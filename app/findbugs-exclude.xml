@@ -1,0 +1,11 @@
+<FindBugsFilter>
+	<Match>
+		<Class name="~.*R\$.*"/>
+	</Match>
+	<Match>
+		<Class name="~.*Manifest\$.*"/>
+	</Match>
+	<Match>
+		<Class name="~.android.support.*"/>
+	</Match>
+</FindBugsFilter>

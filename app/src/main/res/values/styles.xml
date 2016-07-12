@@ -1,0 +1,17 @@
+<resources>
+	<style
+		name="AppTheme"
+		parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">@color/primary</item>
+		<item name="colorPrimaryDark">@color/primary_dark</item>
+		<item name="colorAccent">@color/accent</item>
+	</style>
+	<style
+		name="HomeTheme"
+		parent="@style/AppTheme">
+		<item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:colorBackgroundCacheHint">@null</item>
+		<item name="android:windowShowWallpaper">true</item>
+		<item name="android:windowNoTitle">true</item>
+	</style>
+</resources>
