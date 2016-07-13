@@ -30,6 +30,11 @@ public class AppMenu extends PieMenu
 			((AppMenu.Icon)icons.get( selectedIcon )).launch( context );
 	}
 
+	public int getNumberOfIcons()
+	{
+		return numberOfIcons;
+	}
+
 	private void load()
 	{
 		icons.clear();
@@ -50,7 +55,6 @@ public class AppMenu extends PieMenu
 				continue;
 
 			Icon icon = new Icon();
-
 			icon.appName = p.applicationInfo.loadLabel( pm ).toString();
 			icon.packageName = p.packageName;
 			icon.icon = p.applicationInfo.loadIcon( pm );

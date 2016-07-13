@@ -16,19 +16,26 @@ public class PieMenu
 		protected int y;
 	}
 
-	public int numberOfIcons = 0;
-	public ArrayList<Icon> icons = new ArrayList<Icon>();
-	public double radius = 0;
-	public double twist = 0;
-	public int selectedIcon = -1;
-	public int centerX = 0;
-	public int centerY = 0;
+	public final ArrayList<Icon> icons = new ArrayList<Icon>();
 
-	public void setup( int x, int y, int radius )
+	protected int numberOfIcons = 0;
+	protected int selectedIcon = -1;
+	protected int centerX = -1;
+	protected int centerY = -1;
+	protected double radius = 0;
+	protected double twist = 0;
+
+	public void setup( int x, int y, double radius )
+	{
+		setup( x, y, radius, 0 );
+	}
+
+	public void setup( int x, int y, double radius, double twist )
 	{
 		centerX = x;
 		centerY = y;
 		this.radius = radius;
+		this.twist = twist;
 	}
 
 	public void calculate( float x, float y )
@@ -58,14 +65,14 @@ public class PieMenu
 			// calculate weight of each icon
 			{
 				double cursorRadius = Math.sqrt(
-					(centeredY*centeredY)+
-					(centeredX*centeredX) );
+					centeredY*centeredY+
+					centeredX*centeredX );
 				double infieldRadius = radius/2f;
 				double f = cursorRadius/infieldRadius;
 
 				if( cursorRadius < infieldRadius )
 				{
-					double b = (circumference/numberOfIcons)*.75f;
+					double b = circumference/numberOfIcons*.75f;
 
 					if( b < maxIconSize )
 						maxIconSize = b+(maxIconSize-b)*f;
@@ -77,7 +84,7 @@ public class PieMenu
 				{
 					double closestDistance = TAU;
 					double a = twist;
-					double m = (maxIconSize*pixelsPerRadian)/cellSize;
+					double m = maxIconSize*pixelsPerRadian/cellSize;
 
 					maxWeight = HALF_PI+Math.pow( Math.PI, m );
 
@@ -148,9 +155,10 @@ public class PieMenu
 					cellSize*difference );
 
 				// active icon
-				icons.get( closestIcon ).x = centerX+(int)Math.round(
+				Icon ic = icons.get( closestIcon );
+				ic.x = centerX+(int)Math.round(
 					radius*Math.cos( angle ) );
-				icons.get( closestIcon ).y = centerY+(int)Math.round(
+				ic.y = centerY+(int)Math.round(
 					radius*Math.sin( angle ) );
 
 				// calculate positions of all other icons
