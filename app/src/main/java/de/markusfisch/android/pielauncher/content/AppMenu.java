@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 
 import java.util.List;
 
@@ -16,27 +17,37 @@ public class AppMenu extends PieMenu
 	public AppMenu( Context context )
 	{
 		this.context = context;
-		load();
+		restoreAsync();
 	}
 
-	public Context getContext()
+	public void draw( Canvas canvas )
 	{
-		return context;
+		for( int n = numberOfIcons; n-- > 0; )
+			((AppIcon)icons.get( n )).draw( canvas );
 	}
 
-	public void fire()
+	public void launch()
 	{
 		if( selectedIcon > -1 )
-			((AppMenu.Icon)icons.get( selectedIcon )).launch( context );
+			((AppIcon)icons.get( selectedIcon )).launch( context );
 	}
 
-	public int getNumberOfIcons()
+	private void restoreAsync()
 	{
-		return numberOfIcons;
+		new AsyncTask<Void, Void, Void>()
+		{
+			@Override
+			protected Void doInBackground( Void... nothing )
+			{
+				restore();
+				return null;
+			}
+		}.execute();
 	}
 
-	private void load()
+	private void restore()
 	{
+		numberOfIcons = 0;
 		icons.clear();
 
 		PackageManager pm = context.getPackageManager();
@@ -54,19 +65,23 @@ public class AppMenu extends PieMenu
 					p.packageName )) == null )
 				continue;
 
-			Icon icon = new Icon();
+			AppIcon icon = new AppIcon();
 			icon.appName = p.applicationInfo.loadLabel( pm ).toString();
 			icon.packageName = p.packageName;
 			icon.icon = p.applicationInfo.loadIcon( pm );
 			icon.intent = intent;
 
 			icons.add( icon );
+
+			// DEBUG ONLY
+			if( icons.size() > 8 )
+				break;
 		}
 
 		numberOfIcons = icons.size();
 	}
 
-	public static class Icon extends PieMenu.Icon
+	private static class AppIcon extends PieMenu.Icon
 	{
 		public String appName;
 		public String packageName;
@@ -83,14 +98,14 @@ public class AppMenu extends PieMenu
 
 		public void draw( Canvas canvas )
 		{
-			int s = ((int)size)>>1<<1;
+			int s = (int)size >> 1;
 
 			if( s < 1 )
 				return;
 
-			int half = s/2;
-			int left = x-half;
-			int top = y-half;
+			int left = x-s;
+			int top = y-s;
+			s <<= 1;
 
 			icon.setBounds( left, top, left+s, top+s );
 			icon.draw( canvas );

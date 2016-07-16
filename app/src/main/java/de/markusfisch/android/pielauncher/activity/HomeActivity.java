@@ -1,7 +1,6 @@
 package de.markusfisch.android.pielauncher.activity;
 
-import de.markusfisch.android.pielauncher.content.AppMenu;
-import de.markusfisch.android.pielauncher.widget.PieLauncherSurfaceView;
+import de.markusfisch.android.pielauncher.widget.PieView;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -12,8 +11,6 @@ import android.view.Window;
 
 public class HomeActivity extends Activity
 {
-	private PieLauncherSurfaceView surfaceView;
-
 	@Override
 	public void onBackPressed()
 	{
@@ -25,25 +22,8 @@ public class HomeActivity extends Activity
 	{
 		super.onCreate( state );
 
-		surfaceView = new PieLauncherSurfaceView(
-			new AppMenu( this ) );
-
-		setContentView( surfaceView );
+		setContentView( new PieView( this ) );
 		setTransparentSystemBars( getWindow() );
-	}
-
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
-		surfaceView.onResume();
-	}
-
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-		surfaceView.onPause();
 	}
 
 	@TargetApi( Build.VERSION_CODES.LOLLIPOP )
