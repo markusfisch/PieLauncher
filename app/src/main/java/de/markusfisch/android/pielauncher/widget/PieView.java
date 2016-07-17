@@ -13,9 +13,36 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-public class PieView extends SurfaceView implements Runnable
+public class PieView extends SurfaceView
 {
 	private static final int MAX_ICON_SIZE = 128;
+
+	private final Runnable animationRunnable =
+		new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				while( running )
+				{
+					Canvas canvas = surfaceHolder.lockCanvas();
+
+					if( canvas == null )
+						continue;
+
+					synchronized( surfaceHolder )
+					{
+						long now = SystemClock.elapsedRealtime();
+						long elapsed = now-last;
+						last = now;
+
+						drawMenu( canvas );
+					}
+
+					surfaceHolder.unlockCanvasAndPost( canvas );
+				}
+			}
+		};
 
 	private volatile boolean running = false;
 
@@ -50,29 +77,6 @@ public class PieView extends SurfaceView implements Runnable
 			} );
 	}
 
-	@Override
-	public void run()
-	{
-		while( running )
-		{
-			Canvas canvas = surfaceHolder.lockCanvas();
-
-			if( canvas == null )
-				continue;
-
-			synchronized( surfaceHolder )
-			{
-				long now = SystemClock.elapsedRealtime();
-				long elapsed = now-last;
-				last = now;
-
-				drawMenu( canvas );
-			}
-
-			surfaceHolder.unlockCanvasAndPost( canvas );
-		}
-	}
-
 	private void initSurfaceHolder()
 	{
 		surfaceHolder = getHolder();
@@ -94,7 +98,7 @@ public class PieView extends SurfaceView implements Runnable
 					last = SystemClock.elapsedRealtime();
 					running = true;
 
-					thread = new Thread( PieView.this );
+					thread = new Thread( animationRunnable );
 					thread.start();
 				}
 
@@ -137,7 +141,7 @@ public class PieView extends SurfaceView implements Runnable
 
 	private void drawMenu( Canvas canvas )
 	{
-		canvas.drawColor( 0x00000000, PorterDuff.Mode.CLEAR );
+		canvas.drawColor( 0, PorterDuff.Mode.CLEAR );
 
 		if( touchX < 0 )
 			return;
