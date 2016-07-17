@@ -1,6 +1,9 @@
 *.swp
+*.iml
 .gradle
 .idea
+.DS_Store
 build
 local.properties
 gradle.properties
+.aside
