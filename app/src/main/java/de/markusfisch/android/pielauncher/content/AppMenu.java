@@ -67,7 +67,6 @@ public class AppMenu extends PieMenu
 
 			AppIcon icon = new AppIcon();
 			icon.appName = p.applicationInfo.loadLabel( pm ).toString();
-			icon.packageName = p.packageName;
 			icon.icon = p.applicationInfo.loadIcon( pm );
 			icon.intent = intent;
 
@@ -84,7 +83,6 @@ public class AppMenu extends PieMenu
 	private static class AppIcon extends PieMenu.Icon
 	{
 		public String appName;
-		public String packageName;
 		public Drawable icon;
 		public Intent intent;
 
