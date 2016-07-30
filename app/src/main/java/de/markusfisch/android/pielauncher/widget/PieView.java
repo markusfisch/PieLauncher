@@ -108,7 +108,8 @@ public class PieView extends SurfaceView
 				}
 
 				@Override
-				public void surfaceDestroyed( SurfaceHolder holder ) {
+				public void surfaceDestroyed( SurfaceHolder holder )
+				{
 					running = false;
 
 					for( int retry = 100; retry-- > 0; )
