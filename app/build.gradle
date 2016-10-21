@@ -2,20 +2,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'findbugs'
 
 android {
-	compileSdkVersion 24
+	compileSdkVersion 25
 	buildToolsVersion "23.0.3"
 
 	defaultConfig {
 		minSdkVersion 9
-		targetSdkVersion 24
+		targetSdkVersion 25
 	}
 }
 
 dependencies {
-	compile 'com.android.support:appcompat-v7:24.0.0'
+	compile 'com.android.support:appcompat-v7:25.0.0'
 }
 
-task findbugs(type: FindBugs, dependsOn: assembleDebug) {
+task findbugs(type: FindBugs, dependsOn: 'assembleDebug') {
 	excludeFilter = file('./findbugs-exclude.xml')
 	source = fileTree('src/main/java/')
 	classes = files("${project.rootDir}/app/build/intermediates/classes")
