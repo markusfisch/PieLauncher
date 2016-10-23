@@ -12,8 +12,6 @@ import android.view.SurfaceHolder;
 import android.view.View;
 
 public class AppPieView extends SurfaceView {
-	private static final int MAX_ICON_SIZE = 128;
-
 	private final Runnable animationRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -35,6 +33,7 @@ public class AppPieView extends SurfaceView {
 
 	private volatile boolean running = false;
 
+	private final float dp;
 	private final SurfaceHolder surfaceHolder;
 
 	private AppMenu appMenu;
@@ -46,40 +45,16 @@ public class AppPieView extends SurfaceView {
 	private int lastTouchX;
 	private int lastTouchY;
 
-	public AppPieView(final Context context) {
+	public AppPieView(Context context) {
 		super(context);
 
 		appMenu = new AppMenu(context);
 
-		surfaceHolder = getHolder();
-		initSurfaceHolder(surfaceHolder);
+		dp = context.getResources().getDisplayMetrics().density;
+		initSurfaceHolder(surfaceHolder = getHolder());
+		initTouchListener(context);
 
 		setZOrderOnTop(true);
-		setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				touchX = Math.round(event.getX());
-				touchY = Math.round(event.getY());
-
-				switch (event.getActionMasked()) {
-					default:
-						break;
-					case MotionEvent.ACTION_CANCEL:
-						touchX = -1;
-						break;
-					case MotionEvent.ACTION_DOWN:
-						setMenu(touchX, touchY);
-						break;
-					case MotionEvent.ACTION_UP:
-						v.performClick();
-						appMenu.launch(context);
-						touchX = -1;
-						break;
-				}
-
-				return true;
-			}
-		});
 	}
 
 	private void initSurfaceHolder(SurfaceHolder holder) {
@@ -93,7 +68,7 @@ public class AppPieView extends SurfaceView {
 					int format,
 					int width,
 					int height) {
-				initCanvas(width, height);
+				initMenu(width, height);
 
 				running = true;
 
@@ -121,16 +96,61 @@ public class AppPieView extends SurfaceView {
 		});
 	}
 
-	private void initCanvas(int width, int height) {
+	private void initMenu(int width, int height) {
 		int min = Math.min(width, height);
+		float maxIconSize = 64f * dp;
 
-		if (Math.floor(min * .28f) > MAX_ICON_SIZE) {
-			min = Math.round(MAX_ICON_SIZE / .28f);
+		if (Math.floor(min * .28f) > maxIconSize) {
+			min = Math.round(maxIconSize / .28f);
 		}
 
 		radius = Math.round(min * .5f);
 		this.width = width;
 		this.height = height;
+	}
+
+	private void initTouchListener(final Context context) {
+		setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				touchX = Math.round(event.getX());
+				touchY = Math.round(event.getY());
+
+				switch (event.getActionMasked()) {
+					default:
+						break;
+					case MotionEvent.ACTION_CANCEL:
+						touchX = -1;
+						break;
+					case MotionEvent.ACTION_DOWN:
+						setMenu(touchX, touchY);
+						break;
+					case MotionEvent.ACTION_UP:
+						v.performClick();
+						appMenu.launch(context);
+						touchX = -1;
+						break;
+				}
+
+				return true;
+			}
+		});
+	}
+
+	private void setMenu(int x, int y) {
+		if (x + radius > width) {
+			x = width - radius;
+		} else if (x - radius < 0) {
+			x = radius;
+		}
+
+		if (y + radius > height) {
+			y = height - radius;
+		} else if (y - radius < 0) {
+			y = radius;
+		}
+
+		appMenu.set(x, y, radius);
 	}
 
 	private void drawMenu(Canvas canvas) {
@@ -156,21 +176,5 @@ public class AppPieView extends SurfaceView {
 		}
 
 		appMenu.draw(canvas);
-	}
-
-	private void setMenu(int x, int y) {
-		if (x + radius > width) {
-			x = width - radius;
-		} else if (x - radius < 0) {
-			x = radius;
-		}
-
-		if (y + radius > height) {
-			y = height - radius;
-		} else if (y - radius < 0) {
-			y = radius;
-		}
-
-		appMenu.set(x, y, radius);
 	}
 }
