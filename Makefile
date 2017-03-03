@@ -12,6 +12,9 @@ lint:
 findbugs:
 	./gradlew findBugs
 
+infer: clean
+	infer -- ./gradlew assembleDebug
+
 release:
 	@./gradlew \
 		assembleRelease \

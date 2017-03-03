@@ -7,3 +7,4 @@ build
 local.properties
 gradle.properties
 .aside
+infer-out
