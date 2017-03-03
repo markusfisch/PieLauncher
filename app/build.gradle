@@ -2,17 +2,17 @@ apply plugin: 'com.android.application'
 apply plugin: 'findbugs'
 
 android {
-	compileSdkVersion 25
-	buildToolsVersion "23.0.3"
+	compileSdkVersion sdk_version
+	buildToolsVersion build_tools_version
 
 	defaultConfig {
 		minSdkVersion 9
-		targetSdkVersion 25
+		targetSdkVersion sdk_version
 	}
 }
 
 dependencies {
-	compile 'com.android.support:appcompat-v7:25.0.0'
+	compile "com.android.support:appcompat-v7:$support_version"
 }
 
 task findbugs(type: FindBugs, dependsOn: 'assembleDebug') {
