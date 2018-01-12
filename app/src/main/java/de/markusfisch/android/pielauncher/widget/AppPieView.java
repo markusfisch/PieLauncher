@@ -93,7 +93,7 @@ public class AppPieView extends SurfaceView {
 						thread.join();
 						break;
 					} catch (InterruptedException e) {
-						// try again
+						thread.interrupt();
 					}
 				}
 			}
