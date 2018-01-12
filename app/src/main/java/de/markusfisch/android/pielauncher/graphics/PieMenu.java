@@ -1,4 +1,4 @@
-package de.markusfisch.android.pielauncher.content;
+package de.markusfisch.android.pielauncher.graphics;
 
 import java.util.ArrayList;
 
@@ -6,18 +6,18 @@ public class PieMenu {
 	private static final double TAU = Math.PI + Math.PI;
 	private static final double HALF_PI = Math.PI * .5f;
 
-	static class Icon {
-		double weight;
-		double size;
-		double cellSize;
-		int x;
-		int y;
+	protected static class Icon {
+		public double weight;
+		public double size;
+		public double cellSize;
+		public int x;
+		public int y;
 	}
 
-	final ArrayList<Icon> icons = new ArrayList<>();
+	protected final ArrayList<Icon> icons = new ArrayList<>();
 
-	int numberOfIcons = 0;
-	int selectedIcon = -1;
+	protected int numberOfIcons = 0;
+	protected int selectedIcon = -1;
 
 	private int centerX = -1;
 	private int centerY = -1;

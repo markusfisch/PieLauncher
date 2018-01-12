@@ -1,5 +1,7 @@
 package de.markusfisch.android.pielauncher.content;
 
+import de.markusfisch.android.pielauncher.graphics.PieMenu;
+
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;

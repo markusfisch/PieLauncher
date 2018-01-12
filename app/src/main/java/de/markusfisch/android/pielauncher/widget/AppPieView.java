@@ -17,15 +17,10 @@ public class AppPieView extends SurfaceView {
 		public void run() {
 			while (running) {
 				Canvas canvas = surfaceHolder.lockCanvas();
-
 				if (canvas == null) {
 					continue;
 				}
-
-				synchronized (surfaceHolder) {
-					drawMenu(canvas);
-				}
-
+				drawMenu(canvas);
 				surfaceHolder.unlockCanvasAndPost(canvas);
 			}
 		}
@@ -68,6 +63,7 @@ public class AppPieView extends SurfaceView {
 					int format,
 					int width,
 					int height) {
+				stopThread();
 				initMenu(width, height);
 
 				running = true;
@@ -82,12 +78,20 @@ public class AppPieView extends SurfaceView {
 
 			@Override
 			public void surfaceDestroyed(SurfaceHolder holder) {
+				stopThread();
+			}
+
+			private void stopThread() {
+				if (thread == null) {
+					return;
+				}
+
 				running = false;
 
 				for (int retry = 100; retry-- > 0; ) {
 					try {
 						thread.join();
-						retry = 0;
+						break;
 					} catch (InterruptedException e) {
 						// try again
 					}
@@ -159,14 +163,6 @@ public class AppPieView extends SurfaceView {
 		if (touchX < 0) {
 			return;
 		}
-
-		/*View rootView = ((Activity) getContext())
-				.getWindow()
-				.getDecorView()
-				.getRootView();
-		rootView.setDrawingCacheEnabled(true);
-		Bitmap bitmap = Bitmap.createBitmap(rootView.getDrawingCache());
-		rootView.setDrawingCacheEnabled(false);*/
 
 		if (touchX != lastTouchX || touchY != lastTouchY) {
 			appMenu.calculate(touchX, touchY);
