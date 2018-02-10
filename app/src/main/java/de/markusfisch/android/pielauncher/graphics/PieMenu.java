@@ -211,10 +211,11 @@ public class PieMenu {
 	}
 
 	private static double getAngleDifference(double a, double b) {
-		double c = a - b;
-		double d = a > b ? a - (b + TAU) : a - (b - TAU);
-
-		return Math.abs(c) < Math.abs(d) ? c : d;
+		double d = ((a - b) + TAU) % TAU;
+		if (d > Math.PI) {
+			d -= TAU;
+		}
+		return d;
 	}
 
 	private static double getValidAngle(double a) {
