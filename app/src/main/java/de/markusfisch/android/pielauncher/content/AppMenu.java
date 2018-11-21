@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.content;
 
 import de.markusfisch.android.pielauncher.graphics.PieMenu;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -31,6 +32,10 @@ public class AppMenu extends PieMenu {
 		}
 	}
 
+	// this AsyncTask is running for a short and finite time only
+	// and it's perfectly okay to delay garbage collection of the
+	// parent instance until this task has been terminated
+	@SuppressLint("StaticFieldLeak")
 	private void indexAppsAsync(final Context context) {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
