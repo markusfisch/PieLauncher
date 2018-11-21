@@ -15,18 +15,13 @@ public class AppPieView extends SurfaceView {
 	private final Runnable animationRunnable = new Runnable() {
 		@Override
 		public void run() {
-			while (running) {
-				Canvas canvas = surfaceHolder.lockCanvas();
-				if (canvas == null) {
-					continue;
-				}
-				drawMenu(canvas);
-				surfaceHolder.unlockCanvasAndPost(canvas);
+			while (animating) {
+				drawView();
 			}
 		}
 	};
 
-	private volatile boolean running = false;
+	private volatile boolean animating = false;
 
 	private final float dp;
 	private final SurfaceHolder surfaceHolder;
@@ -66,7 +61,7 @@ public class AppPieView extends SurfaceView {
 				stopThread();
 				initMenu(width, height);
 
-				running = true;
+				animating = true;
 
 				thread = new Thread(animationRunnable);
 				thread.start();
@@ -86,7 +81,7 @@ public class AppPieView extends SurfaceView {
 					return;
 				}
 
-				running = false;
+				animating = false;
 
 				for (int retry = 100; retry-- > 0; ) {
 					try {
@@ -155,6 +150,15 @@ public class AppPieView extends SurfaceView {
 		}
 
 		appMenu.set(x, y, radius);
+	}
+
+	private void drawView() {
+		Canvas canvas = surfaceHolder.lockCanvas();
+		if (canvas == null) {
+			return;
+		}
+		drawMenu(canvas);
+		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 
 	private void drawMenu(Canvas canvas) {
