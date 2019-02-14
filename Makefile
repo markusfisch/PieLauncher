@@ -1,5 +1,4 @@
 PACKAGE = de.markusfisch.android.pielauncher
-APK = app/build/outputs/apk/debug/app-debug.apk
 
 all: debug install start
 
@@ -27,7 +26,7 @@ release:
 		-Pandroid.injected.signing.key.password=$(ANDROID_KEY_PASSWORD)
 
 install:
-	adb $(TARGET) install -r $(APK)
+	adb $(TARGET) install -r app/build/outputs/apk/debug/app-debug.apk
 
 start:
 	adb $(TARGET) shell 'am start -n \
