@@ -4,14 +4,15 @@ import de.markusfisch.android.pielauncher.graphics.PieMenu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class AppMenu extends PieMenu {
 	private final HashMap<String, App> apps = new HashMap<>();
@@ -50,30 +51,28 @@ public class AppMenu extends PieMenu {
 	private void restore() {
 		numberOfIcons = 0;
 		icons.clear();
-
-		// if this is the first run, just take a few apps
 		for (App app : apps.values()) {
 			icons.add(new AppIcon(app));
-
-			// DEBUG
-			if (icons.size() > 8) {
-				break;
-			}
 		}
-
 		numberOfIcons = icons.size();
 	}
 
 	private void indexApps(Context context) {
 		apps.clear();
 
+		Intent intent = new Intent(Intent.ACTION_MAIN, null);
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		PackageManager pm = context.getPackageManager();
-
-		for (PackageInfo pkg : pm.getInstalledPackages(0)) {
-			apps.put(pkg.packageName, new App(
-					pkg.packageName,
-					pkg.applicationInfo.loadLabel(pm).toString(),
-					pkg.applicationInfo.loadIcon(pm)));
+		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
+		if (activities == null) {
+			return;
+		}
+		for (ResolveInfo info : activities) {
+			String packageName = info.activityInfo.packageName;
+			apps.put(packageName, new App(
+					packageName,
+					info.loadLabel(pm).toString(),
+					info.loadIcon(pm)));
 		}
 	}
 
