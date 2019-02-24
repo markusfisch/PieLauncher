@@ -58,8 +58,10 @@ public class HomeActivity extends Activity {
 			return;
 		}
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(Intent.ACTION_USER_PRESENT);
-		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+		filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+		filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
 		registerReceiver(packageEventReceiver, filter);
 	}
 
