@@ -38,10 +38,11 @@ public class AppPieView extends SurfaceView {
 	public AppPieView(Context context) {
 		super(context);
 
+		dp = context.getResources().getDisplayMetrics().density;
+		surfaceHolder = getHolder();
 		appMenu = new AppMenu(context);
 
-		dp = context.getResources().getDisplayMetrics().density;
-		initSurfaceHolder(surfaceHolder = getHolder());
+		initSurfaceHolder(surfaceHolder);
 		initTouchListener(context);
 
 		setZOrderOnTop(true);
@@ -122,7 +123,7 @@ public class AppPieView extends SurfaceView {
 						touchX = -1;
 						break;
 					case MotionEvent.ACTION_DOWN:
-						setMenu(touchX, touchY);
+						setCenterAndRadius(touchX, touchY);
 						break;
 					case MotionEvent.ACTION_UP:
 						v.performClick();
@@ -136,7 +137,7 @@ public class AppPieView extends SurfaceView {
 		});
 	}
 
-	private void setMenu(int x, int y) {
+	private void setCenterAndRadius(int x, int y) {
 		if (x + radius > width) {
 			x = width - radius;
 		} else if (x - radius < 0) {
