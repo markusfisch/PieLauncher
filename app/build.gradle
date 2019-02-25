@@ -30,10 +30,6 @@ android {
 	}
 }
 
-dependencies {
-	implementation "com.android.support:appcompat-v7:$support_version"
-}
-
 task findbugs(type: FindBugs, dependsOn: 'assembleDebug') {
 	excludeFilter = file('./findbugs-exclude.xml')
 	source = fileTree('src/main/java/')
