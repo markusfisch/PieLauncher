@@ -17,10 +17,6 @@ import java.util.List;
 public class AppMenu extends PieMenu {
 	private final HashMap<String, App> apps = new HashMap<>();
 
-	public AppMenu(Context context) {
-		indexAppsAsync(context);
-	}
-
 	public void draw(Canvas canvas) {
 		for (int n = numberOfIcons; n-- > 0; ) {
 			((AppIcon) icons.get(n)).draw(canvas);
@@ -37,24 +33,14 @@ public class AppMenu extends PieMenu {
 	// and it's perfectly okay to delay garbage collection of the
 	// parent instance until this task has been terminated
 	@SuppressLint("StaticFieldLeak")
-	private void indexAppsAsync(final Context context) {
+	public void indexAppsAsync(final Context context) {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... nothing) {
 				indexApps(context);
-				restore();
 				return null;
 			}
 		}.execute();
-	}
-
-	private void restore() {
-		numberOfIcons = 0;
-		icons.clear();
-		for (App app : apps.values()) {
-			icons.add(new AppIcon(app));
-		}
-		numberOfIcons = icons.size();
 	}
 
 	private void indexApps(Context context) {
@@ -74,6 +60,17 @@ public class AppMenu extends PieMenu {
 					info.loadLabel(pm).toString(),
 					info.loadIcon(pm)));
 		}
+
+		restore();
+	}
+
+	private void restore() {
+		numberOfIcons = 0;
+		icons.clear();
+		for (App app : apps.values()) {
+			icons.add(new AppIcon(app));
+		}
+		numberOfIcons = icons.size();
 	}
 
 	private static class App {

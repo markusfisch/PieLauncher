@@ -12,6 +12,8 @@ import android.view.SurfaceHolder;
 import android.view.View;
 
 public class AppPieView extends SurfaceView {
+	public static final AppMenu appMenu = new AppMenu();
+
 	private final Runnable animationRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -26,7 +28,6 @@ public class AppPieView extends SurfaceView {
 	private final float dp;
 	private final SurfaceHolder surfaceHolder;
 
-	private AppMenu appMenu;
 	private int width;
 	private int height;
 	private int radius;
@@ -40,7 +41,7 @@ public class AppPieView extends SurfaceView {
 
 		dp = context.getResources().getDisplayMetrics().density;
 		surfaceHolder = getHolder();
-		appMenu = new AppMenu(context);
+		appMenu.indexAppsAsync(context);
 
 		initSurfaceHolder(surfaceHolder);
 		initTouchListener(context);
