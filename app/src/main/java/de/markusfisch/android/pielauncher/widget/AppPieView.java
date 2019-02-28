@@ -17,13 +17,11 @@ public class AppPieView extends SurfaceView {
 	private final Runnable animationRunnable = new Runnable() {
 		@Override
 		public void run() {
-			while (animating) {
+			while (!Thread.currentThread().isInterrupted()) {
 				drawView();
 			}
 		}
 	};
-
-	private volatile boolean animating = false;
 
 	private final float dp;
 	private final SurfaceHolder surfaceHolder;
@@ -63,8 +61,6 @@ public class AppPieView extends SurfaceView {
 				stopThread();
 				initMenu(width, height);
 
-				animating = true;
-
 				thread = new Thread(animationRunnable);
 				thread.start();
 			}
@@ -83,15 +79,11 @@ public class AppPieView extends SurfaceView {
 					return;
 				}
 
-				animating = false;
-
-				for (int retry = 100; retry-- > 0; ) {
-					try {
-						thread.join();
-						break;
-					} catch (InterruptedException e) {
-						thread.interrupt();
-					}
+				thread.interrupt();
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					// parent thread was interrupted
 				}
 			}
 		});
