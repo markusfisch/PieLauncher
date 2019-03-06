@@ -17,10 +17,12 @@
 			android:launchMode="singleTask"
 			android:clearTaskOnLaunch="true"
 			android:stateNotNeeded="true"
+			android:taskAffinity=""
 			android:excludeFromRecents="true"
 			android:theme="@style/HomeTheme">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
 				<category android:name="android.intent.category.DEFAULT"/>
 				<category android:name="android.intent.category.HOME"/>
 			</intent-filter>
@@ -32,15 +34,16 @@
 					android:host="www.markusfisch.de"
 					android:scheme="http"/>
 			</intent-filter>
-		</activity>
-		<receiver android:name=".receiver.PackageEventReceiver">
 			<intent-filter>
-				<action android:name="android.intent.action.PACKAGE_ADDED"/>
-				<action android:name="android.intent.action.PACKAGE_REMOVED"/>
-				<action android:name="android.intent.action.PACKAGE_CHANGED"/>
-				<action android:name="android.intent.action.PACKAGE_REPLACED"/>
-				<data android:scheme="package"/>
+				<action android:name="android.intent.action.ASSIST"/>
+				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
-		</receiver>
+			<intent-filter>
+				<action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT"/>
+			</intent-filter>
+			<!--meta-data
+				android:name="com.android.systemui.action_assist_icon"
+				android:resource="@drawable/ic_launcher"/-->
+		</activity>
 	</application>
 </manifest>
