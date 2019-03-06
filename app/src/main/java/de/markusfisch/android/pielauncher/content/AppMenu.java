@@ -11,11 +11,11 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class AppMenu extends PieMenu {
-	private final HashMap<String, App> apps = new HashMap<>();
+	private final TreeMap<String, App> apps = new TreeMap<>();
 
 	public void draw(Canvas canvas) {
 		for (int n = numberOfIcons; n-- > 0; ) {
