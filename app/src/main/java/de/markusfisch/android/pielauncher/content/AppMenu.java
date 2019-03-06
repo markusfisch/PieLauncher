@@ -53,8 +53,13 @@ public class AppMenu extends PieMenu {
 		if (activities == null) {
 			return;
 		}
+		String thisPackageName = context.getApplicationContext()
+				.getPackageName();
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.packageName;
+			if (thisPackageName.equals(packageName)) {
+				continue;
+			}
 			apps.put(packageName, new App(
 					packageName,
 					info.loadLabel(pm).toString(),
