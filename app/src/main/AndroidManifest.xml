@@ -10,7 +10,8 @@
 		tools:ignore="UnusedAttribute"
 		android:allowBackup="true"
 		android:supportsRtl="true"
-		android:label="@string/app_name">
+		android:label="@string/app_name"
+		android:icon="@mipmap/ic_launcher">
 		<activity
 			android:name=".activity.HomeActivity"
 			android:label="@string/app_name"
@@ -41,9 +42,9 @@
 			<intent-filter>
 				<action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT"/>
 			</intent-filter>
-			<!--meta-data
+			<meta-data
 				android:name="com.android.systemui.action_assist_icon"
-				android:resource="@drawable/ic_launcher"/-->
+				android:resource="@drawable/ic_launcher"/>
 		</activity>
 	</application>
 </manifest>
