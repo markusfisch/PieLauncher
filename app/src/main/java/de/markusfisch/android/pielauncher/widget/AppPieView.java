@@ -33,6 +33,7 @@ public class AppPieView extends SurfaceView {
 	private int touchY;
 	private int lastTouchX;
 	private int lastTouchY;
+	private Thread animationThread;
 
 	public AppPieView(Context context) {
 		super(context);
@@ -42,7 +43,7 @@ public class AppPieView extends SurfaceView {
 		appMenu.indexAppsAsync(context);
 
 		initSurfaceHolder(surfaceHolder);
-		initTouchListener(context);
+		initTouchListener();
 
 		setZOrderOnTop(true);
 	}
@@ -50,19 +51,13 @@ public class AppPieView extends SurfaceView {
 	private void initSurfaceHolder(SurfaceHolder holder) {
 		holder.setFormat(PixelFormat.TRANSPARENT);
 		holder.addCallback(new SurfaceHolder.Callback() {
-			private Thread thread;
-
 			@Override
 			public void surfaceChanged(
 					SurfaceHolder holder,
 					int format,
 					int width,
 					int height) {
-				stopThread();
 				initMenu(width, height);
-
-				thread = new Thread(animationRunnable);
-				thread.start();
 			}
 
 			@Override
@@ -71,20 +66,7 @@ public class AppPieView extends SurfaceView {
 
 			@Override
 			public void surfaceDestroyed(SurfaceHolder holder) {
-				stopThread();
-			}
-
-			private void stopThread() {
-				if (thread == null) {
-					return;
-				}
-
-				thread.interrupt();
-				try {
-					thread.join();
-				} catch (InterruptedException e) {
-					// parent thread was interrupted
-				}
+				stopAnimationThread();
 			}
 		});
 	}
@@ -102,7 +84,7 @@ public class AppPieView extends SurfaceView {
 		this.height = height;
 	}
 
-	private void initTouchListener(final Context context) {
+	private void initTouchListener() {
 		setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -114,14 +96,20 @@ public class AppPieView extends SurfaceView {
 						break;
 					case MotionEvent.ACTION_CANCEL:
 						touchX = -1;
+						drawView();
+						break;
+					case MotionEvent.ACTION_MOVE:
+						drawView();
 						break;
 					case MotionEvent.ACTION_DOWN:
-						setCenterAndRadius(touchX, touchY);
+						setCenter(touchX, touchY);
+						drawView();
 						break;
 					case MotionEvent.ACTION_UP:
 						v.performClick();
-						appMenu.launch(context);
+						appMenu.launch(v.getContext());
 						touchX = -1;
+						drawView();
 						break;
 				}
 
@@ -130,45 +118,46 @@ public class AppPieView extends SurfaceView {
 		});
 	}
 
-	private void setCenterAndRadius(int x, int y) {
-		if (x + radius > width) {
-			x = width - radius;
-		} else if (x - radius < 0) {
-			x = radius;
-		}
-
-		if (y + radius > height) {
-			y = height - radius;
-		} else if (y - radius < 0) {
-			y = radius;
-		}
-
-		appMenu.set(x, y, radius);
+	private void setCenter(int x, int y) {
+		appMenu.set(
+				Math.max(radius, Math.min(width - radius, x)),
+				Math.max(radius, Math.min(height - radius, y)),
+				radius);
 	}
 
 	private void drawView() {
+		if (touchX == lastTouchX && touchY == lastTouchY) {
+			return;
+		}
 		Canvas canvas = surfaceHolder.lockCanvas();
 		if (canvas == null) {
 			return;
 		}
-		drawMenu(canvas);
+		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		if (touchX > -1) {
+			appMenu.calculate(touchX, touchY);
+			appMenu.draw(canvas);
+		}
+		lastTouchX = touchX;
+		lastTouchY = touchY;
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 
-	private void drawMenu(Canvas canvas) {
-		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+	private void startAnimationThread() {
+		stopAnimationThread();
+		animationThread = new Thread(animationRunnable);
+		animationThread.start();
+	}
 
-		if (touchX < 0) {
+	private void stopAnimationThread() {
+		if (animationThread == null) {
 			return;
 		}
-
-		if (touchX != lastTouchX || touchY != lastTouchY) {
-			appMenu.calculate(touchX, touchY);
-
-			lastTouchX = touchX;
-			lastTouchY = touchY;
+		animationThread.interrupt();
+		try {
+			animationThread.join();
+		} catch (InterruptedException e) {
+			// parent thread was interrupted
 		}
-
-		appMenu.draw(canvas);
 	}
 }
