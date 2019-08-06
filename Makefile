@@ -17,13 +17,11 @@ sonarqube:
 infer: clean
 	infer -- ./gradlew assembleDebug
 
-release:
-	@./gradlew \
-		assembleRelease \
-		-Pandroid.injected.signing.store.file=$(ANDROID_KEYFILE) \
-		-Pandroid.injected.signing.store.password=$(ANDROID_STORE_PASSWORD) \
-		-Pandroid.injected.signing.key.alias=$(ANDROID_KEY_ALIAS) \
-		-Pandroid.injected.signing.key.password=$(ANDROID_KEY_PASSWORD)
+release: lint findbugs
+	./gradlew assembleRelease
+
+bundle: lint findbugs
+	./gradlew bundleRelease
 
 install:
 	adb $(TARGET) install -r app/build/outputs/apk/debug/app-debug.apk
