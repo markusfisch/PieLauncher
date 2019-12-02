@@ -14,15 +14,6 @@ import android.view.View;
 public class AppPieView extends SurfaceView {
 	public static final AppMenu appMenu = new AppMenu();
 
-	private final Runnable animationRunnable = new Runnable() {
-		@Override
-		public void run() {
-			while (!Thread.currentThread().isInterrupted()) {
-				drawView();
-			}
-		}
-	};
-
 	private final float dp;
 	private final SurfaceHolder surfaceHolder;
 
@@ -33,7 +24,6 @@ public class AppPieView extends SurfaceView {
 	private int touchY;
 	private int lastTouchX;
 	private int lastTouchY;
-	private Thread animationThread;
 
 	public AppPieView(Context context) {
 		super(context);
@@ -66,7 +56,6 @@ public class AppPieView extends SurfaceView {
 
 			@Override
 			public void surfaceDestroyed(SurfaceHolder holder) {
-				stopAnimationThread();
 			}
 		});
 	}
@@ -137,23 +126,5 @@ public class AppPieView extends SurfaceView {
 		lastTouchX = touchX;
 		lastTouchY = touchY;
 		surfaceHolder.unlockCanvasAndPost(canvas);
-	}
-
-	private void startAnimationThread() {
-		stopAnimationThread();
-		animationThread = new Thread(animationRunnable);
-		animationThread.start();
-	}
-
-	private void stopAnimationThread() {
-		if (animationThread == null) {
-			return;
-		}
-		animationThread.interrupt();
-		try {
-			animationThread.join();
-		} catch (InterruptedException e) {
-			// parent thread was interrupted
-		}
 	}
 }
