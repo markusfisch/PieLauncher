@@ -33,11 +33,14 @@ public class AppMenu extends PieMenu {
 	// and it's perfectly okay to delay garbage collection of the
 	// parent instance until this task has been terminated
 	@SuppressLint("StaticFieldLeak")
-	public void indexAppsAsync(final Context context) {
+	public void indexAppsAsync(Context context) {
+		// get application context to not block garbage collection
+		// on other Context objects
+		final Context appContext = context.getApplicationContext();
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... nothing) {
-				indexApps(context);
+				indexApps(appContext);
 				return null;
 			}
 		}.execute();
