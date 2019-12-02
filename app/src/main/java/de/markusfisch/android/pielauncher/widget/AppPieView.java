@@ -74,11 +74,9 @@ public class AppPieView extends SurfaceView {
 	private void initMenu(int width, int height) {
 		int min = Math.min(width, height);
 		float maxIconSize = 64f * dp;
-
 		if (Math.floor(min * .28f) > maxIconSize) {
 			min = Math.round(maxIconSize / .28f);
 		}
-
 		radius = Math.round(min * .5f);
 		this.width = width;
 		this.height = height;
@@ -90,7 +88,6 @@ public class AppPieView extends SurfaceView {
 			public boolean onTouch(View v, MotionEvent event) {
 				touchX = Math.round(event.getX());
 				touchY = Math.round(event.getY());
-
 				switch (event.getActionMasked()) {
 					default:
 						break;
@@ -112,7 +109,6 @@ public class AppPieView extends SurfaceView {
 						drawView();
 						break;
 				}
-
 				return true;
 			}
 		});

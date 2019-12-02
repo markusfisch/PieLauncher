@@ -45,7 +45,6 @@ public class AppMenu extends PieMenu {
 
 	private void indexApps(Context context) {
 		apps.clear();
-
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		PackageManager pm = context.getPackageManager();
@@ -100,26 +99,21 @@ public class AppMenu extends PieMenu {
 		void launch(Context context) {
 			PackageManager pm = context.getPackageManager();
 			Intent intent;
-
 			if (pm == null || (intent = pm.getLaunchIntentForPackage(
 					app.packageName)) == null) {
 				return;
 			}
-
 			context.startActivity(intent);
 		}
 
 		void draw(Canvas canvas) {
 			int s = (int) size >> 1;
-
 			if (s < 1) {
 				return;
 			}
-
 			int left = x - s;
 			int top = y - s;
 			s <<= 1;
-
 			app.icon.setBounds(left, top, left + s, top + s);
 			app.icon.draw(canvas);
 		}
