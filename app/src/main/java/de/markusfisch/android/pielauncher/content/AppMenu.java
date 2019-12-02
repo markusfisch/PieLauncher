@@ -55,11 +55,10 @@ public class AppMenu extends PieMenu {
 		if (activities == null) {
 			return;
 		}
-		String thisPackageName = context.getApplicationContext()
-				.getPackageName();
+		String skip = context.getPackageName();
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.packageName;
-			if (thisPackageName.equals(packageName)) {
+			if (skip.equals(packageName)) {
 				continue;
 			}
 			apps.put(packageName, new App(
@@ -67,12 +66,10 @@ public class AppMenu extends PieMenu {
 					info.loadLabel(pm).toString(),
 					info.loadIcon(pm)));
 		}
-
-		restore();
+		createIcons();
 	}
 
-	private void restore() {
-		numberOfIcons = 0;
+	private void createIcons() {
 		icons.clear();
 		for (App app : apps.values()) {
 			icons.add(new AppIcon(app));
