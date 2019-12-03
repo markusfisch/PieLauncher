@@ -22,15 +22,25 @@ import java.util.List;
 import java.util.Map;
 
 public class AppMenu extends CanvasPieMenu {
+	public interface UpdateListener {
+		void onUpdate();
+	}
+
 	private static final String MENU = "menu";
 
 	private final HashMap<String, AppIcon> apps = new HashMap<>();
+
+	private UpdateListener updateListener;
 
 	public void launch(Context context) {
 		int selectedIcon = getSelectedIcon();
 		if (selectedIcon > -1) {
 			((AppIcon) icons.get(selectedIcon)).launch(context);
 		}
+	}
+
+	public void setUpdateListener(UpdateListener listener) {
+		updateListener = listener;
 	}
 
 	public boolean store(Context context) {
@@ -50,6 +60,13 @@ public class AppMenu extends CanvasPieMenu {
 			protected Void doInBackground(Void... nothing) {
 				indexApps(appContext);
 				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void nothing) {
+				if (updateListener != null) {
+					updateListener.onUpdate();
+				}
 			}
 		}.execute();
 	}

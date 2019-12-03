@@ -1,7 +1,9 @@
 package de.markusfisch.android.pielauncher.activity;
 
+import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
+import de.markusfisch.android.pielauncher.R;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -11,20 +13,48 @@ import android.os.Bundle;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
+import android.widget.ListView;
 
 public class HomeActivity extends Activity {
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
+	private AppPieView pieView;
+	private View allAppsContainer;
+	private ListView appsListView;
+	private EditText searchInput;
+
 	@Override
 	public void onBackPressed() {
-		// ignore back on home screen
+		if (allAppsContainer.getVisibility() == View.VISIBLE) {
+			allAppsContainer.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
-		setContentView(new AppPieView(this));
+
+		setContentView(R.layout.activity_home);
+		pieView = findViewById(R.id.pie);
+		allAppsContainer = findViewById(R.id.all_apps);
+		appsListView = findViewById(R.id.apps);
+		searchInput = findViewById(R.id.name);
+
+		pieView.setOpenListListener(new AppPieView.OpenListListener() {
+			@Override
+			public void onOpenList() {
+				allAppsContainer.setVisibility(View.VISIBLE);
+				searchInput.requestFocus();
+			}
+		});
+		AppPieView.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
+			@Override
+			public void onUpdate() {
+			}
+		});
+
 		setTransparentSystemBars(getWindow());
 		registerPackageEventReceiver();
 	}

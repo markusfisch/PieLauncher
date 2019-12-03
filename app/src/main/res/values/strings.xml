@@ -1,3 +1,4 @@
 <resources>
 	<string name="app_name">PieLauncher</string>
+	<string name="input_app_name">Input app name</string>
 </resources>

@@ -7,12 +7,19 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.util.AttributeSet;
 
 public class AppPieView extends SurfaceView {
+	public interface OpenListListener {
+		void onOpenList();
+	}
+
 	public static final AppMenu appMenu = new AppMenu();
 
 	private final Point touch = new Point();
@@ -23,18 +30,30 @@ public class AppPieView extends SurfaceView {
 	private int width;
 	private int height;
 	private int radius;
+	private float touchSlopSq;
+	private int tapTimeout;
+	private OpenListListener listListener;
 
-	public AppPieView(Context context) {
-		super(context);
+	public AppPieView(Context context, AttributeSet attr) {
+		super(context, attr);
 
 		dp = context.getResources().getDisplayMetrics().density;
 		surfaceHolder = getHolder();
 		appMenu.indexAppsAsync(context);
 
+		ViewConfiguration vc = ViewConfiguration.get(context);
+		float touchSlop = vc.getScaledTouchSlop();
+		touchSlopSq = touchSlop * touchSlop;
+		tapTimeout = vc.getTapTimeout();
+
 		initSurfaceHolder(surfaceHolder);
 		initTouchListener();
 
 		setZOrderOnTop(true);
+	}
+
+	public void setOpenListListener(OpenListListener listener) {
+		listListener = listener;
 	}
 
 	private void initSurfaceHolder(SurfaceHolder holder) {
@@ -72,6 +91,9 @@ public class AppPieView extends SurfaceView {
 
 	private void initTouchListener() {
 		setOnTouchListener(new View.OnTouchListener() {
+			private Point down = new Point();
+			private long downAt;
+
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				touch.x = Math.round(event.getX());
@@ -87,12 +109,21 @@ public class AppPieView extends SurfaceView {
 						drawView();
 						break;
 					case MotionEvent.ACTION_DOWN:
+						down.set(touch.x, touch.y);
+						downAt = event.getEventTime();
 						setCenter(touch);
 						drawView();
 						break;
 					case MotionEvent.ACTION_UP:
 						v.performClick();
-						appMenu.launch(v.getContext());
+						if (SystemClock.uptimeMillis() - downAt <= tapTimeout &&
+								distSq(down, touch) <= touchSlopSq) {
+							if (listListener != null) {
+								listListener.onOpenList();
+							}
+						} else {
+							appMenu.launch(v.getContext());
+						}
 						touch.x = -1;
 						drawView();
 						break;
@@ -124,5 +155,11 @@ public class AppPieView extends SurfaceView {
 		}
 		lastTouch.set(touch.x, touch.y);
 		surfaceHolder.unlockCanvasAndPost(canvas);
+	}
+
+	private static float distSq(Point a, Point b) {
+		float dx = a.x - b.x;
+		float dy = a.y - b.y;
+		return dx*dx + dy*dy;
 	}
 }
