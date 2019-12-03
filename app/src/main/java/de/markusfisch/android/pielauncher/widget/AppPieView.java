@@ -5,6 +5,7 @@ import de.markusfisch.android.pielauncher.content.AppMenu;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -14,16 +15,14 @@ import android.view.View;
 public class AppPieView extends SurfaceView {
 	public static final AppMenu appMenu = new AppMenu();
 
+	private final Point touch = new Point();
+	private final Point lastTouch = new Point();
 	private final float dp;
 	private final SurfaceHolder surfaceHolder;
 
 	private int width;
 	private int height;
 	private int radius;
-	private int touchX;
-	private int touchY;
-	private int lastTouchX;
-	private int lastTouchY;
 
 	public AppPieView(Context context) {
 		super(context);
@@ -75,26 +74,26 @@ public class AppPieView extends SurfaceView {
 		setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				touchX = Math.round(event.getX());
-				touchY = Math.round(event.getY());
+				touch.x = Math.round(event.getX());
+				touch.y = Math.round(event.getY());
 				switch (event.getActionMasked()) {
 					default:
 						break;
 					case MotionEvent.ACTION_CANCEL:
-						touchX = -1;
+						touch.x = -1;
 						drawView();
 						break;
 					case MotionEvent.ACTION_MOVE:
 						drawView();
 						break;
 					case MotionEvent.ACTION_DOWN:
-						setCenter(touchX, touchY);
+						setCenter(touch);
 						drawView();
 						break;
 					case MotionEvent.ACTION_UP:
 						v.performClick();
 						appMenu.launch(v.getContext());
-						touchX = -1;
+						touch.x = -1;
 						drawView();
 						break;
 				}
@@ -103,15 +102,15 @@ public class AppPieView extends SurfaceView {
 		});
 	}
 
-	private void setCenter(int x, int y) {
+	private void setCenter(Point point) {
 		appMenu.set(
-				Math.max(radius, Math.min(width - radius, x)),
-				Math.max(radius, Math.min(height - radius, y)),
+				Math.max(radius, Math.min(width - radius, point.x)),
+				Math.max(radius, Math.min(height - radius, point.y)),
 				radius);
 	}
 
 	private void drawView() {
-		if (touchX == lastTouchX && touchY == lastTouchY) {
+		if (touch.equals(lastTouch)) {
 			return;
 		}
 		Canvas canvas = surfaceHolder.lockCanvas();
@@ -119,12 +118,11 @@ public class AppPieView extends SurfaceView {
 			return;
 		}
 		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		if (touchX > -1) {
-			appMenu.calculate(touchX, touchY);
+		if (touch.x > -1) {
+			appMenu.calculate(touch.x, touch.y);
 			appMenu.draw(canvas);
 		}
-		lastTouchX = touchX;
-		lastTouchY = touchY;
+		lastTouch.set(touch.x, touch.y);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 }
