@@ -61,10 +61,8 @@ public class AppMenu extends PieMenu {
 			if (skip.equals(packageName)) {
 				continue;
 			}
-			apps.put(packageName, new App(
-					packageName,
-					info.loadLabel(pm).toString(),
-					info.loadIcon(pm)));
+			String name = info.loadLabel(pm).toString();
+			apps.put(name, new App(packageName, name, info.loadIcon(pm)));
 		}
 		createIcons();
 	}
