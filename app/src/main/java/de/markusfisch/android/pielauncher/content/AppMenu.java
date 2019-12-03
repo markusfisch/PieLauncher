@@ -1,32 +1,40 @@
 package de.markusfisch.android.pielauncher.content;
 
-import de.markusfisch.android.pielauncher.graphics.PieMenu;
+import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
-public class AppMenu extends PieMenu {
-	private final TreeMap<String, App> apps = new TreeMap<>();
+public class AppMenu extends CanvasPieMenu {
+	private static final String MENU = "menu";
 
-	public void draw(Canvas canvas) {
-		for (int n = numberOfIcons; n-- > 0; ) {
-			((AppIcon) icons.get(n)).draw(canvas);
-		}
-	}
+	private final HashMap<String, AppIcon> apps = new HashMap<>();
 
 	public void launch(Context context) {
+		int selectedIcon = getSelectedIcon();
 		if (selectedIcon > -1) {
 			((AppIcon) icons.get(selectedIcon)).launch(context);
 		}
+	}
+
+	public boolean store(Context context) {
+		return writeMenu(context, icons);
 	}
 
 	// this AsyncTask is running for a short and finite time only
@@ -57,63 +65,124 @@ public class AppMenu extends PieMenu {
 		}
 		String skip = context.getPackageName();
 		for (ResolveInfo info : activities) {
-			String packageName = info.activityInfo.packageName;
-			if (skip.equals(packageName)) {
+			String pn = info.activityInfo.packageName;
+			if (skip.equals(pn)) {
 				continue;
 			}
-			String name = info.loadLabel(pm).toString();
-			apps.put(name, new App(packageName, name, info.loadIcon(pm)));
+			apps.put(pn, new AppIcon(
+					pn,
+					info.loadLabel(pm).toString(),
+					info.loadIcon(pm)));
 		}
-		createIcons();
+		createIcons(context);
 	}
 
-	private void createIcons() {
+	private void createIcons(Context context) {
 		icons.clear();
-		for (App app : apps.values()) {
-			icons.add(new AppIcon(app));
+		List<String> menu = readMenu(context);
+		if (menu.isEmpty()) {
+			int max = Math.min(apps.size(), 6);
+			int i = 0;
+			for (Map.Entry entry : apps.entrySet()) {
+				addAppIcon((AppIcon) entry.getValue());
+				if (++i >= max) {
+					break;
+				}
+			}
+		} else {
+			for (String name : readMenu(context)) {
+				addAppIcon(apps.get(name));
+			}
 		}
-		numberOfIcons = icons.size();
 	}
 
-	private static class App {
+	private void addAppIcon(AppIcon appIcon) {
+		if (appIcon != null) {
+			icons.add(appIcon);
+		}
+	}
+
+	private static List<String> readMenu(Context context) {
+		try {
+			return readLines(context.openFileInput(MENU));
+		} catch (FileNotFoundException e) {
+			return new ArrayList<>();
+		}
+	}
+
+	private static List<String> readLines(InputStream is) {
+		ArrayList<String> list = new ArrayList<>();
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(is));
+			while (reader.ready()) {
+				list.add(reader.readLine());
+			}
+		} catch (IOException e) {
+			// return what we got so far
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException e) {
+				// ignore, can't do anything about it
+			}
+		}
+		return list;
+	}
+
+	private static boolean writeMenu(Context context, List<Icon> icons) {
+		ArrayList<String> items = new ArrayList<>();
+		for (CanvasPieMenu.Icon icon : icons) {
+			items.add(((AppIcon) icon).packageName);
+		}
+		try {
+			return writeLines(context.openFileOutput(MENU,
+					Context.MODE_PRIVATE), items);
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	private static boolean writeLines(OutputStream os, List<String> lines) {
+		if (os == null) {
+			return false;
+		}
+		try {
+			for (String line : lines) {
+				os.write(line.getBytes("UTF-8"));
+			}
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			try {
+				os.close();
+			} catch (IOException e) {
+				// ignore, can't do anything about it
+			}
+		}
+	}
+
+	private static class AppIcon extends CanvasPieMenu.CanvasIcon {
 		final String packageName;
 		final String appName;
-		final Drawable icon;
 
-		App(String packageName, String appName, Drawable icon) {
+		AppIcon(String packageName, String appName, Drawable icon) {
+			super(icon);
 			this.packageName = packageName;
 			this.appName = appName;
-			this.icon = icon;
-		}
-	}
-
-	private static class AppIcon extends PieMenu.Icon {
-		final App app;
-
-		AppIcon(App app) {
-			this.app = app;
 		}
 
 		void launch(Context context) {
 			PackageManager pm = context.getPackageManager();
 			Intent intent;
 			if (pm == null || (intent = pm.getLaunchIntentForPackage(
-					app.packageName)) == null) {
+					packageName)) == null) {
 				return;
 			}
 			context.startActivity(intent);
-		}
-
-		void draw(Canvas canvas) {
-			int s = (int) size >> 1;
-			if (s < 1) {
-				return;
-			}
-			int left = x - s;
-			int top = y - s;
-			s <<= 1;
-			app.icon.setBounds(left, top, left + s, top + s);
-			app.icon.draw(canvas);
 		}
 	}
 }
