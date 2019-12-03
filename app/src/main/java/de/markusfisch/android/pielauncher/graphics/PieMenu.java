@@ -6,7 +6,7 @@ public class PieMenu {
 	private static final double TAU = Math.PI + Math.PI;
 	private static final double HALF_PI = Math.PI * .5f;
 
-	protected static class Icon {
+	public static class Icon {
 		public double weight;
 		public double size;
 		public double cellSize;
@@ -14,15 +14,17 @@ public class PieMenu {
 		public int y;
 	}
 
-	protected final ArrayList<Icon> icons = new ArrayList<>();
+	public final ArrayList<Icon> icons = new ArrayList<>();
 
-	protected int numberOfIcons = 0;
-	protected int selectedIcon = -1;
-
+	private int selectedIcon = -1;
 	private int centerX = -1;
 	private int centerY = -1;
 	private double radius = 0;
 	private double twist = 0;
+
+	public int getSelectedIcon() {
+		return selectedIcon;
+	}
 
 	public void set(int x, int y, double radius) {
 		set(x, y, radius, 0);
@@ -38,6 +40,7 @@ public class PieMenu {
 	public void calculate(float x, float y) {
 		selectedIcon = -1;
 
+		int numberOfIcons = icons.size();
 		if (numberOfIcons < 1) {
 			return;
 		}
