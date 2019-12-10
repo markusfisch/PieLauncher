@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
@@ -26,11 +29,13 @@ import java.util.Map;
 
 public class AppMenu extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
+		public final Drawable icon;
 		public final String packageName;
 		public final String appName;
 
 		AppIcon(String packageName, String appName, Drawable icon) {
-			super(icon);
+			super(getBitmapFromDrawable(icon));
+			this.icon = icon;
 			this.packageName = packageName;
 			this.appName = appName;
 		}
@@ -229,5 +234,19 @@ public class AppMenu extends CanvasPieMenu {
 				// ignore, can't do anything about it
 			}
 		}
+	}
+
+	private static Bitmap getBitmapFromDrawable(Drawable drawable) {
+		if (drawable instanceof BitmapDrawable) {
+			return ((BitmapDrawable) drawable).getBitmap();
+		}
+		Bitmap bitmap = Bitmap.createBitmap(
+				drawable.getIntrinsicWidth(),
+				drawable.getIntrinsicHeight(),
+				Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.draw(canvas);
+		return bitmap;
 	}
 }

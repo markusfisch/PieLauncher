@@ -1,14 +1,19 @@
 package de.markusfisch.android.pielauncher.graphics;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
+import android.graphics.Paint;
+import android.graphics.Rect;
 
 public class CanvasPieMenu extends PieMenu {
-	public static class CanvasIcon extends PieMenu.Icon {
-		public final Drawable icon;
+	private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-		public CanvasIcon(Drawable icon) {
-			this.icon = icon;
+	public static class CanvasIcon extends PieMenu.Icon {
+		private final Rect dst = new Rect();
+		private final Bitmap bitmap;
+
+		public CanvasIcon(Bitmap bitmap) {
+			this.bitmap = bitmap;
 		}
 
 		public void draw(Canvas canvas) {
@@ -19,8 +24,8 @@ public class CanvasPieMenu extends PieMenu {
 			int left = x - s;
 			int top = y - s;
 			s <<= 1;
-			icon.setBounds(left, top, left + s, top + s);
-			icon.draw(canvas);
+			dst.set(left, top, left + s, top + s);
+			canvas.drawBitmap(bitmap, null, dst, paint);
 		}
 	}
 
