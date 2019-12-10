@@ -57,10 +57,16 @@ public class AppPieView extends SurfaceView {
 		listListener = listener;
 	}
 
-	public void enterEditMode(Point t) {
+	public void addIconInteractive(AppMenu.AppIcon appIcon, Point from) {
+		int centerX = width >> 1;
+		int centerY = height >> 1;
+		double step = AppMenu.TAU / (appMenu.icons.size() + 1);
+		double a = Math.atan2(from.y - centerY, from.x - centerX);
+		a = (a + AppMenu.TAU) % AppMenu.TAU;
+		appMenu.icons.add((int) Math.floor(a / step), appIcon);
 		editMode = true;
-		touch.set(t.x, t.y);
-		setCenter(width >> 1, height >> 1);
+		touch.set(from.x, from.y);
+		setCenter(centerX, centerY);
 		drawView();
 	}
 

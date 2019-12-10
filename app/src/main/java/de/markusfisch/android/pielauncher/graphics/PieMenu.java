@@ -3,8 +3,8 @@ package de.markusfisch.android.pielauncher.graphics;
 import java.util.ArrayList;
 
 public class PieMenu {
-	private static final double TAU = Math.PI + Math.PI;
-	private static final double HALF_PI = Math.PI * .5f;
+	public static final double TAU = Math.PI + Math.PI;
+	public static final double HALF_PI = Math.PI * .5f;
 
 	public static class Icon {
 		public double weight;

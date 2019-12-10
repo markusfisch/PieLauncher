@@ -163,8 +163,11 @@ public class HomeActivity extends Activity {
 					View view,
 					int position,
 					long id) {
-				pieView.enterEditMode(touch);
-				hideAllApps();
+				AppMenu.AppIcon appIcon = appsAdapter.getItem(position);
+				if (appIcon != null) {
+					pieView.addIconInteractive(appIcon, touch);
+					hideAllApps();
+				}
 				return false;
 			}
 		});
