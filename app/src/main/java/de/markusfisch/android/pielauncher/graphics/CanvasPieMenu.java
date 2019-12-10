@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 
 public class CanvasPieMenu extends PieMenu {
 	public static class CanvasIcon extends PieMenu.Icon {
-		final Drawable icon;
+		public final Drawable icon;
 
 		public CanvasIcon(Drawable icon) {
 			this.icon = icon;

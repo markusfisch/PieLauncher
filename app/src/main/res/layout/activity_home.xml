@@ -10,28 +10,31 @@
 	<RelativeLayout
 		android:id="@+id/all_apps"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
+		android:background="@color/half_transparent"
 		android:visibility="gone">
-		<ListView
-			android:id="@+id/apps"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_above="@+id/name"
-			android:choiceMode="singleChoice"
-			android:divider="@android:color/transparent"
-			android:dividerHeight="0px"/>
 		<EditText
 			android:id="@+id/name"
 			android:background="@android:color/transparent"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:padding="16dp"
+			android:layout_alignParentTop="true"
+			android:layout_margin="16dp"
+			android:paddingTop="48dp"
 			android:inputType="textShortMessage|textCapSentences"
 			android:imeOptions="actionDone|flagNoExtractUi"
 			android:hint="@string/input_app_name"
+			android:gravity="center"
 			android:maxLines="1"
 			android:maxLength="128"
 			android:importantForAutofill="no"/>
+		<ListView
+			android:id="@+id/apps"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@+id/name"
+			android:choiceMode="singleChoice"
+			android:divider="@android:color/transparent"
+			android:dividerHeight="0px"/>
 	</RelativeLayout>
 </RelativeLayout>

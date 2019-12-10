@@ -17,18 +17,47 @@ import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class AppMenu extends CanvasPieMenu {
+	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
+		public final String packageName;
+		public final String appName;
+
+		AppIcon(String packageName, String appName, Drawable icon) {
+			super(icon);
+			this.packageName = packageName;
+			this.appName = appName;
+		}
+
+		public void launch(Context context) {
+			PackageManager pm = context.getPackageManager();
+			Intent intent;
+			if (pm == null || (intent = pm.getLaunchIntentForPackage(
+					packageName)) == null) {
+				return;
+			}
+			context.startActivity(intent);
+		}
+	}
+
 	public interface UpdateListener {
 		void onUpdate();
 	}
 
-	private static final String MENU = "menu";
+	public final HashMap<String, AppIcon> apps = new HashMap<>();
 
-	private final HashMap<String, AppIcon> apps = new HashMap<>();
+	private static final String MENU = "menu";
+	private static final Comparator<AppIcon> appNameComparator = new Comparator<AppIcon>() {
+		public int compare(AppIcon left, AppIcon right) {
+			return left.appName.compareTo(right.appName);
+		}
+	};
 
 	private UpdateListener updateListener;
 
@@ -45,6 +74,26 @@ public class AppMenu extends CanvasPieMenu {
 
 	public boolean store(Context context) {
 		return writeMenu(context, icons);
+	}
+
+	public List<AppIcon> filterAppsBy(String query) {
+		if (query == null) {
+			query = "";
+		}
+		query = query.trim().toLowerCase(Locale.US);
+		ArrayList<AppIcon> list = new ArrayList<>();
+		if (query.length() < 1) {
+			list.addAll(apps.values());
+		} else {
+			for (Map.Entry entry : apps.entrySet()) {
+				AppIcon appIcon = (AppIcon) entry.getValue();
+				if (appIcon.appName.toLowerCase(Locale.US).startsWith(query)) {
+					list.add(appIcon);
+				}
+			}
+		}
+		Collections.sort(list, appNameComparator);
+		return list;
 	}
 
 	// this AsyncTask is running for a short and finite time only
@@ -98,7 +147,7 @@ public class AppMenu extends CanvasPieMenu {
 		icons.clear();
 		List<String> menu = readMenu(context);
 		if (menu.isEmpty()) {
-			int max = Math.min(apps.size(), 6);
+			int max = Math.min(apps.size(), 8);
 			int i = 0;
 			for (Map.Entry entry : apps.entrySet()) {
 				addAppIcon((AppIcon) entry.getValue());
@@ -179,27 +228,6 @@ public class AppMenu extends CanvasPieMenu {
 			} catch (IOException e) {
 				// ignore, can't do anything about it
 			}
-		}
-	}
-
-	private static class AppIcon extends CanvasPieMenu.CanvasIcon {
-		final String packageName;
-		final String appName;
-
-		AppIcon(String packageName, String appName, Drawable icon) {
-			super(icon);
-			this.packageName = packageName;
-			this.appName = appName;
-		}
-
-		void launch(Context context) {
-			PackageManager pm = context.getPackageManager();
-			Intent intent;
-			if (pm == null || (intent = pm.getLaunchIntentForPackage(
-					packageName)) == null) {
-				return;
-			}
-			context.startActivity(intent);
 		}
 	}
 }

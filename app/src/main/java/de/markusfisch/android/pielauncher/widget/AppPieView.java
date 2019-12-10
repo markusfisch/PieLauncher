@@ -8,12 +8,12 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.util.AttributeSet;
 
 public class AppPieView extends SurfaceView {
 	public interface OpenListListener {
@@ -33,6 +33,7 @@ public class AppPieView extends SurfaceView {
 	private float touchSlopSq;
 	private int tapTimeout;
 	private OpenListListener listListener;
+	private boolean editMode = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -54,6 +55,13 @@ public class AppPieView extends SurfaceView {
 
 	public void setOpenListListener(OpenListListener listener) {
 		listListener = listener;
+	}
+
+	public void enterEditMode(Point t) {
+		editMode = true;
+		touch.set(t.x, t.y);
+		setCenter(width >> 1, height >> 1);
+		drawView();
 	}
 
 	private void initSurfaceHolder(SurfaceHolder holder) {
@@ -109,6 +117,7 @@ public class AppPieView extends SurfaceView {
 						drawView();
 						break;
 					case MotionEvent.ACTION_DOWN:
+						editMode = false;
 						down.set(touch.x, touch.y);
 						downAt = event.getEventTime();
 						setCenter(touch);
@@ -116,13 +125,15 @@ public class AppPieView extends SurfaceView {
 						break;
 					case MotionEvent.ACTION_UP:
 						v.performClick();
-						if (SystemClock.uptimeMillis() - downAt <= tapTimeout &&
-								distSq(down, touch) <= touchSlopSq) {
-							if (listListener != null) {
-								listListener.onOpenList();
+						if (!editMode) {
+							if (SystemClock.uptimeMillis() - downAt <= tapTimeout &&
+									distSq(down, touch) <= touchSlopSq) {
+								if (listListener != null) {
+									listListener.onOpenList();
+								}
+							} else {
+								appMenu.launch(v.getContext());
 							}
-						} else {
-							appMenu.launch(v.getContext());
 						}
 						touch.x = -1;
 						drawView();
@@ -134,9 +145,13 @@ public class AppPieView extends SurfaceView {
 	}
 
 	private void setCenter(Point point) {
+		setCenter(point.x, point.y);
+	}
+
+	private void setCenter(int x, int y) {
 		appMenu.set(
-				Math.max(radius, Math.min(width - radius, point.x)),
-				Math.max(radius, Math.min(height - radius, point.y)),
+				Math.max(radius, Math.min(width - radius, x)),
+				Math.max(radius, Math.min(height - radius, y)),
 				radius);
 	}
 
