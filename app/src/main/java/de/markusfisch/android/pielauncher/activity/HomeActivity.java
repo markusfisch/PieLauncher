@@ -120,7 +120,11 @@ public class HomeActivity extends Activity {
 					case EditorInfo.IME_ACTION_DONE:
 					case EditorInfo.IME_ACTION_NEXT:
 					case EditorInfo.IME_NULL:
-						return launchFirstApp();
+						if (searchInput.getText().toString().length() > 0) {
+							launchFirstApp();
+						}
+						hideAllApps();
+						return true;
 					default:
 						return false;
 				}
@@ -166,14 +170,12 @@ public class HomeActivity extends Activity {
 		});
 	}
 
-	private boolean launchFirstApp() {
-		AppMenu.AppIcon icon = appsAdapter.getItem(0);
-		if (icon == null) {
-			return false;
+	private void launchFirstApp() {
+		AppMenu.AppIcon icon;
+		if (appsAdapter.getCount() > 0 &&
+				(icon = appsAdapter.getItem(0)) != null) {
+			icon.launch(this);
 		}
-		icon.launch(this);
-		hideAllApps();
-		return true;
 	}
 
 	private void hideAllApps() {
