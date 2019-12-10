@@ -185,7 +185,7 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<String> list = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(is));
+			reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
 			while (reader.ready()) {
 				list.add(reader.readLine());
 			}

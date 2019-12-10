@@ -42,6 +42,9 @@ public class HomeActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
+		if (pieView.isEditMode()) {
+			pieView.endEditMode();
+		}
 		hideAllApps();
 	}
 
@@ -136,7 +139,13 @@ public class HomeActivity extends Activity {
 		appsListView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+				if (pieView.isEditMode()) {
+					pieView.dispatchTouchEvent(event);
+					return true;
+				}
 				switch (event.getActionMasked()) {
+					default: // to make FindBugs happy
+						break;
 					case MotionEvent.ACTION_MOVE:
 						touch.set((int) event.getRawX(),
 								(int) event.getRawY());

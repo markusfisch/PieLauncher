@@ -15,6 +15,8 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import java.util.ArrayList;
+
 public class AppPieView extends SurfaceView {
 	public interface OpenListListener {
 		void onOpenList();
@@ -22,17 +24,19 @@ public class AppPieView extends SurfaceView {
 
 	public static final AppMenu appMenu = new AppMenu();
 
+	private final ArrayList<AppMenu.Icon> iconsBeforeEdit = new ArrayList<>();
 	private final Point touch = new Point();
 	private final Point lastTouch = new Point();
-	private final float dp;
 	private final SurfaceHolder surfaceHolder;
+	private final float dp;
 
-	private int width;
-	private int height;
+	private int viewWidth;
+	private int viewHeight;
 	private int radius;
-	private float touchSlopSq;
 	private int tapTimeout;
+	private float touchSlopSq;
 	private OpenListListener listListener;
+	private AppMenu.Icon iconToEdit;
 	private boolean editMode = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
@@ -57,17 +61,31 @@ public class AppPieView extends SurfaceView {
 		listListener = listener;
 	}
 
-	public void addIconInteractive(AppMenu.AppIcon appIcon, Point from) {
-		int centerX = width >> 1;
-		int centerY = height >> 1;
-		double step = AppMenu.TAU / (appMenu.icons.size() + 1);
-		double a = Math.atan2(from.y - centerY, from.x - centerX);
-		a = (a + AppMenu.TAU) % AppMenu.TAU;
-		appMenu.icons.add((int) Math.floor(a / step), appIcon);
-		editMode = true;
+	public void addIconInteractive(AppMenu.Icon appIcon, Point from) {
+		editIcon(appIcon);
+		clear(lastTouch);
 		touch.set(from.x, from.y);
-		setCenter(centerX, centerY);
+		setCenter(viewWidth >> 1, viewHeight >> 1);
 		drawView();
+	}
+
+	public boolean isEditMode() {
+		return editMode;
+	}
+
+	public void endEditMode() {
+		iconsBeforeEdit.clear();
+		iconToEdit = null;
+		editMode = false;
+		drawView();
+	}
+
+	private void editIcon(AppMenu.Icon icon) {
+		appMenu.icons.remove(icon);
+		iconsBeforeEdit.clear();
+		iconsBeforeEdit.addAll(appMenu.icons);
+		iconToEdit = icon;
+		editMode = true;
 	}
 
 	private void initSurfaceHolder(SurfaceHolder holder) {
@@ -80,6 +98,10 @@ public class AppPieView extends SurfaceView {
 					int width,
 					int height) {
 				initMenu(width, height);
+				if (editMode) {
+					clear(lastTouch);
+					drawView();
+				}
 			}
 
 			@Override
@@ -99,8 +121,8 @@ public class AppPieView extends SurfaceView {
 			min = Math.round(maxIconSize / .28f);
 		}
 		radius = Math.round(min * .5f);
-		this.width = width;
-		this.height = height;
+		viewWidth = width;
+		viewHeight = height;
 	}
 
 	private void initTouchListener() {
@@ -110,28 +132,34 @@ public class AppPieView extends SurfaceView {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				touch.x = Math.round(event.getX());
-				touch.y = Math.round(event.getY());
+				touch.set(Math.round(event.getRawX()),
+						Math.round(event.getRawY()));
 				switch (event.getActionMasked()) {
 					default:
 						break;
 					case MotionEvent.ACTION_CANCEL:
-						touch.x = -1;
+						clear(touch);
+						iconToEdit = null;
 						drawView();
 						break;
 					case MotionEvent.ACTION_MOVE:
 						drawView();
 						break;
 					case MotionEvent.ACTION_DOWN:
-						editMode = false;
-						down.set(touch.x, touch.y);
-						downAt = event.getEventTime();
-						setCenter(touch);
+						if (editMode) {
+							editIconAt(touch);
+						} else {
+							down.set(touch.x, touch.y);
+							downAt = event.getEventTime();
+							setCenter(touch);
+						}
 						drawView();
 						break;
 					case MotionEvent.ACTION_UP:
 						v.performClick();
-						if (!editMode) {
+						if (editMode) {
+							iconToEdit = null;
+						} else {
 							if (SystemClock.uptimeMillis() - downAt <= tapTimeout &&
 									distSq(down, touch) <= touchSlopSq) {
 								if (listListener != null) {
@@ -141,7 +169,7 @@ public class AppPieView extends SurfaceView {
 								appMenu.launch(v.getContext());
 							}
 						}
-						touch.x = -1;
+						clear(touch);
 						drawView();
 						break;
 				}
@@ -156,9 +184,21 @@ public class AppPieView extends SurfaceView {
 
 	private void setCenter(int x, int y) {
 		appMenu.set(
-				Math.max(radius, Math.min(width - radius, x)),
-				Math.max(radius, Math.min(height - radius, y)),
+				Math.max(radius, Math.min(viewWidth - radius, x)),
+				Math.max(radius, Math.min(viewHeight - radius, y)),
 				radius);
+	}
+
+	private boolean editIconAt(Point point) {
+		for (int i = 0, size = appMenu.icons.size(); i < size; ++i) {
+			AppMenu.Icon icon = appMenu.icons.get(i);
+			float sizeSq = Math.round(icon.size * icon.size);
+			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
+				editIcon(icon);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void drawView() {
@@ -170,17 +210,56 @@ public class AppPieView extends SurfaceView {
 			return;
 		}
 		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		if (touch.x > -1) {
-			appMenu.calculate(touch.x, touch.y);
+		if (isTouchValid() || editMode) {
+			int cx = appMenu.getCenterX();
+			int cy = appMenu.getCenterY();
+			{
+				int focusX = touch.x;
+				int focusY = touch.y;
+				if (editMode && iconToEdit == null) {
+					focusX = cx;
+					focusY = cy;
+				}
+				appMenu.calculate(focusX, focusY);
+			}
+			if (iconToEdit != null) {
+				double angle = AppMenu.getPositiveAngle(Math.atan2(
+						touch.y - cy,
+						touch.x - cx));
+				double step = AppMenu.TAU / appMenu.icons.size();
+				int insertAt = (int) Math.floor(angle / step);
+				appMenu.icons.clear();
+				appMenu.icons.addAll(iconsBeforeEdit);
+				appMenu.icons.add(insertAt, iconToEdit);
+				iconToEdit.x = touch.x;
+				iconToEdit.y = touch.y;
+			}
 			appMenu.draw(canvas);
+			/*if (editMode) {
+				// draw delete from menu icon
+				// draw app info icon
+				// draw close editor
+			}*/
 		}
 		lastTouch.set(touch.x, touch.y);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 
+	private boolean isTouchValid() {
+		return touch.x > -1;
+	}
+
+	private static void clear(Point point) {
+		point.set(-1, -1);
+	}
+
 	private static float distSq(Point a, Point b) {
-		float dx = a.x - b.x;
-		float dy = a.y - b.y;
+		return distSq(a.x, a.y, b.x, b.y);
+	}
+
+	private static float distSq(int ax, int ay, int bx, int by) {
+		float dx = ax - bx;
+		float dy = ay - by;
 		return dx*dx + dy*dy;
 	}
 }

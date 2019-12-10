@@ -22,8 +22,28 @@ public class PieMenu {
 	private double radius = 0;
 	private double twist = 0;
 
+	public static double getPositiveAngle(double a) {
+		return (a + TAU) % TAU;
+	}
+
+	public static double getAngleDifference(double a, double b) {
+		double d = getPositiveAngle(a - b);
+		if (d > Math.PI) {
+			d -= TAU;
+		}
+		return d;
+	}
+
 	public int getSelectedIcon() {
 		return selectedIcon;
+	}
+
+	public int getCenterX() {
+		return centerX;
+	}
+
+	public int getCenterY() {
+		return centerY;
 	}
 
 	public void set(int x, int y, double radius) {
@@ -201,17 +221,5 @@ public class PieMenu {
 				}
 			}
 		}
-	}
-
-	private static double getAngleDifference(double a, double b) {
-		double d = ((a - b) + TAU) % TAU;
-		if (d > Math.PI) {
-			d -= TAU;
-		}
-		return d;
-	}
-
-	private static double getPositiveAngle(double a) {
-		return (a + TAU) % TAU;
 	}
 }
