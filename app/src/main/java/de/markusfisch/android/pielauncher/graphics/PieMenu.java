@@ -68,11 +68,9 @@ public class PieMenu {
 
 			if (cursorRadius < infieldRadius) {
 				double b = circumference / numberOfIcons * .75f;
-
 				if (b < maxIconSize) {
 					maxIconSize = b + (maxIconSize - b) * factor;
 				}
-
 				cursorNearCenter = true;
 			}
 
@@ -85,9 +83,7 @@ public class PieMenu {
 				maxWeight = HALF_PI + Math.pow(Math.PI, m);
 
 				for (int i = 0; i < numberOfIcons; ++i) {
-					double d = Math.abs(
-							getAngleDifference(a, cursorAngle));
-
+					double d = Math.abs(getAngleDifference(a, cursorAngle));
 					if (d < closestDistance) {
 						closestDistance = d;
 						closestIcon = i;
@@ -99,7 +95,6 @@ public class PieMenu {
 					}
 
 					Icon ic = icons.get(i);
-
 					ic.weight = HALF_PI + Math.pow(Math.PI - d, m);
 					weight += ic.weight;
 
@@ -120,17 +115,14 @@ public class PieMenu {
 
 			for (int i = numberOfIcons; i-- > 0; ) {
 				Icon ic = icons.get(i);
-
 				ic.size = ic.cellSize = sizeUnit * ic.weight;
 			}
 
 			// scale icons within cell
 			{
 				double maxSize = sizeUnit * maxWeight;
-
 				if (maxSize > maxIconSize) {
 					double f = maxIconSize / maxSize;
-
 					for (int i = numberOfIcons; i-- > 0; ) {
 						icons.get(i).size *= f;
 					}
@@ -140,16 +132,14 @@ public class PieMenu {
 
 		// calculate icon positions
 		{
-			double difference = getAngleDifference(
-					cursorAngle, closestAngle);
-			double angle = getValidAngle(cursorAngle -
+			double difference = getAngleDifference(cursorAngle, closestAngle);
+			double angle = getPositiveAngle(cursorAngle -
 					(pixelsPerRadian * icons.get(closestIcon).cellSize) /
 							cellSize * difference);
 
 			// active icon
 			{
 				Icon ic = icons.get(closestIcon);
-
 				ic.x = centerX + (int) Math.round(
 						radius * Math.cos(angle));
 				ic.y = centerY + (int) Math.round(
@@ -181,7 +171,7 @@ public class PieMenu {
 
 					Icon lic = icons.get(left);
 
-					leftAngle = getValidAngle(leftAngle -
+					leftAngle = getPositiveAngle(leftAngle -
 							(.5f * icons.get(previousLeft).cellSize +
 									.5f * lic.cellSize) * pixelsPerRadian);
 
@@ -197,7 +187,7 @@ public class PieMenu {
 
 					Icon ric = icons.get(right);
 
-					rightAngle = getValidAngle(rightAngle +
+					rightAngle = getPositiveAngle(rightAngle +
 							(.5f * icons.get(previousRight).cellSize +
 									.5f * ric.cellSize) * pixelsPerRadian);
 
@@ -221,7 +211,7 @@ public class PieMenu {
 		return d;
 	}
 
-	private static double getValidAngle(double a) {
+	private static double getPositiveAngle(double a) {
 		return (a + TAU) % TAU;
 	}
 }
