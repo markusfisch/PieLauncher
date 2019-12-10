@@ -139,7 +139,7 @@ public class HomeActivity extends Activity {
 				switch (event.getActionMasked()) {
 					case MotionEvent.ACTION_MOVE:
 						touch.set((int) event.getRawX(),
-								(int) event.getRawX());
+								(int) event.getRawY());
 						break;
 				}
 				return false;
