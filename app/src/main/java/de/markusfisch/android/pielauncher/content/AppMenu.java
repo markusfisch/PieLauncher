@@ -222,8 +222,10 @@ public class AppMenu extends CanvasPieMenu {
 			return false;
 		}
 		try {
+			byte[] lf = "\n".getBytes("UTF-8");
 			for (String line : lines) {
 				os.write(line.getBytes("UTF-8"));
+				os.write(lf);
 			}
 			return true;
 		} catch (IOException e) {
