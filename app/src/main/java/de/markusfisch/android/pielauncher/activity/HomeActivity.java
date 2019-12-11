@@ -146,9 +146,13 @@ public class HomeActivity extends Activity {
 					pieView.dispatchTouchEvent(event);
 					return true;
 				}
-				if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
-					touch.set((int) event.getRawX(),
-							(int) event.getRawY());
+				switch (event.getActionMasked()) {
+					default: break; // make FindBugs happy
+					case MotionEvent.ACTION_DOWN:
+					case MotionEvent.ACTION_MOVE:
+						touch.set((int) event.getRawX(),
+								(int) event.getRawY());
+						break;
 				}
 				return false;
 			}
