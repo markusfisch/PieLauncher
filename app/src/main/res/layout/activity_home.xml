@@ -23,7 +23,6 @@
 			android:paddingTop="48dp"
 			android:inputType="textShortMessage|textCapSentences"
 			android:imeOptions="actionDone|flagNoExtractUi"
-			android:hint="@string/input_app_name"
 			android:gravity="center"
 			android:maxLines="1"
 			android:maxLength="128"
