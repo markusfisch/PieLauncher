@@ -16,7 +16,7 @@ public class CanvasPieMenu extends PieMenu {
 			this.bitmap = bitmap;
 		}
 
-		public void draw(Canvas canvas) {
+		void draw(Canvas canvas) {
 			int s = (int) size >> 1;
 			if (s < 1) {
 				return;
