@@ -93,7 +93,7 @@ public class AppMenu extends CanvasPieMenu {
 		} else {
 			for (Map.Entry entry : apps.entrySet()) {
 				AppIcon appIcon = (AppIcon) entry.getValue();
-				if (appIcon.appName.toLowerCase(Locale.US).startsWith(query)) {
+				if (appIcon.appName.toLowerCase(Locale.US).contains(query)) {
 					list.add(appIcon);
 				}
 			}
