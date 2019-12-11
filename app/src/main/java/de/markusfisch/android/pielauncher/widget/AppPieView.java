@@ -324,10 +324,11 @@ public class AppPieView extends SurfaceView {
 		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 		if (shouldShowMenu() || editMode) {
 			if (editMode) {
-				drawTouchTarget(canvas, iconAdd, iconAddRect);
-				drawTouchTarget(canvas, iconRemove, iconRemoveRect);
-				drawTouchTarget(canvas, iconInfo, iconInfoRect);
-				drawTouchTarget(canvas, iconDone, iconDoneRect);
+				boolean hasIcon = iconToEdit != null;
+				drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
+				drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
+				drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
+				drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
 			}
 			if (iconToEdit != null) {
 				int size = iconsBeforeEdit.size();
@@ -365,10 +366,12 @@ public class AppPieView extends SurfaceView {
 		return touch.x > -1;
 	}
 
-	private void drawTouchTarget(Canvas canvas, Bitmap icon, Rect rect) {
-		canvas.drawBitmap(icon, null, rect, rect.contains(touch.x, touch.y)
-				? selectedPaint
-				: bitmapPaint);
+	private void drawIcon(Canvas canvas, Bitmap icon, Rect rect,
+			boolean active) {
+		canvas.drawBitmap(icon, null, rect,
+				active && rect.contains(touch.x, touch.y)
+						? selectedPaint
+						: bitmapPaint);
 	}
 
 	private static float distSq(Point a, Point b) {
