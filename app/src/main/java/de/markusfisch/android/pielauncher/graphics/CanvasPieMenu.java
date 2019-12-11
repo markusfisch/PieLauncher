@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class CanvasPieMenu extends PieMenu {
-	private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private static final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
 	public static class CanvasIcon extends PieMenu.Icon {
 		private final Rect dst = new Rect();

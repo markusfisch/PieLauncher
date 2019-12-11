@@ -1,15 +1,13 @@
 package de.markusfisch.android.pielauncher.content;
 
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
+import de.markusfisch.android.pielauncher.graphics.Converter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 
@@ -34,7 +32,7 @@ public class AppMenu extends CanvasPieMenu {
 		public final String appName;
 
 		AppIcon(String packageName, String appName, Drawable icon) {
-			super(getBitmapFromDrawable(icon));
+			super(Converter.getBitmapFromDrawable(icon));
 			this.icon = icon;
 			this.packageName = packageName;
 			this.appName = appName;
@@ -78,6 +76,9 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public boolean store(Context context) {
+		if (context == null) {
+			return false;
+		}
 		return writeMenu(context, icons);
 	}
 
@@ -234,19 +235,5 @@ public class AppMenu extends CanvasPieMenu {
 				// ignore, can't do anything about it
 			}
 		}
-	}
-
-	private static Bitmap getBitmapFromDrawable(Drawable drawable) {
-		if (drawable instanceof BitmapDrawable) {
-			return ((BitmapDrawable) drawable).getBitmap();
-		}
-		Bitmap bitmap = Bitmap.createBitmap(
-				drawable.getIntrinsicWidth(),
-				drawable.getIntrinsicHeight(),
-				Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap);
-		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-		drawable.draw(canvas);
-		return bitmap;
 	}
 }
