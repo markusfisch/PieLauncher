@@ -16,7 +16,9 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -66,14 +68,10 @@ public class AppPieView extends SurfaceView {
 				0xffff0000, PorterDuff.Mode.SRC_IN));
 
 		Resources res = context.getResources();
-		iconAdd = Converter.getBitmapFromDrawable(
-				res.getDrawable(R.drawable.ic_add));
-		iconRemove = Converter.getBitmapFromDrawable(
-				res.getDrawable(R.drawable.ic_remove));
-		iconInfo = Converter.getBitmapFromDrawable(
-				res.getDrawable(R.drawable.ic_info));
-		iconDone = Converter.getBitmapFromDrawable(
-				res.getDrawable(R.drawable.ic_done));
+		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
+		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
+		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
+		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
 		dp = res.getDisplayMetrics().density;
 
 		float touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -122,6 +120,19 @@ public class AppPieView extends SurfaceView {
 		invalidateView();
 	}
 
+	private static Bitmap getBitmapFromDrawable(Resources res, int resId) {
+		return Converter.getBitmapFromDrawable(getDrawable(res, resId));
+	}
+
+	private static Drawable getDrawable(Resources res, int resId) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			return res.getDrawable(resId, null);
+		} else {
+			//noinspection deprecation
+			return res.getDrawable(resId);
+		}
+	}
+
 	private void initSurfaceHolder(SurfaceHolder holder) {
 		holder.setFormat(PixelFormat.TRANSPARENT);
 		holder.addCallback(new SurfaceHolder.Callback() {
@@ -163,7 +174,7 @@ public class AppPieView extends SurfaceView {
 	private void layoutTouchTargets(boolean portrait) {
 		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconInfo, iconDone};
 		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconInfoRect, iconDoneRect};
-		int length = Math.min(icons.length, rects.length);
+		int length = icons.length;
 		int totalWidth = 0;
 		int totalHeight = 0;
 		int largestWidth = 0;
@@ -277,7 +288,7 @@ public class AppPieView extends SurfaceView {
 				android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 		intent.addCategory(Intent.CATEGORY_DEFAULT);
 		intent.setData(Uri.parse("package:" + packageName));
-		((Activity) getContext()).startActivity(intent);
+		getContext().startActivity(intent);
 	}
 
 	private void setCenter(Point point) {
