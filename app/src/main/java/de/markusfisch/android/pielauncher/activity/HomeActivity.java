@@ -6,6 +6,7 @@ import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 import de.markusfisch.android.pielauncher.R;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -44,8 +45,10 @@ public class HomeActivity extends Activity {
 	public void onBackPressed() {
 		if (pieView.isEditMode()) {
 			pieView.endEditMode();
+			showAllApps();
+		} else {
+			hideAllApps();
 		}
-		hideAllApps();
 	}
 
 	@Override
@@ -65,9 +68,7 @@ public class HomeActivity extends Activity {
 		pieView.setOpenListListener(new AppPieView.OpenListListener() {
 			@Override
 			public void onOpenList() {
-				allAppsContainer.setVisibility(View.VISIBLE);
-				showSoftKeyboardFor(searchInput);
-				updateApps();
+				showAllApps();
 			}
 		});
 		AppPieView.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
@@ -135,6 +136,8 @@ public class HomeActivity extends Activity {
 		});
 	}
 
+	// this onTouchListener is just for dispatching events
+	@SuppressLint("ClickableViewAccessibility")
 	private void initAppListView() {
 		appsListView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -143,13 +146,9 @@ public class HomeActivity extends Activity {
 					pieView.dispatchTouchEvent(event);
 					return true;
 				}
-				switch (event.getActionMasked()) {
-					default: // to make FindBugs happy
-						break;
-					case MotionEvent.ACTION_MOVE:
-						touch.set((int) event.getRawX(),
-								(int) event.getRawY());
-						break;
+				if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
+					touch.set((int) event.getRawX(),
+							(int) event.getRawY());
 				}
 				return false;
 			}
@@ -190,6 +189,12 @@ public class HomeActivity extends Activity {
 		}
 	}
 
+	private void showAllApps() {
+		allAppsContainer.setVisibility(View.VISIBLE);
+		showSoftKeyboardFor(searchInput);
+		updateApps();
+	}
+
 	private void hideAllApps() {
 		if (allAppsContainer.getVisibility() == View.VISIBLE) {
 			allAppsContainer.setVisibility(View.GONE);
@@ -199,10 +204,10 @@ public class HomeActivity extends Activity {
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static boolean setTransparentSystemBars(Window window) {
+	private static void setTransparentSystemBars(Window window) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			return false;
+			return;
 		}
 		window.getDecorView().setSystemUiVisibility(
 				View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
@@ -210,7 +215,6 @@ public class HomeActivity extends Activity {
 				View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 		window.setStatusBarColor(0);
 		window.setNavigationBarColor(0);
-		return true;
 	}
 
 	private void registerPackageEventReceiver() {
@@ -239,7 +243,7 @@ public class HomeActivity extends Activity {
 
 	private void updateApps() {
 		String query = searchInput.getText().toString();
-		appsAdapter = new AppsAdapter(pieView.appMenu.filterAppsBy(query));
+		appsAdapter = new AppsAdapter(AppPieView.appMenu.filterAppsBy(query));
 		appsListView.setAdapter(appsAdapter);
 	}
 }

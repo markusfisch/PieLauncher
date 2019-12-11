@@ -55,7 +55,7 @@ public class AppMenu extends CanvasPieMenu {
 		void onUpdate();
 	}
 
-	public final HashMap<String, AppIcon> apps = new HashMap<>();
+	private final HashMap<String, AppIcon> apps = new HashMap<>();
 
 	private static final String MENU = "menu";
 	private static final Comparator<AppIcon> appNameComparator = new Comparator<AppIcon>() {
@@ -185,7 +185,7 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<String> list = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+			reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			while (reader.ready()) {
 				list.add(reader.readLine());
 			}

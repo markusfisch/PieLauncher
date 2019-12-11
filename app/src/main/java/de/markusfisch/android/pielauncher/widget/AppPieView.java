@@ -46,10 +46,9 @@ public class AppPieView extends SurfaceView {
 		surfaceHolder = getHolder();
 		appMenu.indexAppsAsync(context);
 
-		ViewConfiguration vc = ViewConfiguration.get(context);
-		float touchSlop = vc.getScaledTouchSlop();
+		float touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
-		tapTimeout = vc.getTapTimeout();
+		tapTimeout = ViewConfiguration.getTapTimeout();
 
 		initSurfaceHolder(surfaceHolder);
 		initTouchListener();
@@ -63,7 +62,6 @@ public class AppPieView extends SurfaceView {
 
 	public void addIconInteractive(AppMenu.Icon appIcon, Point from) {
 		editIcon(appIcon);
-		clear(lastTouch);
 		touch.set(from.x, from.y);
 		setCenter(viewWidth >> 1, viewHeight >> 1);
 		drawView();
@@ -77,6 +75,7 @@ public class AppPieView extends SurfaceView {
 		iconsBeforeEdit.clear();
 		iconToEdit = null;
 		editMode = false;
+		invalidateView();
 		drawView();
 	}
 
@@ -86,6 +85,7 @@ public class AppPieView extends SurfaceView {
 		iconsBeforeEdit.addAll(appMenu.icons);
 		iconToEdit = icon;
 		editMode = true;
+		invalidateView();
 	}
 
 	private void initSurfaceHolder(SurfaceHolder holder) {
@@ -99,7 +99,7 @@ public class AppPieView extends SurfaceView {
 					int height) {
 				initMenu(width, height);
 				if (editMode) {
-					clear(lastTouch);
+					invalidateView();
 					drawView();
 				}
 			}
@@ -138,7 +138,7 @@ public class AppPieView extends SurfaceView {
 					default:
 						break;
 					case MotionEvent.ACTION_CANCEL:
-						clear(touch);
+						hideMenu();
 						iconToEdit = null;
 						drawView();
 						break;
@@ -169,7 +169,7 @@ public class AppPieView extends SurfaceView {
 								appMenu.launch(v.getContext());
 							}
 						}
-						clear(touch);
+						hideMenu();
 						drawView();
 						break;
 				}
@@ -189,16 +189,15 @@ public class AppPieView extends SurfaceView {
 				radius);
 	}
 
-	private boolean editIconAt(Point point) {
+	private void editIconAt(Point point) {
 		for (int i = 0, size = appMenu.icons.size(); i < size; ++i) {
 			AppMenu.Icon icon = appMenu.icons.get(i);
 			float sizeSq = Math.round(icon.size * icon.size);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
 				editIcon(icon);
-				return true;
+				break;
 			}
 		}
-		return false;
 	}
 
 	private void drawView() {
@@ -210,29 +209,24 @@ public class AppPieView extends SurfaceView {
 			return;
 		}
 		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		if (isTouchValid() || editMode) {
-			int cx = appMenu.getCenterX();
-			int cy = appMenu.getCenterY();
-			{
-				int focusX = touch.x;
-				int focusY = touch.y;
-				if (editMode && iconToEdit == null) {
-					focusX = cx;
-					focusY = cy;
-				}
-				appMenu.calculate(focusX, focusY);
-			}
+		if (shouldShowMenu() || editMode) {
 			if (iconToEdit != null) {
+				int size = iconsBeforeEdit.size();
+				double step = AppMenu.TAU / (size + 1);
 				double angle = AppMenu.getPositiveAngle(Math.atan2(
-						touch.y - cy,
-						touch.x - cx));
-				double step = AppMenu.TAU / appMenu.icons.size();
+						touch.y - appMenu.getCenterY(),
+						touch.x - appMenu.getCenterX()) + step * .5);
 				int insertAt = (int) Math.floor(angle / step);
 				appMenu.icons.clear();
 				appMenu.icons.addAll(iconsBeforeEdit);
-				appMenu.icons.add(insertAt, iconToEdit);
+				appMenu.icons.add(Math.min(size, insertAt), iconToEdit);
+				appMenu.calculate(touch.x, touch.y);
 				iconToEdit.x = touch.x;
 				iconToEdit.y = touch.y;
+			} else if (editMode) {
+				appMenu.calculate(appMenu.getCenterX(), appMenu.getCenterY());
+			} else {
+				appMenu.calculate(touch.x, touch.y);
 			}
 			appMenu.draw(canvas);
 			/*if (editMode) {
@@ -245,12 +239,16 @@ public class AppPieView extends SurfaceView {
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 
-	private boolean isTouchValid() {
-		return touch.x > -1;
+	private void invalidateView() {
+		lastTouch.set(-2, -2);
 	}
 
-	private static void clear(Point point) {
-		point.set(-1, -1);
+	private void hideMenu() {
+		touch.set(-1, -1);
+	}
+
+	private boolean shouldShowMenu() {
+		return touch.x > -1;
 	}
 
 	private static float distSq(Point a, Point b) {
