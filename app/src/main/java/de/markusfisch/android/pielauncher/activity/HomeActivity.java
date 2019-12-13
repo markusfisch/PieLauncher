@@ -18,11 +18,13 @@ import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -164,7 +166,7 @@ public class HomeActivity extends Activity {
 					View view,
 					int position,
 					long id) {
-				appsAdapter.getItem(position).launch(HomeActivity.this);
+				appsAdapter.getItem(position - 1).launch(HomeActivity.this);
 				hideAllApps();
 			}
 		});
@@ -175,7 +177,7 @@ public class HomeActivity extends Activity {
 					View view,
 					int position,
 					long id) {
-				AppMenu.AppIcon appIcon = appsAdapter.getItem(position);
+				AppMenu.AppIcon appIcon = appsAdapter.getItem(position - 1);
 				if (appIcon != null) {
 					pieView.addIconInteractive(appIcon, touch);
 					hideAllApps();
@@ -183,6 +185,35 @@ public class HomeActivity extends Activity {
 				return false;
 			}
 		});
+		appsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScroll(final AbsListView view,
+					final int firstVisibleItem,
+					final int visibleItemCount,
+					final int totalItemCount) {
+				// give Android some time to settle down before running this;
+				// not putting it on the queue makes it only work sometimes
+				view.post(new Runnable() {
+					@Override
+					public void run() {
+						boolean scrolled = firstVisibleItem > 0 ||
+								(totalItemCount > 0 && view.getChildAt(0).getTop() < 0);
+						searchInput.setBackgroundColor(
+								scrolled ? 0xdd000000 : 0);
+					}
+				});
+			}
+
+			@Override
+			public void onScrollStateChanged(AbsListView view,
+					int scrollState) {
+			}
+		});
+		LayoutInflater inflater = getLayoutInflater();
+		appsListView.addHeaderView(inflater.inflate(R.layout.list_header,
+				appsListView, false), null, false);
+		appsListView.addFooterView(inflater.inflate(R.layout.list_footer,
+				appsListView, false), null, false);
 	}
 
 	private void launchFirstApp() {
