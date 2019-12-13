@@ -36,7 +36,8 @@ public class AppPieView extends SurfaceView {
 
 	public static final AppMenu appMenu = new AppMenu();
 
-	private final ArrayList<AppMenu.Icon> iconsBeforeEdit = new ArrayList<>();
+	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
+	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
 	private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint selectedPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Point touch = new Point();
@@ -58,7 +59,7 @@ public class AppPieView extends SurfaceView {
 	private int tapTimeout;
 	private float touchSlopSq;
 	private OpenListListener listListener;
-	private AppMenu.Icon iconToEdit;
+	private AppMenu.Icon grabbedIcon;
 	private boolean editMode = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
@@ -104,18 +105,21 @@ public class AppPieView extends SurfaceView {
 
 	public void endEditMode() {
 		appMenu.store(getContext());
-		iconsBeforeEdit.clear();
-		iconToEdit = null;
+		backup.clear();
+		ungrabbedIcons.clear();
+		grabbedIcon = null;
 		editMode = false;
 		invalidateView();
 		drawView();
 	}
 
 	private void editIcon(AppMenu.Icon icon) {
+		backup.clear();
+		backup.addAll(appMenu.icons);
 		appMenu.icons.remove(icon);
-		iconsBeforeEdit.clear();
-		iconsBeforeEdit.addAll(appMenu.icons);
-		iconToEdit = icon;
+		ungrabbedIcons.clear();
+		ungrabbedIcons.addAll(appMenu.icons);
+		grabbedIcon = icon;
 		editMode = true;
 		invalidateView();
 	}
@@ -226,7 +230,7 @@ public class AppPieView extends SurfaceView {
 						break;
 					case MotionEvent.ACTION_CANCEL:
 						invalidateTouch();
-						iconToEdit = null;
+						grabbedIcon = null;
 						drawView();
 						break;
 					case MotionEvent.ACTION_MOVE:
@@ -246,24 +250,33 @@ public class AppPieView extends SurfaceView {
 						v.performClick();
 						if (editMode) {
 							if (iconAddRect.contains(touch.x, touch.y)) {
-								((Activity) getContext()).onBackPressed();
+								if (grabbedIcon != null) {
+									rollback();
+								} else {
+									((Activity) getContext()).onBackPressed();
+								}
 							} else if (iconRemoveRect.contains(
 									touch.x, touch.y)) {
-								if (iconToEdit != null) {
-									appMenu.icons.remove(iconToEdit);
+								if (grabbedIcon != null) {
+									appMenu.icons.remove(grabbedIcon);
 									invalidateView();
 								}
 							} else if (iconInfoRect.contains(
 									touch.x, touch.y)) {
-								if (iconToEdit != null) {
+								if (grabbedIcon != null) {
+									rollback();
 									startAppInfo(((AppMenu.AppIcon)
-											iconToEdit).packageName);
+											grabbedIcon).packageName);
 								}
 							} else if (iconDoneRect.contains(
 									touch.x, touch.y)) {
-								endEditMode();
+								if (grabbedIcon != null) {
+									rollback();
+								} else {
+									endEditMode();
+								}
 							}
-							iconToEdit = null;
+							grabbedIcon = null;
 						} else {
 							if (SystemClock.uptimeMillis() - downAt <= tapTimeout &&
 									distSq(down, touch) <= touchSlopSq) {
@@ -281,6 +294,11 @@ public class AppPieView extends SurfaceView {
 				return true;
 			}
 		});
+	}
+
+	private void rollback() {
+		appMenu.icons.clear();
+		appMenu.icons.addAll(backup);
 	}
 
 	private void startAppInfo(String packageName) {
@@ -324,25 +342,25 @@ public class AppPieView extends SurfaceView {
 		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 		if (shouldShowMenu() || editMode) {
 			if (editMode) {
-				boolean hasIcon = iconToEdit != null;
+				boolean hasIcon = grabbedIcon != null;
 				drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
 				drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
 				drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
 				drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
 			}
-			if (iconToEdit != null) {
-				int size = iconsBeforeEdit.size();
+			if (grabbedIcon != null) {
+				int size = ungrabbedIcons.size();
 				double step = AppMenu.TAU / (size + 1);
 				double angle = AppMenu.getPositiveAngle(Math.atan2(
 						touch.y - appMenu.getCenterY(),
 						touch.x - appMenu.getCenterX()) + step * .5);
 				int insertAt = (int) Math.floor(angle / step);
 				appMenu.icons.clear();
-				appMenu.icons.addAll(iconsBeforeEdit);
-				appMenu.icons.add(Math.min(size, insertAt), iconToEdit);
+				appMenu.icons.addAll(ungrabbedIcons);
+				appMenu.icons.add(Math.min(size, insertAt), grabbedIcon);
 				appMenu.calculate(touch.x, touch.y);
-				iconToEdit.x = touch.x;
-				iconToEdit.y = touch.y;
+				grabbedIcon.x = touch.x;
+				grabbedIcon.y = touch.y;
 			} else if (editMode) {
 				appMenu.calculate(appMenu.getCenterX(), appMenu.getCenterY());
 			} else {
