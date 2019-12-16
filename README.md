@@ -1,7 +1,6 @@
 # Pie Launcher
 
-Android home screen launcher which uses a zooming pie menu for your most
-commonly used apps instead of an app bar at the bottom of the screen.
+Android home screen launcher using a dynamic pie menu instead of fixed icons.
 
 Swipe to open the pie menu and choose an app to start.
 Or just tap and type the name of an app you don't use regularly.
