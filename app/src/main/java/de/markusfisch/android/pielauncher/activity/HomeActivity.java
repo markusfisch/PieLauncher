@@ -225,6 +225,7 @@ public class HomeActivity extends Activity {
 	}
 
 	private void showAllApps() {
+		pieView.setVisibility(View.GONE);
 		allAppsContainer.setVisibility(View.VISIBLE);
 		showSoftKeyboardFor(searchInput);
 		updateApps();
@@ -236,6 +237,7 @@ public class HomeActivity extends Activity {
 			searchInput.setText(null);
 			hideSoftKeyboardFrom(searchInput);
 		}
+		pieView.setVisibility(View.VISIBLE);
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
