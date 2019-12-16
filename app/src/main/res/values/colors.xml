@@ -1,4 +1,5 @@
 <resources>
 	<color name="ic_launcher_background">#f7d19a</color>
-	<color name="half_transparent">#aa000000</color>
+	<color name="background_transparent">#aa000000</color>
+	<color name="selected">#ffff0000</color>
 </resources>

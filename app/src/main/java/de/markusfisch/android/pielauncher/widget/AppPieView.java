@@ -51,6 +51,7 @@ public class AppPieView extends SurfaceView {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
+	private final int transparentBackgroundColor;
 	private final float dp;
 
 	private int viewWidth;
@@ -65,10 +66,13 @@ public class AppPieView extends SurfaceView {
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
 
-		selectedPaint.setColorFilter(new PorterDuffColorFilter(
-				0xffff0000, PorterDuff.Mode.SRC_IN));
-
 		Resources res = context.getResources();
+		selectedPaint.setColorFilter(new PorterDuffColorFilter(
+				res.getColor(R.color.selected),
+				PorterDuff.Mode.SRC_IN));
+		transparentBackgroundColor = res.getColor(
+				R.color.background_transparent);
+
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
@@ -339,7 +343,12 @@ public class AppPieView extends SurfaceView {
 		if (canvas == null) {
 			return;
 		}
-		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		if (editMode) {
+			canvas.drawColor(transparentBackgroundColor,
+					PorterDuff.Mode.SRC);
+		} else {
+			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		}
 		if (shouldShowMenu() || editMode) {
 			if (editMode) {
 				boolean hasIcon = grabbedIcon != null;

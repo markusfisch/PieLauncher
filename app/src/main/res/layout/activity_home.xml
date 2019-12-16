@@ -1,4 +1,4 @@
-<RelativeLayout
+<FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
@@ -11,7 +11,7 @@
 		android:id="@+id/all_apps"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@color/half_transparent"
+		android:background="@color/background_transparent"
 		android:visibility="gone">
 		<ListView
 			android:id="@+id/apps"
@@ -35,4 +35,4 @@
 			android:maxLength="128"
 			android:importantForAutofill="no"/>
 	</RelativeLayout>
-</RelativeLayout>
+</FrameLayout>
