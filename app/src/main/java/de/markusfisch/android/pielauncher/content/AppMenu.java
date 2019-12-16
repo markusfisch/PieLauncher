@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
@@ -53,14 +54,14 @@ public class AppMenu extends CanvasPieMenu {
 		void onUpdate();
 	}
 
-	private final HashMap<String, AppIcon> apps = new HashMap<>();
-
 	private static final String MENU = "menu";
 	private static final Comparator<AppIcon> appNameComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
 			return left.appName.compareTo(right.appName);
 		}
 	};
+
+	private final HashMap<String, AppIcon> apps = new HashMap<>();
 
 	private UpdateListener updateListener;
 
@@ -152,19 +153,52 @@ public class AppMenu extends CanvasPieMenu {
 		icons.clear();
 		List<String> menu = readMenu(context);
 		if (menu.isEmpty()) {
-			int max = Math.min(apps.size(), 8);
-			int i = 0;
-			for (Map.Entry entry : apps.entrySet()) {
-				addAppIcon((AppIcon) entry.getValue());
-				if (++i >= max) {
-					break;
-				}
-			}
+			createInitialMenu(context.getPackageManager());
 		} else {
 			for (String name : readMenu(context)) {
 				addAppIcon(apps.get(name));
 			}
 		}
+	}
+
+	private void createInitialMenu(PackageManager pm) {
+		Intent[] intents = new Intent[]{
+				new Intent(Intent.ACTION_VIEW, Uri.parse("http://")),
+				new Intent(Intent.ACTION_DIAL),
+				new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:")),
+				new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE),
+				new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")),
+				new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0"))
+		};
+		ArrayList<String> defaults = new ArrayList<>();
+		for (Intent intent : intents) {
+			String packageName = resolveDefault(pm, intent);
+			AppIcon appIcon;
+			if (packageName != null && !defaults.contains(packageName) &&
+					(appIcon = apps.get(packageName)) != null) {
+				defaults.add(packageName);
+				addAppIcon(appIcon);
+			}
+		}
+		int max = Math.min(apps.size(), 6);
+		int i = icons.size();
+		for (Map.Entry entry : apps.entrySet()) {
+			if (i >= max) {
+				break;
+			}
+			if (!defaults.contains(entry.getKey())) {
+				addAppIcon((AppIcon) entry.getValue());
+				++i;
+			}
+		}
+	}
+
+	private static String resolveDefault(PackageManager pm, Intent intent) {
+		ResolveInfo resolveInfo = pm.resolveActivity(intent,
+				PackageManager.MATCH_DEFAULT_ONLY);
+		return resolveInfo != null ?
+				resolveInfo.activityInfo.packageName :
+				null;
 	}
 
 	private void addAppIcon(AppIcon appIcon) {
