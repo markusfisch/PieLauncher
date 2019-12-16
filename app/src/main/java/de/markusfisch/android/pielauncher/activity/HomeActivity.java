@@ -199,7 +199,7 @@ public class HomeActivity extends Activity {
 						boolean scrolled = firstVisibleItem > 0 ||
 								(totalItemCount > 0 && view.getChildAt(0).getTop() < 0);
 						searchInput.setBackgroundColor(
-								scrolled ? 0xdd000000 : 0);
+								scrolled ? 0xaa000000 : 0);
 					}
 				});
 			}
