@@ -7,13 +7,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="1.0beta1 (32d4812, 2019-09-19)"
-   sodipodi:docname="ic_done.svg"
-   id="svg837"
+   width="64"
+   height="64"
+   viewBox="0 0 64 64"
    version="1.1"
-   viewBox="0 0 56 56"
-   height="56"
-   width="56">
+   id="svg837"
+   sodipodi:docname="ic_done.svg"
+   inkscape:version="1.0beta1 (32d4812, 2019-09-19)">
   <metadata
      id="metadata843">
     <rdf:RDF>
@@ -29,30 +29,30 @@
   <defs
      id="defs841" />
   <sodipodi:namedview
-     inkscape:current-layer="svg837"
-     inkscape:window-maximized="0"
-     inkscape:window-y="0"
-     inkscape:window-x="0"
-     inkscape:cy="560"
-     inkscape:cx="400"
-     inkscape:zoom="0.35"
-     inkscape:showpageshadow="false"
-     showgrid="false"
-     id="namedview839"
-     inkscape:window-height="907"
-     inkscape:window-width="1600"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0"
-     guidetolerance="10"
-     gridtolerance="10"
-     objecttolerance="10"
-     borderopacity="1"
-     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
      bordercolor="#eeeeee"
-     pagecolor="#ffffff" />
+     inkscape:document-rotation="0"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1600"
+     inkscape:window-height="907"
+     id="namedview839"
+     showgrid="false"
+     inkscape:showpageshadow="false"
+     inkscape:zoom="7.7229319"
+     inkscape:cx="32"
+     inkscape:cy="32"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg837" />
   <path
-     inkscape:connector-curvature="0"
+     style="fill:#ffffff"
+     d="m 28.8,35.9 -4.2,-4.2 -1.4,1.4 5.6,5.6 12,-12 -1.4,-1.4 z"
      id="path835"
-     d="m 24.8,31.9 -4.2,-4.2 -1.4,1.4 5.6,5.6 12,-12 -1.4,-1.4 z"
-     style="fill:#ffffff" />
+     inkscape:connector-curvature="0" />
 </svg>
