@@ -57,7 +57,7 @@ public class AppMenu extends CanvasPieMenu {
 	private static final String MENU = "menu";
 	private static final Comparator<AppIcon> appNameComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
-			return left.appName.compareTo(right.appName);
+			return left.appName.compareToIgnoreCase(right.appName);
 		}
 	};
 
