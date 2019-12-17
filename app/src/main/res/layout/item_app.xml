@@ -23,5 +23,6 @@
 		android:layout_gravity="center_vertical"
 		android:ellipsize="end"
 		android:singleLine="true"
+		android:textColor="@color/text_color"
 		android:textAppearance="?android:attr/textAppearanceLarge"/>
 </LinearLayout>

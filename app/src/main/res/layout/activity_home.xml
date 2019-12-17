@@ -31,6 +31,7 @@
 			android:inputType="textShortMessage|textCapSentences"
 			android:imeOptions="actionDone|flagNoExtractUi"
 			android:gravity="center"
+			android:textColor="@color/text_color"
 			android:maxLines="1"
 			android:maxLength="128"
 			android:importantForAutofill="no"/>
