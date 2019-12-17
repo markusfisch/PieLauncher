@@ -1,5 +1,6 @@
 <resources>
 	<color name="ic_launcher_background">#f7d19a</color>
 	<color name="background_transparent">#aa000000</color>
+	<color name="background_search_bar">#cc000000</color>
 	<color name="selected">#ffff0000</color>
 </resources>

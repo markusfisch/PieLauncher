@@ -46,6 +46,7 @@ public class HomeActivity extends Activity {
 	private EditText searchInput;
 	private AppsAdapter appsAdapter;
 	private boolean isScrolled = false;
+	private int searchBarBackgroundColor;
 
 	@Override
 	public void onBackPressed() {
@@ -65,6 +66,8 @@ public class HomeActivity extends Activity {
 				Context.INPUT_METHOD_SERVICE);
 		gestureDetector = new GestureDetector(this, new FlingListener(
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
+		searchBarBackgroundColor = getResources().getColor(
+				R.color.background_search_bar);
 
 		setContentView(R.layout.activity_home);
 
@@ -208,7 +211,7 @@ public class HomeActivity extends Activity {
 						isScrolled = firstVisibleItem > 0 ||
 								(totalItemCount > 0 && view.getChildAt(0).getTop() < 0);
 						searchInput.setBackgroundColor(
-								isScrolled ? 0xaa000000 : 0);
+								isScrolled ? searchBarBackgroundColor : 0);
 					}
 				});
 			}
