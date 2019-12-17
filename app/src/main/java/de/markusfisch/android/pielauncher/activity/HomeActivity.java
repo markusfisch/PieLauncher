@@ -9,6 +9,7 @@ import de.markusfisch.android.pielauncher.R;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -62,11 +63,18 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
 
+		Resources res = getResources();
+
+		// restrict to current orientation, whatever that is;
+		// makes it possible to use it on tablets in landscape and
+		// in portrait for phones; should become a choice at some point
+		setRequestedOrientation(res.getConfiguration().orientation);
+
 		imm = (InputMethodManager) getSystemService(
 				Context.INPUT_METHOD_SERVICE);
 		gestureDetector = new GestureDetector(this, new FlingListener(
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
-		searchBarBackgroundColor = getResources().getColor(
+		searchBarBackgroundColor = res.getColor(
 				R.color.background_search_bar);
 
 		setContentView(R.layout.activity_home);
