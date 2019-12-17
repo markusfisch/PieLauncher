@@ -233,8 +233,10 @@ public class HomeActivity extends Activity {
 		LayoutInflater inflater = getLayoutInflater();
 		appsListView.addHeaderView(inflater.inflate(R.layout.list_header,
 				appsListView, false), null, false);
-		appsListView.addFooterView(inflater.inflate(R.layout.list_footer,
-				appsListView, false), null, false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			appsListView.addFooterView(inflater.inflate(R.layout.list_footer,
+					appsListView, false), null, false);
+		}
 	}
 
 	private static int getTopOfFirstChild(AbsListView view) {
