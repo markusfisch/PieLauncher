@@ -48,7 +48,7 @@ public class AppsAdapter extends BaseAdapter {
 
 		ViewHolder holder = getViewHolder(convertView);
 		holder.icon.setImageDrawable(app.icon);
-		holder.name.setText(app.appName);
+		holder.name.setText(app.label);
 
 		return convertView;
 	}

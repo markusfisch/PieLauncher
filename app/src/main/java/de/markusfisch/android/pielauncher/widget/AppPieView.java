@@ -272,8 +272,10 @@ public class AppPieView extends SurfaceView {
 									touch.x, touch.y)) {
 								if (grabbedIcon != null) {
 									rollback();
-									startAppInfo(((AppMenu.AppIcon)
-											grabbedIcon).packageName);
+									startAppInfo(
+											((AppMenu.AppIcon) grabbedIcon)
+													.componentName
+													.getPackageName());
 								}
 							} else if (iconDoneRect.contains(
 									touch.x, touch.y)) {
@@ -291,7 +293,7 @@ public class AppPieView extends SurfaceView {
 									listListener.onOpenList();
 								}
 							} else {
-								appMenu.launch(v.getContext());
+								appMenu.launchApp(v.getContext());
 							}
 						}
 						invalidateTouch();

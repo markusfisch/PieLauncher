@@ -178,7 +178,8 @@ public class HomeActivity extends Activity {
 					View view,
 					int position,
 					long id) {
-				appsAdapter.getItem(position - 1).launch(HomeActivity.this);
+				AppPieView.appMenu.launchApp(HomeActivity.this,
+						appsAdapter.getItem(position - 1));
 				hideAllApps();
 			}
 		});
@@ -232,7 +233,7 @@ public class HomeActivity extends Activity {
 		AppMenu.AppIcon icon;
 		if (appsAdapter.getCount() > 0 &&
 				(icon = appsAdapter.getItem(0)) != null) {
-			icon.launch(this);
+			AppPieView.appMenu.launchApp(this, icon);
 		}
 	}
 
@@ -299,7 +300,7 @@ public class HomeActivity extends Activity {
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {
 		private int minimumVelocity;
 
-		public FlingListener(int minimumVelocity) {
+		private FlingListener(int minimumVelocity) {
 			this.minimumVelocity = minimumVelocity;
 		}
 
