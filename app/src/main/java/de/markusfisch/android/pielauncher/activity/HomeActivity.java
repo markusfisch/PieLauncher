@@ -17,11 +17,13 @@ import android.os.Bundle;
 import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -37,11 +39,13 @@ public class HomeActivity extends Activity {
 	private final Point touch = new Point();
 
 	private InputMethodManager imm;
+	private GestureDetector gestureDetector;
 	private AppPieView pieView;
 	private View allAppsContainer;
 	private ListView appsListView;
 	private EditText searchInput;
 	private AppsAdapter appsAdapter;
+	private boolean isScrolled = false;
 
 	@Override
 	public void onBackPressed() {
@@ -59,6 +63,8 @@ public class HomeActivity extends Activity {
 
 		imm = (InputMethodManager) getSystemService(
 				Context.INPUT_METHOD_SERVICE);
+		gestureDetector = new GestureDetector(this, new FlingListener(
+				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
 		setContentView(R.layout.activity_home);
 
@@ -148,6 +154,9 @@ public class HomeActivity extends Activity {
 					pieView.dispatchTouchEvent(event);
 					return true;
 				}
+				if (gestureDetector.onTouchEvent(event)) {
+					return true;
+				}
 				switch (event.getActionMasked()) {
 					default: break; // make FindBugs happy
 					case MotionEvent.ACTION_DOWN:
@@ -196,10 +205,10 @@ public class HomeActivity extends Activity {
 				view.post(new Runnable() {
 					@Override
 					public void run() {
-						boolean scrolled = firstVisibleItem > 0 ||
+						isScrolled = firstVisibleItem > 0 ||
 								(totalItemCount > 0 && view.getChildAt(0).getTop() < 0);
 						searchInput.setBackgroundColor(
-								scrolled ? 0xaa000000 : 0);
+								isScrolled ? 0xaa000000 : 0);
 					}
 				});
 			}
@@ -282,5 +291,28 @@ public class HomeActivity extends Activity {
 		String query = searchInput.getText().toString();
 		appsAdapter = new AppsAdapter(AppPieView.appMenu.filterAppsBy(query));
 		appsListView.setAdapter(appsAdapter);
+	}
+
+	private class FlingListener extends GestureDetector.SimpleOnGestureListener {
+		private int minimumVelocity;
+
+		public FlingListener(int minimumVelocity) {
+			this.minimumVelocity = minimumVelocity;
+		}
+
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2,
+				float velocityX, float velocityY) {
+			if (isScrolled) {
+				return false;
+			}
+			boolean hide = velocityY > velocityX &&
+					velocityY >= minimumVelocity &&
+					e2.getY() - e1.getY() > 0;
+			if (hide) {
+				hideAllApps();
+			}
+			return hide;
+		}
 	}
 }
