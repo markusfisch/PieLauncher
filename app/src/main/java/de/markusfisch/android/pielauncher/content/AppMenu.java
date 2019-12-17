@@ -50,12 +50,15 @@ public class AppMenu extends CanvasPieMenu {
 		void onUpdate();
 	}
 
+	private static Locale DEFAULT_LOCALE = Locale.getDefault();
 	private static boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 	private static final String MENU = "menu";
 	private static final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
-			return left.label.compareToIgnoreCase(right.label);
+			// compareToIgnoreCase() does not take locale into account
+			return left.label.toLowerCase(DEFAULT_LOCALE).compareTo(
+						right.label.toLowerCase(DEFAULT_LOCALE));
 		}
 	};
 
@@ -102,14 +105,14 @@ public class AppMenu extends CanvasPieMenu {
 		if (query == null) {
 			query = "";
 		}
-		query = query.trim().toLowerCase(Locale.US);
+		query = query.trim().toLowerCase(DEFAULT_LOCALE);
 		ArrayList<AppIcon> list = new ArrayList<>();
 		if (query.length() < 1) {
 			list.addAll(apps.values());
 		} else {
 			for (Map.Entry entry : apps.entrySet()) {
 				AppIcon appIcon = (AppIcon) entry.getValue();
-				if (appIcon.label.toLowerCase(Locale.US).contains(query)) {
+				if (appIcon.label.toLowerCase(DEFAULT_LOCALE).contains(query)) {
 					list.add(appIcon);
 				}
 			}
