@@ -57,6 +57,10 @@ public class PieMenu {
 		this.twist = twist;
 	}
 
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+
 	public void calculate(float x, float y) {
 		selectedIcon = -1;
 

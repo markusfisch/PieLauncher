@@ -7,6 +7,7 @@ import de.markusfisch.android.pielauncher.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,8 +21,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -35,6 +38,8 @@ public class AppPieView extends SurfaceView {
 	}
 
 	public static final AppMenu appMenu = new AppMenu();
+
+	public static final String RADIUS = "radius";
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -54,8 +59,12 @@ public class AppPieView extends SurfaceView {
 	private final int transparentBackgroundColor;
 	private final float dp;
 
+	private SharedPreferences prefs;
+	private ScaleGestureDetector scaleDetector;
 	private int viewWidth;
 	private int viewHeight;
+	private int minRadius;
+	private int maxRadius;
 	private int radius;
 	private int tapTimeout;
 	private float touchSlopSq;
@@ -65,6 +74,10 @@ public class AppPieView extends SurfaceView {
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
+
+		prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		scaleDetector = new ScaleGestureDetector(context,
+				new ScaleListener());
 
 		Resources res = context.getResources();
 		selectedPaint.setColorFilter(new PorterDuffColorFilter(
@@ -176,7 +189,9 @@ public class AppPieView extends SurfaceView {
 		if (Math.floor(min * .28f) > maxIconSize) {
 			min = Math.round(maxIconSize / .28f);
 		}
-		radius = Math.round(min * .5f);
+		maxRadius = Math.round(min * .5f);
+		minRadius = Math.round(maxRadius * .5f);
+		radius = prefs.getInt(RADIUS, maxRadius);
 		viewWidth = width;
 		viewHeight = height;
 		layoutTouchTargets(height > width);
@@ -230,6 +245,9 @@ public class AppPieView extends SurfaceView {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+				if (editMode && grabbedIcon == null) {
+					scaleDetector.onTouchEvent(event);
+				}
 				touch.set(Math.round(event.getRawX()),
 						Math.round(event.getRawY()));
 				switch (event.getActionMasked()) {
@@ -414,5 +432,27 @@ public class AppPieView extends SurfaceView {
 		float dx = ax - bx;
 		float dy = ay - by;
 		return dx*dx + dy*dy;
+	}
+
+	private void scaleRadius(float factor) {
+		radius *= factor;
+		radius = Math.max(minRadius, Math.min(radius, maxRadius));
+		appMenu.setRadius(radius);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt(RADIUS, radius);
+		editor.apply();
+	}
+
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			if (!detector.isInProgress()) {
+				return false;
+			}
+			scaleRadius(detector.getScaleFactor());
+			invalidateView();
+			drawView();
+			return true;
+		}
 	}
 }
