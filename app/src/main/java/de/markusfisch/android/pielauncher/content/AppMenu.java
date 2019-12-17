@@ -77,9 +77,7 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void store(Context context) {
-		if (context != null) {
-			writeMenu(context, icons);
-		}
+		writeMenu(context, icons);
 	}
 
 	public List<AppIcon> filterAppsBy(String query) {

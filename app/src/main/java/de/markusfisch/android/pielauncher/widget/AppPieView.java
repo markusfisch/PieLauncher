@@ -108,7 +108,10 @@ public class AppPieView extends SurfaceView {
 	}
 
 	public void endEditMode() {
-		appMenu.store(getContext());
+		Context context = getContext();
+		if (context != null) {
+			appMenu.store(context);
+		}
 		backup.clear();
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
