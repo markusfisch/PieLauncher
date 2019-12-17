@@ -218,7 +218,7 @@ public class HomeActivity extends Activity {
 					@Override
 					public void run() {
 						isScrolled = firstVisibleItem > 0 ||
-								(totalItemCount > 0 && view.getChildAt(0).getTop() < 0);
+								(totalItemCount > 0 && getTopOfFirstChild(view) < 0);
 						searchInput.setBackgroundColor(
 								isScrolled ? searchBarBackgroundColor : 0);
 					}
@@ -235,6 +235,11 @@ public class HomeActivity extends Activity {
 				appsListView, false), null, false);
 		appsListView.addFooterView(inflater.inflate(R.layout.list_footer,
 				appsListView, false), null, false);
+	}
+
+	private static int getTopOfFirstChild(AbsListView view) {
+		View child = view != null ? view.getChildAt(0) : null;
+		return child != null ? child.getTop() : 0;
 	}
 
 	private void launchFirstApp() {
