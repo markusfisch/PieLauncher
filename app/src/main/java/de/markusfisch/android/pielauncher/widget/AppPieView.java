@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.widget;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.R;
@@ -7,7 +8,6 @@ import de.markusfisch.android.pielauncher.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -39,8 +38,6 @@ public class AppPieView extends SurfaceView {
 	}
 
 	public static final AppMenu appMenu = new AppMenu();
-
-	public static final String RADIUS = "radius";
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -65,7 +62,6 @@ public class AppPieView extends SurfaceView {
 	private final String dragToOrderTip;
 	private final String pinchZoomTip;
 
-	private SharedPreferences prefs;
 	private ScaleGestureDetector scaleDetector;
 	private int viewWidth;
 	private int viewHeight;
@@ -83,7 +79,6 @@ public class AppPieView extends SurfaceView {
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
 
-		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		scaleDetector = new ScaleGestureDetector(context,
 				new ScaleListener());
 
@@ -144,9 +139,7 @@ public class AppPieView extends SurfaceView {
 		Context context = getContext();
 		if (context != null) {
 			appMenu.store(context);
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putInt(RADIUS, radius);
-			editor.apply();
+			PieLauncherApp.prefs.setRadius(radius);
 		}
 		backup.clear();
 		ungrabbedIcons.clear();
@@ -214,7 +207,7 @@ public class AppPieView extends SurfaceView {
 		}
 		maxRadius = Math.round(min * .5f);
 		minRadius = Math.round(maxRadius * .5f);
-		radius = clampRadius(prefs.getInt(RADIUS, maxRadius));
+		radius = clampRadius(PieLauncherApp.prefs.getRadius(maxRadius));
 		viewWidth = width;
 		viewHeight = height;
 		layoutTouchTargets(height > width);

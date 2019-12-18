@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.activity;
 
 import de.markusfisch.android.pielauncher.adapter.AppsAdapter;
 import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 import de.markusfisch.android.pielauncher.R;

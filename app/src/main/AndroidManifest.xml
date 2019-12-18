@@ -8,6 +8,7 @@
 		android:xlargeScreens="true"/>
 	<application
 		tools:ignore="UnusedAttribute"
+		android:name=".app.PieLauncherApp"
 		android:allowBackup="true"
 		android:fullBackupContent="@xml/backup_rules"
 		android:supportsRtl="true"
