@@ -345,8 +345,8 @@ public class AppPieView extends SurfaceView {
 
 	private void setCenter(int x, int y) {
 		appMenu.set(
-				Math.max(radius, Math.min(viewWidth - radius, x)),
-				Math.max(radius, Math.min(viewHeight - radius, y)),
+				Math.max(maxRadius, Math.min(viewWidth - maxRadius, x)),
+				Math.max(maxRadius, Math.min(viewHeight - maxRadius, y)),
 				radius);
 	}
 
