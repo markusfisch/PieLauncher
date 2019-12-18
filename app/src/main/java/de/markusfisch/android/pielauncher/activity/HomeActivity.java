@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.activity;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.adapter.AppsAdapter;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
@@ -91,7 +92,7 @@ public class HomeActivity extends Activity {
 				showAllApps();
 			}
 		});
-		AppPieView.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
+		PieLauncherApp.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
 			@Override
 			public void onUpdate() {
 				searchInput.setText(null);
@@ -187,7 +188,7 @@ public class HomeActivity extends Activity {
 					View view,
 					int position,
 					long id) {
-				AppPieView.appMenu.launchApp(HomeActivity.this,
+				PieLauncherApp.appMenu.launchApp(HomeActivity.this,
 						appsAdapter.getItem(position - 1));
 				hideAllApps();
 			}
@@ -249,7 +250,7 @@ public class HomeActivity extends Activity {
 		AppMenu.AppIcon icon;
 		if (appsAdapter.getCount() > 0 &&
 				(icon = appsAdapter.getItem(0)) != null) {
-			AppPieView.appMenu.launchApp(this, icon);
+			PieLauncherApp.appMenu.launchApp(this, icon);
 		}
 	}
 
@@ -309,7 +310,8 @@ public class HomeActivity extends Activity {
 
 	private void updateApps() {
 		String query = searchInput.getText().toString();
-		appsAdapter = new AppsAdapter(AppPieView.appMenu.filterAppsBy(query));
+		appsAdapter = new AppsAdapter(
+				PieLauncherApp.appMenu.filterAppsBy(query));
 		appsListView.setAdapter(appsAdapter);
 	}
 

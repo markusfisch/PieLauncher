@@ -37,8 +37,6 @@ public class AppPieView extends SurfaceView {
 		void onOpenList();
 	}
 
-	public static final AppMenu appMenu = new AppMenu();
-
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
 	private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
@@ -112,7 +110,7 @@ public class AppPieView extends SurfaceView {
 		tapTimeout = ViewConfiguration.getTapTimeout();
 
 		surfaceHolder = getHolder();
-		appMenu.indexAppsAsync(context);
+		PieLauncherApp.appMenu.indexAppsAsync(context);
 
 		initSurfaceHolder(surfaceHolder);
 		initTouchListener();
@@ -138,7 +136,7 @@ public class AppPieView extends SurfaceView {
 	public void endEditMode() {
 		Context context = getContext();
 		if (context != null) {
-			appMenu.store(context);
+			PieLauncherApp.appMenu.store(context);
 			PieLauncherApp.prefs.setRadius(radius);
 		}
 		backup.clear();
@@ -151,10 +149,10 @@ public class AppPieView extends SurfaceView {
 
 	private void editIcon(AppMenu.Icon icon) {
 		backup.clear();
-		backup.addAll(appMenu.icons);
-		appMenu.icons.remove(icon);
+		backup.addAll(PieLauncherApp.appMenu.icons);
+		PieLauncherApp.appMenu.icons.remove(icon);
 		ungrabbedIcons.clear();
-		ungrabbedIcons.addAll(appMenu.icons);
+		ungrabbedIcons.addAll(PieLauncherApp.appMenu.icons);
 		grabbedIcon = icon;
 		editMode = true;
 		invalidateView();
@@ -308,7 +306,7 @@ public class AppPieView extends SurfaceView {
 				listListener.onOpenList();
 			}
 		} else {
-			appMenu.launchApp(context);
+			PieLauncherApp.appMenu.launchApp(context);
 		}
 	}
 
@@ -321,7 +319,7 @@ public class AppPieView extends SurfaceView {
 			}
 		} else if (iconRemoveRect.contains(touch.x, touch.y)) {
 			if (grabbedIcon != null) {
-				appMenu.icons.remove(grabbedIcon);
+				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
 				invalidateView();
 			}
 		} else if (iconInfoRect.contains(touch.x, touch.y)) {
@@ -340,8 +338,8 @@ public class AppPieView extends SurfaceView {
 	}
 
 	private void rollback() {
-		appMenu.icons.clear();
-		appMenu.icons.addAll(backup);
+		PieLauncherApp.appMenu.icons.clear();
+		PieLauncherApp.appMenu.icons.addAll(backup);
 	}
 
 	private void startAppInfo(String packageName) {
@@ -357,15 +355,16 @@ public class AppPieView extends SurfaceView {
 	}
 
 	private void setCenter(int x, int y) {
-		appMenu.set(
+		PieLauncherApp.appMenu.set(
 				Math.max(radius, Math.min(viewWidth - radius, x)),
 				Math.max(radius, Math.min(viewHeight - radius, y)),
 				radius);
 	}
 
 	private void editIconAt(Point point) {
-		for (int i = 0, size = appMenu.icons.size(); i < size; ++i) {
-			AppMenu.Icon icon = appMenu.icons.get(i);
+		for (int i = 0, size = PieLauncherApp.appMenu.icons.size();
+				i < size; ++i) {
+			AppMenu.Icon icon = PieLauncherApp.appMenu.icons.get(i);
 			float sizeSq = Math.round(icon.size * icon.size);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
 				editIcon(icon);
@@ -395,23 +394,26 @@ public class AppPieView extends SurfaceView {
 				int size = ungrabbedIcons.size();
 				double step = AppMenu.TAU / (size + 1);
 				double angle = AppMenu.getPositiveAngle(Math.atan2(
-						touch.y - appMenu.getCenterY(),
-						touch.x - appMenu.getCenterX()) + step * .5);
+						touch.y - PieLauncherApp.appMenu.getCenterY(),
+						touch.x - PieLauncherApp.appMenu.getCenterX()) +
+								step * .5);
 				int insertAt = (int) Math.floor(angle / step);
-				appMenu.icons.clear();
-				appMenu.icons.addAll(ungrabbedIcons);
-				appMenu.icons.add(Math.min(size, insertAt), grabbedIcon);
-				appMenu.calculate(touch.x, touch.y);
+				PieLauncherApp.appMenu.icons.clear();
+				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
+				PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt), grabbedIcon);
+				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 				grabbedIcon.x = touch.x;
 				grabbedIcon.y = touch.y;
 			} else {
-				appMenu.calculate(appMenu.getCenterX(), appMenu.getCenterY());
+				PieLauncherApp.appMenu.calculate(
+						PieLauncherApp.appMenu.getCenterX(),
+						PieLauncherApp.appMenu.getCenterY());
 			}
-			appMenu.draw(canvas);
+			PieLauncherApp.appMenu.draw(canvas);
 		} else if (shouldShowMenu()) {
 			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			appMenu.calculate(touch.x, touch.y);
-			appMenu.draw(canvas);
+			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+			PieLauncherApp.appMenu.draw(canvas);
 		} else {
 			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 		}
@@ -441,7 +443,7 @@ public class AppPieView extends SurfaceView {
 		if (hasIcon) {
 			return dragToOrderTip;
 		}
-		int iconsInMenu = appMenu.icons.size();
+		int iconsInMenu = PieLauncherApp.appMenu.icons.size();
 		if (iconsInMenu != 4 && iconsInMenu != 6 && iconsInMenu != 8) {
 			return numberOfIconsTip;
 		} else {
@@ -478,7 +480,7 @@ public class AppPieView extends SurfaceView {
 	private void scaleRadius(float factor) {
 		radius *= factor;
 		radius = clampRadius(radius);
-		appMenu.setRadius(radius);
+		PieLauncherApp.appMenu.setRadius(radius);
 	}
 
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

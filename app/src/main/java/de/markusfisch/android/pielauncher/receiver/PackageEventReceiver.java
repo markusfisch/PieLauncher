@@ -1,6 +1,6 @@
 package de.markusfisch.android.pielauncher.receiver;
 
-import de.markusfisch.android.pielauncher.widget.AppPieView;
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,7 +17,7 @@ public class PackageEventReceiver extends BroadcastReceiver {
 				Intent.ACTION_PACKAGE_REMOVED.equals(action) ||
 				Intent.ACTION_PACKAGE_CHANGED.equals(action) ||
 				Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
-			AppPieView.appMenu.indexAppsAsync(context);
+			PieLauncherApp.appMenu.indexAppsAsync(context);
 		}
 	}
 }
