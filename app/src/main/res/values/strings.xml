@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">Pie Launcher</string>
 	<string name="app_icon">App icon</string>
-	<string name="tip_number_of_icons">Use 4, 6 or 8 icons for easy access</string>
-	<string name="tip_zoom_pinch">Zoom/Pinch to scale pie menu</string>
+	<string name="tip_number_of_icons">For easiest use, try 4, 6 oder 8 icons.</string>
+	<string name="tip_pinch_zoom">Pinch/zoom to scale the pie menu.</string>
+	<string name="tip_drag_to_order">Drag icons to order pie menu.</string>
 </resources>
