@@ -45,6 +45,7 @@ public class AppPieView extends SurfaceView {
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
 	private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint selectedPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+	private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
 	private final Point lastTouch = new Point();
 	private final SurfaceHolder surfaceHolder;
@@ -58,6 +59,9 @@ public class AppPieView extends SurfaceView {
 	private final Bitmap iconDone;
 	private final int transparentBackgroundColor;
 	private final float dp;
+	private final float sp;
+	private final String numberOfIconsTip;
+	private final String zoomPinchTip;
 
 	private SharedPreferences prefs;
 	private ScaleGestureDetector scaleDetector;
@@ -67,6 +71,8 @@ public class AppPieView extends SurfaceView {
 	private int maxRadius;
 	private int radius;
 	private int tapTimeout;
+	private int padding;
+	private float textOffset;
 	private float touchSlopSq;
 	private OpenListListener listListener;
 	private AppMenu.Icon grabbedIcon;
@@ -80,9 +86,21 @@ public class AppPieView extends SurfaceView {
 				new ScaleListener());
 
 		Resources res = context.getResources();
+		dp = res.getDisplayMetrics().density;
+		sp = res.getDisplayMetrics().scaledDensity;
+		padding = Math.round(dp * 80f);
+
+		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
+		zoomPinchTip = context.getString(R.string.tip_zoom_pinch);
+
 		selectedPaint.setColorFilter(new PorterDuffColorFilter(
 				res.getColor(R.color.selected),
 				PorterDuff.Mode.SRC_IN));
+		textPaint.setColor(res.getColor(R.color.text_color));
+		textPaint.setTextAlign(Paint.Align.CENTER);
+		textPaint.setTextSize(14f * sp);
+		float textHeight = textPaint.descent() - textPaint.ascent();
+		textOffset = (textHeight / 2) - textPaint.descent();
 		transparentBackgroundColor = res.getColor(
 				R.color.background_transparent);
 
@@ -90,7 +108,6 @@ public class AppPieView extends SurfaceView {
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
-		dp = res.getDisplayMetrics().density;
 
 		float touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
@@ -219,7 +236,6 @@ public class AppPieView extends SurfaceView {
 			totalWidth += w;
 			totalHeight += h;
 		}
-		int padding = Math.round(dp * 80f);
 		if (portrait) {
 			int step = Math.round(
 					(float) (viewWidth - totalWidth) / (length + 1));
@@ -378,6 +394,17 @@ public class AppPieView extends SurfaceView {
 		if (shouldShowMenu() || editMode) {
 			if (editMode) {
 				boolean hasIcon = grabbedIcon != null;
+				String message = null;
+				int iconsInMenu = appMenu.icons.size();
+				if (iconsInMenu != 4 && iconsInMenu != 6 &&
+						iconsInMenu != 8) {
+					message = numberOfIconsTip;
+				} else if (!hasIcon) {
+					message = zoomPinchTip;
+				}
+				if (message != null) {
+					drawText(canvas, message);
+				}
 				drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
 				drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
 				drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
@@ -425,6 +452,10 @@ public class AppPieView extends SurfaceView {
 				active && rect.contains(touch.x, touch.y)
 						? selectedPaint
 						: bitmapPaint);
+	}
+
+	private void drawText(Canvas canvas, String text) {
+		canvas.drawText(text, viewWidth >> 1, padding + textOffset, textPaint);
 	}
 
 	private static float distSq(Point a, Point b) {
