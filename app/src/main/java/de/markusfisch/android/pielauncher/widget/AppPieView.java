@@ -124,6 +124,9 @@ public class AppPieView extends SurfaceView {
 		Context context = getContext();
 		if (context != null) {
 			appMenu.store(context);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putInt(RADIUS, radius);
+			editor.apply();
 		}
 		backup.clear();
 		ungrabbedIcons.clear();
@@ -438,9 +441,6 @@ public class AppPieView extends SurfaceView {
 		radius *= factor;
 		radius = Math.max(minRadius, Math.min(radius, maxRadius));
 		appMenu.setRadius(radius);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putInt(RADIUS, radius);
-		editor.apply();
 	}
 
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
