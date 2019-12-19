@@ -25,3 +25,9 @@ memory anywhere on the screen without even looking at it.
 <img
 	src="https://raw.githubusercontent.com/markusfisch/PieLauncher/gh-pages/screencap-editor.png"
 	alt="Screenshot of pie menu editor" width="160"/>
+
+## Download
+
+<a href="https://play.google.com/store/apps/details?id=de.markusfisch.android.pielauncher"><img
+	src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
+	alt="Get it on Google Play" height="80"></a>
