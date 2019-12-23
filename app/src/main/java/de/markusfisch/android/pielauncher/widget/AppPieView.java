@@ -42,6 +42,7 @@ public class AppPieView extends SurfaceView {
 	private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint selectedPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Point inset = new Point();
 	private final Point touch = new Point();
 	private final Point lastTouch = new Point();
 	private final SurfaceHolder surfaceHolder;
@@ -209,6 +210,12 @@ public class AppPieView extends SurfaceView {
 		viewWidth = width;
 		viewHeight = height;
 		layoutTouchTargets(height > width);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			// because views can't go below the status bar before Lollipop
+			int[] pos = new int[2];
+			getLocationOnScreen(pos);
+			inset.set(pos[0], pos[1]);
+		}
 	}
 
 	private void layoutTouchTargets(boolean portrait) {
@@ -261,8 +268,8 @@ public class AppPieView extends SurfaceView {
 				if (editMode && grabbedIcon == null) {
 					scaleDetector.onTouchEvent(event);
 				}
-				touch.set(Math.round(event.getRawX()),
-						Math.round(event.getRawY()));
+				touch.set(Math.round(event.getRawX() - inset.x),
+						Math.round(event.getRawY() - inset.y));
 				switch (event.getActionMasked()) {
 					default:
 						break;
