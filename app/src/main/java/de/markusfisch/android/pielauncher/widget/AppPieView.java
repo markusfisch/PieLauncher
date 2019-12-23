@@ -54,7 +54,7 @@ public class AppPieView extends SurfaceView {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
-	private final int transparentBackgroundColor;
+	private final int translucentBackgroundColor;
 	private final float dp;
 	private final float sp;
 	private final String numberOfIconsTip;
@@ -98,7 +98,7 @@ public class AppPieView extends SurfaceView {
 		textPaint.setTextSize(14f * sp);
 		float textHeight = textPaint.descent() - textPaint.ascent();
 		textOffset = (textHeight / 2) - textPaint.descent();
-		transparentBackgroundColor = res.getColor(
+		translucentBackgroundColor = res.getColor(
 				R.color.background_transparent);
 
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
@@ -389,7 +389,7 @@ public class AppPieView extends SurfaceView {
 			return;
 		}
 		if (editMode) {
-			canvas.drawColor(transparentBackgroundColor,
+			canvas.drawColor(translucentBackgroundColor,
 					PorterDuff.Mode.SRC);
 			boolean hasIcon = grabbedIcon != null;
 			drawTip(canvas, getTip(hasIcon));
