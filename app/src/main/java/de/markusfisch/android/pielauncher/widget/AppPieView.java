@@ -220,7 +220,8 @@ public class AppPieView extends SurfaceView {
 
 	private void layoutTouchTargets(boolean portrait) {
 		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconInfo, iconDone};
-		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconInfoRect, iconDoneRect};
+		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconInfoRect,
+				iconDoneRect};
 		int length = icons.length;
 		int totalWidth = 0;
 		int totalHeight = 0;
@@ -407,7 +408,8 @@ public class AppPieView extends SurfaceView {
 				int insertAt = (int) Math.floor(angle / step);
 				PieLauncherApp.appMenu.icons.clear();
 				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
-				PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt), grabbedIcon);
+				PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt),
+						grabbedIcon);
 				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 				grabbedIcon.x = touch.x;
 				grabbedIcon.y = touch.y;
