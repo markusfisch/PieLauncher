@@ -417,12 +417,12 @@ public class AppPieView extends SurfaceView {
 						PieLauncherApp.appMenu.getCenterY());
 			}
 			PieLauncherApp.appMenu.draw(canvas);
-		} else if (shouldShowMenu()) {
-			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-			PieLauncherApp.appMenu.draw(canvas);
 		} else {
 			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			if (shouldShowMenu()) {
+				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+				PieLauncherApp.appMenu.draw(canvas);
+			}
 		}
 		lastTouch.set(touch.x, touch.y);
 		surfaceHolder.unlockCanvasAndPost(canvas);
