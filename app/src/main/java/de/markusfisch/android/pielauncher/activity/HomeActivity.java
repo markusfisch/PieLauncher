@@ -106,6 +106,17 @@ public class HomeActivity extends Activity {
 	}
 
 	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		// end edit mode when HOME is pressed
+		if (pieView.isEditMode() && intent != null &&
+				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
+						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
+			pieView.endEditMode();
+		}
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
 		hideAllApps();
