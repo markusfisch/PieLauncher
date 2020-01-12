@@ -261,11 +261,13 @@ public class AppPieView extends SurfaceView {
 
 	private void initTouchListener() {
 		setOnTouchListener(new View.OnTouchListener() {
-			private Point down = new Point();
+			private final Point down = new Point();
+
 			private long downAt;
+			private Runnable performActionRunnable;
 
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
+			public boolean onTouch(final View v, MotionEvent event) {
 				if (editMode && grabbedIcon == null) {
 					scaleDetector.onTouchEvent(event);
 				}
@@ -283,6 +285,12 @@ public class AppPieView extends SurfaceView {
 						drawView();
 						break;
 					case MotionEvent.ACTION_DOWN:
+						if (performActionRunnable != null) {
+							removeCallbacks(performActionRunnable);
+							// Ignore ACTION_DOWN's when there was
+							// an action pending.
+							break;
+						}
 						if (editMode) {
 							editIconAt(touch);
 						} else {
@@ -293,10 +301,27 @@ public class AppPieView extends SurfaceView {
 						drawView();
 						break;
 					case MotionEvent.ACTION_UP:
-						v.performClick();
-						performAction(v.getContext(), down, downAt);
-						invalidateTouch();
-						drawView();
+						if (performActionRunnable != null) {
+							removeCallbacks(performActionRunnable);
+						}
+						final long downTime =
+								SystemClock.uptimeMillis() - downAt;
+						performActionRunnable = new Runnable() {
+							@Override
+							public void run() {
+								v.performClick();
+								performAction(v.getContext(), down, downTime);
+								performActionRunnable = null;
+								invalidateTouch();
+								drawView();
+							}
+						};
+						// Wait a short time before performing the action
+						// because some touch screen drivers send
+						// ACTION_UP/ACTION_DOWN pairs for very short
+						// touch interruptions what makes the menu jump
+						// and execute multiple actions unintentionally.
+						postDelayed(performActionRunnable, 16);
 						break;
 				}
 				return true;
@@ -304,11 +329,11 @@ public class AppPieView extends SurfaceView {
 		});
 	}
 
-	private void performAction(Context context, Point down, long downAt) {
+	private void performAction(Context context, Point down, long downTime) {
 		if (editMode) {
 			performEditAction(context);
 			grabbedIcon = null;
-		} else if (SystemClock.uptimeMillis() - downAt <= tapTimeout &&
+		} else if (downTime <= tapTimeout &&
 				distSq(down, touch) <= touchSlopSq) {
 			if (listListener != null) {
 				listListener.onOpenList();
