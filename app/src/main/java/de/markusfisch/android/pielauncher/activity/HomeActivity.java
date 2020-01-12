@@ -95,7 +95,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onUpdate() {
 				searchInput.setText(null);
-				updateApps();
+				updateAppsAdapter();
 			}
 		});
 		initSearchInput();
@@ -131,7 +131,7 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable e) {
-				updateApps();
+				updateAppsAdapter();
 			}
 		});
 		searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -257,7 +257,7 @@ public class HomeActivity extends Activity {
 		pieView.setVisibility(View.GONE);
 		allAppsContainer.setVisibility(View.VISIBLE);
 		showSoftKeyboardFor(searchInput);
-		updateApps();
+		updateAppsAdapter();
 	}
 
 	private void hideAllApps() {
@@ -307,7 +307,7 @@ public class HomeActivity extends Activity {
 		imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 	}
 
-	private void updateApps() {
+	private void updateAppsAdapter() {
 		String query = searchInput.getText().toString();
 		appsAdapter = new AppsAdapter(
 				PieLauncherApp.appMenu.filterAppsBy(query));
