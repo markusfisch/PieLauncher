@@ -6,6 +6,7 @@ import de.markusfisch.android.pielauncher.graphics.Converter;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageManager;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -125,19 +127,11 @@ public class AppMenu extends CanvasPieMenu {
 	// and it's perfectly okay to delay garbage collection of the
 	// parent instance until this task has been terminated
 	@SuppressLint("StaticFieldLeak")
-	public void indexAppsAsync(Context context) {
-		// get application context to not block garbage collection
-		// on other Context objects
-		final Context appContext = context.getApplicationContext();
-		if (HAS_LAUNCHER_APP) {
-			userHandle = Process.myUserHandle();
-			launcherApps = (LauncherApps) appContext.getSystemService(
-				Context.LAUNCHER_APPS_SERVICE);
-		}
+	public void removePackageAsync(final String packageName) {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... nothing) {
-				indexApps(appContext);
+				removePackage(packageName);
 				return null;
 			}
 
@@ -150,10 +144,49 @@ public class AppMenu extends CanvasPieMenu {
 		}.execute();
 	}
 
-	private void indexApps(Context context) {
-		apps.clear();
+	public void indexAppsAsync(Context context) {
+		indexAppsAsync(context, null);
+	}
+
+	// this AsyncTask is running for a short and finite time only
+	// and it's perfectly okay to delay garbage collection of the
+	// parent instance until this task has been terminated
+	@SuppressLint("StaticFieldLeak")
+	public void indexAppsAsync(Context context,
+			final String packageNameRestriction) {
+		// get application context to not block garbage collection
+		// on other Context objects
+		final Context appContext = context.getApplicationContext();
+		if (HAS_LAUNCHER_APP) {
+			userHandle = Process.myUserHandle();
+			launcherApps = (LauncherApps) appContext.getSystemService(
+				Context.LAUNCHER_APPS_SERVICE);
+		}
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... nothing) {
+				indexApps(appContext, packageNameRestriction);
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void nothing) {
+				if (updateListener != null) {
+					updateListener.onUpdate();
+				}
+			}
+		}.execute();
+	}
+
+	private void indexApps(Context context, String packageNameRestriction) {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		if (packageNameRestriction != null) {
+			removePackage(packageNameRestriction);
+			intent.setPackage(packageNameRestriction);
+		} else {
+			apps.clear();
+		}
 		PackageManager pm = context.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
 		if (activities == null) {
@@ -161,24 +194,27 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		String skip = context.getPackageName();
 		for (ResolveInfo info : activities) {
-			String pn = info.activityInfo.applicationInfo.packageName;
-			if (skip.equals(pn)) {
+			String packageName = info.activityInfo.applicationInfo.packageName;
+			if (skip.equals(packageName)) {
+				// always skip this package
 				continue;
 			}
 			if (HAS_LAUNCHER_APP) {
 				for (LauncherActivityInfo ai : launcherApps.getActivityList(
-						pn, userHandle)) {
+						packageName, userHandle)) {
 					addApp(ai.getComponentName(),
 							ai.getLabel().toString(),
 							ai.getBadgedIcon(0));
 				}
 			} else {
-				addApp(getComponentName(info),
+				addApp(getComponentName(info.activityInfo),
 						info.loadLabel(pm).toString(),
 						info.loadIcon(pm));
 			}
 		}
-		createIcons(context);
+		if (packageNameRestriction == null) {
+			createIcons(context);
+		}
 	}
 
 	private void addApp(ComponentName componentName, String label,
@@ -250,9 +286,34 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
-	private static ComponentName getComponentName(ResolveInfo info) {
-		return new ComponentName(info.activityInfo.packageName,
-				info.activityInfo.name);
+	private static ComponentName getComponentName(ActivityInfo info) {
+		return new ComponentName(info.packageName, info.name);
+	}
+
+	private void removePackage(String packageName) {
+		removePackageFromApps(packageName);
+		removePackageFromPieMenu(packageName);
+	}
+
+	private void removePackageFromApps(String packageName) {
+		Iterator<Map.Entry<ComponentName, AppIcon>> it =
+				apps.entrySet().iterator();
+		while (it.hasNext()) {
+			if (packageName.equals(((AppIcon) it.next().getValue())
+					.componentName.getPackageName())) {
+				it.remove();
+			}
+		}
+	}
+
+	private void removePackageFromPieMenu(String packageName) {
+		Iterator<Icon> it = icons.iterator();
+		while (it.hasNext()) {
+			if (packageName.equals(((AppIcon) it.next())
+					.componentName.getPackageName())) {
+				it.remove();
+			}
+		}
 	}
 
 	private static List<Icon> restoreMenu(Context context,
