@@ -103,7 +103,7 @@ public class AppMenu extends CanvasPieMenu {
 		storeMenu(context, icons);
 	}
 
-	public List<AppIcon> filterAppsBy(String query) {
+	public synchronized List<AppIcon> filterAppsBy(String query) {
 		if (query == null) {
 			query = "";
 		}
@@ -178,7 +178,8 @@ public class AppMenu extends CanvasPieMenu {
 		}.execute();
 	}
 
-	private void indexApps(Context context, String packageNameRestriction) {
+	private synchronized void indexApps(Context context,
+			String packageNameRestriction) {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
@@ -295,7 +296,7 @@ public class AppMenu extends CanvasPieMenu {
 		removePackageFromPieMenu(packageName);
 	}
 
-	private void removePackageFromApps(String packageName) {
+	private synchronized void removePackageFromApps(String packageName) {
 		Iterator<Map.Entry<ComponentName, AppIcon>> it =
 				apps.entrySet().iterator();
 		while (it.hasNext()) {
@@ -306,7 +307,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
-	private void removePackageFromPieMenu(String packageName) {
+	private synchronized void removePackageFromPieMenu(String packageName) {
 		Iterator<Icon> it = icons.iterator();
 		while (it.hasNext()) {
 			if (packageName.equals(((AppIcon) it.next())

@@ -29,7 +29,7 @@ public class CanvasPieMenu extends PieMenu {
 		}
 	}
 
-	public void draw(Canvas canvas) {
+	public synchronized void draw(Canvas canvas) {
 		for (int n = icons.size(); n-- > 0; ) {
 			((CanvasIcon) icons.get(n)).draw(canvas);
 		}

@@ -61,7 +61,7 @@ public class PieMenu {
 		this.radius = radius;
 	}
 
-	public void calculate(float x, float y) {
+	public synchronized void calculate(float x, float y) {
 		selectedIcon = -1;
 
 		int numberOfIcons = icons.size();
