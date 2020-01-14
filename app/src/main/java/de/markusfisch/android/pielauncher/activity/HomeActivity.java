@@ -296,6 +296,7 @@ public class HomeActivity extends Activity {
 
 	private void registerPackageEventReceiver() {
 		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
 		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
 		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
 		filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
