@@ -48,6 +48,7 @@ public class HomeActivity extends Activity {
 	private EditText searchInput;
 	private AppsAdapter appsAdapter;
 	private boolean isScrolled = false;
+	private boolean updateAfterTextChange = true;
 	private int searchBarBackgroundColor;
 
 	@Override
@@ -142,7 +143,9 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable e) {
-				updateAppsAdapter();
+				if (updateAfterTextChange) {
+					updateAppsAdapter();
+				}
 			}
 		});
 		searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -268,13 +271,22 @@ public class HomeActivity extends Activity {
 		pieView.setVisibility(View.GONE);
 		allAppsContainer.setVisibility(View.VISIBLE);
 		showSoftKeyboardFor(searchInput);
-		updateAppsAdapter();
+
+		// clear search input
+		boolean searchWasEmpty = searchInput.getText().toString().isEmpty();
+		updateAfterTextChange = false;
+		searchInput.setText(null);
+		updateAfterTextChange = true;
+
+		// keeps list state if possible
+		if (!searchWasEmpty || appsListView.getAdapter() == null) {
+			updateAppsAdapter();
+		}
 	}
 
 	private void hideAllApps() {
 		if (allAppsContainer.getVisibility() == View.VISIBLE) {
 			allAppsContainer.setVisibility(View.GONE);
-			searchInput.setText(null);
 			hideSoftKeyboardFrom(searchInput);
 		}
 		pieView.setVisibility(View.VISIBLE);
