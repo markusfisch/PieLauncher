@@ -50,14 +50,14 @@ public class PieMenu {
 		set(x, y, radius, 0);
 	}
 
-	public void set(int x, int y, double radius, double twist) {
+	public synchronized void set(int x, int y, double radius, double twist) {
 		centerX = x;
 		centerY = y;
 		this.radius = radius;
 		this.twist = twist;
 	}
 
-	public void setRadius(double radius) {
+	public synchronized void setRadius(double radius) {
 		this.radius = radius;
 	}
 
