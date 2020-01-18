@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.1.0
+* Keep state of app listing if possible
+* Improve handling of events for new and removed packages
+* Reload app infos when the locale changes
+* End edit mode when home button is pressed
+* Filter very short touch interruptions
+* Fix touch position on Android Lollipop and before
+
 ## 1.0.0
 * Add support for multiple launcher icons per app
 * Show tips in editor
