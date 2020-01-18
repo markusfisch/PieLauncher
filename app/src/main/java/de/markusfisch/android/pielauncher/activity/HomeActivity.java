@@ -109,11 +109,22 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		// end edit mode when HOME is pressed
-		if (pieView.isEditMode() && intent != null &&
+		if (intent != null &&
 				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
 						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
-			pieView.endEditMode();
+			// end edit mode when HOME is pressed
+			if (pieView.isEditMode()) {
+				pieView.endEditMode();
+			} else if (!isAllAppsVisible()) {
+				// post showing all apps because onNewIntent() is followed
+				// by onResume() what runs hideAllApps()
+				allAppsContainer.post(new Runnable() {
+					@Override
+					public void run() {
+						showAllApps();
+					}
+				});
+			}
 		}
 	}
 
@@ -268,6 +279,10 @@ public class HomeActivity extends Activity {
 	}
 
 	private void showAllApps() {
+		if (isAllAppsVisible()) {
+			return;
+		}
+
 		pieView.setVisibility(View.GONE);
 		allAppsContainer.setVisibility(View.VISIBLE);
 		showSoftKeyboardFor(searchInput);
@@ -285,11 +300,15 @@ public class HomeActivity extends Activity {
 	}
 
 	private void hideAllApps() {
-		if (allAppsContainer.getVisibility() == View.VISIBLE) {
+		if (isAllAppsVisible()) {
 			allAppsContainer.setVisibility(View.GONE);
 			hideSoftKeyboardFrom(searchInput);
 		}
 		pieView.setVisibility(View.VISIBLE);
+	}
+
+	private boolean isAllAppsVisible() {
+		return allAppsContainer.getVisibility() == View.VISIBLE;
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
