@@ -300,7 +300,7 @@ public class AppMenu extends CanvasPieMenu {
 		Iterator<Map.Entry<ComponentName, AppIcon>> it =
 				apps.entrySet().iterator();
 		while (it.hasNext()) {
-			if (packageName.equals(((AppIcon) it.next().getValue())
+			if (packageName.equals((it.next().getValue())
 					.componentName.getPackageName())) {
 				it.remove();
 			}
