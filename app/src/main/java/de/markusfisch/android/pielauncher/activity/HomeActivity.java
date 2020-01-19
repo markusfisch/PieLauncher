@@ -49,6 +49,8 @@ public class HomeActivity extends Activity {
 	private AppsAdapter appsAdapter;
 	private boolean isScrolled = false;
 	private boolean updateAfterTextChange = true;
+	private boolean showAllAppsOnResume = false;
+	private long pausedAt = 0L;
 	private int searchBarBackgroundColor;
 
 	@Override
@@ -109,21 +111,23 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		// because this activity has the launch mode "singleTask", it'll get
+		// an onNewIntent() when the activity is re-launched
 		if (intent != null &&
 				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
 						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
-			// end edit mode when HOME is pressed
+			// if this activity is re-launched but _not_ brought to front,
+			// the home button was pressed while this activity was on screen
 			if (pieView.isEditMode()) {
 				pieView.endEditMode();
-			} else if (!isAllAppsVisible()) {
-				// post showing all apps because onNewIntent() is followed
-				// by onResume() what runs hideAllApps()
-				allAppsContainer.post(new Runnable() {
-					@Override
-					public void run() {
-						showAllApps();
-					}
-				});
+			} else if (!isAllAppsVisible() &&
+					// only show all apps if the activity was recently paused
+					// (by pressing the home button) and _not_ if onPause()
+					// was triggered by pressing the overview button and
+					// *then* the home button
+					System.currentTimeMillis() - pausedAt < 100) {
+				// onNewIntent() is always followed by onResume()
+				showAllAppsOnResume = true;
 			}
 		}
 	}
@@ -131,7 +135,18 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		hideAllApps();
+		if (showAllAppsOnResume) {
+			showAllApps();
+			showAllAppsOnResume = false;
+		} else {
+			hideAllApps();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		pausedAt = System.currentTimeMillis();
 	}
 
 	@Override
