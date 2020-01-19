@@ -56,7 +56,6 @@ public class AppPieView extends SurfaceView {
 	private final Bitmap iconDone;
 	private final int translucentBackgroundColor;
 	private final float dp;
-	private final float sp;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
 	private final String pinchZoomTip;
@@ -83,7 +82,7 @@ public class AppPieView extends SurfaceView {
 
 		Resources res = context.getResources();
 		dp = res.getDisplayMetrics().density;
-		sp = res.getDisplayMetrics().scaledDensity;
+		float sp = res.getDisplayMetrics().scaledDensity;
 		padding = Math.round(dp * 80f);
 
 		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
