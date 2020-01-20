@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.0
+* Show app listing when Home button is pressed
+
 ## 1.1.0
 * Keep state of app listing if possible
 * Improve handling of events for new and removed packages
