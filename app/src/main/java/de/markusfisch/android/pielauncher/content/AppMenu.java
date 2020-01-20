@@ -183,7 +183,7 @@ public class AppMenu extends CanvasPieMenu {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
-			removePackage(packageNameRestriction);
+			removePackageFromApps(packageNameRestriction);
 			intent.setPackage(packageNameRestriction);
 		} else {
 			apps.clear();

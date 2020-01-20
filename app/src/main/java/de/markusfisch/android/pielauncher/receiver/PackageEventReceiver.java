@@ -24,10 +24,11 @@ public class PackageEventReceiver extends BroadcastReceiver {
 		}
 		String packageName = data.getSchemeSpecificPart();
 		if (Intent.ACTION_PACKAGE_ADDED.equals(action) ||
-				Intent.ACTION_PACKAGE_CHANGED.equals(action) ||
-				Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
+				// sent when a component of a package changed
+				Intent.ACTION_PACKAGE_CHANGED.equals(action)) {
 			PieLauncherApp.appMenu.indexAppsAsync(context, packageName);
-		} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
+		} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
+				!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
 			PieLauncherApp.appMenu.removePackageAsync(packageName);
 		}
 	}
