@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.1
+* Fix handling of app updates
+
 ## 1.2.0
 * Show app listing when Home button is pressed
 
