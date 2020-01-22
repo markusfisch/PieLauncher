@@ -39,8 +39,8 @@ public class AppPieView extends SurfaceView {
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
-	private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-	private final Paint selectedPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+	private final Paint paintActive = new Paint(Paint.FILTER_BITMAP_FLAG);
+	private final Paint paintDeactive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Point inset = new Point();
 	private final Point touch = new Point();
@@ -88,9 +88,7 @@ public class AppPieView extends SurfaceView {
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
 		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
 
-		selectedPaint.setColorFilter(new PorterDuffColorFilter(
-				res.getColor(R.color.selected),
-				PorterDuff.Mode.SRC_IN));
+		paintDeactive.setAlpha(40);
 		textPaint.setColor(res.getColor(R.color.text_color));
 		textPaint.setTextAlign(Paint.Align.CENTER);
 		textPaint.setTextSize(14f * sp);
@@ -475,9 +473,7 @@ public class AppPieView extends SurfaceView {
 	private void drawIcon(Canvas canvas, Bitmap icon, Rect rect,
 			boolean active) {
 		canvas.drawBitmap(icon, null, rect,
-				active && rect.contains(touch.x, touch.y)
-						? selectedPaint
-						: bitmapPaint);
+				active ? paintActive : paintDeactive);
 	}
 
 	private static float distSq(Point a, Point b) {
