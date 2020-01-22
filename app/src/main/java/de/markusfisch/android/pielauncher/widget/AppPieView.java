@@ -453,12 +453,6 @@ public class AppPieView extends SurfaceView {
 		return touch.x > -1;
 	}
 
-	private void drawTip(Canvas canvas, String tip) {
-		if (tip != null) {
-			drawText(canvas, tip);
-		}
-	}
-
 	private String getTip(boolean hasIcon) {
 		if (hasIcon) {
 			return dragToOrderTip;
@@ -471,16 +465,19 @@ public class AppPieView extends SurfaceView {
 		}
 	}
 
+	private void drawTip(Canvas canvas, String tip) {
+		if (tip != null) {
+			canvas.drawText(tip, viewWidth >> 1, padding + textOffset,
+					textPaint);
+		}
+	}
+
 	private void drawIcon(Canvas canvas, Bitmap icon, Rect rect,
 			boolean active) {
 		canvas.drawBitmap(icon, null, rect,
 				active && rect.contains(touch.x, touch.y)
 						? selectedPaint
 						: bitmapPaint);
-	}
-
-	private void drawText(Canvas canvas, String text) {
-		canvas.drawText(text, viewWidth >> 1, padding + textOffset, textPaint);
 	}
 
 	private static float distSq(Point a, Point b) {
