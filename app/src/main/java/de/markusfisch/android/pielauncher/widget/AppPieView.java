@@ -128,7 +128,7 @@ public class AppPieView extends SurfaceView {
 		drawView();
 	}
 
-	public boolean isEditMode() {
+	public boolean inEditMode() {
 		return editMode;
 	}
 

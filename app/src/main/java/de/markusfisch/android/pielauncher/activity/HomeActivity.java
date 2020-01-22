@@ -55,7 +55,7 @@ public class HomeActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		if (pieView.isEditMode()) {
+		if (pieView.inEditMode()) {
 			pieView.endEditMode();
 			showAllApps();
 		} else {
@@ -118,7 +118,7 @@ public class HomeActivity extends Activity {
 						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
 			// if this activity is re-launched but _not_ brought to front,
 			// the home button was pressed while this activity was on screen
-			if (pieView.isEditMode()) {
+			if (pieView.inEditMode()) {
 				pieView.endEditMode();
 			} else if (!isAllAppsVisible() &&
 					// only show all apps if the activity was recently paused
@@ -202,7 +202,7 @@ public class HomeActivity extends Activity {
 		appsListView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if (pieView.isEditMode()) {
+				if (pieView.inEditMode()) {
 					pieView.dispatchTouchEvent(event);
 					return true;
 				}
