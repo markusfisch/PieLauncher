@@ -82,7 +82,7 @@ public class AppPieView extends SurfaceView {
 		Resources res = context.getResources();
 		dp = res.getDisplayMetrics().density;
 		float sp = res.getDisplayMetrics().scaledDensity;
-		padding = Math.round(dp * 80f);
+		padding = Math.round(80f * dp);
 
 		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
