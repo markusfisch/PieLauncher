@@ -44,7 +44,6 @@ public class AppPieView extends SurfaceView {
 	private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Point inset = new Point();
 	private final Point touch = new Point();
-	private final Point lastTouch = new Point();
 	private final SurfaceHolder surfaceHolder;
 	private final Rect iconAddRect = new Rect();
 	private final Bitmap iconAdd;
@@ -143,7 +142,6 @@ public class AppPieView extends SurfaceView {
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
 		editMode = false;
-		invalidateView();
 		drawView();
 	}
 
@@ -155,7 +153,6 @@ public class AppPieView extends SurfaceView {
 		ungrabbedIcons.addAll(PieLauncherApp.appMenu.icons);
 		grabbedIcon = icon;
 		editMode = true;
-		invalidateView();
 	}
 
 	private static Bitmap getBitmapFromDrawable(Resources res, int resId) {
@@ -182,7 +179,6 @@ public class AppPieView extends SurfaceView {
 					int height) {
 				initMenu(width, height);
 				if (editMode) {
-					invalidateView();
 					drawView();
 				}
 			}
@@ -275,14 +271,6 @@ public class AppPieView extends SurfaceView {
 				switch (event.getActionMasked()) {
 					default:
 						break;
-					case MotionEvent.ACTION_CANCEL:
-						invalidateTouch();
-						grabbedIcon = null;
-						drawView();
-						break;
-					case MotionEvent.ACTION_MOVE:
-						drawView();
-						break;
 					case MotionEvent.ACTION_DOWN:
 						if (performActionRunnable != null) {
 							removeCallbacks(performActionRunnable);
@@ -297,6 +285,9 @@ public class AppPieView extends SurfaceView {
 							downAt = event.getEventTime();
 							setCenter(touch);
 						}
+						drawView();
+						break;
+					case MotionEvent.ACTION_MOVE:
 						drawView();
 						break;
 					case MotionEvent.ACTION_UP:
@@ -321,6 +312,11 @@ public class AppPieView extends SurfaceView {
 						// touch interruptions what makes the menu jump
 						// and execute multiple actions unintentionally.
 						postDelayed(performActionRunnable, 16);
+						break;
+					case MotionEvent.ACTION_CANCEL:
+						invalidateTouch();
+						grabbedIcon = null;
+						drawView();
 						break;
 				}
 				return true;
@@ -352,7 +348,6 @@ public class AppPieView extends SurfaceView {
 		} else if (iconRemoveRect.contains(touch.x, touch.y)) {
 			if (grabbedIcon != null) {
 				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
-				invalidateView();
 			}
 		} else if (iconInfoRect.contains(touch.x, touch.y)) {
 			if (grabbedIcon != null) {
@@ -406,9 +401,6 @@ public class AppPieView extends SurfaceView {
 	}
 
 	private void drawView() {
-		if (touch.equals(lastTouch)) {
-			return;
-		}
 		Canvas canvas = surfaceHolder.lockCanvas();
 		if (canvas == null) {
 			return;
@@ -450,12 +442,7 @@ public class AppPieView extends SurfaceView {
 				PieLauncherApp.appMenu.draw(canvas);
 			}
 		}
-		lastTouch.set(touch.x, touch.y);
 		surfaceHolder.unlockCanvasAndPost(canvas);
-	}
-
-	private void invalidateView() {
-		lastTouch.set(-2, -2);
 	}
 
 	private void invalidateTouch() {
@@ -523,7 +510,6 @@ public class AppPieView extends SurfaceView {
 				return false;
 			}
 			scaleRadius(detector.getScaleFactor());
-			invalidateView();
 			drawView();
 			return true;
 		}
