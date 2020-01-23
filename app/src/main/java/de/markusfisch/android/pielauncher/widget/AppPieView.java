@@ -12,10 +12,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -25,14 +23,12 @@ import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.SurfaceView;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewConfiguration;
 
 import java.util.ArrayList;
 
-public class AppPieView extends SurfaceView {
+public class AppPieView extends View {
 	public interface OpenListListener {
 		void onOpenList();
 	}
@@ -44,7 +40,6 @@ public class AppPieView extends SurfaceView {
 	private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Point inset = new Point();
 	private final Point touch = new Point();
-	private final SurfaceHolder surfaceHolder;
 	private final Rect iconAddRect = new Rect();
 	private final Bitmap iconAdd;
 	private final Rect iconRemoveRect = new Rect();
@@ -106,13 +101,9 @@ public class AppPieView extends SurfaceView {
 		touchSlopSq = touchSlop * touchSlop;
 		tapTimeout = ViewConfiguration.getTapTimeout();
 
-		surfaceHolder = getHolder();
 		PieLauncherApp.appMenu.indexAppsAsync(context);
 
-		initSurfaceHolder(surfaceHolder);
 		initTouchListener();
-
-		setZOrderOnTop(true);
 	}
 
 	public void setOpenListListener(OpenListListener listener) {
@@ -123,7 +114,7 @@ public class AppPieView extends SurfaceView {
 		editIcon(appIcon);
 		touch.set(from.x, from.y);
 		setCenter(viewWidth >> 1, viewHeight >> 1);
-		drawView();
+		invalidate();
 	}
 
 	public boolean inEditMode() {
@@ -140,7 +131,57 @@ public class AppPieView extends SurfaceView {
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
 		editMode = false;
-		drawView();
+		invalidate();
+	}
+
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right,
+			int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+		if (changed) {
+			initMenu(right - top, bottom - top);
+		}
+	}
+
+	@Override
+	protected void onDraw(Canvas canvas) {
+		if (editMode) {
+			canvas.drawColor(translucentBackgroundColor,
+					PorterDuff.Mode.SRC);
+			boolean hasIcon = grabbedIcon != null;
+			drawTip(canvas, getTip(hasIcon));
+			drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
+			drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
+			drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
+			drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
+			if (hasIcon) {
+				int size = ungrabbedIcons.size();
+				double step = AppMenu.TAU / (size + 1);
+				double angle = AppMenu.getPositiveAngle(Math.atan2(
+						touch.y - PieLauncherApp.appMenu.getCenterY(),
+						touch.x - PieLauncherApp.appMenu.getCenterX()) +
+								step * .5);
+				int insertAt = (int) Math.floor(angle / step);
+				PieLauncherApp.appMenu.icons.clear();
+				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
+				PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt),
+						grabbedIcon);
+				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+				grabbedIcon.x = touch.x;
+				grabbedIcon.y = touch.y;
+			} else {
+				PieLauncherApp.appMenu.calculate(
+						PieLauncherApp.appMenu.getCenterX(),
+						PieLauncherApp.appMenu.getCenterY());
+			}
+			PieLauncherApp.appMenu.draw(canvas);
+		} else {
+			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			if (shouldShowMenu()) {
+				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+				PieLauncherApp.appMenu.draw(canvas);
+			}
+		}
 	}
 
 	private void editIcon(AppMenu.Icon icon) {
@@ -164,31 +205,6 @@ public class AppPieView extends SurfaceView {
 			//noinspection deprecation
 			return res.getDrawable(resId);
 		}
-	}
-
-	private void initSurfaceHolder(SurfaceHolder holder) {
-		holder.setFormat(PixelFormat.TRANSPARENT);
-		holder.addCallback(new SurfaceHolder.Callback() {
-			@Override
-			public void surfaceChanged(
-					SurfaceHolder holder,
-					int format,
-					int width,
-					int height) {
-				initMenu(width, height);
-				if (editMode) {
-					drawView();
-				}
-			}
-
-			@Override
-			public void surfaceCreated(SurfaceHolder holder) {
-			}
-
-			@Override
-			public void surfaceDestroyed(SurfaceHolder holder) {
-			}
-		});
 	}
 
 	private void initMenu(int width, int height) {
@@ -283,10 +299,10 @@ public class AppPieView extends SurfaceView {
 							downAt = event.getEventTime();
 							setCenter(touch);
 						}
-						drawView();
+						invalidate();
 						break;
 					case MotionEvent.ACTION_MOVE:
-						drawView();
+						invalidate();
 						break;
 					case MotionEvent.ACTION_UP:
 						if (performActionRunnable != null) {
@@ -301,7 +317,7 @@ public class AppPieView extends SurfaceView {
 								performAction(v.getContext(), down, downTime);
 								performActionRunnable = null;
 								invalidateTouch();
-								drawView();
+								invalidate();
 							}
 						};
 						// Wait a short time before performing the action
@@ -314,7 +330,7 @@ public class AppPieView extends SurfaceView {
 					case MotionEvent.ACTION_CANCEL:
 						invalidateTouch();
 						grabbedIcon = null;
-						drawView();
+						invalidate();
 						break;
 				}
 				return true;
@@ -398,51 +414,6 @@ public class AppPieView extends SurfaceView {
 		}
 	}
 
-	private void drawView() {
-		Canvas canvas = surfaceHolder.lockCanvas();
-		if (canvas == null) {
-			return;
-		}
-		if (editMode) {
-			canvas.drawColor(translucentBackgroundColor,
-					PorterDuff.Mode.SRC);
-			boolean hasIcon = grabbedIcon != null;
-			drawTip(canvas, getTip(hasIcon));
-			drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
-			drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
-			drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
-			drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
-			if (hasIcon) {
-				int size = ungrabbedIcons.size();
-				double step = AppMenu.TAU / (size + 1);
-				double angle = AppMenu.getPositiveAngle(Math.atan2(
-						touch.y - PieLauncherApp.appMenu.getCenterY(),
-						touch.x - PieLauncherApp.appMenu.getCenterX()) +
-								step * .5);
-				int insertAt = (int) Math.floor(angle / step);
-				PieLauncherApp.appMenu.icons.clear();
-				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
-				PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt),
-						grabbedIcon);
-				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-				grabbedIcon.x = touch.x;
-				grabbedIcon.y = touch.y;
-			} else {
-				PieLauncherApp.appMenu.calculate(
-						PieLauncherApp.appMenu.getCenterX(),
-						PieLauncherApp.appMenu.getCenterY());
-			}
-			PieLauncherApp.appMenu.draw(canvas);
-		} else {
-			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			if (shouldShowMenu()) {
-				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-				PieLauncherApp.appMenu.draw(canvas);
-			}
-		}
-		surfaceHolder.unlockCanvasAndPost(canvas);
-	}
-
 	private void invalidateTouch() {
 		touch.set(-1, -1);
 	}
@@ -503,7 +474,7 @@ public class AppPieView extends SurfaceView {
 				return false;
 			}
 			scaleRadius(detector.getScaleFactor());
-			drawView();
+			invalidate();
 			return true;
 		}
 	}
