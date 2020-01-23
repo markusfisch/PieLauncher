@@ -95,7 +95,7 @@ public class AppPieView extends SurfaceView {
 		float textHeight = textPaint.descent() - textPaint.ascent();
 		textOffset = (textHeight / 2) - textPaint.descent();
 		translucentBackgroundColor = res.getColor(
-				R.color.background_transparent);
+				R.color.background_ui);
 
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);

@@ -11,7 +11,7 @@
 		android:id="@+id/all_apps"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@color/background_transparent"
+		android:background="@color/background_ui"
 		android:visibility="gone">
 		<ListView
 			android:id="@+id/apps"
