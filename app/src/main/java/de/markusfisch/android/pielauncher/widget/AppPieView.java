@@ -125,8 +125,8 @@ public class AppPieView extends View {
 		Context context = getContext();
 		if (context != null) {
 			PieLauncherApp.appMenu.store(context);
-			PieLauncherApp.prefs.setRadius(radius);
 		}
+		PieLauncherApp.prefs.setRadius(radius);
 		backup.clear();
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
