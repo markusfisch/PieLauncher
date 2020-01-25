@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.2
+* Improve rendering of pie menu
+* Make unavailable actions in editor translucent
+
 ## 1.2.1
 * Fix handling of app updates
 
