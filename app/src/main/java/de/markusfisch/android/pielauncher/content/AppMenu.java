@@ -322,19 +322,7 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<Icon> icons = new ArrayList<>();
 		try {
 			for (String line : readLines(context.openFileInput(MENU))) {
-				ComponentName componentName =
-						ComponentName.unflattenFromString(line);
-				// because the first version saved only package names;
-				// subject to be removed a after update!
-				if (componentName == null) {
-					PackageManager pm = context.getPackageManager();
-					Intent launchIntent = pm.getLaunchIntentForPackage(line);
-					if (launchIntent == null) {
-						continue;
-					}
-					componentName = launchIntent.getComponent();
-				}
-				Icon icon = apps.get(componentName);
+				Icon icon = apps.get(ComponentName.unflattenFromString(line));
 				if (icon != null) {
 					icons.add(icon);
 				}
