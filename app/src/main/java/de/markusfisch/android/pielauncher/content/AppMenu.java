@@ -214,9 +214,9 @@ public class AppMenu extends CanvasPieMenu {
 						info.loadIcon(pm));
 			}
 		}
-		if (packageNameRestriction == null) {
-			createIcons(context);
-		}
+		// always reload icons after updates to `apps` because drawables
+		// may have changed
+		createIcons(context);
 	}
 
 	private void addApp(ComponentName componentName, String label,
