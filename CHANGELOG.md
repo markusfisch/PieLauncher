@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.3
+* Fix reloading icons after package events
+
 ## 1.2.2
 * Improve rendering of pie menu
 * Make unavailable actions in editor translucent
