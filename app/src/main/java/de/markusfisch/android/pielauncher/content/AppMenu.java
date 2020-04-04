@@ -185,6 +185,8 @@ public class AppMenu extends CanvasPieMenu {
 		if (packageNameRestriction != null) {
 			// remove old package and add it anew
 			removePackageFromApps(packageNameRestriction);
+			// don't call removePackageFromPieMenu() here because the
+			// icon will be updated anyway by createIcons() below
 			intent.setPackage(packageNameRestriction);
 		} else {
 			apps.clear();
@@ -214,8 +216,7 @@ public class AppMenu extends CanvasPieMenu {
 						info.loadIcon(pm));
 			}
 		}
-		// always reload icons after updates to `apps` because drawables
-		// may have changed
+		// always reload icons because drawables may have changed
 		createIcons(context);
 	}
 
