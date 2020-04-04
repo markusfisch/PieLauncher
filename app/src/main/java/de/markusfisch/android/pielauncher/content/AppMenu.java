@@ -1,17 +1,14 @@
 package de.markusfisch.android.pielauncher.content;
 
-import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
-import de.markusfisch.android.pielauncher.graphics.Converter;
-
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.LauncherApps;
 import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,10 +17,10 @@ import android.os.Process;
 import android.os.UserHandle;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
+import de.markusfisch.android.pielauncher.graphics.Converter;
 
 public class AppMenu extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
@@ -60,7 +60,7 @@ public class AppMenu extends CanvasPieMenu {
 		public int compare(AppIcon left, AppIcon right) {
 			// compareToIgnoreCase() does not take locale into account
 			return left.label.toLowerCase(DEFAULT_LOCALE).compareTo(
-						right.label.toLowerCase(DEFAULT_LOCALE));
+					right.label.toLowerCase(DEFAULT_LOCALE));
 		}
 	};
 
@@ -160,7 +160,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (HAS_LAUNCHER_APP) {
 			userHandle = Process.myUserHandle();
 			launcherApps = (LauncherApps) appContext.getSystemService(
-				Context.LAUNCHER_APPS_SERVICE);
+					Context.LAUNCHER_APPS_SERVICE);
 		}
 		new AsyncTask<Void, Void, Void>() {
 			@Override

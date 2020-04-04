@@ -1,8 +1,5 @@
 package de.markusfisch.android.pielauncher.adapter;
 
-import de.markusfisch.android.pielauncher.content.AppMenu;
-import de.markusfisch.android.pielauncher.R;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -14,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import de.markusfisch.android.pielauncher.R;
+import de.markusfisch.android.pielauncher.content.AppMenu;
 
 public class AppsAdapter extends BaseAdapter {
 	private static final boolean USE_COMPOUND =

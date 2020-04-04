@@ -1,11 +1,11 @@
 package de.markusfisch.android.pielauncher.receiver;
 
-import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 
 public class PackageEventReceiver extends BroadcastReceiver {
 	@Override

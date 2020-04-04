@@ -1,10 +1,5 @@
 package de.markusfisch.android.pielauncher.widget;
 
-import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.AppMenu;
-import de.markusfisch.android.pielauncher.graphics.Converter;
-import de.markusfisch.android.pielauncher.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +22,11 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 import java.util.ArrayList;
+
+import de.markusfisch.android.pielauncher.R;
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.graphics.Converter;
 
 public class AppPieView extends View {
 	public interface OpenListListener {
@@ -164,7 +164,7 @@ public class AppPieView extends View {
 				double angle = AppMenu.getPositiveAngle(Math.atan2(
 						touch.y - PieLauncherApp.appMenu.getCenterY(),
 						touch.x - PieLauncherApp.appMenu.getCenterX()) +
-								step * .5);
+						step * .5);
 				int insertAt = (int) Math.floor(angle / step);
 				PieLauncherApp.appMenu.icons.clear();
 				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
@@ -458,7 +458,7 @@ public class AppPieView extends View {
 	private static float distSq(int ax, int ay, int bx, int by) {
 		float dx = ax - bx;
 		float dy = ay - by;
-		return dx*dx + dy*dy;
+		return dx * dx + dy * dy;
 	}
 
 	private int clampRadius(int r) {
