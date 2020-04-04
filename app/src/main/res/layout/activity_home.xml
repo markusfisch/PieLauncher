@@ -1,8 +1,6 @@
-<FrameLayout
+<merge
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	xmlns:tools="http://schemas.android.com/tools">
 	<de.markusfisch.android.pielauncher.widget.AppPieView
 		android:id="@+id/pie"
 		android:layout_width="match_parent"
@@ -21,6 +19,7 @@
 			android:divider="@android:color/transparent"
 			android:dividerHeight="0px"/>
 		<EditText
+			tools:ignore="LabelFor"
 			android:id="@+id/name"
 			android:background="@android:color/transparent"
 			android:layout_width="match_parent"
@@ -36,4 +35,4 @@
 			android:maxLength="128"
 			android:importantForAutofill="no"/>
 	</RelativeLayout>
-</FrameLayout>
+</merge>
