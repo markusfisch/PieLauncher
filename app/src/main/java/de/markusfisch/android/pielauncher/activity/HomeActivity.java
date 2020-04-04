@@ -319,6 +319,10 @@ public class HomeActivity extends Activity {
 			allAppsContainer.setVisibility(View.GONE);
 			hideSoftKeyboardFrom(searchInput);
 		}
+		// ensure the pie menu is initially hidden because on some devices
+		// there's not always a matching ACTION_UP/_CANCEL event for every
+		// ACTION_DOWN event
+		pieView.hideMenu();
 		pieView.setVisibility(View.VISIBLE);
 	}
 

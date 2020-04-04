@@ -110,6 +110,10 @@ public class AppPieView extends View {
 		listListener = listener;
 	}
 
+	public void hideMenu() {
+		invalidateTouch();
+	}
+
 	public void addIconInteractive(AppMenu.Icon appIcon, Point from) {
 		editIcon(appIcon);
 		touch.set(from.x, from.y);
