@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.0
+* Search internet with unresolved queries
+
 ## 1.2.4
 * Ensure pie menu is initially hidden
 
