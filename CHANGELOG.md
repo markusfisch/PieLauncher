@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.4
+* Ensure pie menu is initially hidden
+
 ## 1.2.3
 * Fix reloading icons after package events
 
