@@ -2,7 +2,6 @@ buildscript {
 	ext.tools_version = '3.6.2'
 	ext.build_tools_version = '28.0.3'
 	ext.sdk_version = 29
-	ext.support_version = '25.3.1'
 
 	repositories {
 		google()
