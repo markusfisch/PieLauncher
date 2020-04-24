@@ -1,5 +1,5 @@
 buildscript {
-	ext.tools_version = '3.6.2'
+	ext.tools_version = '3.6.3'
 	ext.build_tools_version = '28.0.3'
 	ext.sdk_version = 29
 
