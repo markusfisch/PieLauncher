@@ -417,16 +417,14 @@ public class HomeActivity extends Activity {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2,
 				float velocityX, float velocityY) {
-			if (isScrolled) {
-				return false;
-			}
-			boolean hide = velocityY > velocityX &&
+			if (!isScrolled &&
+					velocityY > velocityX &&
 					velocityY >= minimumVelocity &&
-					e2.getY() - e1.getY() > 0;
-			if (hide) {
+					e2.getY() - e1.getY() > 0) {
 				hideAllApps();
+				return true;
 			}
-			return hide;
+			return false;
 		}
 	}
 }
