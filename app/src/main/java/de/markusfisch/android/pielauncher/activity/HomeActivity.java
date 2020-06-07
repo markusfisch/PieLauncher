@@ -273,6 +273,9 @@ public class HomeActivity extends Activity {
 								(y = getTopOfFirstChild(view)) < 0) {
 							isScrolled = true;
 							y = Math.abs(y);
+							if (y < searchBarThreshold) {
+								hideSoftKeyboardFrom(searchInput);
+							}
 							int alpha = (searchBarBackgroundColor >> 24) & 0xff;
 							int opaque = searchBarBackgroundColor & 0xffffff;
 							color = opaque | Math.round(Math.min(1f,
