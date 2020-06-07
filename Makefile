@@ -30,6 +30,9 @@ start:
 uninstall:
 	adb $(TARGET) uninstall $(PACKAGE).debug
 
+meminfo:
+	adb shell dumpsys meminfo $(PACKAGE).debug
+
 avocado:
 	avocado $(shell fgrep -rl '<vector' app/src/main/res)
 
