@@ -52,6 +52,7 @@ public class HomeActivity extends Activity {
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
 	private int searchBarBackgroundColor;
+	private float searchBarThreshold;
 
 	@Override
 	public void onBackPressed() {
@@ -80,6 +81,7 @@ public class HomeActivity extends Activity {
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 		searchBarBackgroundColor = res.getColor(
 				R.color.background_search_bar);
+		searchBarThreshold = res.getDisplayMetrics().density * 48f;
 
 		setContentView(R.layout.activity_home);
 
@@ -262,10 +264,24 @@ public class HomeActivity extends Activity {
 				view.post(new Runnable() {
 					@Override
 					public void run() {
-						isScrolled = firstVisibleItem > 0 ||
-								(totalItemCount > 0 && getTopOfFirstChild(view) < 0);
-						searchInput.setBackgroundColor(
-								isScrolled ? searchBarBackgroundColor : 0);
+						int color;
+						int y;
+						if (firstVisibleItem > 0) {
+							isScrolled = true;
+							color = searchBarBackgroundColor;
+						} else if (totalItemCount > 0 &&
+								(y = getTopOfFirstChild(view)) < 0) {
+							isScrolled = true;
+							y = Math.abs(y);
+							int alpha = (searchBarBackgroundColor >> 24) & 0xff;
+							int opaque = searchBarBackgroundColor & 0xffffff;
+							color = opaque | Math.round(Math.min(1f,
+									y / searchBarThreshold) * alpha) << 24;
+						} else {
+							isScrolled = false;
+							color = 0;
+						}
+						searchInput.setBackgroundColor(color);
 					}
 				});
 			}
