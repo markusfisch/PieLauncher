@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'findbugs'
 
 android {
 	compileSdkVersion sdk_version
@@ -33,19 +32,5 @@ android {
 			shrinkResources true
 			signingConfig signingConfigs.config
 		}
-	}
-}
-
-task findbugs(type: FindBugs, dependsOn: 'assembleDebug') {
-	excludeFilter = file('./findbugs-exclude.xml')
-	source = fileTree('src/main/java/')
-	classes = files("${project.rootDir}/app/build/intermediates/javac")
-	classpath = files()
-
-	effort = 'max'
-
-	reports {
-		xml.enabled = false
-		html.enabled = true
 	}
 }

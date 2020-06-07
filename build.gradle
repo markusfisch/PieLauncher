@@ -1,6 +1,6 @@
 buildscript {
-	ext.tools_version = '3.6.3'
-	ext.build_tools_version = '28.0.3'
+	ext.tools_version = '4.0.0'
+	ext.build_tools_version = '29.0.3'
 	ext.sdk_version = 29
 
 	repositories {
@@ -21,9 +21,7 @@ allprojects {
 
 	gradle.projectsEvaluated {
 		tasks.withType(JavaCompile) {
-			options.compilerArgs \
-				<< "-Xlint:unchecked" \
-				<< "-Xlint:deprecation"
+			options.compilerArgs << "-Xlint:unchecked"
 		}
 	}
 }

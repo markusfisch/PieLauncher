@@ -8,16 +8,13 @@ debug:
 lint:
 	./gradlew lintDebug
 
-findbugs:
-	./gradlew findBugs
-
 infer: clean
 	infer -- ./gradlew assembleDebug
 
-release: lint findbugs
+release: lint
 	./gradlew assembleRelease
 
-bundle: lint findbugs
+bundle: lint
 	./gradlew bundleRelease
 
 install:
