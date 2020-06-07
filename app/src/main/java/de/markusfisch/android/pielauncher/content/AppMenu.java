@@ -124,7 +124,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (filter) {
 			list.addAll(apps.values());
 		} else {
-			for (Map.Entry entry : apps.entrySet()) {
+			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = (AppIcon) entry.getValue();
 				if (appIcon.label.toLowerCase(DEFAULT_LOCALE).contains(query)) {
 					list.add(appIcon);
@@ -303,7 +303,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		int max = Math.min(apps.size(), 6);
 		int i = icons.size();
-		for (Map.Entry entry : apps.entrySet()) {
+		for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
 			if (i >= max) {
 				break;
 			}
