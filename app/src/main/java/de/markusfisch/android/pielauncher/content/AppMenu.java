@@ -210,9 +210,6 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		PackageManager pm = context.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
-		if (activities == null) {
-			return;
-		}
 		String skip = context.getPackageName();
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.applicationInfo.packageName;
