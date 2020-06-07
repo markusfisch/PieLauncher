@@ -346,6 +346,10 @@ public class HomeActivity extends Activity {
 	}
 
 	private void registerPackageEventReceiver() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+			// broadcasts already declared in manifest
+			return;
+		}
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
 		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -358,6 +362,10 @@ public class HomeActivity extends Activity {
 	}
 
 	private void unregisterPackageEventReceiver() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+			// broadcasts already declared in manifest
+			return;
+		}
 		unregisterReceiver(packageEventReceiver);
 	}
 

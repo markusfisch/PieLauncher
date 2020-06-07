@@ -48,5 +48,14 @@
 				android:name="com.android.systemui.action_assist_icon"
 				android:resource="@drawable/ic_launcher"/>
 		</activity>
+		<receiver android:name=".receiver.PackageEventReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.PACKAGE_ADDED"/>
+				<action android:name="android.intent.action.PACKAGE_REMOVED"/>
+				<action android:name="android.intent.action.PACKAGE_CHANGED"/>
+				<action android:name="android.intent.action.PACKAGE_REPLACED"/>
+				<data android:scheme="package"/>
+			</intent-filter>
+		</receiver>
 	</application>
 </manifest>
