@@ -407,8 +407,8 @@ public class AppPieView extends View {
 	}
 
 	private void editIconAt(Point point) {
-		for (int i = 0, size = PieLauncherApp.appMenu.icons.size();
-				i < size; ++i) {
+		int size = PieLauncherApp.appMenu.icons.size();
+		for (int i = 0; i < size; ++i) {
 			AppMenu.Icon icon = PieLauncherApp.appMenu.icons.get(i);
 			float sizeSq = Math.round(icon.size * icon.size);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {

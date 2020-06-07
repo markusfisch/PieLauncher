@@ -9,8 +9,8 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
-import de.markusfisch.android.pielauncher.R;
 
 public class AppMenu extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
@@ -246,13 +246,13 @@ public class AppMenu extends CanvasPieMenu {
 		if (defaultBrowser == null) {
 			return;
 		}
-		String[] templates = new String[] {
-			"https://www.google.com/search?q=%s",
-			"https://duckduckgo.com/?q=%s"
+		String[] templates = new String[]{
+				"https://www.google.com/search?q=%s",
+				"https://duckduckgo.com/?q=%s"
 		};
-		String[] labels = new String[] {
-			context.getString(R.string.search_with_google),
-			context.getString(R.string.search_with_duck_duck_go)
+		String[] labels = new String[]{
+				context.getString(R.string.search_with_google),
+				context.getString(R.string.search_with_duck_duck_go)
 		};
 		int length = templates.length;
 		searchApps = new SearchApp[length];
@@ -276,7 +276,7 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private void createInitialMenu(PackageManager pm) {
-		Intent[] intents = new Intent[] {
+		Intent[] intents = new Intent[]{
 				new Intent(Intent.ACTION_VIEW, Uri.parse("http://")),
 				new Intent(Intent.ACTION_DIAL),
 				new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:")),
