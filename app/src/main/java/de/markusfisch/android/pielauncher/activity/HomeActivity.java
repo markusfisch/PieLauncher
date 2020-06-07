@@ -242,8 +242,11 @@ public class HomeActivity extends Activity {
 					long id) {
 				AppMenu.AppIcon appIcon = appsAdapter.getItem(position - 1);
 				if (appIcon != null) {
-					pieView.addIconInteractive(appIcon, touch);
+					// it's important to call hideAllApps() first because
+					// it invalidates the touch position addIconInteractive()
+					// tries to set
 					hideAllApps();
+					pieView.addIconInteractive(appIcon, touch);
 				}
 				return false;
 			}
