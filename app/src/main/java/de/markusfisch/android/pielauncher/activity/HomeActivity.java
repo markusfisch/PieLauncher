@@ -51,8 +51,6 @@ public class HomeActivity extends Activity {
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
-	private int searchBarBackgroundColor;
-	private float searchBarThreshold;
 
 	@Override
 	public void onBackPressed() {
@@ -79,9 +77,6 @@ public class HomeActivity extends Activity {
 				Context.INPUT_METHOD_SERVICE);
 		gestureDetector = new GestureDetector(this, new FlingListener(
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
-		searchBarBackgroundColor = res.getColor(
-				R.color.background_search_bar);
-		searchBarThreshold = res.getDisplayMetrics().density * 48f;
 
 		setContentView(R.layout.activity_home);
 
@@ -254,11 +249,17 @@ public class HomeActivity extends Activity {
 			}
 		});
 		appsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			private int searchBarBackgroundColor;
+			private float searchBarThreshold;
+
 			@Override
 			public void onScroll(final AbsListView view,
 					final int firstVisibleItem,
 					final int visibleItemCount,
 					final int totalItemCount) {
+				if (searchBarBackgroundColor == 0) {
+					init(view.getResources());
+				}
 				// give Android some time to settle down before running this;
 				// not putting it on the queue makes it only work sometimes
 				view.post(new Runnable() {
@@ -276,10 +277,8 @@ public class HomeActivity extends Activity {
 							if (y < searchBarThreshold) {
 								hideSoftKeyboardFrom(searchInput);
 							}
-							int alpha = (searchBarBackgroundColor >> 24) & 0xff;
-							int opaque = searchBarBackgroundColor & 0xffffff;
-							color = opaque | Math.round(Math.min(1f,
-									y / searchBarThreshold) * alpha) << 24;
+							color = fadeColor(searchBarBackgroundColor,
+									y / searchBarThreshold);
 						} else {
 							isScrolled = false;
 							color = 0;
@@ -292,6 +291,12 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onScrollStateChanged(AbsListView view,
 					int scrollState) {
+			}
+
+			private void init(Resources res) {
+				searchBarBackgroundColor = res.getColor(
+						R.color.background_search_bar);
+				searchBarThreshold = res.getDisplayMetrics().density * 48f;
 			}
 		});
 		LayoutInflater inflater = getLayoutInflater();
@@ -306,6 +311,13 @@ public class HomeActivity extends Activity {
 	private static int getTopOfFirstChild(AbsListView view) {
 		View child = view != null ? view.getChildAt(0) : null;
 		return child != null ? child.getTop() : 0;
+	}
+
+	private static int fadeColor(int argb, float fraction) {
+		fraction = Math.min(1f, fraction);
+		int alpha = (argb >> 24) & 0xff;
+		int rgb = argb & 0xffffff;
+		return rgb | Math.round(fraction * alpha) << 24;
 	}
 
 	private void launchFirstApp() {
