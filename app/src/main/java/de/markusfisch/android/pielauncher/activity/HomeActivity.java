@@ -5,7 +5,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Build;
@@ -31,13 +30,9 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.AppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
-import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 
 public class HomeActivity extends Activity {
-	private static final PackageEventReceiver packageEventReceiver =
-			new PackageEventReceiver();
-
 	private final Point touch = new Point();
 
 	private InputMethodManager imm;
@@ -102,7 +97,6 @@ public class HomeActivity extends Activity {
 		initAppListView();
 
 		setTransparentSystemBars(getWindow());
-		registerPackageEventReceiver();
 	}
 
 	@Override
@@ -144,12 +138,6 @@ public class HomeActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		pausedAt = System.currentTimeMillis();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		unregisterPackageEventReceiver();
 	}
 
 	private void initSearchInput() {
@@ -377,30 +365,6 @@ public class HomeActivity extends Activity {
 						View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 		window.setStatusBarColor(0);
 		window.setNavigationBarColor(0);
-	}
-
-	private void registerPackageEventReceiver() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-			// broadcasts already declared in manifest
-			return;
-		}
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
-		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-		filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-		filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-		filter.addDataScheme("package");
-		filter.addDataScheme("file");
-		registerReceiver(packageEventReceiver, filter);
-	}
-
-	private void unregisterPackageEventReceiver() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-			// broadcasts already declared in manifest
-			return;
-		}
-		unregisterReceiver(packageEventReceiver);
 	}
 
 	private void showSoftKeyboardFor(EditText editText) {
