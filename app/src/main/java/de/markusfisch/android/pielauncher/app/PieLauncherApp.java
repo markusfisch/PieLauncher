@@ -9,6 +9,9 @@ import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
+	private static final PackageEventReceiver packageEventReceiver =
+			new PackageEventReceiver();
+
 	public static final Preferences prefs = new Preferences();
 	public static final AppMenu appMenu = new AppMenu();
 
@@ -28,10 +31,7 @@ public class PieLauncherApp extends Application {
 		filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
 		filter.addDataScheme("package");
 		filter.addDataScheme("file");
-		// It's important to register the receiver in the application context
-		// to bind the receiver to the application object. Using an Activity
-		// context silently stops working after while before Android O.
-		registerReceiver(new PackageEventReceiver(), filter);
+		registerReceiver(packageEventReceiver, filter);
 		// Note it's not required to unregister the receiver because it
 		// needs to be there as long as this application is running.
 	}

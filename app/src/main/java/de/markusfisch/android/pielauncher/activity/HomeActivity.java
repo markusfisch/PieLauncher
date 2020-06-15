@@ -124,6 +124,18 @@ public class HomeActivity extends Activity {
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+			// unfortunately, on Android Nougat, it's neccessary to
+			// re-register the receiver on a regular basis or it will
+			// silently stop working after a while
+			((PieLauncherApp) getApplicationContext())
+					.registerPackageEventReceiver();
+		}
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
 		if (showAllAppsOnResume) {
