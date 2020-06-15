@@ -9,7 +9,6 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 
@@ -73,7 +69,6 @@ public class AppMenu extends CanvasPieMenu {
 	private UpdateListener updateListener;
 	private UserHandle userHandle;
 	private LauncherApps launcherApps;
-	private SearchApp[] searchApps;
 
 	public void launchApp(Context context) {
 		int selectedIcon = getSelectedIcon();
@@ -83,23 +78,17 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void launchApp(Context context, AppIcon icon) {
-		if (icon instanceof SearchApp) {
-			((SearchApp) icon).search(context);
-			return;
-		}
-		launchComponent(context, icon.componentName, icon.dst);
-	}
-
-	public void launchComponent(Context context, ComponentName componentName,
-			Rect sourceBounds) {
 		if (HAS_LAUNCHER_APP) {
-			launcherApps.startMainActivity(componentName, userHandle,
-					sourceBounds, null);
+			launcherApps.startMainActivity(
+					icon.componentName,
+					userHandle,
+					icon.dst,
+					null);
 		} else {
 			PackageManager pm = context.getPackageManager();
 			Intent intent;
 			if (pm == null || (intent = pm.getLaunchIntentForPackage(
-					componentName.getPackageName())) == null) {
+					icon.componentName.getPackageName())) == null) {
 				return;
 			}
 			context.startActivity(intent);
@@ -119,9 +108,8 @@ public class AppMenu extends CanvasPieMenu {
 			query = "";
 		}
 		query = query.trim().toLowerCase(DEFAULT_LOCALE);
-		boolean filter = query.length() < 1;
 		ArrayList<AppIcon> list = new ArrayList<>();
-		if (filter) {
+		if (query.length() < 1) {
 			list.addAll(apps.values());
 		} else {
 			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
@@ -132,11 +120,6 @@ public class AppMenu extends CanvasPieMenu {
 			}
 		}
 		Collections.sort(list, appLabelComparator);
-		if (!filter && searchApps != null) {
-			for (SearchApp searchApp : searchApps) {
-				list.add(searchApp.update(query));
-			}
-		}
 		return list;
 	}
 
@@ -232,34 +215,6 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		// always reload icons because drawables may have changed
 		createIcons(context);
-		updateSearchApps(context, pm);
-	}
-
-	private void updateSearchApps(Context context, PackageManager pm) {
-		searchApps = null;
-		ComponentName componentName = getComponentNameForIntent(pm,
-				new Intent(Intent.ACTION_VIEW, Uri.parse("http://")));
-		if (componentName == null) {
-			return;
-		}
-		AppIcon defaultBrowser = apps.get(componentName);
-		if (defaultBrowser == null) {
-			return;
-		}
-		String[] templates = new String[]{
-				"https://www.google.com/search?q=%s",
-				"https://duckduckgo.com/?q=%s"
-		};
-		String[] labels = new String[]{
-				context.getString(R.string.search_with_google),
-				context.getString(R.string.search_with_duck_duck_go)
-		};
-		int length = templates.length;
-		searchApps = new SearchApp[length];
-		for (int i = 0; i < length; ++i) {
-			searchApps[i] = new SearchApp(componentName, labels[i],
-					templates[i], defaultBrowser.icon);
-		}
 	}
 
 	private void addApp(ComponentName componentName, String label,
@@ -286,20 +241,22 @@ public class AppMenu extends CanvasPieMenu {
 		};
 		ArrayList<String> defaults = new ArrayList<>();
 		for (Intent intent : intents) {
-			ComponentName componentName = getComponentNameForIntent(pm, intent);
-			if (componentName == null) {
+			String packageName = resolveDefaultAppForIntent(pm, intent);
+			if (packageName == null || defaults.contains(packageName)) {
 				continue;
 			}
-			AppIcon appIcon = apps.get(componentName);
-			if (appIcon == null) {
+			// get launch intent because the class name from above intents
+			// doesn't match the launch intent and so doesn't match the
+			// ComponentName key in apps
+			Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
+			if (launchIntent == null) {
 				continue;
 			}
-			String packageName = appIcon.componentName.getPackageName();
-			if (defaults.contains(packageName)) {
-				continue;
+			AppIcon appIcon = apps.get(launchIntent.getComponent());
+			if (appIcon != null) {
+				defaults.add(packageName);
+				addAppIcon(appIcon);
 			}
-			defaults.add(packageName);
-			addAppIcon(appIcon);
 		}
 		int max = Math.min(apps.size(), 6);
 		int i = icons.size();
@@ -307,33 +264,15 @@ public class AppMenu extends CanvasPieMenu {
 			if (i >= max) {
 				break;
 			}
-			ComponentName componentName = (ComponentName) entry.getKey();
-			String packageName = componentName.getPackageName();
-			if (!defaults.contains(packageName)) {
+			if (!defaults.contains(
+					((ComponentName) entry.getKey()).getPackageName())) {
 				addAppIcon((AppIcon) entry.getValue());
 				++i;
 			}
 		}
 	}
 
-	private static ComponentName getComponentNameForIntent(
-			PackageManager pm,
-			Intent intent) {
-		String packageName = resolveDefaultForIntent(pm, intent);
-		if (packageName == null) {
-			return null;
-		}
-		// get launch intent because the class name from above intents
-		// doesn't match the launch intent and so doesn't match the
-		// ComponentName key in apps
-		Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
-		if (launchIntent == null) {
-			return null;
-		}
-		return launchIntent.getComponent();
-	}
-
-	private static String resolveDefaultForIntent(PackageManager pm,
+	private static String resolveDefaultAppForIntent(PackageManager pm,
 			Intent intent) {
 		ResolveInfo resolveInfo = pm.resolveActivity(intent,
 				PackageManager.MATCH_DEFAULT_ONLY);
@@ -374,20 +313,6 @@ public class AppMenu extends CanvasPieMenu {
 					.componentName.getPackageName())) {
 				it.remove();
 			}
-		}
-	}
-
-	private static void startBrowserSearch(Context context,
-			String urlTemplate, String query) {
-		try {
-			query = URLEncoder.encode(query.trim(), "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			return;
-		}
-		Uri uri = Uri.parse(String.format(urlTemplate, query));
-		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		if (intent.resolveActivity(context.getPackageManager()) != null) {
-			context.startActivity(intent);
 		}
 	}
 
@@ -461,27 +386,6 @@ public class AppMenu extends CanvasPieMenu {
 			} catch (IOException e) {
 				// ignore, can't do anything about it
 			}
-		}
-	}
-
-	private static class SearchApp extends AppIcon {
-		private final String urlTemplate;
-
-		private String query;
-
-		SearchApp(ComponentName componentName, String label,
-				String urlTemplate, Drawable drawable) {
-			super(componentName, label, drawable);
-			this.urlTemplate = urlTemplate;
-		}
-
-		private void search(Context context) {
-			startBrowserSearch(context, urlTemplate, query);
-		}
-
-		private SearchApp update(String query) {
-			this.query = query;
-			return this;
 		}
 	}
 }
