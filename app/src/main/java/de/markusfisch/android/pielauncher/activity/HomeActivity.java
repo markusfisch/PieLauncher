@@ -314,7 +314,7 @@ public class HomeActivity extends Activity {
 	}
 
 	private static int fadeColor(int argb, float fraction) {
-		fraction = Math.min(1f, fraction);
+		fraction = Math.max(0f, Math.min(1f, fraction));
 		int alpha = (argb >> 24) & 0xff;
 		int rgb = argb & 0xffffff;
 		return rgb | Math.round(fraction * alpha) << 24;
