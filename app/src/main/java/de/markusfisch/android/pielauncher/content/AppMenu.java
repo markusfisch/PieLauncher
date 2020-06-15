@@ -114,7 +114,9 @@ public class AppMenu extends CanvasPieMenu {
 		} else {
 			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = (AppIcon) entry.getValue();
-				if (appIcon.label.toLowerCase(DEFAULT_LOCALE).contains(query)) {
+				String label = appIcon.label.toLowerCase(DEFAULT_LOCALE);
+				if (label.contains(query) ||
+						hammingDistance(label, query) < 2) {
 					list.add(appIcon);
 				}
 			}
@@ -387,5 +389,15 @@ public class AppMenu extends CanvasPieMenu {
 				// ignore, can't do anything about it
 			}
 		}
+	}
+
+	private static int hammingDistance(String a, String b) {
+		int count = 0;
+		for (int i = 0, l = Math.min(a.length(), b.length()); i < l; ++i) {
+			if (a.charAt(i) != b.charAt(i)) {
+				++count;
+			}
+		}
+		return count;
 	}
 }
