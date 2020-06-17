@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -97,6 +98,7 @@ public class HomeActivity extends Activity {
 		initAppListView();
 
 		setTransparentSystemBars(getWindow());
+		listenForWindowInsets(appsListView);
 	}
 
 	@Override
@@ -377,6 +379,27 @@ public class HomeActivity extends Activity {
 						View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 		window.setStatusBarColor(0);
 		window.setNavigationBarColor(0);
+	}
+
+	@TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
+	private static void listenForWindowInsets(View view) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
+			return;
+		}
+		view.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+			@Override
+			public WindowInsets onApplyWindowInsets(View v,
+					WindowInsets insets) {
+				if (insets.hasSystemWindowInsets()) {
+					v.setPadding(
+							insets.getSystemWindowInsetLeft(),
+							insets.getSystemWindowInsetTop(),
+							insets.getSystemWindowInsetRight(),
+							insets.getSystemWindowInsetBottom());
+				}
+				return insets.consumeSystemWindowInsets();
+			}
+		});
 	}
 
 	private void showSoftKeyboardFor(EditText editText) {
