@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.4.0
+* Allow one typo in app search
+* Make background of search input fade in and out
+* Remove search the internet items from app listing
+* Make app listing always end above soft keyboard
+* Hide soft keyboard when scrolling a fresh app listing up
+* Add a fading edge to app listing
+* Fix initial dragging position when adding an icon to the menu
+
 ## 1.3.0
 * Search internet with unresolved queries
 
