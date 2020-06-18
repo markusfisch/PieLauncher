@@ -393,7 +393,9 @@ public class HomeActivity extends Activity {
 				if (insets.hasSystemWindowInsets()) {
 					v.setPadding(
 							insets.getSystemWindowInsetLeft(),
-							insets.getSystemWindowInsetTop(),
+							// never set a top padding because the list should
+							// appear under the status bar
+							0,
 							insets.getSystemWindowInsetRight(),
 							insets.getSystemWindowInsetBottom());
 				}
