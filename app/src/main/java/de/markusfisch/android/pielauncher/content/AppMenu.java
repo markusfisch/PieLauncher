@@ -109,19 +109,23 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		query = query.trim().toLowerCase(DEFAULT_LOCALE);
 		ArrayList<AppIcon> list = new ArrayList<>();
+		ArrayList<AppIcon> secondary = new ArrayList<>();
 		if (query.length() < 1) {
 			list.addAll(apps.values());
 		} else {
 			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = (AppIcon) entry.getValue();
 				String label = appIcon.label.toLowerCase(DEFAULT_LOCALE);
-				if (label.contains(query) ||
-						hammingDistance(label, query) < 2) {
+				if (label.contains(query)) {
 					list.add(appIcon);
+				} else if (hammingDistance(label, query) < 2) {
+					secondary.add(appIcon);
 				}
 			}
 		}
 		Collections.sort(list, appLabelComparator);
+		Collections.sort(secondary, appLabelComparator);
+		list.addAll(secondary);
 		return list;
 	}
 
