@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.0
+* Sort fuzzy matches for app search after exact ones
+* Improve tap detection for opening the app list
+
 ## 1.4.0
 * Allow one typo in app search
 * Make background of search input fade in and out
