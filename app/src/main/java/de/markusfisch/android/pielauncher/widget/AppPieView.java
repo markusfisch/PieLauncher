@@ -97,9 +97,11 @@ public class AppPieView extends View {
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
 
-		float touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+		int generosity = 2;
+		float touchSlop = ViewConfiguration.get(context)
+				.getScaledTouchSlop() * generosity;
 		touchSlopSq = touchSlop * touchSlop;
-		tapTimeout = ViewConfiguration.getTapTimeout();
+		tapTimeout = ViewConfiguration.getTapTimeout() * generosity;
 
 		PieLauncherApp.appMenu.indexAppsAsync(context);
 
