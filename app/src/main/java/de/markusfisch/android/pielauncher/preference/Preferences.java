@@ -18,12 +18,16 @@ public class Preferences {
 	}
 
 	public void setRadius(int radius) {
-		putInt(RADIUS, radius);
+		apply(RADIUS, radius);
 	}
 
-	private void putInt(String key, int value) {
+	private void apply(String key, int value) {
+		put(key, value).apply();
+	}
+
+	private SharedPreferences.Editor put(String key, int value) {
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putInt(key, value);
-		editor.apply();
+		return editor;
 	}
 }
