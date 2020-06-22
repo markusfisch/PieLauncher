@@ -145,7 +145,7 @@ public class AppPieView extends View {
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (changed) {
-			initMenu(right - top, bottom - top);
+			initMenu(right - left, bottom - top);
 		}
 	}
 
