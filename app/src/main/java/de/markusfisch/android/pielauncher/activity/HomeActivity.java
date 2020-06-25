@@ -3,7 +3,6 @@ package de.markusfisch.android.pielauncher.activity;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -20,7 +19,6 @@ import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -31,12 +29,13 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.AppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 
 public class HomeActivity extends Activity {
 	private final Point touch = new Point();
 
-	private InputMethodManager imm;
+	private SoftKeyboard kb;
 	private GestureDetector gestureDetector;
 	private AppPieView pieView;
 	private View allAppsContainer;
@@ -69,8 +68,7 @@ public class HomeActivity extends Activity {
 		// in portrait for phones; should become a choice at some point
 		setRequestedOrientation(res.getConfiguration().orientation);
 
-		imm = (InputMethodManager) getSystemService(
-				Context.INPUT_METHOD_SERVICE);
+		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
@@ -277,7 +275,7 @@ public class HomeActivity extends Activity {
 							isScrolled = true;
 							y = Math.abs(y);
 							if (y < searchBarThreshold) {
-								hideSoftKeyboardFrom(searchInput);
+								kb.hideFrom(searchInput);
 							}
 							color = fadeColor(searchBarBackgroundColor,
 									y / searchBarThreshold);
@@ -337,7 +335,7 @@ public class HomeActivity extends Activity {
 
 		pieView.setVisibility(View.GONE);
 		allAppsContainer.setVisibility(View.VISIBLE);
-		showSoftKeyboardFor(searchInput);
+		kb.showFor(searchInput);
 
 		// clear search input
 		boolean searchWasEmpty = searchInput.getText().toString().isEmpty();
@@ -354,7 +352,7 @@ public class HomeActivity extends Activity {
 	private void hideAllApps() {
 		if (isAllAppsVisible()) {
 			allAppsContainer.setVisibility(View.GONE);
-			hideSoftKeyboardFrom(searchInput);
+			kb.hideFrom(searchInput);
 		}
 		// ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
@@ -402,15 +400,6 @@ public class HomeActivity extends Activity {
 				return insets.consumeSystemWindowInsets();
 			}
 		});
-	}
-
-	private void showSoftKeyboardFor(EditText editText) {
-		editText.requestFocus();
-		imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-	}
-
-	private void hideSoftKeyboardFrom(View view) {
-		imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 	}
 
 	private void updateAppsAdapter() {
