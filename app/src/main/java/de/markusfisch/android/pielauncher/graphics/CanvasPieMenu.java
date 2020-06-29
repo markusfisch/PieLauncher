@@ -24,7 +24,15 @@ public class CanvasPieMenu extends PieMenu {
 			int left = x - s;
 			int top = y - s;
 			s <<= 1;
-			dst.set(left, top, left + s, top + s);
+			draw(canvas, left, top, left + s, top + s);
+		}
+
+		void draw(Canvas canvas, int left, int top, int right, int bottom) {
+			dst.set(left, top, right, bottom);
+			draw(canvas, dst);
+		}
+
+		void draw(Canvas canvas, Rect dst) {
 			canvas.drawBitmap(bitmap, null, dst, paint);
 		}
 	}

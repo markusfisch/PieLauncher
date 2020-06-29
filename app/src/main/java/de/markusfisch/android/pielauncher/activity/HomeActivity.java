@@ -1,18 +1,15 @@
 package de.markusfisch.android.pielauncher.activity;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -20,30 +17,20 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import de.markusfisch.android.pielauncher.R;
-import de.markusfisch.android.pielauncher.adapter.AppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 
 public class HomeActivity extends Activity {
-	private final Point touch = new Point();
-
 	private SoftKeyboard kb;
 	private GestureDetector gestureDetector;
 	private AppPieView pieView;
-	private View allAppsContainer;
-	private ListView appsListView;
 	private EditText searchInput;
-	private AppsAdapter appsAdapter;
-	private boolean isScrolled = false;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
@@ -56,6 +43,14 @@ public class HomeActivity extends Activity {
 		} else {
 			hideAllApps();
 		}
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		if (pieView.inListMode() && gestureDetector.onTouchEvent(ev)) {
+			return true;
+		}
+		return super.dispatchTouchEvent(ev);
 	}
 
 	@Override
@@ -76,28 +71,13 @@ public class HomeActivity extends Activity {
 		setContentView(R.layout.activity_home);
 
 		pieView = findViewById(R.id.pie);
-		allAppsContainer = findViewById(R.id.all_apps);
-		appsListView = findViewById(R.id.apps);
-		searchInput = findViewById(R.id.name);
+		searchInput = findViewById(R.id.search);
 
-		pieView.setOpenListListener(new AppPieView.OpenListListener() {
-			@Override
-			public void onOpenList() {
-				showAllApps();
-			}
-		});
-		PieLauncherApp.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
-			@Override
-			public void onUpdate() {
-				searchInput.setText(null);
-				updateAppsAdapter();
-			}
-		});
+		initPieView(res);
 		initSearchInput();
-		initAppListView();
 
+		listenForWindowInsets(pieView);
 		setTransparentSystemBars(getWindow());
-		listenForWindowInsets(appsListView);
 	}
 
 	@Override
@@ -112,7 +92,7 @@ public class HomeActivity extends Activity {
 			// the home button was pressed while this activity was on screen
 			if (pieView.inEditMode()) {
 				pieView.endEditMode();
-			} else if (!isAllAppsVisible() &&
+			} else if (!isSearchVisible() &&
 					// only show all apps if the activity was recently paused
 					// (by pressing the home button) and _not_ if onPause()
 					// was triggered by pressing the overview button and
@@ -153,6 +133,42 @@ public class HomeActivity extends Activity {
 		pausedAt = System.currentTimeMillis();
 	}
 
+	private void initPieView(Resources res) {
+		final int searchBarBackgroundColor = res.getColor(
+				R.color.background_search_bar);
+		final float searchBarThreshold = res.getDisplayMetrics().density * 48f;
+		pieView.setListListener(new AppPieView.ListListener() {
+			@Override
+			public void onOpenList() {
+				showAllApps();
+			}
+
+			@Override
+			public void onHideList() {
+				hideAllApps();
+			}
+
+			@Override
+			public void onScrollList(int y) {
+				y = Math.abs(y);
+				if (y > 0 && y < searchBarThreshold) {
+					kb.hideFrom(searchInput);
+				}
+				int color = fadeColor(searchBarBackgroundColor,
+						y / searchBarThreshold);
+				searchInput.setBackgroundColor(
+						pieView.isAppListScrolled() ? color : 0);
+			}
+		});
+		PieLauncherApp.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
+			@Override
+			public void onUpdate() {
+				searchInput.setText(null);
+				updateAppList();
+			}
+		});
+	}
+
 	private void initSearchInput() {
 		searchInput.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -168,7 +184,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void afterTextChanged(Editable e) {
 				if (updateAfterTextChange) {
-					updateAppsAdapter();
+					updateAppList();
 				}
 			}
 		});
@@ -183,7 +199,7 @@ public class HomeActivity extends Activity {
 					case EditorInfo.IME_ACTION_NEXT:
 					case EditorInfo.IME_NULL:
 						if (searchInput.getText().toString().length() > 0) {
-							launchFirstApp();
+							pieView.launchFirstApp();
 						}
 						hideAllApps();
 						return true;
@@ -194,148 +210,12 @@ public class HomeActivity extends Activity {
 		});
 	}
 
-	// this onTouchListener is just for dispatching events
-	@SuppressLint("ClickableViewAccessibility")
-	private void initAppListView() {
-		appsListView.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (pieView.inEditMode()) {
-					pieView.dispatchTouchEvent(event);
-					return true;
-				}
-				if (gestureDetector.onTouchEvent(event)) {
-					return true;
-				}
-				switch (event.getActionMasked()) {
-					default:
-						break; // make FindBugs happy
-					case MotionEvent.ACTION_DOWN:
-					case MotionEvent.ACTION_MOVE:
-						touch.set((int) event.getRawX(),
-								(int) event.getRawY());
-						break;
-				}
-				return false;
-			}
-		});
-		appsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(
-					AdapterView<?> parent,
-					View view,
-					int position,
-					long id) {
-				PieLauncherApp.appMenu.launchApp(HomeActivity.this,
-						appsAdapter.getItem(position - 1));
-				hideAllApps();
-			}
-		});
-		appsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(
-					AdapterView<?> parent,
-					View view,
-					int position,
-					long id) {
-				AppMenu.AppIcon appIcon = appsAdapter.getItem(position - 1);
-				if (appIcon != null) {
-					// it's important to call hideAllApps() first because
-					// it invalidates the touch position addIconInteractive()
-					// tries to set
-					hideAllApps();
-					pieView.addIconInteractive(appIcon, touch);
-				}
-				return false;
-			}
-		});
-		appsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-			private int searchBarBackgroundColor;
-			private float searchBarThreshold;
-
-			@Override
-			public void onScroll(final AbsListView view,
-					final int firstVisibleItem,
-					final int visibleItemCount,
-					final int totalItemCount) {
-				if (searchBarBackgroundColor == 0) {
-					init(view.getResources());
-				}
-				// give Android some time to settle down before running this;
-				// not putting it on the queue makes it only work sometimes
-				view.post(new Runnable() {
-					@Override
-					public void run() {
-						int color;
-						int y;
-						if (firstVisibleItem > 0) {
-							isScrolled = true;
-							color = searchBarBackgroundColor;
-						} else if (totalItemCount > 0 &&
-								(y = getTopOfFirstChild(view)) < 0) {
-							isScrolled = true;
-							y = Math.abs(y);
-							if (y < searchBarThreshold) {
-								kb.hideFrom(searchInput);
-							}
-							color = fadeColor(searchBarBackgroundColor,
-									y / searchBarThreshold);
-						} else {
-							isScrolled = false;
-							color = 0;
-						}
-						searchInput.setBackgroundColor(color);
-					}
-				});
-			}
-
-			@Override
-			public void onScrollStateChanged(AbsListView view,
-					int scrollState) {
-			}
-
-			private void init(Resources res) {
-				searchBarBackgroundColor = res.getColor(
-						R.color.background_search_bar);
-				searchBarThreshold = res.getDisplayMetrics().density * 48f;
-			}
-		});
-		LayoutInflater inflater = getLayoutInflater();
-		appsListView.addHeaderView(inflater.inflate(R.layout.list_header,
-				appsListView, false), null, false);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			appsListView.addFooterView(inflater.inflate(R.layout.list_footer,
-					appsListView, false), null, false);
-		}
-	}
-
-	private static int getTopOfFirstChild(AbsListView view) {
-		View child = view != null ? view.getChildAt(0) : null;
-		return child != null ? child.getTop() : 0;
-	}
-
-	private static int fadeColor(int argb, float fraction) {
-		fraction = Math.max(0f, Math.min(1f, fraction));
-		int alpha = (argb >> 24) & 0xff;
-		int rgb = argb & 0xffffff;
-		return rgb | Math.round(fraction * alpha) << 24;
-	}
-
-	private void launchFirstApp() {
-		AppMenu.AppIcon icon;
-		if (appsAdapter.getCount() > 0 &&
-				(icon = appsAdapter.getItem(0)) != null) {
-			PieLauncherApp.appMenu.launchApp(this, icon);
-		}
-	}
-
 	private void showAllApps() {
-		if (isAllAppsVisible()) {
+		if (isSearchVisible()) {
 			return;
 		}
 
-		pieView.setVisibility(View.GONE);
-		allAppsContainer.setVisibility(View.VISIBLE);
+		searchInput.setVisibility(View.VISIBLE);
 		kb.showFor(searchInput);
 
 		// clear search input
@@ -345,25 +225,26 @@ public class HomeActivity extends Activity {
 		updateAfterTextChange = true;
 
 		// keeps list state if possible
-		if (!searchWasEmpty || appsListView.getAdapter() == null) {
-			updateAppsAdapter();
+		if (!searchWasEmpty || pieView.isEmpty()) {
+			updateAppList();
 		}
+
+		pieView.showList();
 	}
 
 	private void hideAllApps() {
-		if (isAllAppsVisible()) {
-			allAppsContainer.setVisibility(View.GONE);
+		if (isSearchVisible()) {
+			searchInput.setVisibility(View.GONE);
 			kb.hideFrom(searchInput);
 		}
 		// ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
 		// ACTION_DOWN event
-		pieView.hideMenu();
-		pieView.setVisibility(View.VISIBLE);
+		pieView.hideList();
 	}
 
-	private boolean isAllAppsVisible() {
-		return allAppsContainer.getVisibility() == View.VISIBLE;
+	private boolean isSearchVisible() {
+		return searchInput.getVisibility() == View.VISIBLE;
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -372,6 +253,9 @@ public class HomeActivity extends Activity {
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
 		}
+		// this is important or subsequent (not the very first!) openings of
+		// the soft keyboard will reposition the DecorView according to the
+		// window insets
 		window.setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		window.getDecorView().setSystemUiVisibility(
@@ -405,11 +289,15 @@ public class HomeActivity extends Activity {
 		});
 	}
 
-	private void updateAppsAdapter() {
-		String query = searchInput.getText().toString();
-		appsAdapter = new AppsAdapter(
-				PieLauncherApp.appMenu.filterAppsBy(query));
-		appsListView.setAdapter(appsAdapter);
+	private void updateAppList() {
+		pieView.filterAppList(searchInput.getText().toString());
+	}
+
+	private static int fadeColor(int argb, float fraction) {
+		fraction = Math.max(0f, Math.min(1f, fraction));
+		int alpha = (argb >> 24) & 0xff;
+		int rgb = argb & 0xffffff;
+		return rgb | Math.round(fraction * alpha) << 24;
 	}
 
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {
@@ -422,7 +310,7 @@ public class HomeActivity extends Activity {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2,
 				float velocityX, float velocityY) {
-			if (!isScrolled &&
+			if (!pieView.isAppListScrolled() &&
 					velocityY > velocityX &&
 					velocityY >= minimumVelocity &&
 					e2.getY() - e1.getY() > 0) {

@@ -9,6 +9,7 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -36,15 +37,14 @@ import de.markusfisch.android.pielauncher.graphics.Converter;
 
 public class AppMenu extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
+		public final Rect hitRect = new Rect();
 		public final ComponentName componentName;
 		public final String label;
-		public final Drawable icon;
 
 		AppIcon(ComponentName componentName, String label, Drawable icon) {
 			super(Converter.getBitmapFromDrawable(icon));
 			this.componentName = componentName;
 			this.label = label;
-			this.icon = icon;
 		}
 	}
 

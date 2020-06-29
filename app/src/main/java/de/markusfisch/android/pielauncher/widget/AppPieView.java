@@ -14,14 +14,19 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.OverScroller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
@@ -29,17 +34,26 @@ import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 
 public class AppPieView extends View {
-	public interface OpenListListener {
+	public interface ListListener {
 		void onOpenList();
+
+		void onHideList();
+
+		void onScrollList(int y);
 	}
+
+	private static final int MODE_PIE = 0;
+	private static final int MODE_LIST = 1;
+	private static final int MODE_EDIT = 2;
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
 	private final Paint paintActive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint paintDeactive = new Paint(Paint.FILTER_BITMAP_FLAG);
-	private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point inset = new Point();
 	private final Point touch = new Point();
+	private final Rect drawRect = new Rect();
 	private final Rect iconAddRect = new Rect();
 	private final Bitmap iconAdd;
 	private final Rect iconRemoveRect = new Rect();
@@ -60,13 +74,22 @@ public class AppPieView extends View {
 	private int minRadius;
 	private int maxRadius;
 	private int radius;
-	private int tapTimeout;
-	private int padding;
+	private long tapTimeout;
+	private long longPressTimeout;
+	private int editorPadding;
+	private int listPadding;
+	private int searchInputHeight;
+	private int maxScrollY;
+	private int lastScrollY;
+	private int iconSize;
+	private int iconTextPadding;
+	private float textHeight;
 	private float textOffset;
 	private float touchSlopSq;
-	private OpenListListener listListener;
+	private ListListener listListener;
 	private AppMenu.Icon grabbedIcon;
-	private boolean editMode = false;
+	private List<AppMenu.AppIcon> appList;
+	private int mode = MODE_PIE;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -77,54 +100,89 @@ public class AppPieView extends View {
 		Resources res = context.getResources();
 		dp = res.getDisplayMetrics().density;
 		float sp = res.getDisplayMetrics().scaledDensity;
-		padding = Math.round(80f * dp);
+		editorPadding = Math.round(80f * dp);
+		listPadding = Math.round(16f * dp);
+		searchInputHeight = Math.round(112f * dp);
+		iconSize = Math.round(48f * dp);
+		iconTextPadding = Math.round(12f * dp);
 
 		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
 		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
 
 		paintDeactive.setAlpha(40);
-		textPaint.setColor(res.getColor(R.color.text_color));
-		textPaint.setTextAlign(Paint.Align.CENTER);
-		textPaint.setTextSize(14f * sp);
-		float textHeight = textPaint.descent() - textPaint.ascent();
-		textOffset = (textHeight / 2) - textPaint.descent();
-		translucentBackgroundColor = res.getColor(
-				R.color.background_ui);
+		paintText.setColor(res.getColor(R.color.text_color));
+		paintText.setTextAlign(Paint.Align.CENTER);
+		paintText.setTextSize(14f * sp);
+		textHeight = paintText.descent() - paintText.ascent();
+		textOffset = (textHeight / 2) - paintText.descent();
+		translucentBackgroundColor = res.getColor(R.color.background_ui);
 
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
 
+		ViewConfiguration configuration = ViewConfiguration.get(context);
 		int generosity = 2;
-		float touchSlop = ViewConfiguration.get(context)
-				.getScaledTouchSlop() * generosity;
+		float touchSlop = configuration.getScaledTouchSlop() * generosity;
 		touchSlopSq = touchSlop * touchSlop;
 		tapTimeout = ViewConfiguration.getTapTimeout() * generosity;
+		longPressTimeout = ViewConfiguration.getLongPressTimeout();
 
 		PieLauncherApp.appMenu.indexAppsAsync(context);
-
 		initTouchListener();
 	}
 
-	public void setOpenListListener(OpenListListener listener) {
+	public void setListListener(ListListener listener) {
 		listListener = listener;
 	}
 
-	public void hideMenu() {
+	public void showList() {
+		mode = MODE_LIST;
+		scrollList(lastScrollY);
+		setVerticalScrollBarEnabled(true);
 		invalidateTouch();
-	}
-
-	public void addIconInteractive(AppMenu.Icon appIcon, Point from) {
-		editIcon(appIcon);
-		touch.set(from.x, from.y);
-		setCenter(viewWidth >> 1, viewHeight >> 1);
 		invalidate();
 	}
 
+	public void hideList() {
+		mode = MODE_PIE;
+		resetScrollSilently();
+		setVerticalScrollBarEnabled(false);
+		invalidateTouch();
+		invalidate();
+	}
+
+	public boolean isEmpty() {
+		return appList == null || appList.size() < 1;
+	}
+
+	public boolean isAppListScrolled() {
+		return mode == MODE_LIST && getScrollY() != 0;
+	}
+
 	public boolean inEditMode() {
-		return editMode;
+		return mode == MODE_EDIT;
+	}
+
+	public boolean inListMode() {
+		return mode == MODE_LIST;
+	}
+
+	public void filterAppList(String query) {
+		appList = PieLauncherApp.appMenu.filterAppsBy(query);
+		scrollList(0);
+		invalidateTouch();
+		invalidate();
+	}
+
+	public void launchFirstApp() {
+		if (isEmpty()) {
+			return;
+		}
+		AppMenu.AppIcon appIcon = appList.get(0);
+		PieLauncherApp.appMenu.launchApp(getContext(), appIcon);
 	}
 
 	public void endEditMode() {
@@ -136,7 +194,7 @@ public class AppPieView extends View {
 		backup.clear();
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
-		editMode = false;
+		mode = MODE_PIE;
 		invalidate();
 	}
 
@@ -151,53 +209,33 @@ public class AppPieView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		if (editMode) {
-			canvas.drawColor(translucentBackgroundColor,
-					PorterDuff.Mode.SRC);
-			boolean hasIcon = grabbedIcon != null;
-			drawTip(canvas, getTip(hasIcon));
-			drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
-			drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
-			drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
-			drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
-			if (hasIcon) {
-				int size = ungrabbedIcons.size();
-				double step = AppMenu.TAU / (size + 1);
-				double angle = AppMenu.getPositiveAngle(Math.atan2(
-						touch.y - PieLauncherApp.appMenu.getCenterY(),
-						touch.x - PieLauncherApp.appMenu.getCenterX()) +
-						step * .5);
-				int insertAt = (int) Math.floor(angle / step);
-				PieLauncherApp.appMenu.icons.clear();
-				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
-				PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt),
-						grabbedIcon);
-				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-				grabbedIcon.x = touch.x;
-				grabbedIcon.y = touch.y;
-			} else {
-				PieLauncherApp.appMenu.calculate(
-						PieLauncherApp.appMenu.getCenterX(),
-						PieLauncherApp.appMenu.getCenterY());
-			}
-			PieLauncherApp.appMenu.draw(canvas);
-		} else {
-			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			if (shouldShowMenu()) {
-				PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-				PieLauncherApp.appMenu.draw(canvas);
-			}
+		switch (mode) {
+			default:
+			case MODE_PIE:
+				drawPieMenu(canvas);
+				break;
+			case MODE_LIST:
+				drawList(canvas);
+				break;
+			case MODE_EDIT:
+				drawEditor(canvas);
+				break;
 		}
 	}
 
-	private void editIcon(AppMenu.Icon icon) {
-		backup.clear();
-		backup.addAll(PieLauncherApp.appMenu.icons);
-		PieLauncherApp.appMenu.icons.remove(icon);
-		ungrabbedIcons.clear();
-		ungrabbedIcons.addAll(PieLauncherApp.appMenu.icons);
-		grabbedIcon = icon;
-		editMode = true;
+	@Override
+	protected int computeVerticalScrollRange() {
+		return maxScrollY + getHeight();
+	}
+
+	@Override
+	protected int computeVerticalScrollExtent() {
+		return getHeight();
+	}
+
+	@Override
+	protected int computeVerticalScrollOffset() {
+		return getScrollY();
 	}
 
 	private static Bitmap getBitmapFromDrawable(Resources res, int resId) {
@@ -213,6 +251,134 @@ public class AppPieView extends View {
 		}
 	}
 
+	private void initTouchListener() {
+		setOnTouchListener(new OnTouchListener() {
+			private final FlingRunnable flingRunnable = new FlingRunnable();
+			private final Point down = new Point();
+
+			private VelocityTracker velocityTracker;
+			private long downAt;
+			private int downScrollY;
+			private Runnable performActionRunnable;
+			private Runnable longPressRunnable;
+
+			@Override
+			public boolean onTouch(final View v, MotionEvent event) {
+				if (mode == MODE_EDIT && grabbedIcon == null) {
+					scaleDetector.onTouchEvent(event);
+				}
+				touch.set(Math.round(event.getRawX() - inset.x),
+						Math.round(event.getRawY() - inset.y));
+				switch (event.getActionMasked()) {
+					default:
+						break;
+					case MotionEvent.ACTION_DOWN:
+						if (performActionRunnable != null) {
+							removeCallbacks(performActionRunnable);
+							// Ignore ACTION_DOWN's when there was
+							// an action pending.
+							break;
+						}
+						down.set(touch.x, touch.y);
+						downAt = event.getEventTime();
+						switch (mode) {
+							case MODE_PIE:
+								setCenter(touch);
+								break;
+							case MODE_LIST:
+								flingRunnable.stop();
+								velocityTracker = VelocityTracker.obtain();
+								velocityTracker.addMovement(event);
+								downScrollY = getScrollY();
+								cancelLongPress();
+								longPressRunnable = new Runnable() {
+									@Override
+									public void run() {
+										addIconInteractively(down);
+										longPressRunnable = null;
+									}
+								};
+								postDelayed(longPressRunnable,
+										longPressTimeout);
+								break;
+							case MODE_EDIT:
+								editIconAt(touch);
+								break;
+						}
+						invalidate();
+						break;
+					case MotionEvent.ACTION_MOVE:
+						if (mode == MODE_LIST) {
+							if (!isTap(longPressTimeout)) {
+								cancelLongPress();
+							}
+							velocityTracker.addMovement(event);
+							int y = downScrollY + (down.y - touch.y);
+							lastScrollY = clamp(y, 0, maxScrollY);
+							scrollList(lastScrollY);
+						}
+						invalidate();
+						break;
+					case MotionEvent.ACTION_UP:
+						if (mode == MODE_LIST) {
+							cancelLongPress();
+							// 1000 means getYVelocity() will return pixels
+							// per second
+							velocityTracker.computeCurrentVelocity(1000);
+							flingRunnable.start(Math.round(
+									velocityTracker.getYVelocity()));
+							velocityTracker.recycle();
+						}
+						if (performActionRunnable != null) {
+							removeCallbacks(performActionRunnable);
+						}
+						final boolean wasTap = isTap(tapTimeout);
+						performActionRunnable = new Runnable() {
+							@Override
+							public void run() {
+								v.performClick();
+								performAction(v.getContext(), down, wasTap);
+								performActionRunnable = null;
+								invalidateTouch();
+								invalidate();
+							}
+						};
+						// Wait a short time before performing the action
+						// because some touch screen drivers send
+						// ACTION_UP/ACTION_DOWN pairs for very short
+						// touch interruptions what makes the menu jump
+						// and execute multiple actions unintentionally.
+						postDelayed(performActionRunnable, 16);
+						break;
+					case MotionEvent.ACTION_CANCEL:
+						if (mode == MODE_LIST) {
+							cancelLongPress();
+							if (velocityTracker != null) {
+								velocityTracker.recycle();
+							}
+						}
+						invalidateTouch();
+						grabbedIcon = null;
+						invalidate();
+						break;
+				}
+				return true;
+			}
+
+			private boolean isTap(long timeOut) {
+				return SystemClock.uptimeMillis() - downAt <= timeOut &&
+						distSq(down, touch) <= touchSlopSq;
+			}
+
+			private void cancelLongPress() {
+				if (longPressRunnable != null) {
+					removeCallbacks(longPressRunnable);
+					longPressRunnable = null;
+				}
+			}
+		});
+	}
+
 	private void initMenu(int width, int height) {
 		int min = Math.min(width, height);
 		float maxIconSize = 64f * dp;
@@ -224,7 +390,7 @@ public class AppPieView extends View {
 		radius = clampRadius(PieLauncherApp.prefs.getRadius(maxRadius));
 		viewWidth = width;
 		viewHeight = height;
-		layoutTouchTargets(height > width);
+		layoutEditorControls(height > width);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			// because views can't go below the status bar before Lollipop
 			int[] pos = new int[2];
@@ -233,7 +399,7 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void layoutTouchTargets(boolean portrait) {
+	private void layoutEditorControls(boolean portrait) {
 		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconInfo, iconDone};
 		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconInfoRect,
 				iconDoneRect};
@@ -257,7 +423,7 @@ public class AppPieView extends View {
 			int step = Math.round(
 					(float) (viewWidth - totalWidth) / (length + 1));
 			int x = step;
-			int y = viewHeight - largestHeight - padding;
+			int y = viewHeight - largestHeight - editorPadding;
 			for (Rect rect : rects) {
 				rect.offset(x, y);
 				x += step + rect.width();
@@ -265,7 +431,7 @@ public class AppPieView extends View {
 		} else {
 			int step = Math.round(
 					(float) (viewHeight - totalHeight) / (length + 1));
-			int x = viewWidth - largestWidth - padding;
+			int x = viewWidth - largestWidth - editorPadding;
 			int y = step;
 			for (Rect rect : rects) {
 				rect.offset(x, y);
@@ -274,88 +440,75 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void initTouchListener() {
-		setOnTouchListener(new View.OnTouchListener() {
-			private final Point down = new Point();
-
-			private long downAt;
-			private Runnable performActionRunnable;
-
-			@Override
-			public boolean onTouch(final View v, MotionEvent event) {
-				if (editMode && grabbedIcon == null) {
-					scaleDetector.onTouchEvent(event);
-				}
-				touch.set(Math.round(event.getRawX() - inset.x),
-						Math.round(event.getRawY() - inset.y));
-				switch (event.getActionMasked()) {
-					default:
-						break;
-					case MotionEvent.ACTION_DOWN:
-						if (performActionRunnable != null) {
-							removeCallbacks(performActionRunnable);
-							// Ignore ACTION_DOWN's when there was
-							// an action pending.
-							break;
-						}
-						if (editMode) {
-							editIconAt(touch);
-						} else {
-							down.set(touch.x, touch.y);
-							downAt = event.getEventTime();
-							setCenter(touch);
-						}
-						invalidate();
-						break;
-					case MotionEvent.ACTION_MOVE:
-						invalidate();
-						break;
-					case MotionEvent.ACTION_UP:
-						if (performActionRunnable != null) {
-							removeCallbacks(performActionRunnable);
-						}
-						final long downTime =
-								SystemClock.uptimeMillis() - downAt;
-						performActionRunnable = new Runnable() {
-							@Override
-							public void run() {
-								v.performClick();
-								performAction(v.getContext(), down, downTime);
-								performActionRunnable = null;
-								invalidateTouch();
-								invalidate();
-							}
-						};
-						// Wait a short time before performing the action
-						// because some touch screen drivers send
-						// ACTION_UP/ACTION_DOWN pairs for very short
-						// touch interruptions what makes the menu jump
-						// and execute multiple actions unintentionally.
-						postDelayed(performActionRunnable, 16);
-						break;
-					case MotionEvent.ACTION_CANCEL:
-						invalidateTouch();
-						grabbedIcon = null;
-						invalidate();
-						break;
-				}
-				return true;
-			}
-		});
+	private void addIconInteractively(Point from) {
+		AppMenu.Icon appIcon = getListIconAt(from.x, from.y);
+		if (appIcon == null) {
+			return;
+		}
+		if (listListener != null) {
+			listListener.onHideList();
+		}
+		editIcon(appIcon);
+		touch.set(from.x, from.y);
+		setCenter(viewWidth >> 1, viewHeight >> 1);
+		resetScrollSilently();
+		invalidate();
 	}
 
-	private void performAction(Context context, Point down, long downTime) {
-		if (editMode) {
+	private void editIcon(AppMenu.Icon icon) {
+		backup.clear();
+		backup.addAll(PieLauncherApp.appMenu.icons);
+		PieLauncherApp.appMenu.icons.remove(icon);
+		ungrabbedIcons.clear();
+		ungrabbedIcons.addAll(PieLauncherApp.appMenu.icons);
+		grabbedIcon = icon;
+		mode = MODE_EDIT;
+	}
+
+	private void resetScrollSilently() {
+		scrollTo(0, 0);
+	}
+
+	private void scrollList(int y) {
+		scrollTo(0, y);
+		if (listListener != null) {
+			listListener.onScrollList(y);
+		}
+	}
+
+	private void performAction(Context context, Point at, boolean wasTap) {
+		if (mode == MODE_PIE) {
+			if (wasTap) {
+				if (listListener != null) {
+					listListener.onOpenList();
+				}
+			} else {
+				PieLauncherApp.appMenu.launchApp(context);
+			}
+		} else if (mode == MODE_LIST && wasTap) {
+			performListAction(context, at.x, at.y);
+		} else if (mode == MODE_EDIT) {
 			performEditAction(context);
 			grabbedIcon = null;
-		} else if (downTime <= tapTimeout &&
-				distSq(down, touch) <= touchSlopSq) {
-			if (listListener != null) {
-				listListener.onOpenList();
-			}
-		} else {
-			PieLauncherApp.appMenu.launchApp(context);
 		}
+	}
+
+	private void performListAction(Context context, int x, int y) {
+		AppMenu.AppIcon appIcon = getListIconAt(x, y);
+		if (appIcon != null) {
+			PieLauncherApp.appMenu.launchApp(context, appIcon);
+		}
+	}
+
+	private AppMenu.AppIcon getListIconAt(int x, int y) {
+		y += getScrollY();
+		for (int i = 0, l = appList.size(); i < l; ++i) {
+			AppMenu.AppIcon appIcon = appList.get(i);
+			if (appIcon.hitRect.contains(x, y)) {
+				return appIcon;
+			}
+		}
+		return null;
 	}
 
 	private void performEditAction(Context context) {
@@ -403,8 +556,8 @@ public class AppPieView extends View {
 
 	private void setCenter(int x, int y) {
 		PieLauncherApp.appMenu.set(
-				Math.max(radius, Math.min(viewWidth - radius, x)),
-				Math.max(radius, Math.min(viewHeight - radius, y)),
+				clamp(x, radius, viewWidth - radius),
+				clamp(y, radius, viewHeight - radius),
 				radius);
 	}
 
@@ -420,12 +573,97 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void invalidateTouch() {
-		touch.set(-1, -1);
+	private void drawList(Canvas canvas) {
+		// manually draw an icon grid because GridView doesn't perform too
+		// well on low-end devices and doing it manually gives us more control
+		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
+		int innerWidth = viewWidth - listPadding * 2;
+		int columns = Math.min(5, innerWidth / iconSize);
+		int iconAndTextHeight = iconSize + iconTextPadding +
+				Math.round(textHeight);
+		int cellWidth = innerWidth / columns;
+		int cellHeight = iconAndTextHeight + iconTextPadding * 2;
+		int maxTextWidth = cellWidth - iconTextPadding;
+		int hpad = (cellWidth - iconSize) / 2;
+		int vpad = (cellHeight - iconAndTextHeight) / 2;
+		int labelX = cellWidth >> 1;
+		int labelY = cellHeight - vpad - Math.round(textOffset);
+		int scrollY = getScrollY();
+		int bottomPadding = getPaddingBottom();
+		int viewHeightMinusPadding = viewHeight - bottomPadding;
+		int viewTop = scrollY - cellHeight;
+		int viewBottom = scrollY + viewHeight;
+		int x = listPadding;
+		int y = listPadding + searchInputHeight;
+		int wrapX = listPadding + cellWidth * columns;
+		for (int i = 0, l = appList.size(); i < l; ++i) {
+			if (y > viewTop && y < viewBottom) {
+				AppMenu.AppIcon appIcon = appList.get(i);
+				appIcon.hitRect.set(x, y, x + cellWidth, y + cellHeight);
+				int ix = x + hpad;
+				int iy = y + vpad;
+				drawRect.set(ix, iy, ix + iconSize, iy + iconSize);
+				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintActive);
+				CharSequence label = TextUtils.ellipsize(appIcon.label,
+						paintText, maxTextWidth, TextUtils.TruncateAt.END);
+				canvas.drawText(label, 0, label.length(),
+						x + labelX, y + labelY, paintText);
+			}
+			x += cellWidth;
+			if (x >= wrapX) {
+				x = listPadding;
+				y += cellHeight;
+			}
+		}
+		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
+		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
+	}
+
+	private void drawEditor(Canvas canvas) {
+		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
+		boolean hasIcon = grabbedIcon != null;
+		drawTip(canvas, getTip(hasIcon));
+		drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
+		drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
+		drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
+		drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
+		if (hasIcon) {
+			int size = ungrabbedIcons.size();
+			double step = AppMenu.TAU / (size + 1);
+			double angle = AppMenu.getPositiveAngle(Math.atan2(
+					touch.y - PieLauncherApp.appMenu.getCenterY(),
+					touch.x - PieLauncherApp.appMenu.getCenterX()) +
+					step * .5);
+			int insertAt = (int) Math.floor(angle / step);
+			PieLauncherApp.appMenu.icons.clear();
+			PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
+			PieLauncherApp.appMenu.icons.add(Math.min(size, insertAt),
+					grabbedIcon);
+			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+			grabbedIcon.x = touch.x;
+			grabbedIcon.y = touch.y;
+		} else {
+			PieLauncherApp.appMenu.calculate(
+					PieLauncherApp.appMenu.getCenterX(),
+					PieLauncherApp.appMenu.getCenterY());
+		}
+		PieLauncherApp.appMenu.draw(canvas);
+	}
+
+	private void drawPieMenu(Canvas canvas) {
+		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		if (shouldShowMenu()) {
+			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+			PieLauncherApp.appMenu.draw(canvas);
+		}
 	}
 
 	private boolean shouldShowMenu() {
 		return touch.x > -1;
+	}
+
+	private void invalidateTouch() {
+		touch.set(-1, -1);
 	}
 
 	private String getTip(boolean hasIcon) {
@@ -442,8 +680,8 @@ public class AppPieView extends View {
 
 	private void drawTip(Canvas canvas, String tip) {
 		if (tip != null) {
-			canvas.drawText(tip, viewWidth >> 1, padding + textOffset,
-					textPaint);
+			canvas.drawText(tip, viewWidth >> 1, editorPadding + textOffset,
+					paintText);
 		}
 	}
 
@@ -464,7 +702,11 @@ public class AppPieView extends View {
 	}
 
 	private int clampRadius(int r) {
-		return Math.max(minRadius, Math.min(r, maxRadius));
+		return clamp(r, minRadius, maxRadius);
+	}
+
+	private static int clamp(int value, int min, int max) {
+		return Math.max(min, Math.min(max, value));
 	}
 
 	private void scaleRadius(float factor) {
@@ -482,6 +724,47 @@ public class AppPieView extends View {
 			scaleRadius(detector.getScaleFactor());
 			invalidate();
 			return true;
+		}
+	}
+
+	private class FlingRunnable implements Runnable {
+		private OverScroller scroller;
+
+		@Override
+		public void run() {
+			if (!scroller.computeScrollOffset()) {
+				return;
+			}
+			scrollList(scroller.getCurrY());
+			update();
+		}
+
+		private FlingRunnable() {
+			scroller = new OverScroller(getContext());
+		}
+
+		private void start(int pixelsPerSecond) {
+			scroller.fling(
+					0, getScrollY(),
+					0, -pixelsPerSecond,
+					0, 0,
+					0, maxScrollY,
+					0, listPadding);
+			update();
+		}
+
+		private void stop() {
+			scroller.forceFinished(true);
+			removeCallbacks(this);
+		}
+
+		private void update() {
+			invalidate();
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				post(this);
+			} else {
+				postOnAnimation(this);
+			}
 		}
 	}
 }
