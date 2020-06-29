@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.6.0
+* Show all apps in an icon grid instead of a list
+* Improve sorting of matches
+* Improve action icons in menu editor
+
 ## 1.5.0
 * Sort fuzzy matches for app search after exact ones
 * Improve tap detection for opening the app list
