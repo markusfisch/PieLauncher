@@ -820,11 +820,19 @@ public class AppPieView extends View {
 
 	private class FlingRunnable implements Runnable {
 		private OverScroller scroller;
+		private int maxY;
 
 		@Override
 		public void run() {
 			if (!scroller.computeScrollOffset()) {
 				return;
+			}
+			if (maxY != maxScrollY) {
+				maxY = maxScrollY;
+				scroller.springBack(
+						0, getScrollY(),
+						0, 0,
+						0, maxY);
 			}
 			scrollList(scroller.getCurrY());
 			update();
@@ -835,11 +843,12 @@ public class AppPieView extends View {
 		}
 
 		private void start(int pixelsPerSecond) {
+			maxY = maxScrollY;
 			scroller.fling(
 					0, getScrollY(),
 					0, -pixelsPerSecond,
 					0, 0,
-					0, maxScrollY,
+					0, maxY,
 					0, listPadding);
 			update();
 		}
