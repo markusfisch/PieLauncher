@@ -256,49 +256,45 @@ public class AppPieView extends View {
 			private final Point down = new Point();
 
 			private VelocityTracker velocityTracker;
-			private long downAt;
-			private int downScrollY;
-			private Runnable performActionRunnable;
+			private long downTime;
+			private int downId;
+			private int scrollOffset;
 			private Runnable longPressRunnable;
+			private Runnable performActionRunnable;
 
 			@Override
-			public boolean onTouch(final View v, MotionEvent event) {
+			public boolean onTouch(View v, MotionEvent event) {
 				if (mode == MODE_EDIT && grabbedIcon == null) {
 					scaleDetector.onTouchEvent(event);
 				}
-				touch.set(Math.round(event.getRawX() - inset.x),
-						Math.round(event.getRawY() - inset.y));
+				setTouch(event.getRawX(), event.getRawY());
 				switch (event.getActionMasked()) {
 					default:
 						break;
+					case MotionEvent.ACTION_POINTER_DOWN:
+						if (mode == MODE_LIST) {
+							makePointerPrimary(event, event.getActionIndex());
+						}
+						break;
+					case MotionEvent.ACTION_POINTER_UP:
+						if (mode == MODE_LIST) {
+							findNewPrimaryPointer(event);
+						}
+						break;
 					case MotionEvent.ACTION_DOWN:
-						if (performActionRunnable != null) {
-							removeCallbacks(performActionRunnable);
+						if (cancelPerformAction()) {
 							// Ignore ACTION_DOWN's when there was
 							// an action pending.
 							break;
 						}
-						down.set(touch.x, touch.y);
-						downAt = event.getEventTime();
+						recordDown(event);
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch);
 								break;
 							case MODE_LIST:
-								flingRunnable.stop();
-								velocityTracker = VelocityTracker.obtain();
-								velocityTracker.addMovement(event);
-								downScrollY = getScrollY();
-								cancelLongPress();
-								longPressRunnable = new Runnable() {
-									@Override
-									public void run() {
-										addIconInteractively(down);
-										longPressRunnable = null;
-									}
-								};
-								postDelayed(longPressRunnable,
-										longPressTimeout);
+								initScroll(event);
+								initLongPress();
 								break;
 							case MODE_EDIT:
 								editIconAt(touch);
@@ -311,62 +307,123 @@ public class AppPieView extends View {
 							if (!isTap(longPressTimeout)) {
 								cancelLongPress();
 							}
-							velocityTracker.addMovement(event);
-							int y = downScrollY + (down.y - touch.y);
-							lastScrollY = clamp(y, 0, maxScrollY);
-							scrollList(lastScrollY);
+							scroll(event);
 						}
 						invalidate();
 						break;
 					case MotionEvent.ACTION_UP:
 						if (mode == MODE_LIST) {
 							cancelLongPress();
-							// 1000 means getYVelocity() will return pixels
-							// per second
-							velocityTracker.computeCurrentVelocity(1000);
-							flingRunnable.start(Math.round(
-									velocityTracker.getYVelocity()));
-							velocityTracker.recycle();
+							keepScrolling();
 						}
-						if (performActionRunnable != null) {
-							removeCallbacks(performActionRunnable);
-						}
-						final boolean wasTap = isTap(tapTimeout);
-						performActionRunnable = new Runnable() {
-							@Override
-							public void run() {
-								v.performClick();
-								performAction(v.getContext(), down, wasTap);
-								performActionRunnable = null;
-								invalidateTouch();
-								invalidate();
-							}
-						};
-						// Wait a short time before performing the action
-						// because some touch screen drivers send
-						// ACTION_UP/ACTION_DOWN pairs for very short
-						// touch interruptions what makes the menu jump
-						// and execute multiple actions unintentionally.
-						postDelayed(performActionRunnable, 16);
+						postPerformAction(v, event);
 						break;
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_LIST) {
 							cancelLongPress();
-							if (velocityTracker != null) {
-								velocityTracker.recycle();
+							if (event.getPointerCount() < 1) {
+								recycleVelocityTracker();
 							}
 						}
-						invalidateTouch();
 						grabbedIcon = null;
+						invalidateTouch();
 						invalidate();
 						break;
 				}
 				return true;
 			}
 
-			private boolean isTap(long timeOut) {
-				return SystemClock.uptimeMillis() - downAt <= timeOut &&
-						distSq(down, touch) <= touchSlopSq;
+			private void setTouch(float x, float y) {
+				touch.set(translateX(x), translateY(y));
+			}
+
+			private int translateX(float x) {
+				return Math.round(x - inset.x);
+			}
+
+			private int translateY(float y) {
+				return Math.round(y - inset.y);
+			}
+
+			private void recordDown(MotionEvent event) {
+				down.set(touch.x, touch.y);
+				downId = event.getPointerId(event.getActionIndex());
+				downTime = event.getEventTime();
+			}
+
+			private void makePointerPrimary(MotionEvent event, int index) {
+				setTouch(event.getRawX(index), event.getRawY(index));
+				down.set(touch.x, touch.y);
+				downId = event.getPointerId(index);
+				initScroll(event);
+			}
+
+			private void findNewPrimaryPointer(MotionEvent event) {
+				int ignore = event.getActionIndex();
+				if (event.getPointerId(ignore) != downId) {
+					return;
+				}
+				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
+					if (i != ignore) {
+						makePointerPrimary(event, i);
+						break;
+					}
+				}
+			}
+
+			private void initScroll(MotionEvent event) {
+				flingRunnable.stop();
+				recycleVelocityTracker();
+				velocityTracker = VelocityTracker.obtain();
+				velocityTracker.addMovement(event);
+				scrollOffset = getScrollY();
+			}
+
+			private void scroll(MotionEvent event) {
+				// find leading pointer and use its y coordinate for scrolling
+				int ty = -1;
+				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
+					if (event.getPointerId(i) == downId) {
+						ty = translateY(event.getRawY(i));
+						break;
+					}
+				}
+				if (velocityTracker != null && ty > -1) {
+					velocityTracker.addMovement(event);
+					int y = scrollOffset + (down.y - ty);
+					lastScrollY = clamp(y, 0, maxScrollY);
+					scrollList(lastScrollY);
+				}
+			}
+
+			private void keepScrolling() {
+				if (velocityTracker != null) {
+					// 1000 means getYVelocity() will return pixels
+					// per second
+					velocityTracker.computeCurrentVelocity(1000);
+					flingRunnable.start(Math.round(
+							velocityTracker.getYVelocity()));
+					recycleVelocityTracker();
+				}
+			}
+
+			private void recycleVelocityTracker() {
+				if (velocityTracker != null) {
+					velocityTracker.recycle();
+					velocityTracker = null;
+				}
+			}
+
+			private void initLongPress() {
+				cancelLongPress();
+				longPressRunnable = new Runnable() {
+					@Override
+					public void run() {
+						addIconInteractively(down);
+						longPressRunnable = null;
+					}
+				};
+				postDelayed(longPressRunnable, longPressTimeout);
 			}
 
 			private void cancelLongPress() {
@@ -374,6 +431,41 @@ public class AppPieView extends View {
 					removeCallbacks(longPressRunnable);
 					longPressRunnable = null;
 				}
+			}
+
+			private boolean isTap(long timeOut) {
+				return SystemClock.uptimeMillis() - downTime <= timeOut &&
+						distSq(down, touch) <= touchSlopSq;
+			}
+
+			private void postPerformAction(final View v, MotionEvent event) {
+				cancelPerformAction();
+				final boolean wasTap = isTap(tapTimeout);
+				performActionRunnable = new Runnable() {
+					@Override
+					public void run() {
+						v.performClick();
+						performAction(v.getContext(), down, wasTap);
+						performActionRunnable = null;
+						invalidateTouch();
+						invalidate();
+					}
+				};
+				// Wait a short time before performing the action
+				// because some touch screen drivers send
+				// ACTION_UP/ACTION_DOWN pairs for very short
+				// touch interruptions what makes the menu jump
+				// and execute multiple actions unintentionally.
+				postDelayed(performActionRunnable, 16);
+			}
+
+			private boolean cancelPerformAction() {
+				if (performActionRunnable != null) {
+					removeCallbacks(performActionRunnable);
+					performActionRunnable = null;
+					return true;
+				}
+				return false;
 			}
 		});
 	}
