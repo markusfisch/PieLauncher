@@ -18,6 +18,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.VelocityTracker;
@@ -51,7 +52,6 @@ public class AppPieView extends View {
 	private final Paint paintActive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint paintDeactive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-	private final Point inset = new Point();
 	private final Point touch = new Point();
 	private final Rect drawRect = new Rect();
 	private final Rect iconAddRect = new Rect();
@@ -253,11 +253,11 @@ public class AppPieView extends View {
 	private void initTouchListener() {
 		setOnTouchListener(new OnTouchListener() {
 			private final FlingRunnable flingRunnable = new FlingRunnable();
-			private final Point down = new Point();
+			private final SparseArray<TouchReference> touchReferences =
+					new SparseArray<>();
 
 			private VelocityTracker velocityTracker;
-			private long downTime;
-			private int downId;
+			private int primaryId;
 			private int scrollOffset;
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
@@ -267,18 +267,21 @@ public class AppPieView extends View {
 				if (mode == MODE_EDIT && grabbedIcon == null) {
 					scaleDetector.onTouchEvent(event);
 				}
-				setTouch(event.getRawX(), event.getRawY());
+				touch.set(Math.round(event.getX()), Math.round(event.getY()));
 				switch (event.getActionMasked()) {
 					default:
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						if (mode == MODE_LIST) {
-							makePointerPrimary(event, event.getActionIndex());
+							cancelLongPress();
+							addTouch(event);
+							initScroll(event);
 						}
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
 						if (mode == MODE_LIST) {
-							findNewPrimaryPointer(event);
+							updateReferences(event);
+							initScroll(event);
 						}
 						break;
 					case MotionEvent.ACTION_DOWN:
@@ -287,7 +290,7 @@ public class AppPieView extends View {
 							// an action pending.
 							break;
 						}
-						recordDown(event);
+						addTouch(event);
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch);
@@ -304,7 +307,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_MOVE:
 						if (mode == MODE_LIST) {
-							if (!isTap(longPressTimeout)) {
+							if (!isTap(event, longPressTimeout)) {
 								cancelLongPress();
 							}
 							scroll(event);
@@ -314,7 +317,7 @@ public class AppPieView extends View {
 					case MotionEvent.ACTION_UP:
 						if (mode == MODE_LIST) {
 							cancelLongPress();
-							keepScrolling();
+							keepScrolling(event);
 						}
 						postPerformAction(v, event);
 						break;
@@ -333,42 +336,37 @@ public class AppPieView extends View {
 				return true;
 			}
 
-			private void setTouch(float x, float y) {
-				touch.set(translateX(x), translateY(y));
+			private void addTouch(MotionEvent event) {
+				int index = event.getActionIndex();
+				primaryId = event.getPointerId(index);
+				addTouchReference(event, primaryId, index);
 			}
 
-			private int translateX(float x) {
-				return Math.round(x - inset.x);
-			}
-
-			private int translateY(float y) {
-				return Math.round(y - inset.y);
-			}
-
-			private void recordDown(MotionEvent event) {
-				down.set(touch.x, touch.y);
-				downId = event.getPointerId(event.getActionIndex());
-				downTime = event.getEventTime();
-			}
-
-			private void makePointerPrimary(MotionEvent event, int index) {
-				setTouch(event.getRawX(index), event.getRawY(index));
-				down.set(touch.x, touch.y);
-				downId = event.getPointerId(index);
-				initScroll(event);
-			}
-
-			private void findNewPrimaryPointer(MotionEvent event) {
-				int ignore = event.getActionIndex();
-				if (event.getPointerId(ignore) != downId) {
-					return;
-				}
+			private void updateReferences(MotionEvent event) {
+				// Unfortunately, and contrary to the docs, some (old?) touch
+				// screen drivers don't return the index of the touch that has
+				// gone up in ACTION_POINTER_UP for getActionIndex() but an
+				// index of a pointer that is still down.
+				// So the only option is to update all references.
 				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
-					if (i != ignore) {
-						makePointerPrimary(event, i);
-						break;
-					}
+					int id = event.getPointerId(i);
+					addTouchReference(event, id, i);
 				}
+			}
+
+			private void addTouchReference(MotionEvent event, int id,
+					int index) {
+				touchReferences.put(id, new TouchReference(
+						event.getX(index),
+						event.getY(index),
+						event.getEventTime()));
+			}
+
+			private TouchReference getTouchReference(MotionEvent event,
+					int index) {
+				return index > -1 && index < event.getPointerCount()
+						? touchReferences.get(event.getPointerId(index))
+						: null;
 			}
 
 			private void initScroll(MotionEvent event) {
@@ -379,25 +377,40 @@ public class AppPieView extends View {
 				scrollOffset = getScrollY();
 			}
 
-			private void scroll(MotionEvent event) {
-				// find leading pointer and use its y coordinate for scrolling
-				int ty = -1;
-				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
-					if (event.getPointerId(i) == downId) {
-						ty = translateY(event.getRawY(i));
-						break;
+			private int getPrimaryIndex(MotionEvent event) {
+				int count = event.getPointerCount();
+				int id = -1;
+				for (int i = 0; i < count; ++i) {
+					id = event.getPointerId(i);
+					if (id == primaryId) {
+						return i;
 					}
 				}
-				if (velocityTracker != null && ty > -1) {
-					velocityTracker.addMovement(event);
-					int y = scrollOffset + (down.y - ty);
-					lastScrollY = clamp(y, 0, maxScrollY);
-					scrollList(lastScrollY);
-				}
+				// if the ID wasn't found, the pointer must have gone up
+				primaryId = id;
+				return count - 1;
 			}
 
-			private void keepScrolling() {
+			private void scroll(MotionEvent event) {
+				int index = getPrimaryIndex(event);
+				if (index < 0) {
+					return;
+				}
+				TouchReference tr = getTouchReference(event, index);
+				if (tr == null) {
+					return;
+				}
 				if (velocityTracker != null) {
+					velocityTracker.addMovement(event);
+				}
+				int y = Math.round(event.getY(index));
+				int scrollY = scrollOffset + (tr.pos.y - y);
+				lastScrollY = clamp(scrollY, 0, maxScrollY);
+				scrollList(lastScrollY);
+			}
+
+			private void keepScrolling(MotionEvent event) {
+				if (event.getPointerCount() < 2 && velocityTracker != null) {
 					// 1000 means getYVelocity() will return pixels
 					// per second
 					velocityTracker.computeCurrentVelocity(1000);
@@ -416,10 +429,11 @@ public class AppPieView extends View {
 
 			private void initLongPress() {
 				cancelLongPress();
+				final Point pos = touch;
 				longPressRunnable = new Runnable() {
 					@Override
 					public void run() {
-						addIconInteractively(down);
+						addIconInteractively(pos);
 						longPressRunnable = null;
 					}
 				};
@@ -433,19 +447,24 @@ public class AppPieView extends View {
 				}
 			}
 
-			private boolean isTap(long timeOut) {
-				return SystemClock.uptimeMillis() - downTime <= timeOut &&
-						distSq(down, touch) <= touchSlopSq;
+			private boolean isTap(MotionEvent event, long timeOut) {
+				TouchReference tr = getTouchReference(event, 0);
+				if (tr == null) {
+					return false;
+				}
+				return SystemClock.uptimeMillis() - tr.time <= timeOut &&
+						distSq(tr.pos, touch) <= touchSlopSq;
 			}
 
 			private void postPerformAction(final View v, MotionEvent event) {
 				cancelPerformAction();
-				final boolean wasTap = isTap(tapTimeout);
+				final boolean wasTap = isTap(event, tapTimeout);
+				final Point pos = touch;
 				performActionRunnable = new Runnable() {
 					@Override
 					public void run() {
 						v.performClick();
-						performAction(v.getContext(), down, wasTap);
+						performAction(v.getContext(), pos, wasTap);
 						performActionRunnable = null;
 						invalidateTouch();
 						invalidate();
@@ -482,12 +501,6 @@ public class AppPieView extends View {
 		viewWidth = width;
 		viewHeight = height;
 		layoutEditorControls(height > width);
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			// because views can't go below the status bar before Lollipop
-			int[] pos = new int[2];
-			getLocationOnScreen(pos);
-			inset.set(pos[0], pos[1]);
-		}
 	}
 
 	private void layoutEditorControls(boolean portrait) {
@@ -865,6 +878,16 @@ public class AppPieView extends View {
 			} else {
 				postOnAnimation(this);
 			}
+		}
+	}
+
+	private static final class TouchReference {
+		private final Point pos = new Point();
+		private final long time;
+
+		private TouchReference(float x, float y, long time) {
+			this.pos.set(Math.round(x), Math.round(y));
+			this.time = time;
 		}
 	}
 }
