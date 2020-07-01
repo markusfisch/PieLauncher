@@ -599,6 +599,9 @@ public class AppPieView extends View {
 		AppMenu.AppIcon appIcon = getListIconAt(x, y);
 		if (appIcon != null) {
 			PieLauncherApp.appMenu.launchApp(context, appIcon);
+			if (listListener != null) {
+				listListener.onHideList();
+			}
 		}
 	}
 
