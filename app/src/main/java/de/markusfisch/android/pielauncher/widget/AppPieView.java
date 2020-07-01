@@ -844,10 +844,8 @@ public class AppPieView extends View {
 			}
 			if (maxY != maxScrollY) {
 				maxY = maxScrollY;
-				scroller.springBack(
-						0, getScrollY(),
-						0, 0,
-						0, maxY);
+				scroller.notifyVerticalEdgeReached(
+						getScrollY(), maxY, listPadding);
 			}
 			scrollList(scroller.getCurrY());
 			update();
