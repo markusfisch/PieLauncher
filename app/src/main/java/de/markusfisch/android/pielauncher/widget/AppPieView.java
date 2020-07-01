@@ -553,7 +553,6 @@ public class AppPieView extends View {
 			listListener.onHideList();
 		}
 		editIcon(appIcon);
-		touch.set(from.x, from.y);
 		resetScrollSilently();
 		invalidate();
 	}
