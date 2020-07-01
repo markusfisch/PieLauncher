@@ -554,7 +554,6 @@ public class AppPieView extends View {
 		}
 		editIcon(appIcon);
 		touch.set(from.x, from.y);
-		setCenter(viewWidth >> 1, viewHeight >> 1);
 		resetScrollSilently();
 		invalidate();
 	}
@@ -731,6 +730,7 @@ public class AppPieView extends View {
 		drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
 		drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
 		drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
+		setCenter(viewWidth >> 1, viewHeight >> 1);
 		if (hasIcon) {
 			int size = ungrabbedIcons.size();
 			double step = AppMenu.TAU / (size + 1);
