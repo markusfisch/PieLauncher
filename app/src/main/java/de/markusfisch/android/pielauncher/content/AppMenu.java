@@ -115,7 +115,7 @@ public class AppMenu extends CanvasPieMenu {
 			list.addAll(apps.values());
 		} else {
 			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
-				AppIcon appIcon = (AppIcon) entry.getValue();
+				AppIcon appIcon = entry.getValue();
 				String label = appIcon.label.toLowerCase(DEFAULT_LOCALE);
 				if (label.startsWith(query)) {
 					list.add(appIcon);
@@ -277,7 +277,7 @@ public class AppMenu extends CanvasPieMenu {
 			}
 			if (!defaults.contains(
 					((ComponentName) entry.getKey()).getPackageName())) {
-				addAppIcon((AppIcon) entry.getValue());
+				addAppIcon(entry.getValue());
 				++i;
 			}
 		}
