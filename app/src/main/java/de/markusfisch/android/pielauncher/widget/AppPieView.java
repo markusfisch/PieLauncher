@@ -836,6 +836,7 @@ public class AppPieView extends View {
 	private class FlingRunnable implements Runnable {
 		private OverScroller scroller;
 		private int maxY;
+		private int pps;
 
 		@Override
 		public void run() {
@@ -844,8 +845,15 @@ public class AppPieView extends View {
 			}
 			if (maxY != maxScrollY) {
 				maxY = maxScrollY;
-				scroller.notifyVerticalEdgeReached(
-						getScrollY(), maxY, listPadding);
+				// OverScroller.springBack() stops the animation so we
+				// cannot use it and have to start a new fling instead
+				scroller.forceFinished(true);
+				scroller.fling(
+						0, getScrollY(),
+						0, pps,
+						0, 0,
+						0, maxY,
+						0, listPadding);
 			}
 			scrollList(scroller.getCurrY());
 			update();
@@ -856,10 +864,11 @@ public class AppPieView extends View {
 		}
 
 		private void start(int pixelsPerSecond) {
+			pps = -pixelsPerSecond;
 			maxY = maxScrollY;
 			scroller.fling(
 					0, getScrollY(),
-					0, -pixelsPerSecond,
+					0, pps,
 					0, 0,
 					0, maxY,
 					0, listPadding);
