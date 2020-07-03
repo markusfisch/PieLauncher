@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.widget;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -262,6 +263,7 @@ public class AppPieView extends View {
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
 
+			@SuppressLint("ClickableViewAccessibility")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (mode == MODE_EDIT && grabbedIcon == null) {
