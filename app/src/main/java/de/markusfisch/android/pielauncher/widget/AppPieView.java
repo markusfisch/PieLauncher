@@ -407,6 +407,13 @@ public class AppPieView extends View {
 				int scrollY = scrollOffset + (tr.pos.y - y);
 				lastScrollY = clamp(scrollY, 0, maxScrollY);
 				scrollList(lastScrollY);
+				if (lastScrollY == 0 || lastScrollY == maxScrollY) {
+					// move reference to current coordinate if this
+					// event wouldn't move the list to make movements
+					// in the opposite direction immediate
+					tr.pos.y = y;
+					scrollOffset = getScrollY();
+				}
 			}
 
 			private void keepScrolling(MotionEvent event) {
