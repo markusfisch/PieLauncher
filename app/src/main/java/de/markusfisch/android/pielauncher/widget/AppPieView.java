@@ -288,8 +288,8 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_DOWN:
 						if (cancelPerformAction()) {
-							// Ignore ACTION_DOWN's when there was
-							// an action pending.
+							// Ignore additional ACTION_DOWN's when there
+							// was a pending action.
 							break;
 						}
 						addTouch(event);
@@ -326,9 +326,7 @@ public class AppPieView extends View {
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_LIST) {
 							cancelLongPress();
-							if (event.getPointerCount() < 1) {
-								recycleVelocityTracker();
-							}
+							recycleVelocityTracker();
 						}
 						grabbedIcon = null;
 						invalidateTouch();
