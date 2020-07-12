@@ -76,7 +76,7 @@ public class AppPieView extends View {
 	private int maxRadius;
 	private int radius;
 	private long tapTimeout;
-	private long longPressTimeout;
+	private long minLongPressDuration;
 	private int editorPadding;
 	private int listPadding;
 	private int searchInputHeight;
@@ -128,7 +128,7 @@ public class AppPieView extends View {
 		float touchSlop = configuration.getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
 		tapTimeout = ViewConfiguration.getTapTimeout();
-		longPressTimeout = ViewConfiguration.getLongPressTimeout();
+		minLongPressDuration = ViewConfiguration.getLongPressTimeout();
 
 		PieLauncherApp.appMenu.indexAppsAsync(context);
 		initTouchListener();
@@ -309,7 +309,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_MOVE:
 						if (mode == MODE_LIST) {
-							if (!isTap(event, longPressTimeout)) {
+							if (!isTap(event, Long.MAX_VALUE)) {
 								cancelLongPress();
 							}
 							scroll(event);
@@ -444,7 +444,7 @@ public class AppPieView extends View {
 						longPressRunnable = null;
 					}
 				};
-				postDelayed(longPressRunnable, longPressTimeout);
+				postDelayed(longPressRunnable, minLongPressDuration);
 			}
 
 			private void cancelLongPress() {
