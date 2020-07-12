@@ -559,6 +559,8 @@ public class AppPieView extends View {
 		if (listListener != null) {
 			listListener.onHideList();
 		}
+		// set touch position for dragging; possibly reset by onHideList()
+		touch.set(from.x, from.y);
 		editIcon(appIcon);
 		resetScrollSilently();
 		invalidate();
