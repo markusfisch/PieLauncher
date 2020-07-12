@@ -34,6 +34,7 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
+import de.markusfisch.android.pielauncher.graphics.Ripple;
 
 public class AppPieView extends View {
 	public interface ListListener {
@@ -54,6 +55,7 @@ public class AppPieView extends View {
 	private final Paint paintDeactive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
+	private final Ripple ripple = new Ripple();
 	private final Rect drawRect = new Rect();
 	private final Rect iconAddRect = new Rect();
 	private final Bitmap iconAdd;
@@ -129,6 +131,7 @@ public class AppPieView extends View {
 		touchSlopSq = touchSlop * touchSlop;
 		tapTimeout = ViewConfiguration.getTapTimeout();
 		minLongPressDuration = ViewConfiguration.getLongPressTimeout();
+		ripple.setDuration(minLongPressDuration);
 
 		PieLauncherApp.appMenu.indexAppsAsync(context);
 		initTouchListener();
@@ -221,6 +224,9 @@ public class AppPieView extends View {
 				drawEditor(canvas);
 				break;
 		}
+		if (ripple.draw(canvas)) {
+			invalidate();
+		}
 	}
 
 	@Override
@@ -261,6 +267,7 @@ public class AppPieView extends View {
 			private int primaryId;
 			private int scrollOffset;
 			private Runnable longPressRunnable;
+			private Runnable rippleRunnable;
 			private Runnable performActionRunnable;
 
 			@SuppressLint("ClickableViewAccessibility")
@@ -436,6 +443,7 @@ public class AppPieView extends View {
 
 			private void initLongPress() {
 				cancelLongPress();
+				initRipple();
 				final Point at = new Point(touch.x, touch.y);
 				longPressRunnable = new Runnable() {
 					@Override
@@ -448,9 +456,30 @@ public class AppPieView extends View {
 			}
 
 			private void cancelLongPress() {
+				cancelRipple();
 				if (longPressRunnable != null) {
 					removeCallbacks(longPressRunnable);
 					longPressRunnable = null;
+				}
+			}
+
+			private void initRipple() {
+				cancelRipple();
+				final Point at = new Point(touch.x, touch.y + getScrollY());
+				rippleRunnable = new Runnable() {
+					@Override
+					public void run() {
+						ripple.set(at.x, at.y);
+					}
+				};
+				postDelayed(rippleRunnable, tapTimeout);
+			}
+
+			private void cancelRipple() {
+				ripple.cancel();
+				if (rippleRunnable != null) {
+					removeCallbacks(rippleRunnable);
+					rippleRunnable = null;
 				}
 			}
 
@@ -633,10 +662,12 @@ public class AppPieView extends View {
 				((Activity) context).onBackPressed();
 			}
 		} else if (iconRemoveRect.contains(touch.x, touch.y)) {
+			ripple.set(touch);
 			if (grabbedIcon != null) {
 				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
 			}
 		} else if (iconInfoRect.contains(touch.x, touch.y)) {
+			ripple.set(touch);
 			if (grabbedIcon != null) {
 				rollback();
 				startAppInfo(((AppMenu.AppIcon) grabbedIcon)
