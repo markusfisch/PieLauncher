@@ -436,10 +436,11 @@ public class AppPieView extends View {
 
 			private void initLongPress() {
 				cancelLongPress();
+				final Point at = new Point(touch.x, touch.y);
 				longPressRunnable = new Runnable() {
 					@Override
 					public void run() {
-						addIconInteractively(touch);
+						addIconInteractively(at);
 						longPressRunnable = null;
 					}
 				};
@@ -465,11 +466,12 @@ public class AppPieView extends View {
 			private void postPerformAction(final View v, MotionEvent event) {
 				cancelPerformAction();
 				final boolean wasTap = isTap(event, tapTimeout);
+				final Point at = new Point(touch.x, touch.y);
 				performActionRunnable = new Runnable() {
 					@Override
 					public void run() {
 						v.performClick();
-						performAction(v.getContext(), touch, wasTap);
+						performAction(v.getContext(), at, wasTap);
 						performActionRunnable = null;
 						invalidateTouch();
 						invalidate();
