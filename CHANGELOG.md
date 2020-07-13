@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.7.0
+* Show a ripple effect for touch events
+* Improve scrolling apps in icon grid
+* Update app icons with Material shadow
+
 ## 1.6.0
 * Show all apps in an icon grid instead of a list
 * Improve sorting of matches
