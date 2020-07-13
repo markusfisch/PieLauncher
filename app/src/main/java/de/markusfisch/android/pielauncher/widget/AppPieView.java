@@ -880,7 +880,7 @@ public class AppPieView extends View {
 
 		@Override
 		public void run() {
-			if (!scroller.computeScrollOffset()) {
+			if (mode != MODE_LIST || !scroller.computeScrollOffset()) {
 				return;
 			}
 			if (maxY != maxScrollY) {
