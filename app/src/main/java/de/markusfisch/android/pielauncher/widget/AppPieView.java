@@ -72,6 +72,7 @@ public class AppPieView extends View {
 	private final String pinchZoomTip;
 
 	private ScaleGestureDetector scaleDetector;
+	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
 	private int minRadius;
@@ -143,6 +144,7 @@ public class AppPieView extends View {
 
 	public void showList() {
 		mode = MODE_LIST;
+		cancelRipple();
 		scrollList(lastScrollY);
 		setVerticalScrollBarEnabled(true);
 		invalidateTouch();
@@ -267,7 +269,6 @@ public class AppPieView extends View {
 			private int primaryId;
 			private int scrollOffset;
 			private Runnable longPressRunnable;
-			private Runnable rippleRunnable;
 			private Runnable performActionRunnable;
 
 			@SuppressLint("ClickableViewAccessibility")
@@ -475,14 +476,6 @@ public class AppPieView extends View {
 				postDelayed(rippleRunnable, tapTimeout);
 			}
 
-			private void cancelRipple() {
-				ripple.cancel();
-				if (rippleRunnable != null) {
-					removeCallbacks(rippleRunnable);
-					rippleRunnable = null;
-				}
-			}
-
 			private boolean isTap(MotionEvent event, long timeOut) {
 				TouchReference tr = getTouchReference(event, 0);
 				if (tr == null) {
@@ -606,6 +599,7 @@ public class AppPieView extends View {
 	}
 
 	private void resetScrollSilently() {
+		cancelRipple();
 		scrollTo(0, 0);
 	}
 
@@ -616,14 +610,22 @@ public class AppPieView extends View {
 		}
 	}
 
+	private void cancelRipple() {
+		ripple.cancel();
+		if (rippleRunnable != null) {
+			removeCallbacks(rippleRunnable);
+			rippleRunnable = null;
+		}
+	}
+
 	private void performAction(Context context, Point at, boolean wasTap) {
 		if (mode == MODE_PIE) {
 			if (wasTap) {
 				if (listListener != null) {
 					listListener.onOpenList();
 				}
-			} else {
-				PieLauncherApp.appMenu.launchApp(context);
+			} else if (PieLauncherApp.appMenu.launchApp(context)) {
+				ripple.set(at);
 			}
 		} else if (mode == MODE_LIST && wasTap) {
 			performListAction(context, at.x, at.y);
@@ -640,6 +642,7 @@ public class AppPieView extends View {
 			if (listListener != null) {
 				listListener.onHideList();
 			}
+			ripple.set(x, y);
 		}
 	}
 

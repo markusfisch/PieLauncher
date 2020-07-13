@@ -70,11 +70,13 @@ public class AppMenu extends CanvasPieMenu {
 	private UserHandle userHandle;
 	private LauncherApps launcherApps;
 
-	public void launchApp(Context context) {
+	public boolean launchApp(Context context) {
 		int selectedIcon = getSelectedIcon();
 		if (selectedIcon > -1) {
 			launchApp(context, ((AppIcon) icons.get(selectedIcon)));
+			return true;
 		}
+		return false;
 	}
 
 	public void launchApp(Context context, AppIcon icon) {
