@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.7.1
+* Ensure ripple effect is shown
+
 ## 1.7.0
 * Show a ripple effect for touch events
 * Improve scrolling apps in icon grid
