@@ -471,6 +471,7 @@ public class AppPieView extends View {
 					@Override
 					public void run() {
 						ripple.set(at.x, at.y);
+						invalidate();
 					}
 				};
 				postDelayed(rippleRunnable, tapTimeout);
