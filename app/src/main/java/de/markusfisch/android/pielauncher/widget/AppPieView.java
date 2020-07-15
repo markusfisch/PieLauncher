@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -102,8 +103,9 @@ public class AppPieView extends View {
 				new ScaleListener());
 
 		Resources res = context.getResources();
-		dp = res.getDisplayMetrics().density;
-		float sp = res.getDisplayMetrics().scaledDensity;
+		DisplayMetrics dm = res.getDisplayMetrics();
+		dp = dm.density;
+		float sp = dm.scaledDensity;
 		editorPadding = Math.round(80f * dp);
 		listPadding = Math.round(16f * dp);
 		searchInputHeight = Math.round(112f * dp);
