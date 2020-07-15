@@ -1,0 +1,2 @@
+* Fix handling of app updates
+

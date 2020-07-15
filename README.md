@@ -13,18 +13,10 @@ memory anywhere on the screen without even looking at it.
 
 ## Screenshots
 
-<img
-	src="https://raw.githubusercontent.com/markusfisch/PieLauncher/gh-pages/screencap-zoomed.png"
-	alt="Screenshot with zoomed pie menu" width="160"/>
-<img
-	src="https://raw.githubusercontent.com/markusfisch/PieLauncher/gh-pages/screencap-centered.png"
-	alt="Screenshot with finger in the middle of the pie menu" width="160"/>
-<img
-	src="https://raw.githubusercontent.com/markusfisch/PieLauncher/gh-pages/screencap-search.png"
-	alt="Screenshot of search with app listing" width="160"/>
-<img
-	src="https://raw.githubusercontent.com/markusfisch/PieLauncher/gh-pages/screencap-editor.png"
-	alt="Screenshot of pie menu editor" width="160"/>
+![Screenshot Zoomed](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-zoomed.png)
+![Screenshot Centered](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-centered.png)
+![Screenshot Search](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-search.png)
+![Screenshot Editor](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-editor.png)
 
 ## Download
 

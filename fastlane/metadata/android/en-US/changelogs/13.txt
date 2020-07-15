@@ -1,0 +1,4 @@
+* Show a ripple effect for touch events
+* Improve scrolling apps in icon grid
+* Update app icons with Material shadow
+

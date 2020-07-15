@@ -1,0 +1,3 @@
+* Improve rendering of pie menu
+* Make unavailable actions in editor translucent
+

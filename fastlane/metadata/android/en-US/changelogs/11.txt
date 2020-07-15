@@ -1,0 +1,3 @@
+* Sort fuzzy matches for app search after exact ones
+* Improve tap detection for opening the app list
+

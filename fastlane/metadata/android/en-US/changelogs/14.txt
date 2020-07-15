@@ -1,0 +1,2 @@
+* Ensure ripple effect is shown
+

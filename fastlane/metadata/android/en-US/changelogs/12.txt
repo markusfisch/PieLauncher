@@ -1,0 +1,4 @@
+* Show all apps in an icon grid instead of a list
+* Improve sorting of matches
+* Improve action icons in menu editor
+
