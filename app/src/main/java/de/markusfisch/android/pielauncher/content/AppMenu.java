@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Process;
 import android.os.UserHandle;
+import android.provider.CalendarContract;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -243,14 +244,35 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	private Intent getCalendarIntent() {
+		Intent intent = new Intent(Intent.ACTION_EDIT)
+				.setType("vnd.android.cursor.item/event");
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			return intent
+					.putExtra("title", "dummy")
+					.putExtra("beginTime", 0)
+					.putExtra("endTime", 0);
+		} else {
+			return intent
+					.putExtra(CalendarContract.Events.TITLE, "dummy")
+					.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0)
+					.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0);
+		}
+	}
+
 	private void createInitialMenu(PackageManager pm) {
 		Intent[] intents = new Intent[]{
 				new Intent(Intent.ACTION_VIEW, Uri.parse("http://")),
 				new Intent(Intent.ACTION_DIAL),
 				new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:")),
-				new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE),
+				new Intent(Intent.ACTION_PICK,
+						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
+				new Intent(Intent.ACTION_VIEW, Uri.parse("geo:47.6,-122.3")),
+				new Intent(Intent.ACTION_VIEW, Uri.parse("google.streetview:cbll=46.414382,10.013988"))
+						.setPackage("com.google.android.apps.maps"),
+				getCalendarIntent(),
 				new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")),
-				new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0"))
+				new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
 		};
 		ArrayList<String> defaults = new ArrayList<>();
 		for (Intent intent : intents) {
@@ -271,7 +293,7 @@ public class AppMenu extends CanvasPieMenu {
 				addAppIcon(appIcon);
 			}
 		}
-		int max = Math.min(apps.size(), 6);
+		int max = Math.min(apps.size(), 8);
 		int i = icons.size();
 		for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
 			if (i >= max) {
