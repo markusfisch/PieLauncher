@@ -50,7 +50,14 @@ public class HomeActivity extends Activity {
 		if (pieView.inListMode() && gestureDetector.onTouchEvent(ev)) {
 			return true;
 		}
-		return super.dispatchTouchEvent(ev);
+		try {
+			return super.dispatchTouchEvent(ev);
+		} catch (IllegalStateException e) {
+			// never saw this happen on my devices but had two reportings
+			// from Google so it's probably better to catch and ignore this
+			// exception than letting the launcher crash
+			return false;
+		}
 	}
 
 	@Override
