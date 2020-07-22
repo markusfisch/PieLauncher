@@ -13,10 +13,14 @@ memory anywhere on the screen without even looking at it.
 
 ## Screenshots
 
-![Screenshot Zoomed](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-zoomed.png)
-![Screenshot Centered](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-centered.png)
-![Screenshot Search](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-search.png)
-![Screenshot Editor](fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-editor.png)
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-zoomed.png"
+	alt="Screenshot Zoomed" width="160"/>
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-centered.png"
+	alt="Screenshot Centered" width="160"/>
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-search.png"
+	alt="Screenshot Search" width="160"/>
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-editor.png"
+	alt="Screenshot Editor" width="160"/>
 
 ## Download
 
