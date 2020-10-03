@@ -15,7 +15,7 @@
 		android:paddingTop="64dp"
 		android:paddingBottom="16dp"
 		android:inputType="textShortMessage|textCapSentences"
-		android:imeOptions="actionDone|flagNoExtractUi"
+		android:imeOptions="actionSearch|flagNoExtractUi"
 		android:gravity="center"
 		android:textColor="@color/text_color"
 		android:maxLines="1"
