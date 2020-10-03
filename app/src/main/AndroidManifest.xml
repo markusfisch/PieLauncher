@@ -6,6 +6,7 @@
 	<supports-screens
 		android:largeScreens="true"
 		android:xlargeScreens="true"/>
+	<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
 	<application
 		tools:ignore="UnusedAttribute"
 		android:name=".app.PieLauncherApp"
