@@ -146,7 +146,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onScrollList(int y) {
 				y = Math.abs(y);
-				if (y > 0 && y < searchBarThreshold) {
+				if (y > 0) {
 					kb.hideFrom(searchInput);
 				}
 				int color = fadeColor(searchBarBackgroundColor,

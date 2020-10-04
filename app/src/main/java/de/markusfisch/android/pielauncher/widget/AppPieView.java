@@ -147,7 +147,7 @@ public class AppPieView extends View {
 	public void showList() {
 		mode = MODE_LIST;
 		cancelRipple();
-		scrollList(lastScrollY);
+		scrollTo(0, lastScrollY);
 		setVerticalScrollBarEnabled(true);
 		invalidateTouch();
 		invalidate();
@@ -179,7 +179,7 @@ public class AppPieView extends View {
 
 	public void filterAppList(String query) {
 		appList = PieLauncherApp.appMenu.filterAppsBy(query);
-		scrollList(0);
+		scrollTo(0, 0);
 		invalidateTouch();
 		invalidate();
 	}
