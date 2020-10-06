@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.8.0
+* Always hide soft keyboard when scrolling down
+* Set search action for soft keyboard
+* Choose eight icons into initial pie menu
+* Remove Material shadow from app icons
+
 ## 1.7.1
 * Ensure ripple effect is shown
 
