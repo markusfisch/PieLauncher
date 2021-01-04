@@ -34,6 +34,7 @@ import java.util.List;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
 
@@ -49,6 +50,7 @@ public class AppPieView extends View {
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
+	private static final float FADE_OUT_DURATION = 250f;
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -95,6 +97,8 @@ public class AppPieView extends View {
 	private AppMenu.Icon grabbedIcon;
 	private List<AppMenu.AppIcon> appList;
 	private int mode = MODE_PIE;
+	private long fadeOutFrom;
+	private boolean pieMenuVisible = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -318,6 +322,7 @@ public class AppPieView extends View {
 								editIconAt(touch);
 								break;
 						}
+						resetFadeOut();
 						invalidate();
 						break;
 					case MotionEvent.ACTION_MOVE:
@@ -335,6 +340,7 @@ public class AppPieView extends View {
 							keepScrolling(event);
 						}
 						postPerformAction(v, event);
+						fadeOutPieMenu();
 						break;
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_LIST) {
@@ -342,6 +348,7 @@ public class AppPieView extends View {
 							recycleVelocityTracker();
 						}
 						grabbedIcon = null;
+						fadeOutPieMenu();
 						invalidateTouch();
 						invalidate();
 						break;
@@ -353,6 +360,7 @@ public class AppPieView extends View {
 				int index = event.getActionIndex();
 				primaryId = event.getPointerId(index);
 				addTouchReference(event, primaryId, index);
+				pieMenuVisible = true;
 			}
 
 			private void updateReferences(MotionEvent event) {
@@ -808,18 +816,32 @@ public class AppPieView extends View {
 
 	private void drawPieMenu(Canvas canvas) {
 		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		if (shouldShowMenu()) {
+		boolean visible = pieMenuVisible;
+		long delta = SystemClock.uptimeMillis() - fadeOutFrom;
+		if (delta < FADE_OUT_DURATION) {
+			float f = delta / FADE_OUT_DURATION;
+			CanvasPieMenu.paint.setAlpha(255 - Math.round(f * 255f));
+			visible = true;
+			invalidate();
+		} else {
+			CanvasPieMenu.paint.setAlpha(255);
+		}
+		if (visible) {
 			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 			PieLauncherApp.appMenu.draw(canvas);
 		}
 	}
 
-	private boolean shouldShowMenu() {
-		return touch.x > -1;
+	private void resetFadeOut() {
+		fadeOutFrom = 0;
+	}
+
+	private void fadeOutPieMenu() {
+		fadeOutFrom = SystemClock.uptimeMillis();
 	}
 
 	private void invalidateTouch() {
-		touch.set(-1, -1);
+		pieMenuVisible = false;
 	}
 
 	private String getTip(boolean hasIcon) {
