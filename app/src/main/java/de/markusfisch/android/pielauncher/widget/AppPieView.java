@@ -66,31 +66,31 @@ public class AppPieView extends View {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
-	private final int translucentBackgroundColor;
-	private final float dp;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
 	private final String pinchZoomTip;
+	private final ScaleGestureDetector scaleDetector;
+	private final long tapTimeout;
+	private final long minLongPressDuration;
+	private final int editorPadding;
+	private final int listPadding;
+	private final int searchInputHeight;
+	private final int iconSize;
+	private final int iconTextPadding;
+	private final int translucentBackgroundColor;
+	private final float dp;
+	private final float textHeight;
+	private final float textOffset;
+	private final float touchSlopSq;
 
-	private ScaleGestureDetector scaleDetector;
 	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
 	private int minRadius;
 	private int maxRadius;
 	private int radius;
-	private long tapTimeout;
-	private long minLongPressDuration;
-	private int editorPadding;
-	private int listPadding;
-	private int searchInputHeight;
 	private int maxScrollY;
 	private int lastScrollY;
-	private int iconSize;
-	private int iconTextPadding;
-	private float textHeight;
-	private float textOffset;
-	private float touchSlopSq;
 	private ListListener listListener;
 	private AppMenu.Icon grabbedIcon;
 	private List<AppMenu.AppIcon> appList;
@@ -881,7 +881,7 @@ public class AppPieView extends View {
 	}
 
 	private class FlingRunnable implements Runnable {
-		private OverScroller scroller;
+		private final OverScroller scroller;
 		private int maxY;
 		private int pps;
 

@@ -53,8 +53,9 @@ public class AppMenu extends CanvasPieMenu {
 		void onUpdate();
 	}
 
-	private static Locale DEFAULT_LOCALE = Locale.getDefault();
-	private static boolean HAS_LAUNCHER_APP =
+	// This locale is just required for toLowerCase().
+	private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+	private static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 	private static final String MENU = "menu";
 	private static final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
@@ -299,8 +300,7 @@ public class AppMenu extends CanvasPieMenu {
 			if (i >= max) {
 				break;
 			}
-			if (!defaults.contains(
-					((ComponentName) entry.getKey()).getPackageName())) {
+			if (!defaults.contains(entry.getKey().getPackageName())) {
 				addAppIcon(entry.getValue());
 				++i;
 			}

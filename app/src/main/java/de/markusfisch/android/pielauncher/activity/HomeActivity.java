@@ -258,7 +258,7 @@ public class HomeActivity extends Activity {
 	}
 
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {
-		private int minimumVelocity;
+		private final int minimumVelocity;
 
 		private FlingListener(int minimumVelocity) {
 			this.minimumVelocity = minimumVelocity;
