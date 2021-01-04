@@ -6,7 +6,11 @@
 	<supports-screens
 		android:largeScreens="true"
 		android:xlargeScreens="true"/>
-	<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+	<!-- A launcher app needs to be able to query all packages. -->
+	<!-- For details see: https://developer.android.com/training/basics/intents/package-visibility#all-apps -->
+	<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+		tools:ignore="QueryAllPackagesPermission" />
+	<!-- A launcher app should be available all the time. -->
 	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 	<application
 		tools:ignore="UnusedAttribute"
