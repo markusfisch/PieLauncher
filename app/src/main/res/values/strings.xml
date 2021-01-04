@@ -3,4 +3,6 @@
 	<string name="tip_number_of_icons">For easiest use, try 4, 6 oder 8 icons.</string>
 	<string name="tip_pinch_zoom">Pinch/zoom to scale the pie menu.</string>
 	<string name="tip_drag_to_order">Drag icons to order pie menu.</string>
+	<string name="please_ignore_battery_optimization">Please disable battery optimizations for Pie Launcher to save energy and make it work faster.\n\nPie Launcher does not consume battery when not in use. A home screen launcher is an exception because it should always and immediately be available, which is prevented by battery optimizations.</string>
+	<string name="disable_battery_optimization">DISABLE BATTERY OPTIMIZATION</string>
 </resources>

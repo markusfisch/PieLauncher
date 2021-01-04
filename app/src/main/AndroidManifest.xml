@@ -7,6 +7,7 @@
 		android:largeScreens="true"
 		android:xlargeScreens="true"/>
 	<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 	<application
 		tools:ignore="UnusedAttribute"
 		android:name=".app.PieLauncherApp"
@@ -49,5 +50,8 @@
 				android:name="com.android.systemui.action_assist_icon"
 				android:resource="@drawable/ic_launcher"/>
 		</activity>
+		<activity
+			android:name=".activity.BatteryOptimizationActivity"
+			android:theme="@style/HomeTheme"/>
 	</application>
 </manifest>

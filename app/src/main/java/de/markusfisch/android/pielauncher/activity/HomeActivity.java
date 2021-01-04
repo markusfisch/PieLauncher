@@ -1,10 +1,8 @@
 package de.markusfisch.android.pielauncher.activity;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,9 +11,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.Window;
-import android.view.WindowInsets;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,7 +18,9 @@ import android.widget.TextView;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
+import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 
 public class HomeActivity extends Activity {
@@ -76,6 +73,7 @@ public class HomeActivity extends Activity {
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
 		setContentView(R.layout.activity_home);
+		showBatteryOptimizationInfoIfNecessary();
 
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
@@ -83,8 +81,8 @@ public class HomeActivity extends Activity {
 		initPieView(res);
 		initSearchInput();
 
-		listenForWindowInsets(pieView);
-		setTransparentSystemBars(getWindow());
+		SystemBars.listenForWindowInsets(pieView);
+		SystemBars.setTransparentSystemBars(getWindow());
 	}
 
 	@Override
@@ -242,46 +240,10 @@ public class HomeActivity extends Activity {
 		return searchInput.getVisibility() == View.VISIBLE;
 	}
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static void setTransparentSystemBars(Window window) {
-		if (window == null ||
-				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			return;
+	private void showBatteryOptimizationInfoIfNecessary() {
+		if (!BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
+			startActivity(new Intent(this, BatteryOptimizationActivity.class));
 		}
-		// this is important or subsequent (not the very first!) openings of
-		// the soft keyboard will reposition the DecorView according to the
-		// window insets
-		window.setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-		window.getDecorView().setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-						View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-						View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-		window.setStatusBarColor(0);
-		window.setNavigationBarColor(0);
-	}
-
-	@TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
-	private static void listenForWindowInsets(View view) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
-			return;
-		}
-		view.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-			@Override
-			public WindowInsets onApplyWindowInsets(View v,
-					WindowInsets insets) {
-				if (insets.hasSystemWindowInsets()) {
-					v.setPadding(
-							insets.getSystemWindowInsetLeft(),
-							// never set a top padding because the list should
-							// appear under the status bar
-							0,
-							insets.getSystemWindowInsetRight(),
-							insets.getSystemWindowInsetBottom());
-				}
-				return insets.consumeSystemWindowInsets();
-			}
-		});
 	}
 
 	private void updateAppList() {
