@@ -53,7 +53,6 @@ public class AppMenu extends CanvasPieMenu {
 		void onUpdate();
 	}
 
-	// This locale is just required for toLowerCase().
 	private static final Locale DEFAULT_LOCALE = Locale.getDefault();
 	private static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
@@ -71,6 +70,7 @@ public class AppMenu extends CanvasPieMenu {
 	private UpdateListener updateListener;
 	private UserHandle userHandle;
 	private LauncherApps launcherApps;
+	private boolean indexing = false;
 
 	public boolean launchApp(Context context) {
 		int selectedIcon = getSelectedIcon();
@@ -159,6 +159,10 @@ public class AppMenu extends CanvasPieMenu {
 		}.execute();
 	}
 
+	public boolean isIndexing() {
+		return indexing;
+	}
+
 	public void indexAppsAsync(Context context) {
 		indexAppsAsync(context, null);
 	}
@@ -177,6 +181,7 @@ public class AppMenu extends CanvasPieMenu {
 			launcherApps = (LauncherApps) appContext.getSystemService(
 					Context.LAUNCHER_APPS_SERVICE);
 		}
+		indexing = true;
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... nothing) {
@@ -186,6 +191,7 @@ public class AppMenu extends CanvasPieMenu {
 
 			@Override
 			protected void onPostExecute(Void nothing) {
+				indexing = false;
 				if (updateListener != null) {
 					updateListener.onUpdate();
 				}

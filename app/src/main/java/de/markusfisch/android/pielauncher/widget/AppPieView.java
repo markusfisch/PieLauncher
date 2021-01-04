@@ -231,6 +231,9 @@ public class AppPieView extends View {
 		if (ripple.draw(canvas)) {
 			invalidate();
 		}
+		if (PieLauncherApp.appMenu.isIndexing()) {
+			drawTip(canvas, "Loading…");
+		}
 	}
 
 	@Override
