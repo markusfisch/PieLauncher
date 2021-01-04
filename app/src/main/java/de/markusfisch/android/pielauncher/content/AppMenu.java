@@ -59,7 +59,7 @@ public class AppMenu extends CanvasPieMenu {
 	private static final String MENU = "menu";
 	private static final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
-			// compareToIgnoreCase() does not take locale into account
+			// compareToIgnoreCase() does not take locale into account.
 			return left.label.toLowerCase(DEFAULT_LOCALE).compareTo(
 					right.label.toLowerCase(DEFAULT_LOCALE));
 		}
@@ -137,9 +137,9 @@ public class AppMenu extends CanvasPieMenu {
 		return list;
 	}
 
-	// this AsyncTask is running for a short and finite time only
+	// This AsyncTask is running for a short and finite time only
 	// and it's perfectly okay to delay garbage collection of the
-	// parent instance until this task has been terminated
+	// parent instance until this task has been terminated.
 	@SuppressLint("StaticFieldLeak")
 	public void removePackageAsync(final String packageName) {
 		new AsyncTask<Void, Void, Void>() {
@@ -162,14 +162,14 @@ public class AppMenu extends CanvasPieMenu {
 		indexAppsAsync(context, null);
 	}
 
-	// this AsyncTask is running for a short and finite time only
+	// This AsyncTask is running for a short and finite time only
 	// and it's perfectly okay to delay garbage collection of the
-	// parent instance until this task has been terminated
+	// parent instance until this task has been terminated.
 	@SuppressLint("StaticFieldLeak")
 	public void indexAppsAsync(Context context,
 			final String packageNameRestriction) {
-		// get application context to not block garbage collection
-		// on other Context objects
+		// Get application context to not block garbage collection
+		// on other Context objects.
 		final Context appContext = context.getApplicationContext();
 		if (HAS_LAUNCHER_APP) {
 			userHandle = Process.myUserHandle();
@@ -197,10 +197,10 @@ public class AppMenu extends CanvasPieMenu {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
-			// remove old package and add it anew
+			// Remove old package and add it anew.
 			removePackageFromApps(packageNameRestriction);
-			// don't call removePackageFromPieMenu() here because the
-			// icon will be updated anyway by createIcons() below
+			// Don't call removePackageFromPieMenu() here because the
+			// icon will be updated anyway by createIcons() below.
 			intent.setPackage(packageNameRestriction);
 		} else {
 			apps.clear();
@@ -211,7 +211,7 @@ public class AppMenu extends CanvasPieMenu {
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.applicationInfo.packageName;
 			if (skip.equals(packageName)) {
-				// always skip this package
+				// Always skip this package.
 				continue;
 			}
 			if (HAS_LAUNCHER_APP) {
@@ -227,7 +227,7 @@ public class AppMenu extends CanvasPieMenu {
 						info.loadIcon(pm));
 			}
 		}
-		// always reload icons because drawables may have changed
+		// Always reload icons because drawables may have changed.
 		createIcons(context);
 	}
 
@@ -280,9 +280,9 @@ public class AppMenu extends CanvasPieMenu {
 			if (packageName == null || defaults.contains(packageName)) {
 				continue;
 			}
-			// get launch intent because the class name from above intents
+			// Get launch intent because the class name from above intents
 			// doesn't match the launch intent and so doesn't match the
-			// ComponentName key in apps
+			// ComponentName key in apps.
 			Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
 			if (launchIntent == null) {
 				continue;
@@ -370,20 +370,22 @@ public class AppMenu extends CanvasPieMenu {
 	private static List<String> readLines(InputStream is) {
 		ArrayList<String> list = new ArrayList<>();
 		BufferedReader reader = null;
+		// It's not possible to use automatic resource management
+		// for this statement because of minSDK.
 		try {
 			reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			while (reader.ready()) {
 				list.add(reader.readLine());
 			}
 		} catch (IOException e) {
-			// return what we got so far
+			// Return what we got so far.
 		} finally {
 			try {
 				if (reader != null) {
 					reader.close();
 				}
 			} catch (IOException e) {
-				// ignore, can't do anything about it
+				// Ignore, can't do anything about it.
 			}
 		}
 		return list;

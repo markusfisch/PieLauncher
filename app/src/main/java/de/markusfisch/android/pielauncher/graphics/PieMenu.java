@@ -69,7 +69,7 @@ public class PieMenu {
 			return;
 		}
 
-		// calculate positions and sizes
+		// Calculate positions and sizes.
 		int closestIcon = 0;
 		boolean cursorNearCenter = false;
 		double circumference = Math.PI * (radius * 2f);
@@ -83,7 +83,7 @@ public class PieMenu {
 		double maxIconSize = .8f * radius;
 		double maxWeight;
 
-		// calculate weight of each icon
+		// Calculate weight of each icon.
 		{
 			double cursorRadius = Math.sqrt(
 					centeredY * centeredY + centeredX * centeredX);
@@ -98,7 +98,7 @@ public class PieMenu {
 				cursorNearCenter = true;
 			}
 
-			// determine how close every icon is to the cursor
+			// Determine how close every icon is to the cursor.
 			{
 				double closestDistance = TAU;
 				double a = twist;
@@ -133,7 +133,7 @@ public class PieMenu {
 			}
 		}
 
-		// calculate size of icons
+		// Calculate size of icons.
 		{
 			double sizeUnit = circumference / weight;
 
@@ -142,7 +142,7 @@ public class PieMenu {
 				ic.size = ic.cellSize = sizeUnit * ic.weight;
 			}
 
-			// scale icons within cell
+			// Scale icons within cell.
 			{
 				double maxSize = sizeUnit * maxWeight;
 				if (maxSize > maxIconSize) {
@@ -154,14 +154,14 @@ public class PieMenu {
 			}
 		}
 
-		// calculate icon positions
+		// Calculate icon positions.
 		{
 			double difference = getAngleDifference(cursorAngle, closestAngle);
 			double angle = getPositiveAngle(cursorAngle -
 					(pixelsPerRadian * icons.get(closestIcon).cellSize) /
 							cellSize * difference);
 
-			// active icon
+			// Calculate active icon.
 			{
 				Icon ic = icons.get(closestIcon);
 				ic.x = centerX + (int) Math.round(
@@ -170,7 +170,7 @@ public class PieMenu {
 						radius * Math.sin(angle));
 			}
 
-			// calculate positions of all other icons
+			// Calculate positions of all other icons.
 			{
 				double leftAngle = angle;
 				double rightAngle = angle;
@@ -184,7 +184,7 @@ public class PieMenu {
 						left = numberOfIcons - 1;
 					}
 
-					// break here when number of icons is odd
+					// Break here when number of icons is odd.
 					if (right == left) {
 						break;
 					}
@@ -204,7 +204,7 @@ public class PieMenu {
 					lic.y = centerY + (int) Math.round(
 							radius * Math.sin(leftAngle));
 
-					// break here when number of icons is even
+					// Break here when number of icons is even.
 					if (left == right) {
 						break;
 					}

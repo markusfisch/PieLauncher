@@ -50,9 +50,9 @@ public class HomeActivity extends Activity {
 		try {
 			return super.dispatchTouchEvent(ev);
 		} catch (IllegalStateException e) {
-			// never saw this happen on my devices but had two reportings
+			// Never saw this happen on any of my devices but had two reports
 			// from Google so it's probably better to catch and ignore this
-			// exception than letting the launcher crash
+			// exception than letting the launcher crash.
 			return false;
 		}
 	}
@@ -63,9 +63,9 @@ public class HomeActivity extends Activity {
 
 		Resources res = getResources();
 
-		// restrict to current orientation, whatever that is;
-		// makes it possible to use it on tablets in landscape and
-		// in portrait for phones; should become a choice at some point
+		// Restrict to current orientation, whatever that is.
+		// Makes it possible to use it on tablets in landscape and
+		// in portrait for phones. Should become a choice at some point.
 		setRequestedOrientation(res.getConfiguration().orientation);
 
 		kb = new SoftKeyboard(this);
@@ -88,20 +88,20 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		// because this activity has the launch mode "singleTask", it'll get
-		// an onNewIntent() when the activity is re-launched
+		// Because this activity has the launch mode "singleTask", it'll get
+		// an onNewIntent() when the activity is re-launched.
 		if (intent != null &&
 				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
 						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
-			// if this activity is re-launched but _not_ brought to front,
-			// the home button was pressed while this activity was on screen
+			// If this activity is re-launched but _not_ brought to front,
+			// the home button was pressed while this activity was on screen.
 			if (pieView.inEditMode()) {
 				pieView.endEditMode();
 			} else if (!isSearchVisible() &&
-					// only show all apps if the activity was recently paused
+					// Only show all apps if the activity was recently paused
 					// (by pressing the home button) and _not_ if onPause()
 					// was triggered by pressing the overview button and
-					// *then* the home button
+					// *then* the home button.
 					System.currentTimeMillis() - pausedAt < 100) {
 				// onNewIntent() is always followed by onResume()
 				showAllAppsOnResume = true;
@@ -211,13 +211,13 @@ public class HomeActivity extends Activity {
 		searchInput.setVisibility(View.VISIBLE);
 		kb.showFor(searchInput);
 
-		// clear search input
+		// Clear search input.
 		boolean searchWasEmpty = searchInput.getText().toString().isEmpty();
 		updateAfterTextChange = false;
 		searchInput.setText(null);
 		updateAfterTextChange = true;
 
-		// keeps list state if possible
+		// Keeps list state if possible.
 		if (!searchWasEmpty || pieView.isEmpty()) {
 			updateAppList();
 		}
@@ -230,9 +230,9 @@ public class HomeActivity extends Activity {
 			searchInput.setVisibility(View.GONE);
 			kb.hideFrom(searchInput);
 		}
-		// ensure the pie menu is initially hidden because on some devices
+		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
-		// ACTION_DOWN event
+		// ACTION_DOWN event.
 		pieView.hideList();
 	}
 

@@ -26,8 +26,8 @@ public class PieLauncherApp extends Application {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-			// because package broadcasts stop mysteriously working after
-			// a while on Android Nougat only
+			// Because package broadcasts stop mysteriously working after
+			// a while on Android Nougat only.
 			registerCallback();
 		} else {
 			registerPackageEventReceiver();

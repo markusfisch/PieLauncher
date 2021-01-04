@@ -396,7 +396,7 @@ public class AppPieView extends View {
 						return i;
 					}
 				}
-				// if the ID wasn't found, the pointer must have gone up
+				// If the ID wasn't found, the pointer must have gone up.
 				primaryId = id;
 				return count - 1;
 			}
@@ -418,9 +418,9 @@ public class AppPieView extends View {
 				lastScrollY = clamp(scrollY, 0, maxScrollY);
 				scrollList(lastScrollY);
 				if (lastScrollY == 0 || lastScrollY == maxScrollY) {
-					// move reference to current coordinate if this
+					// Move reference to current coordinate if this
 					// event wouldn't move the list to make movements
-					// in the opposite direction immediate
+					// in the opposite direction immediate.
 					tr.pos.y = y;
 					scrollOffset = getScrollY();
 				}
@@ -429,7 +429,7 @@ public class AppPieView extends View {
 			private void keepScrolling(MotionEvent event) {
 				if (event.getPointerCount() < 2 && velocityTracker != null) {
 					// 1000 means getYVelocity() will return pixels
-					// per second
+					// per second.
 					velocityTracker.computeCurrentVelocity(1000);
 					flingRunnable.start(Math.round(
 							velocityTracker.getYVelocity()));
@@ -544,7 +544,7 @@ public class AppPieView extends View {
 		int totalHeight = 0;
 		int largestWidth = 0;
 		int largestHeight = 0;
-		// initialize rects and calculate totals
+		// Initialize rects and calculate totals.
 		for (int i = 0; i < length; ++i) {
 			Bitmap icon = icons[i];
 			int w = icon.getWidth();
@@ -584,7 +584,8 @@ public class AppPieView extends View {
 		if (listListener != null) {
 			listListener.onHideList();
 		}
-		// set touch position for dragging; possibly reset by onHideList()
+		// Set touch position for dragging.
+		// Possibly reset by onHideList().
 		touch.set(from.x, from.y);
 		editIcon(appIcon);
 		resetScrollSilently();
@@ -725,8 +726,8 @@ public class AppPieView extends View {
 	}
 
 	private void drawList(Canvas canvas) {
-		// manually draw an icon grid because GridView doesn't perform too
-		// well on low-end devices and doing it manually gives us more control
+		// Manually draw an icon grid because GridView doesn't perform too
+		// well on low-end devices and doing it manually gives us more control.
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		int innerWidth = viewWidth - listPadding * 2;
 		int columns = Math.min(5, innerWidth / iconSize);
@@ -892,7 +893,7 @@ public class AppPieView extends View {
 			if (maxY != maxScrollY) {
 				maxY = maxScrollY;
 				// OverScroller.springBack() stops the animation so we
-				// cannot use it and have to start a new fling instead
+				// cannot use it and have to start a new fling instead.
 				scroller.forceFinished(true);
 				scroller.fling(
 						0, getScrollY(),

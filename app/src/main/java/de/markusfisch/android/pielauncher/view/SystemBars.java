@@ -14,9 +14,9 @@ public class SystemBars {
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
 		}
-		// this is important or subsequent (not the very first!) openings of
+		// This is important or subsequent (not the very first!) openings of
 		// the soft keyboard will reposition the DecorView according to the
-		// window insets
+		// window insets.
 		window.setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		window.getDecorView().setSystemUiVisibility(
@@ -39,8 +39,8 @@ public class SystemBars {
 				if (insets.hasSystemWindowInsets()) {
 					v.setPadding(
 							insets.getSystemWindowInsetLeft(),
-							// never set a top padding because the list should
-							// appear under the status bar
+							// Never set a top padding because the list should
+							// appear under the status bar.
 							0,
 							insets.getSystemWindowInsetRight(),
 							insets.getSystemWindowInsetBottom());
