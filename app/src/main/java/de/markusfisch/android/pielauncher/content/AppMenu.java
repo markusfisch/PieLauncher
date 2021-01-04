@@ -53,19 +53,18 @@ public class AppMenu extends CanvasPieMenu {
 		void onUpdate();
 	}
 
-	private static final Locale DEFAULT_LOCALE = Locale.getDefault();
 	private static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 	private static final String MENU = "menu";
-	private static final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
-		public int compare(AppIcon left, AppIcon right) {
-			// compareToIgnoreCase() does not take locale into account.
-			return left.label.toLowerCase(DEFAULT_LOCALE).compareTo(
-					right.label.toLowerCase(DEFAULT_LOCALE));
-		}
-	};
 
 	private final HashMap<ComponentName, AppIcon> apps = new HashMap<>();
+	private final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
+		public int compare(AppIcon left, AppIcon right) {
+			// compareToIgnoreCase() does not take locale into account.
+			return left.label.toLowerCase(Locale.getDefault()).compareTo(
+					right.label.toLowerCase(Locale.getDefault()));
+		}
+	};
 
 	private UpdateListener updateListener;
 	private UserHandle userHandle;
@@ -111,7 +110,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (query == null) {
 			query = "";
 		}
-		query = query.trim().toLowerCase(DEFAULT_LOCALE);
+		query = query.trim().toLowerCase(Locale.getDefault());
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();
 		ArrayList<AppIcon> hamming = new ArrayList<>();
@@ -120,7 +119,7 @@ public class AppMenu extends CanvasPieMenu {
 		} else {
 			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = entry.getValue();
-				String label = appIcon.label.toLowerCase(DEFAULT_LOCALE);
+				String label = appIcon.label.toLowerCase(Locale.getDefault());
 				if (label.startsWith(query)) {
 					list.add(appIcon);
 				} else if (label.contains(query)) {
