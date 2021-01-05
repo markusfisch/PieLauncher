@@ -50,7 +50,7 @@ public class AppPieView extends View {
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
-	private static final float FADE_OUT_DURATION = 250f;
+	private static final float FADE_DURATION = 250f;
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -97,8 +97,8 @@ public class AppPieView extends View {
 	private AppMenu.Icon grabbedIcon;
 	private List<AppMenu.AppIcon> appList;
 	private int mode = MODE_PIE;
+	private long fadeInFrom;
 	private long fadeOutFrom;
-	private boolean pieMenuVisible = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -324,6 +324,7 @@ public class AppPieView extends View {
 								editIconAt(touch);
 								break;
 						}
+						fadeInFrom = event.getEventTime();
 						resetFadeOut();
 						invalidate();
 						break;
@@ -362,7 +363,6 @@ public class AppPieView extends View {
 				int index = event.getActionIndex();
 				primaryId = event.getPointerId(index);
 				addTouchReference(event, primaryId, index);
-				pieMenuVisible = true;
 			}
 
 			private void updateReferences(MotionEvent event) {
@@ -612,6 +612,7 @@ public class AppPieView extends View {
 		ungrabbedIcons.clear();
 		ungrabbedIcons.addAll(PieLauncherApp.appMenu.icons);
 		grabbedIcon = icon;
+		CanvasPieMenu.paint.setAlpha(255);
 		mode = MODE_EDIT;
 	}
 
@@ -817,20 +818,24 @@ public class AppPieView extends View {
 	}
 
 	private void drawPieMenu(Canvas canvas) {
-		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		boolean visible = pieMenuVisible;
-		long delta = SystemClock.uptimeMillis() - fadeOutFrom;
-		if (delta < FADE_OUT_DURATION) {
-			float f = delta / FADE_OUT_DURATION;
-			CanvasPieMenu.paint.setAlpha(255 - Math.round(f * 255f));
-			visible = true;
-			invalidate();
+		float f = 0;
+		long now = SystemClock.uptimeMillis();
+		if (fadeInFrom > 0) {
+			f = Math.min(1f, (now - fadeInFrom) / FADE_DURATION);
 		} else {
-			CanvasPieMenu.paint.setAlpha(255);
+			long delta = now - fadeOutFrom;
+			if (delta < FADE_DURATION) {
+				f = 1f - delta / FADE_DURATION;
+			}
 		}
-		if (visible) {
+		if (f > 0) {
+			CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
+			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 			PieLauncherApp.appMenu.draw(canvas);
+			if (f < 1f) {
+				invalidate();
+			}
 		}
 	}
 
@@ -843,7 +848,7 @@ public class AppPieView extends View {
 	}
 
 	private void invalidateTouch() {
-		pieMenuVisible = false;
+		fadeInFrom = 0;
 	}
 
 	private String getTip(boolean hasIcon) {
