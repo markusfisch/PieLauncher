@@ -154,6 +154,7 @@ public class AppPieView extends View {
 		scrollTo(0, lastScrollY);
 		setVerticalScrollBarEnabled(true);
 		invalidateTouch();
+		resetFadeOut();
 		invalidate();
 	}
 
@@ -162,6 +163,7 @@ public class AppPieView extends View {
 		resetScrollSilently();
 		setVerticalScrollBarEnabled(false);
 		invalidateTouch();
+		resetFadeOut();
 		invalidate();
 	}
 
