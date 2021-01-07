@@ -153,8 +153,8 @@ public class AppPieView extends View {
 		cancelRipple();
 		scrollTo(0, lastScrollY);
 		setVerticalScrollBarEnabled(true);
-		invalidateTouch();
-		resetFadeOut();
+		hidePieMenu();
+		resetFadeOutPieMenu();
 		invalidate();
 	}
 
@@ -162,8 +162,8 @@ public class AppPieView extends View {
 		mode = MODE_PIE;
 		resetScrollSilently();
 		setVerticalScrollBarEnabled(false);
-		invalidateTouch();
-		resetFadeOut();
+		hidePieMenu();
+		resetFadeOutPieMenu();
 		invalidate();
 	}
 
@@ -186,7 +186,8 @@ public class AppPieView extends View {
 	public void filterAppList(String query) {
 		appList = PieLauncherApp.appMenu.filterAppsBy(query);
 		scrollTo(0, 0);
-		invalidateTouch();
+		hidePieMenu();
+		resetFadeOutPieMenu();
 		invalidate();
 	}
 
@@ -325,7 +326,7 @@ public class AppPieView extends View {
 								break;
 						}
 						fadeInFrom = event.getEventTime();
-						resetFadeOut();
+						resetFadeOutPieMenu();
 						invalidate();
 						break;
 					case MotionEvent.ACTION_MOVE:
@@ -343,16 +344,16 @@ public class AppPieView extends View {
 							keepScrolling(event);
 						}
 						postPerformAction(v, event);
-						fadeOutPieMenu();
 						break;
 					case MotionEvent.ACTION_CANCEL:
-						if (mode == MODE_LIST) {
+						if (mode == MODE_PIE) {
+							fadeOutPieMenu();
+						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							recycleVelocityTracker();
 						}
 						grabbedIcon = null;
-						fadeOutPieMenu();
-						invalidateTouch();
+						hidePieMenu();
 						invalidate();
 						break;
 				}
@@ -511,7 +512,7 @@ public class AppPieView extends View {
 						v.performClick();
 						performAction(v.getContext(), at, wasTap);
 						performActionRunnable = null;
-						invalidateTouch();
+						hidePieMenu();
 						invalidate();
 					}
 				};
@@ -642,8 +643,11 @@ public class AppPieView extends View {
 				if (listListener != null) {
 					listListener.onOpenList();
 				}
-			} else if (PieLauncherApp.appMenu.launchApp(context)) {
-				ripple.set(at);
+			} else {
+				if (PieLauncherApp.appMenu.launchApp(context)) {
+					ripple.set(at);
+				}
+				fadeOutPieMenu();
 			}
 		} else if (mode == MODE_LIST && wasTap) {
 			performListAction(context, at.x, at.y);
@@ -839,7 +843,7 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void resetFadeOut() {
+	private void resetFadeOutPieMenu() {
 		fadeOutFrom = 0;
 	}
 
@@ -847,7 +851,7 @@ public class AppPieView extends View {
 		fadeOutFrom = SystemClock.uptimeMillis();
 	}
 
-	private void invalidateTouch() {
+	private void hidePieMenu() {
 		fadeInFrom = 0;
 	}
 
