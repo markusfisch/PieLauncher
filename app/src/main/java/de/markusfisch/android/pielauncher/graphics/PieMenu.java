@@ -38,14 +38,6 @@ public class PieMenu {
 		return selectedIcon;
 	}
 
-	public int getCenterX() {
-		return centerX;
-	}
-
-	public int getCenterY() {
-		return centerY;
-	}
-
 	public void set(int x, int y, double radius) {
 		set(x, y, radius, 0);
 	}
