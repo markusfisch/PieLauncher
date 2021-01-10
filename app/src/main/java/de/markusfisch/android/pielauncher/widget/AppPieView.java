@@ -141,7 +141,9 @@ public class AppPieView extends View {
 		minLongPressDuration = ViewConfiguration.getLongPressTimeout();
 		ripple.setDuration(minLongPressDuration);
 
-		PieLauncherApp.appMenu.indexAppsAsync(context);
+		if (PieLauncherApp.appMenu.isEmpty()) {
+			PieLauncherApp.appMenu.indexAppsAsync(context);
+		}
 		initTouchListener();
 	}
 

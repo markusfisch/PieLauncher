@@ -158,6 +158,10 @@ public class AppMenu extends CanvasPieMenu {
 		}.execute();
 	}
 
+	public boolean isEmpty() {
+		return apps.isEmpty();
+	}
+
 	public boolean isIndexing() {
 		return indexing;
 	}
