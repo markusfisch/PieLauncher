@@ -1,0 +1,5 @@
+* Always hide soft keyboard when scrolling down
+* Set search action for soft keyboard
+* Choose eight icons into initial pie menu
+* Remove Material shadow from app icons
+
