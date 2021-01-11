@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.9.0
+* Fade pie menu in and out
+* Smooth icon positions in edit mode
+* Give some feedback while indexing apps
+* Request to ignore battery optimizations
+
 ## 1.8.0
 * Always hide soft keyboard when scrolling down
 * Set search action for soft keyboard
