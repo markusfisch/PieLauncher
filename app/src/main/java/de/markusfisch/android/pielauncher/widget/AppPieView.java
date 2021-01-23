@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.VelocityTracker;
@@ -319,6 +320,8 @@ public class AppPieView extends View {
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch);
+								performHapticFeedback(
+										HapticFeedbackConstants.CLOCK_TICK);
 								break;
 							case MODE_LIST:
 								initScroll(event);
@@ -468,6 +471,8 @@ public class AppPieView extends View {
 				longPressRunnable = new Runnable() {
 					@Override
 					public void run() {
+						performHapticFeedback(
+								HapticFeedbackConstants.LONG_PRESS);
 						addIconInteractively(at);
 						longPressRunnable = null;
 					}
@@ -513,7 +518,10 @@ public class AppPieView extends View {
 					@Override
 					public void run() {
 						v.performClick();
-						performAction(v.getContext(), at, wasTap);
+						if (performAction(v.getContext(), at, wasTap)) {
+							v.performHapticFeedback(
+									HapticFeedbackConstants.CONTEXT_CLICK);
+						}
 						performActionRunnable = null;
 						hidePieMenu();
 						invalidate();
@@ -641,7 +649,8 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void performAction(Context context, Point at, boolean wasTap) {
+	private boolean performAction(Context context, Point at, boolean wasTap) {
+		boolean successful = false;
 		if (mode == MODE_PIE) {
 			if (wasTap) {
 				if (listListener != null) {
@@ -650,17 +659,19 @@ public class AppPieView extends View {
 			} else {
 				if (PieLauncherApp.appMenu.launchApp(context)) {
 					ripple.set(at);
+					successful = true;
 				}
 			}
 			fadeOutPieMenu();
 		} else if (mode == MODE_LIST && wasTap) {
-			performListAction(context, at.x, at.y);
+			successful = performListAction(context, at.x, at.y);
 		} else if (mode == MODE_EDIT) {
-			performEditAction(context);
+			successful = performEditAction(context);
 		}
+		return successful;
 	}
 
-	private void performListAction(Context context, int x, int y) {
+	private boolean performListAction(Context context, int x, int y) {
 		AppMenu.AppIcon appIcon = getListIconAt(x, y);
 		if (appIcon != null) {
 			PieLauncherApp.appMenu.launchApp(context, appIcon);
@@ -668,7 +679,9 @@ public class AppPieView extends View {
 				listListener.onHideList();
 			}
 			ripple.set(x, y);
+			return true;
 		}
+		return false;
 	}
 
 	private AppMenu.AppIcon getListIconAt(int x, int y) {
@@ -682,18 +695,21 @@ public class AppPieView extends View {
 		return null;
 	}
 
-	private void performEditAction(Context context) {
+	private boolean performEditAction(Context context) {
+		boolean successful = false;
 		if (iconAddRect.contains(touch.x, touch.y)) {
 			if (grabbedIcon != null) {
 				rollback();
 			} else {
 				((Activity) context).onBackPressed();
 			}
+			successful = true;
 		} else if (iconRemoveRect.contains(touch.x, touch.y)) {
 			ripple.set(touch);
 			if (grabbedIcon != null) {
 				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
 			}
+			successful = true;
 		} else if (iconInfoRect.contains(touch.x, touch.y)) {
 			ripple.set(touch);
 			if (grabbedIcon != null) {
@@ -701,15 +717,18 @@ public class AppPieView extends View {
 				startAppInfo(((AppMenu.AppIcon) grabbedIcon)
 						.componentName.getPackageName());
 			}
+			successful = true;
 		} else if (iconDoneRect.contains(touch.x, touch.y)) {
 			if (grabbedIcon != null) {
 				rollback();
 			} else {
 				endEditMode();
 			}
+			successful = true;
 		}
 		grabbedIcon = null;
 		PieLauncherApp.appMenu.updateSmoothing();
+		return successful;
 	}
 
 	private void rollback() {
@@ -743,6 +762,8 @@ public class AppPieView extends View {
 			float sizeSq = Math.round(icon.size * icon.size);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
 				editIcon(icon);
+				performHapticFeedback(
+						HapticFeedbackConstants.CLOCK_TICK);
 				break;
 			}
 		}
