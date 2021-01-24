@@ -79,6 +79,7 @@ public class AppPieView extends View {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
+	private final Bitmap iconLaunchFirst;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
 	private final String pinchZoomTip;
@@ -90,6 +91,7 @@ public class AppPieView extends View {
 	private final int searchInputHeight;
 	private final int iconSize;
 	private final int iconTextPadding;
+	private final int iconLaunchFirstHalf;
 	private final int translucentBackgroundColor;
 	private final float dp;
 	private final float textHeight;
@@ -111,6 +113,7 @@ public class AppPieView extends View {
 	private AppMenu.Icon grabbedIcon;
 	private long fadeInFrom;
 	private long fadeOutFrom;
+	private boolean showLaunchFirst = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -144,6 +147,9 @@ public class AppPieView extends View {
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
+		iconLaunchFirst = getBitmapFromDrawable(res,
+				R.drawable.ic_launch_first);
+		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
 
 		ViewConfiguration configuration = ViewConfiguration.get(context);
 		float touchSlop = configuration.getScaledTouchSlop();
@@ -199,6 +205,7 @@ public class AppPieView extends View {
 
 	public void filterAppList(String query) {
 		appList = PieLauncherApp.appMenu.filterAppsBy(query);
+		showLaunchFirst = !TextUtils.isEmpty(query);
 		scrollList(0, false);
 		lastScrollY = 0;
 		hidePieMenu();
@@ -800,7 +807,13 @@ public class AppPieView extends View {
 		int x = listPadding;
 		int y = listPadding + searchInputHeight;
 		int wrapX = listPadding + cellWidth * columns;
-		for (int i = 0, l = appList.size(); i < l; ++i) {
+		int size = appList.size();
+		if (showLaunchFirst && size > 0) {
+			canvas.drawBitmap(iconLaunchFirst,
+					x + labelX - iconLaunchFirstHalf,
+					y - listPadding, paintActive);
+		}
+		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
 				AppMenu.AppIcon appIcon = appList.get(i);
 				appIcon.hitRect.set(x, y, x + cellWidth, y + cellHeight);
