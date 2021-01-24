@@ -142,9 +142,9 @@ public class HomeActivity extends Activity {
 			}
 
 			@Override
-			public void onScrollList(int y) {
+			public void onScrollList(int y, boolean isScrolling) {
 				y = Math.abs(y);
-				if (y > 0) {
+				if (isScrolling && y > 0) {
 					kb.hideFrom(searchInput);
 				}
 				int color = fadeColor(searchBarBackgroundColor,
@@ -217,7 +217,7 @@ public class HomeActivity extends Activity {
 		searchInput.setText(null);
 		updateAfterTextChange = true;
 
-		// Keeps list state if possible.
+		// Remove filter and reset last scroll position.
 		if (!searchWasEmpty || pieView.isEmpty()) {
 			updateAppList();
 		}

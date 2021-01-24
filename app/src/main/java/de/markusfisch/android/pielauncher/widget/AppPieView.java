@@ -45,7 +45,7 @@ public class AppPieView extends View {
 
 		void onHideList();
 
-		void onScrollList(int y);
+		void onScrollList(int y, boolean isScrolling);
 	}
 
 	private static final int HAPTIC_FEEDBACK_CONFIRM =
@@ -165,7 +165,7 @@ public class AppPieView extends View {
 	public void showList() {
 		mode = MODE_LIST;
 		cancelRipple();
-		scrollTo(0, lastScrollY);
+		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
 		hidePieMenu();
 		resetFadeOutPieMenu();
@@ -199,7 +199,8 @@ public class AppPieView extends View {
 
 	public void filterAppList(String query) {
 		appList = PieLauncherApp.appMenu.filterAppsBy(query);
-		scrollTo(0, 0);
+		scrollList(0, false);
+		lastScrollY = 0;
 		hidePieMenu();
 		resetFadeOutPieMenu();
 		invalidate();
@@ -445,7 +446,7 @@ public class AppPieView extends View {
 				int y = Math.round(event.getY(index));
 				int scrollY = scrollOffset + (tr.pos.y - y);
 				lastScrollY = clamp(scrollY, 0, maxScrollY);
-				scrollList(lastScrollY);
+				scrollList(lastScrollY, true);
 				if (lastScrollY == 0 || lastScrollY == maxScrollY) {
 					// Move reference to current coordinate if this
 					// event wouldn't move the list to make movements
@@ -642,10 +643,10 @@ public class AppPieView extends View {
 		scrollTo(0, 0);
 	}
 
-	private void scrollList(int y) {
+	private void scrollList(int y, boolean isScrolling) {
 		scrollTo(0, y);
 		if (listListener != null) {
-			listListener.onScrollList(y);
+			listListener.onScrollList(y, isScrolling);
 		}
 	}
 
@@ -982,7 +983,7 @@ public class AppPieView extends View {
 						0, maxY,
 						0, listPadding);
 			}
-			scrollList(scroller.getCurrY());
+			scrollList(scroller.getCurrY(), true);
 			update();
 		}
 
