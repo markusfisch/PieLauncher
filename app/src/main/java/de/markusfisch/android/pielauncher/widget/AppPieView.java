@@ -48,6 +48,16 @@ public class AppPieView extends View {
 		void onScrollList(int y);
 	}
 
+	private static final int HAPTIC_FEEDBACK_CONFIRM =
+			Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+					? HapticFeedbackConstants.KEYBOARD_TAP
+					: Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+					? HapticFeedbackConstants.CONTEXT_CLICK
+					: HapticFeedbackConstants.CONFIRM;
+	private static final int HAPTIC_FEEDBACK_DOWN =
+			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+					? HapticFeedbackConstants.KEYBOARD_TAP
+					: HapticFeedbackConstants.CLOCK_TICK;
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
@@ -320,8 +330,7 @@ public class AppPieView extends View {
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch);
-								performHapticFeedback(
-										HapticFeedbackConstants.CLOCK_TICK);
+								performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
 								break;
 							case MODE_LIST:
 								initScroll(event);
@@ -519,8 +528,7 @@ public class AppPieView extends View {
 					public void run() {
 						v.performClick();
 						if (performAction(v.getContext(), at, wasTap)) {
-							v.performHapticFeedback(
-									HapticFeedbackConstants.CONTEXT_CLICK);
+							v.performHapticFeedback(HAPTIC_FEEDBACK_CONFIRM);
 						}
 						performActionRunnable = null;
 						hidePieMenu();
@@ -762,8 +770,7 @@ public class AppPieView extends View {
 			float sizeSq = Math.round(icon.size * icon.size);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
 				editIcon(icon);
-				performHapticFeedback(
-						HapticFeedbackConstants.CLOCK_TICK);
+				performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
 				break;
 			}
 		}
