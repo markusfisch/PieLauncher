@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.10.0
+* Add haptic feedback
+* Improve tip messages
+
 ## 1.9.0
 * Fade pie menu in and out
 * Smooth icon positions in edit mode
