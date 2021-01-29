@@ -488,13 +488,12 @@ public class AppPieView extends View {
 					return;
 				}
 				initRipple();
-				final Point at = new Point(touch.x, touch.y);
 				longPressRunnable = new Runnable() {
 					@Override
 					public void run() {
 						performHapticFeedback(
 								HapticFeedbackConstants.LONG_PRESS);
-						addIconInteractively(appIcon, at);
+						addIconInteractively(appIcon);
 						longPressRunnable = null;
 					}
 				};
@@ -621,16 +620,13 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void addIconInteractively(AppMenu.Icon appIcon, Point from) {
+	private void addIconInteractively(AppMenu.Icon appIcon) {
 		if (appIcon == null) {
 			return;
 		}
 		if (listListener != null) {
 			listListener.onHideList();
 		}
-		// Set touch position for dragging.
-		// Possibly reset by onHideList().
-		touch.set(from.x, from.y);
 		editIcon(appIcon);
 		resetScrollWithoutAnimation();
 		invalidate();
@@ -683,21 +679,21 @@ public class AppPieView extends View {
 			}
 			fadeOutPieMenu();
 		} else if (mode == MODE_LIST && wasTap) {
-			successful = performListAction(context, at.x, at.y);
+			successful = performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
 			successful = performEditAction(context);
 		}
 		return successful;
 	}
 
-	private boolean performListAction(Context context, int x, int y) {
-		AppMenu.AppIcon appIcon = getListIconAt(x, y);
+	private boolean performListAction(Context context, Point at) {
+		AppMenu.AppIcon appIcon = getListIconAt(at.x, at.y);
 		if (appIcon != null) {
 			PieLauncherApp.appMenu.launchApp(context, appIcon);
 			if (listListener != null) {
 				listListener.onHideList();
 			}
-			ripple.set(x, y);
+			ripple.set(at);
 			return true;
 		}
 		return false;
