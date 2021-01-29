@@ -483,6 +483,10 @@ public class AppPieView extends View {
 
 			private void initLongPress() {
 				cancelLongPress();
+				final AppMenu.Icon appIcon = getListIconAt(touch.x, touch.y);
+				if (appIcon == null) {
+					return;
+				}
 				initRipple();
 				final Point at = new Point(touch.x, touch.y);
 				longPressRunnable = new Runnable() {
@@ -490,7 +494,7 @@ public class AppPieView extends View {
 					public void run() {
 						performHapticFeedback(
 								HapticFeedbackConstants.LONG_PRESS);
-						addIconInteractively(at);
+						addIconInteractively(appIcon, at);
 						longPressRunnable = null;
 					}
 				};
@@ -617,8 +621,7 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void addIconInteractively(Point from) {
-		AppMenu.Icon appIcon = getListIconAt(from.x, from.y);
+	private void addIconInteractively(AppMenu.Icon appIcon, Point from) {
 		if (appIcon == null) {
 			return;
 		}
