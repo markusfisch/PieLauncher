@@ -60,9 +60,14 @@ public class AppMenu extends CanvasPieMenu {
 	private final HashMap<ComponentName, AppIcon> apps = new HashMap<>();
 	private final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
+			// Fast enough to do it for every comparison.
+			// Otherwise, if defaultLocale was a permanent field outside
+			// this scope, we'd need to listen for configuration changes
+			// because the locale may change.
+			Locale defaultLocale = Locale.getDefault();
 			// compareToIgnoreCase() does not take locale into account.
-			return left.label.toLowerCase(Locale.getDefault()).compareTo(
-					right.label.toLowerCase(Locale.getDefault()));
+			return left.label.toLowerCase(defaultLocale).compareTo(
+					right.label.toLowerCase(defaultLocale));
 		}
 	};
 
