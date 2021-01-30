@@ -17,7 +17,8 @@ public class BatteryOptimizationActivity extends Activity {
 		findViewById(R.id.disable_battery_optimization).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				BatteryOptimization.requestDisable(BatteryOptimizationActivity.this);
+				BatteryOptimization.requestDisable(
+						BatteryOptimizationActivity.this);
 				finish();
 			}
 		});

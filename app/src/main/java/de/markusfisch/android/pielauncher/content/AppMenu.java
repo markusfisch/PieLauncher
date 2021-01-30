@@ -376,7 +376,7 @@ public class AppMenu extends CanvasPieMenu {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			// return empty array
+			// Return an empty array.
 		}
 		return icons;
 	}
@@ -385,8 +385,10 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<String> list = new ArrayList<>();
 		BufferedReader reader = null;
 		// It's not possible to use automatic resource management
-		// for this statement because of minSDK.
+		// for this statement because it requires minSDK 19.
 		try {
+			// StandardCharsets.UTF_8 cannot be used because it requires
+			// minSDK 19.
 			reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			while (reader.ready()) {
 				list.add(reader.readLine());
@@ -423,6 +425,8 @@ public class AppMenu extends CanvasPieMenu {
 			return false;
 		}
 		try {
+			// StandardCharsets.UTF_8 cannot be used because it requires
+			// minSDK 19.
 			byte[] lf = "\n".getBytes("UTF-8");
 			for (String line : lines) {
 				os.write(line.getBytes("UTF-8"));
@@ -435,7 +439,7 @@ public class AppMenu extends CanvasPieMenu {
 			try {
 				os.close();
 			} catch (IOException e) {
-				// ignore, can't do anything about it
+				// Ignore, can't do anything about it.
 			}
 		}
 	}
