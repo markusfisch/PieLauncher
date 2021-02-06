@@ -76,7 +76,7 @@ public class AppMenu extends CanvasPieMenu {
 	private LauncherApps launcherApps;
 	private boolean indexing = false;
 
-	public boolean launchApp(Context context) {
+	public boolean launchSelectedApp(Context context) {
 		int selectedIcon = getSelectedIcon();
 		if (selectedIcon > -1) {
 			launchApp(context, ((AppIcon) icons.get(selectedIcon)));

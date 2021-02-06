@@ -672,7 +672,7 @@ public class AppPieView extends View {
 					listListener.onOpenList();
 				}
 			} else {
-				if (PieLauncherApp.appMenu.launchApp(context)) {
+				if (PieLauncherApp.appMenu.launchSelectedApp(context)) {
 					ripple.set(at);
 					successful = true;
 				}
