@@ -1,0 +1,4 @@
+* Show a marker above the default icon in the app listing
+* Only show ripple when an icon is hit in the app listing
+* Fix updating background of search input
+
