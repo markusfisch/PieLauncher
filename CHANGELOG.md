@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.11.0
+* Show a marker above the default icon in the app listing
+* Only show ripple when an icon is hit in the app listing
+* Fix updating background of search input
+
 ## 1.10.0
 * Add haptic feedback
 * Improve tip messages
