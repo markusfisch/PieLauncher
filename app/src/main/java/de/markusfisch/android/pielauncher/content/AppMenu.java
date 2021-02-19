@@ -41,11 +41,14 @@ public class AppMenu extends CanvasPieMenu {
 		public final Rect hitRect = new Rect();
 		public final ComponentName componentName;
 		public final String label;
+		public final UserHandle userHandle;
 
-		AppIcon(ComponentName componentName, String label, Drawable icon) {
+		AppIcon(ComponentName componentName, String label, Drawable icon,
+				UserHandle userHandle) {
 			super(Converter.getBitmapFromDrawable(icon));
 			this.componentName = componentName;
 			this.label = label;
+			this.userHandle = userHandle;
 		}
 	}
 
@@ -72,7 +75,7 @@ public class AppMenu extends CanvasPieMenu {
 	};
 
 	private UpdateListener updateListener;
-	private UserHandle userHandle;
+	private UserHandle defaultProfile;
 	private LauncherApps launcherApps;
 	private boolean indexing = false;
 
@@ -89,7 +92,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (HAS_LAUNCHER_APP) {
 			launcherApps.startMainActivity(
 					icon.componentName,
-					userHandle,
+					icon.userHandle,
 					icon.dst,
 					null);
 		} else {
@@ -185,7 +188,7 @@ public class AppMenu extends CanvasPieMenu {
 		// on other Context objects.
 		final Context appContext = context.getApplicationContext();
 		if (HAS_LAUNCHER_APP) {
-			userHandle = Process.myUserHandle();
+			defaultProfile = Process.myUserHandle();
 			launcherApps = (LauncherApps) appContext.getSystemService(
 					Context.LAUNCHER_APPS_SERVICE);
 		}
@@ -230,25 +233,40 @@ public class AppMenu extends CanvasPieMenu {
 				continue;
 			}
 			if (HAS_LAUNCHER_APP) {
-				for (LauncherActivityInfo ai : launcherApps.getActivityList(
-						packageName, userHandle)) {
-					addApp(ai.getComponentName(),
-							ai.getLabel().toString(),
-							ai.getBadgedIcon(0));
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+					// Add support for Work Profiles.
+					List<UserHandle> profiles = launcherApps.getProfiles();
+					for (UserHandle profile : profiles) {
+						addActivityList(packageName, profile);
+					}
+				} else {
+					addActivityList(packageName, defaultProfile);
 				}
 			} else {
 				addApp(getComponentName(info.activityInfo),
 						info.loadLabel(pm).toString(),
-						info.loadIcon(pm));
+						info.loadIcon(pm),
+						null);
 			}
 		}
 		// Always reload icons because drawables may have changed.
 		createIcons(context);
 	}
 
+	private void addActivityList(String packageName, UserHandle userHandle) {
+		for (LauncherActivityInfo ai : launcherApps.getActivityList(
+				packageName, userHandle)) {
+			addApp(ai.getComponentName(),
+					ai.getLabel().toString(),
+					ai.getBadgedIcon(0),
+					userHandle);
+		}
+	}
+
 	private void addApp(ComponentName componentName, String label,
-			Drawable icon) {
-		apps.put(componentName, new AppIcon(componentName, label, icon));
+			Drawable icon, UserHandle userHandle) {
+		apps.put(componentName,
+				new AppIcon(componentName, label, icon, userHandle));
 	}
 
 	private void createIcons(Context context) {
