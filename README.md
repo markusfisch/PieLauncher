@@ -11,9 +11,7 @@ by typing the first one or two letters of the app name.
 
 ## Video
 
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/JM70qf93UqY"
-frameborder="0" allowfullscreen></iframe>
+[![Demo Video](http://img.youtube.com/vi/JM70qf93UqY/0.jpg)](http://www.youtube.com/watch?v=JM70qf93UqY)
 
 ## Screenshots
 
