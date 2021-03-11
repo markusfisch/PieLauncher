@@ -9,6 +9,12 @@ using muscle memory without even looking.
 Apps you don't use regularly are quickly available with just one tap and
 by typing the first one or two letters of the app name.
 
+## Video
+
+<iframe width="560" height="315"
+src="https://www.youtube.com/embed/JM70qf93UqY"
+frameborder="0" allowfullscreen></iframe>
+
 ## Screenshots
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-zoomed.png"
