@@ -1,10 +1,11 @@
 # Pie Launcher
 
-Android home screen launcher that uses a dynamic pie menu instead of
-tables of icons.
+Android home screen launcher that uses a dynamic
+[pie menu](https://en.wikipedia.org/wiki/Pie_menu)
+instead of tables of icons.
 
 Once you get used to it, you can launch your most frequently used apps
-using muscle memory without even looking.
+using muscle memory without even looking at the screen.
 
 Apps you don't use regularly are quickly available with just one tap and
 by typing the first one or two letters of the app name.
