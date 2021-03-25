@@ -27,7 +27,10 @@ by typing the first one or two letters of the app name.
 
 ## Download
 
-<a href="https://play.google.com/store/apps/details?id=de.markusfisch.android.pielauncher"><img
+<a href="https://f-droid.org/de/packages/de.markusfisch.android.pielauncher/"><img
+	src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+	alt="Get it on F-Droid" height="80"/></a> <a
+	href="https://play.google.com/store/apps/details?id=de.markusfisch.android.pielauncher"><img
 	src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
 	alt="Get it on Google Play" height="80"></a>
 
