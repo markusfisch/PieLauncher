@@ -30,6 +30,7 @@ import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.markusfisch.android.pielauncher.R;
@@ -723,6 +724,10 @@ public class AppPieView extends View {
 			ripple.set(touch);
 			if (grabbedIcon != null) {
 				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
+				// Undo any rotation if the menu has not otherwise changed.
+				if (sameOrder(backup, PieLauncherApp.appMenu.icons)) {
+					rollback();
+				}
 			}
 			successful = true;
 		} else if (iconInfoRect.contains(touch.x, touch.y)) {
@@ -749,6 +754,33 @@ public class AppPieView extends View {
 	private void rollback() {
 		PieLauncherApp.appMenu.icons.clear();
 		PieLauncherApp.appMenu.icons.addAll(backup);
+	}
+
+	private static boolean sameOrder(List<AppMenu.Icon> a,
+			List<AppMenu.Icon> b) {
+		int size = a.size();
+		if (size != b.size()) {
+			return false;
+		}
+		if (size == 0) {
+			return true;
+		}
+		AppMenu.Icon icon = a.get(0);
+		int i;
+		for (i = 0; i < size; ++i) {
+			if (b.get(i) == icon) {
+				break;
+			}
+		}
+		if (i >= size) {
+			return false;
+		}
+		for (int j = 1; j < size; ++j) {
+			if (a.get(j) != b.get(++i % size)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void startAppInfo(String packageName) {
@@ -847,13 +879,25 @@ public class AppPieView extends View {
 		int centerY = viewHeight >> 1;
 		setCenter(centerX, centerY);
 		if (hasIcon) {
-			int size = ungrabbedIcons.size();
-			double step = AppMenu.TAU / (size + 1);
+			int lastIndex = ungrabbedIcons.size();
+			double step = AppMenu.TAU / (lastIndex + 1);
 			double angle = AppMenu.getPositiveAngle(Math.atan2(
 					touch.y - centerY,
 					touch.x - centerX) + step * .5);
-			int insertAt = Math.min(size, (int) Math.floor(angle / step));
+			int insertAt = Math.min(lastIndex, (int) Math.floor(angle / step));
 			if (insertAt != lastInsertAt) {
+				// Avoid (visible) rotation of the menu when the first item
+				// changes. From the user's point of view, it is not clear
+				// why the menu rotates all of a sudden. The technical
+				// reason was to keep the menu unchanged when the grabbed
+				// icon is a newly added icon that is removed again. To
+				// prevent this, the menu is now rolled back if it has the
+				// sameOrder() as before (see below).
+				if (lastInsertAt == 0 && insertAt == lastIndex) {
+					Collections.rotate(ungrabbedIcons, 1);
+				} else if (lastInsertAt == lastIndex && insertAt == 0) {
+					Collections.rotate(ungrabbedIcons, -1);
+				}
 				PieLauncherApp.appMenu.icons.clear();
 				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
 				PieLauncherApp.appMenu.icons.add(insertAt, grabbedIcon);
