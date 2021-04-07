@@ -13,7 +13,7 @@ public class CanvasPieMenu extends PieMenu {
 	private float lastT;
 
 	public static class CanvasIcon extends PieMenu.Icon {
-		public final Rect dst = new Rect();
+		public final Rect rect = new Rect();
 		public final Bitmap bitmap;
 
 		private double smoothedSize;
@@ -22,6 +22,10 @@ public class CanvasPieMenu extends PieMenu {
 
 		public CanvasIcon(Bitmap bitmap) {
 			this.bitmap = bitmap;
+		}
+
+		void draw(Canvas canvas) {
+			draw(canvas, size, x, y);
 		}
 
 		void drawSmoothed(Canvas canvas, float t, float lastT) {
@@ -37,11 +41,8 @@ public class CanvasPieMenu extends PieMenu {
 			draw(canvas, smoothedSize, smoothedX, smoothedY);
 		}
 
-		void draw(Canvas canvas) {
-			draw(canvas, size, x, y);
-		}
-
-		void draw(Canvas canvas, double iconSize, int centerX, int centerY) {
+		private void draw(Canvas canvas, double iconSize, int centerX,
+				int centerY) {
 			int s = (int) iconSize >> 1;
 			if (s < 1) {
 				return;
@@ -49,16 +50,8 @@ public class CanvasPieMenu extends PieMenu {
 			int left = centerX - s;
 			int top = centerY - s;
 			s <<= 1;
-			draw(canvas, left, top, left + s, top + s);
-		}
-
-		void draw(Canvas canvas, int left, int top, int right, int bottom) {
-			dst.set(left, top, right, bottom);
-			draw(canvas, dst);
-		}
-
-		void draw(Canvas canvas, Rect dst) {
-			canvas.drawBitmap(bitmap, null, dst, paint);
+			rect.set(left, top, left + s, top + s);
+			canvas.drawBitmap(bitmap, null, rect, paint);
 		}
 
 		private void initSmoothing() {

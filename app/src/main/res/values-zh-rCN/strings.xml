@@ -1,0 +1,8 @@
+<resources>
+	<string name="app_name">Pie 启动器</string>
+	<string name="tip_number_of_icons">尝试使用4、6或8个符号以获得最佳使用效果</string>
+	<string name="tip_pinch_zoom">并拢 &amp; 伸展手指来缩放菜单</string>
+	<string name="tip_drag_to_order">拖动以排列顺序</string>
+	<string name="please_ignore_battery_optimization">请 对 Pie 启动器禁用电池优化，以节省电量，并使其工作更快。\n\nPie 启动器不使用时不消耗电池。一个主屏幕启动程序是一个例外，因为它应该总是和立即可用，而这是由电池优化所阻止的。\n\n因此，默认启动器也被排除在电池优化之外。</string>
+	<string name="disable_battery_optimization">禁用电池优化</string>
+</resources>

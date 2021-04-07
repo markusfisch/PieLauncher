@@ -93,7 +93,7 @@ public class AppMenu extends CanvasPieMenu {
 			launcherApps.startMainActivity(
 					icon.componentName,
 					icon.userHandle,
-					icon.dst,
+					icon.rect,
 					null);
 		} else {
 			PackageManager pm = context.getPackageManager();
