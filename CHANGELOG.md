@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.12.0
+* Avoid rotating the menu while editing
+* Add Chinese translation
+
 ## 1.11.0
 * Show a marker above the default icon in the app listing
 * Only show ripple when an icon is hit in the app listing
