@@ -14,7 +14,12 @@ public class Preferences {
 	}
 
 	public int getRadius(int preset) {
-		return preferences.getInt(RADIUS, preset);
+		// Somehow preferences can be null here. Frankly, I have no idea how
+		// that can possibly happen and I never ever saw it on one of my
+		// devices but there is at least one NPE in Play's crash logging.
+		return preferences != null
+				? preferences.getInt(RADIUS, preset)
+				: preset;
 	}
 
 	public void setRadius(int radius) {
@@ -22,7 +27,9 @@ public class Preferences {
 	}
 
 	private void apply(String key, int value) {
-		put(key, value).apply();
+		if (preferences != null) {
+			put(key, value).apply();
+		}
 	}
 
 	private SharedPreferences.Editor put(String key, int value) {
