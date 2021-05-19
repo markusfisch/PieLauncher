@@ -83,8 +83,15 @@ public class AppMenu extends CanvasPieMenu {
 			// because the locale may change.
 			Locale defaultLocale = Locale.getDefault();
 			// compareToIgnoreCase() does not take locale into account.
-			return left.label.toLowerCase(defaultLocale).compareTo(
+			int ret = left.label.toLowerCase(defaultLocale).compareTo(
 					right.label.toLowerCase(defaultLocale));
+			if (ret == 0
+					&& left.userHandle != null
+					&& right.userHandle != null) {
+				ret = Integer.valueOf(left.userHandle.hashCode())
+					.compareTo(Integer.valueOf(right.userHandle.hashCode()));
+			}
+			return ret;
 		}
 	};
 
