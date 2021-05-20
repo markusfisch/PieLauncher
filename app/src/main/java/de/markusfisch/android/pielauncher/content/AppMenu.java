@@ -1,6 +1,7 @@
 package de.markusfisch.android.pielauncher.content;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Process;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.provider.CalendarContract;
 
 import java.io.BufferedReader;
@@ -60,7 +62,22 @@ public class AppMenu extends CanvasPieMenu {
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 	private static final String MENU = "menu";
 
-	private final HashMap<ComponentName, AppIcon> apps = new HashMap<>();
+	private final HashMap<String, AppIcon> apps = new HashMap<>();
+	private static String componentKey(ComponentName componentName,
+			UserHandle userHandle) {
+		if (userHandle == null) {
+			return componentName.flattenToString();
+		} else {
+			return componentAndUserHandleKey(componentName, userHandle);
+		}
+	}
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private static String componentAndUserHandleKey(ComponentName componentName,
+			UserHandle userHandle) {
+		return Process.myUserHandle().equals(userHandle) ?
+			componentName.flattenToString()
+			: componentName.flattenToString() + "#" + userHandle.hashCode();
+	}
 	private final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
 			// Fast enough to do it for every comparison.
@@ -69,13 +86,19 @@ public class AppMenu extends CanvasPieMenu {
 			// because the locale may change.
 			Locale defaultLocale = Locale.getDefault();
 			// compareToIgnoreCase() does not take locale into account.
-			return left.label.toLowerCase(defaultLocale).compareTo(
+			int ret = left.label.toLowerCase(defaultLocale).compareTo(
 					right.label.toLowerCase(defaultLocale));
+			if (ret == 0
+					&& left.userHandle != null
+					&& right.userHandle != null) {
+				ret = Integer.valueOf(left.userHandle.hashCode())
+					.compareTo(Integer.valueOf(right.userHandle.hashCode()));
+			}
+			return ret;
 		}
 	};
 
 	private UpdateListener updateListener;
-	private UserHandle defaultProfile;
 	private LauncherApps launcherApps;
 	private boolean indexing = false;
 
@@ -125,7 +148,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (query.length() < 1) {
 			list.addAll(apps.values());
 		} else {
-			for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
+			for (Map.Entry<String, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = entry.getValue();
 				String label = appIcon.label.toLowerCase(Locale.getDefault());
 				if (label.startsWith(query)) {
@@ -187,11 +210,6 @@ public class AppMenu extends CanvasPieMenu {
 		// Get application context to not block garbage collection
 		// on other Context objects.
 		final Context appContext = context.getApplicationContext();
-		if (HAS_LAUNCHER_APP) {
-			defaultProfile = Process.myUserHandle();
-			launcherApps = (LauncherApps) appContext.getSystemService(
-					Context.LAUNCHER_APPS_SERVICE);
-		}
 		indexing = true;
 		new AsyncTask<Void, Void, Void>() {
 			@Override
@@ -212,60 +230,80 @@ public class AppMenu extends CanvasPieMenu {
 
 	private synchronized void indexApps(Context context,
 			String packageNameRestriction) {
+		String skip = context.getPackageName();
+		if (HAS_LAUNCHER_APP) {
+			indexProfilesApps(context, packageNameRestriction, skip);
+		} else {
+			indexIntentsApps(context, packageNameRestriction, skip);
+		}
+		// Always reload icons because drawables may have changed.
+		createIcons(context);
+	}
+
+	private void indexIntentsApps(Context context,
+			String packageNameRestriction,
+			String skipPackage) {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
 			// Remove old package and add it anew.
 			removePackageFromApps(packageNameRestriction);
 			// Don't call removePackageFromPieMenu() here because the
-			// icon will be updated anyway by createIcons() below.
+			// icon will be updated anyway by createIcons() after indexing.
 			intent.setPackage(packageNameRestriction);
 		} else {
 			apps.clear();
 		}
 		PackageManager pm = context.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
-		String skip = context.getPackageName();
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.applicationInfo.packageName;
-			if (skip.equals(packageName)) {
+			if (skipPackage.equals(packageName)) {
 				// Always skip this package.
 				continue;
 			}
-			if (HAS_LAUNCHER_APP) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-					// Add support for Work Profiles.
-					List<UserHandle> profiles = launcherApps.getProfiles();
-					for (UserHandle profile : profiles) {
-						addActivityList(packageName, profile);
-					}
-				} else {
-					addActivityList(packageName, defaultProfile);
-				}
-			} else {
-				addApp(getComponentName(info.activityInfo),
-						info.loadLabel(pm).toString(),
-						info.loadIcon(pm),
-						null);
-			}
+			addApp(getComponentName(info.activityInfo),
+					info.loadLabel(pm).toString(),
+					info.loadIcon(pm),
+					null);
 		}
-		// Always reload icons because drawables may have changed.
-		createIcons(context);
 	}
 
-	private void addActivityList(String packageName, UserHandle userHandle) {
-		for (LauncherActivityInfo ai : launcherApps.getActivityList(
-				packageName, userHandle)) {
-			addApp(ai.getComponentName(),
-					ai.getLabel().toString(),
-					ai.getBadgedIcon(0),
-					userHandle);
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private void indexProfilesApps(Context context,
+			String packageNameRestriction,
+			String skipPackage) {
+		if (packageNameRestriction != null) {
+			// Remove old package and add it anew.
+			removePackageFromApps(packageNameRestriction);
+			// Don't call removePackageFromPieMenu() here because the
+			// icon will be updated anyway by createIcons() after indexing.
+		} else {
+			apps.clear();
+		}
+		launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+		UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+		// Add support for Work Profiles.
+		List<UserHandle> profiles = userManager.getUserProfiles();
+		for (UserHandle profile : profiles) {
+			for (LauncherActivityInfo info :
+					launcherApps.getActivityList(packageNameRestriction, profile)) {
+				String packageName = info.getApplicationInfo().packageName;
+				if (skipPackage.equals(packageName)) {
+					// Always skip this package.
+					continue;
+				}
+				addApp(info.getComponentName(),
+						info.getLabel().toString(),
+						info.getBadgedIcon(0),
+						profile);
+					}
 		}
 	}
 
 	private void addApp(ComponentName componentName, String label,
 			Drawable icon, UserHandle userHandle) {
-		apps.put(componentName,
+		apps.put(componentKey(componentName, userHandle),
 				new AppIcon(componentName, label, icon, userHandle));
 	}
 
@@ -320,7 +358,7 @@ public class AppMenu extends CanvasPieMenu {
 			if (launchIntent == null) {
 				continue;
 			}
-			AppIcon appIcon = apps.get(launchIntent.getComponent());
+			AppIcon appIcon = apps.get(componentKey(launchIntent.getComponent(), null));
 			if (appIcon != null) {
 				defaults.add(packageName);
 				addAppIcon(appIcon);
@@ -328,11 +366,11 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		int max = Math.min(apps.size(), 8);
 		int i = icons.size();
-		for (Map.Entry<ComponentName, AppIcon> entry : apps.entrySet()) {
+		for (Map.Entry<String, AppIcon> entry : apps.entrySet()) {
 			if (i >= max) {
 				break;
 			}
-			if (!defaults.contains(entry.getKey().getPackageName())) {
+			if (!defaults.contains(entry.getValue().componentName.getPackageName())) {
 				addAppIcon(entry.getValue());
 				++i;
 			}
@@ -363,7 +401,7 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private synchronized void removePackageFromApps(String packageName) {
-		Iterator<Map.Entry<ComponentName, AppIcon>> it =
+		Iterator<Map.Entry<String, AppIcon>> it =
 				apps.entrySet().iterator();
 		while (it.hasNext()) {
 			if (packageName.equals((it.next().getValue())
@@ -384,11 +422,11 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private static List<Icon> restoreMenu(Context context,
-			HashMap<ComponentName, AppIcon> apps) {
+			HashMap<String, AppIcon> apps) {
 		ArrayList<Icon> icons = new ArrayList<>();
 		try {
 			for (String line : readLines(context.openFileInput(MENU))) {
-				Icon icon = apps.get(ComponentName.unflattenFromString(line));
+				Icon icon = apps.get(line);
 				if (icon != null) {
 					icons.add(icon);
 				}
@@ -428,7 +466,9 @@ public class AppMenu extends CanvasPieMenu {
 	private static boolean storeMenu(Context context, List<Icon> icons) {
 		ArrayList<String> items = new ArrayList<>();
 		for (CanvasPieMenu.Icon icon : icons) {
-			items.add(((AppIcon) icon).componentName.flattenToString());
+			items.add(componentKey(
+						((AppIcon) icon).componentName,
+						((AppIcon) icon).userHandle));
 		}
 		try {
 			return writeLines(context.openFileOutput(MENU,
