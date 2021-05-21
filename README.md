@@ -12,7 +12,7 @@ by typing the first one or two letters of the app name.
 
 ## Video
 
-[![Demo Video](http://img.youtube.com/vi/JM70qf93UqY/0.jpg)](http://www.youtube.com/watch?v=JM70qf93UqY)
+[![Demo Video](http://img.youtube.com/vi/zg0h3s_yua8/0.jpg)](http://www.youtube.com/watch?v=zg0h3s_yua8)
 
 ## Screenshots
 
