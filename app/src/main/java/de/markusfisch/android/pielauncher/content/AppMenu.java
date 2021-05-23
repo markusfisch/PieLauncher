@@ -110,6 +110,23 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	public void launchAppInfo(Context context, AppIcon icon) {
+		if (HAS_LAUNCHER_APP) {
+			launcherApps.startAppDetailsActivity(
+					icon.componentName,
+					icon.userHandle,
+					icon.rect,
+					null);
+		} else {
+			Intent intent = new Intent(
+					android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+			intent.addCategory(Intent.CATEGORY_DEFAULT);
+			intent.setData(Uri.parse("package:"
+						+ icon.componentName.getPackageName()));
+			context.startActivity(intent);
+		}
+	}
+
 	public void setUpdateListener(UpdateListener listener) {
 		updateListener = listener;
 	}
