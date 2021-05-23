@@ -276,8 +276,12 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 		UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-		// Add support for Work Profiles.
-		List<UserHandle> profiles = userManager.getUserProfiles();
+		List<UserHandle> profiles =
+			packageNameRestriction != null && userHandleRestriction != null
+			? Collections.singletonList(userHandleRestriction)
+			: userManager.getUserProfiles();
+			// if packageNameRestriction == null and userHandleRestriction != null
+			// apps was cleared and all profiles will be indexed
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
 					launcherApps.getActivityList(packageNameRestriction, profile)) {
