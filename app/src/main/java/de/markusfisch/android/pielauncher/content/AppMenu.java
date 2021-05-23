@@ -282,7 +282,7 @@ public class AppMenu extends CanvasPieMenu {
 						info.getLabel().toString(),
 						info.getBadgedIcon(0),
 						profile);
-					}
+			}
 		}
 	}
 
@@ -452,8 +452,8 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<String> items = new ArrayList<>();
 		for (CanvasPieMenu.Icon icon : icons) {
 			items.add(componentKey(
-						((AppIcon) icon).componentName,
-						((AppIcon) icon).userHandle));
+					((AppIcon) icon).componentName,
+					((AppIcon) icon).userHandle));
 		}
 		try {
 			return writeLines(context.openFileOutput(MENU,
