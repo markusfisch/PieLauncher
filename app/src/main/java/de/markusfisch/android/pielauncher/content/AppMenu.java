@@ -94,11 +94,16 @@ public class AppMenu extends CanvasPieMenu {
 
 	public void launchApp(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
-			launcherApps.startMainActivity(
-					icon.componentName,
-					icon.userHandle,
-					icon.rect,
-					null);
+			if (launcherApps.isActivityEnabled(icon.componentName,
+						icon.userHandle)) {
+				launcherApps.startMainActivity(
+						icon.componentName,
+						icon.userHandle,
+						icon.rect,
+						null);
+			} else {
+				return;
+			}
 		} else {
 			PackageManager pm = context.getPackageManager();
 			Intent intent;
