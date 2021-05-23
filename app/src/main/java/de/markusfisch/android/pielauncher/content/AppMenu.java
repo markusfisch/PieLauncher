@@ -63,21 +63,6 @@ public class AppMenu extends CanvasPieMenu {
 	private static final String MENU = "menu";
 
 	private final HashMap<String, AppIcon> apps = new HashMap<>();
-	private static String componentKey(ComponentName componentName,
-			UserHandle userHandle) {
-		if (userHandle == null) {
-			return componentName.flattenToString();
-		} else {
-			return componentAndUserHandleKey(componentName, userHandle);
-		}
-	}
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static String componentAndUserHandleKey(ComponentName componentName,
-			UserHandle userHandle) {
-		return Process.myUserHandle().equals(userHandle) ?
-			componentName.flattenToString()
-			: componentName.flattenToString() + "#" + userHandle.hashCode();
-	}
 	private final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
 			// Fast enough to do it for every comparison.
@@ -500,6 +485,23 @@ public class AppMenu extends CanvasPieMenu {
 				// Ignore, can't do anything about it.
 			}
 		}
+	}
+
+	private static String componentKey(ComponentName componentName,
+			UserHandle userHandle) {
+		if (userHandle == null) {
+			return componentName.flattenToString();
+		} else {
+			return componentAndUserHandleKey(componentName, userHandle);
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private static String componentAndUserHandleKey(ComponentName componentName,
+			UserHandle userHandle) {
+		return Process.myUserHandle().equals(userHandle)
+				? componentName.flattenToString()
+				: componentName.flattenToString() + "#" + userHandle.hashCode();
 	}
 
 	private static int hammingDistance(String a, String b) {
