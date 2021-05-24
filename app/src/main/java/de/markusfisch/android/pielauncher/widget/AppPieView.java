@@ -734,8 +734,8 @@ public class AppPieView extends View {
 			ripple.set(touch);
 			if (grabbedIcon != null) {
 				rollback();
-				startAppInfo(((AppMenu.AppIcon) grabbedIcon)
-						.componentName.getPackageName());
+				PieLauncherApp.appMenu.launchAppInfo(context,
+						(AppMenu.AppIcon) grabbedIcon);
 			}
 			successful = true;
 		} else if (iconDoneRect.contains(touch.x, touch.y)) {
@@ -781,14 +781,6 @@ public class AppPieView extends View {
 			}
 		}
 		return true;
-	}
-
-	private void startAppInfo(String packageName) {
-		Intent intent = new Intent(
-				Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-		intent.addCategory(Intent.CATEGORY_DEFAULT);
-		intent.setData(Uri.parse("package:" + packageName));
-		getContext().startActivity(intent);
 	}
 
 	private void setCenter(Point point) {

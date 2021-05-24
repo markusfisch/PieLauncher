@@ -94,11 +94,16 @@ public class AppMenu extends CanvasPieMenu {
 
 	public void launchApp(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
-			launcherApps.startMainActivity(
-					icon.componentName,
-					icon.userHandle,
-					icon.rect,
-					null);
+			if (launcherApps.isActivityEnabled(icon.componentName,
+						icon.userHandle)) {
+				launcherApps.startMainActivity(
+						icon.componentName,
+						icon.userHandle,
+						icon.rect,
+						null);
+			} else {
+				return;
+			}
 		} else {
 			PackageManager pm = context.getPackageManager();
 			Intent intent;
@@ -106,6 +111,23 @@ public class AppMenu extends CanvasPieMenu {
 					icon.componentName.getPackageName())) == null) {
 				return;
 			}
+			context.startActivity(intent);
+		}
+	}
+
+	public void launchAppInfo(Context context, AppIcon icon) {
+		if (HAS_LAUNCHER_APP) {
+			launcherApps.startAppDetailsActivity(
+					icon.componentName,
+					icon.userHandle,
+					icon.rect,
+					null);
+		} else {
+			Intent intent = new Intent(
+					android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+			intent.addCategory(Intent.CATEGORY_DEFAULT);
+			intent.setData(Uri.parse("package:"
+						+ icon.componentName.getPackageName()));
 			context.startActivity(intent);
 		}
 	}
@@ -153,11 +175,12 @@ public class AppMenu extends CanvasPieMenu {
 	// and it's perfectly okay to delay garbage collection of the
 	// parent instance until this task has been terminated.
 	@SuppressLint("StaticFieldLeak")
-	public void removePackageAsync(final String packageName) {
+	public void removePackageAsync(final String packageName,
+			final UserHandle userHandle) {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... nothing) {
-				removePackage(packageName);
+				removePackage(packageName, userHandle);
 				return null;
 			}
 
@@ -179,7 +202,7 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void indexAppsAsync(Context context) {
-		indexAppsAsync(context, null);
+		indexAppsAsync(context, null, null);
 	}
 
 	// This AsyncTask is running for a short and finite time only
@@ -187,7 +210,8 @@ public class AppMenu extends CanvasPieMenu {
 	// parent instance until this task has been terminated.
 	@SuppressLint("StaticFieldLeak")
 	public void indexAppsAsync(Context context,
-			final String packageNameRestriction) {
+			final String packageNameRestriction,
+			final UserHandle userHandleRestriction) {
 		// Get application context to not block garbage collection
 		// on other Context objects.
 		final Context appContext = context.getApplicationContext();
@@ -195,7 +219,9 @@ public class AppMenu extends CanvasPieMenu {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... nothing) {
-				indexApps(appContext, packageNameRestriction);
+				indexApps(appContext,
+						packageNameRestriction,
+						userHandleRestriction);
 				return null;
 			}
 
@@ -210,12 +236,18 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private synchronized void indexApps(Context context,
-			String packageNameRestriction) {
+			String packageNameRestriction,
+			UserHandle userHandleRestriction) {
 		String skip = context.getPackageName();
 		if (HAS_LAUNCHER_APP) {
-			indexProfilesApps(context, packageNameRestriction, skip);
+			indexProfilesApps(context,
+					packageNameRestriction,
+					userHandleRestriction,
+					skip);
 		} else {
-			indexIntentsApps(context, packageNameRestriction, skip);
+			indexIntentsApps(context,
+					packageNameRestriction,
+					skip);
 		}
 		// Always reload icons because drawables may have changed.
 		createIcons(context);
@@ -228,7 +260,7 @@ public class AppMenu extends CanvasPieMenu {
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
 			// Remove old package and add it anew.
-			removePackageFromApps(packageNameRestriction);
+			removePackageFromApps(packageNameRestriction, null);
 			// Don't call removePackageFromPieMenu() here because the
 			// icon will be updated anyway by createIcons() after indexing.
 			intent.setPackage(packageNameRestriction);
@@ -253,10 +285,12 @@ public class AppMenu extends CanvasPieMenu {
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private void indexProfilesApps(Context context,
 			String packageNameRestriction,
+			UserHandle userHandleRestriction,
 			String skipPackage) {
 		if (packageNameRestriction != null) {
 			// Remove old package and add it anew.
-			removePackageFromApps(packageNameRestriction);
+			removePackageFromApps(packageNameRestriction,
+					userHandleRestriction);
 			// Don't call removePackageFromPieMenu() here because the
 			// icon will be updated anyway by createIcons() after indexing.
 		} else {
@@ -264,8 +298,12 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 		UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-		// Add support for Work Profiles.
-		List<UserHandle> profiles = userManager.getUserProfiles();
+		List<UserHandle> profiles =
+			packageNameRestriction != null && userHandleRestriction != null
+			? Collections.singletonList(userHandleRestriction)
+			: userManager.getUserProfiles();
+			// if packageNameRestriction == null and userHandleRestriction != null
+			// apps was cleared and all profiles will be indexed
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
 					launcherApps.getActivityList(packageNameRestriction, profile)) {
@@ -376,27 +414,33 @@ public class AppMenu extends CanvasPieMenu {
 		return new ComponentName(info.packageName, info.name);
 	}
 
-	private void removePackage(String packageName) {
-		removePackageFromApps(packageName);
-		removePackageFromPieMenu(packageName);
+	private void removePackage(String packageName, UserHandle userHandle) {
+		removePackageFromApps(packageName, userHandle);
+		removePackageFromPieMenu(packageName, userHandle);
 	}
 
-	private synchronized void removePackageFromApps(String packageName) {
+	private synchronized void removePackageFromApps(String packageName,
+			UserHandle userHandle) {
 		Iterator<Map.Entry<String, AppIcon>> it =
 				apps.entrySet().iterator();
 		while (it.hasNext()) {
-			if (packageName.equals((it.next().getValue())
-					.componentName.getPackageName())) {
+			AppIcon appIcon = it.next().getValue();
+			if (packageName.equals(appIcon.componentName.getPackageName())
+					&& (userHandle == null
+						|| userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
 		}
 	}
 
-	private synchronized void removePackageFromPieMenu(String packageName) {
+	private synchronized void removePackageFromPieMenu(String packageName,
+			UserHandle userHandle) {
 		Iterator<Icon> it = icons.iterator();
 		while (it.hasNext()) {
-			if (packageName.equals(((AppIcon) it.next())
-					.componentName.getPackageName())) {
+			AppIcon appIcon = ((AppIcon) it.next());
+			if (packageName.equals(appIcon.componentName.getPackageName())
+					&& (userHandle == null
+						|| userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
 		}
