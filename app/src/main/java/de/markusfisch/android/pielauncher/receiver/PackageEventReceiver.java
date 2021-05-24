@@ -14,10 +14,6 @@ public class PackageEventReceiver extends BroadcastReceiver {
 			return;
 		}
 		String action = intent.getAction();
-		if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context);
-			return;
-		}
 		Uri data = intent.getData();
 		if (data == null) {
 			return;

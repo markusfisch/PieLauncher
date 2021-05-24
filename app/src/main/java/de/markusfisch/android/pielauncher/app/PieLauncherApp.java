@@ -10,9 +10,12 @@ import android.os.UserHandle;
 
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
+import de.markusfisch.android.pielauncher.receiver.LocaleEventReceiver;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
+	private static final LocaleEventReceiver localeEventReceiver =
+			new LocaleEventReceiver();
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
@@ -24,19 +27,23 @@ public class PieLauncherApp extends Application {
 		super.onCreate();
 		prefs.init(this);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-				Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-			// Because package broadcasts stop mysteriously working after
-			// a while on Android Nougat only.
+		registerLocaleEventReceiver();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			// Use LauncherApps.Callback for packages events
 			registerCallback();
 		} else {
 			registerPackageEventReceiver();
 		}
 	}
 
-	private void registerPackageEventReceiver() {
+	private void registerLocaleEventReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
+		registerReceiver(localeEventReceiver, filter);
+	}
+
+	private void registerPackageEventReceiver() {
+		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
 		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
 		filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
