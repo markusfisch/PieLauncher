@@ -11,11 +11,14 @@ import android.os.UserHandle;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.receiver.LocaleEventReceiver;
+import de.markusfisch.android.pielauncher.receiver.ManagedProfileEventReceiver;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
 	private static final LocaleEventReceiver localeEventReceiver =
 			new LocaleEventReceiver();
+	private static final ManagedProfileEventReceiver
+		managedProfileEventReceiver = new ManagedProfileEventReceiver();
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
@@ -31,6 +34,7 @@ public class PieLauncherApp extends Application {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			// Use LauncherApps.Callback for packages events
 			registerCallback();
+			registerManagedEventReceiver();
 		} else {
 			registerPackageEventReceiver();
 		}
@@ -40,6 +44,14 @@ public class PieLauncherApp extends Application {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
 		registerReceiver(localeEventReceiver, filter);
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private void registerManagedEventReceiver() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_MANAGED_PROFILE_ADDED);
+		filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
+		registerReceiver(managedProfileEventReceiver, filter);
 	}
 
 	private void registerPackageEventReceiver() {
