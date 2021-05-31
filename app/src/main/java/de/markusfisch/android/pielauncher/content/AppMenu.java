@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import de.markusfisch.android.pielauncher.content.LauncherItemKey;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 
@@ -64,7 +65,7 @@ public class AppMenu extends CanvasPieMenu {
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 	private static final String MENU = "menu";
 
-	private final HashMap<String, AppIcon> apps = new HashMap<>();
+	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
 	private final Comparator<AppIcon> appLabelComparator = new Comparator<AppIcon>() {
 		public int compare(AppIcon left, AppIcon right) {
 			// Fast enough to do it for every comparison.
@@ -150,7 +151,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (query.length() < 1) {
 			list.addAll(apps.values());
 		} else {
-			for (Map.Entry<String, AppIcon> entry : apps.entrySet()) {
+			for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = entry.getValue();
 				String label = appIcon.label.toLowerCase(Locale.getDefault());
 				if (label.startsWith(query)) {
@@ -321,7 +322,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	private void addApp(ComponentName componentName, String label,
 			Drawable icon, UserHandle userHandle) {
-		apps.put(componentKey(componentName, userHandle),
+		apps.put(new LauncherItemKey(componentName, userHandle),
 				new AppIcon(componentName, label, icon, userHandle));
 	}
 
@@ -366,7 +367,7 @@ public class AppMenu extends CanvasPieMenu {
 		UserHandle userHandle = HAS_LAUNCHER_APP
 				? Process.myUserHandle()
 				: null;
-		ArrayList<String> defaults = new ArrayList<>();
+		ArrayList<LauncherItemKey> defaults = new ArrayList<>();
 		for (Intent intent : intents) {
 			String packageName = resolveDefaultAppForIntent(pm, intent);
 			if (packageName == null || defaults.contains(packageName)) {
@@ -379,22 +380,21 @@ public class AppMenu extends CanvasPieMenu {
 			if (launchIntent == null) {
 				continue;
 			}
-			AppIcon appIcon = apps.get(componentKey(
-					launchIntent.getComponent(), userHandle));
+			LauncherItemKey launcherItemKey =
+				new LauncherItemKey(launchIntent.getComponent(), userHandle);
+			AppIcon appIcon = apps.get(launcherItemKey);
 			if (appIcon != null) {
-				defaults.add(packageName);
+				defaults.add(launcherItemKey);
 				addAppIcon(appIcon);
 			}
 		}
 		int max = Math.min(apps.size(), 8);
 		int i = icons.size();
-		for (Map.Entry<String, AppIcon> entry : apps.entrySet()) {
+		for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
 			if (i >= max) {
 				break;
 			}
-			AppIcon appIcon = entry.getValue();
-			if ((userHandle == null || userHandle.equals(appIcon.userHandle)) &&
-					!defaults.contains(appIcon.componentName.getPackageName())) {
+			if (!defaults.contains(entry.getKey())) {
 				addAppIcon(entry.getValue());
 				++i;
 			}
@@ -427,7 +427,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	private synchronized void removePackageFromApps(String packageName,
 			UserHandle userHandle) {
-		Iterator<Map.Entry<String, AppIcon>> it =
+		Iterator<Map.Entry<LauncherItemKey, AppIcon>> it =
 				apps.entrySet().iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next().getValue();
@@ -451,11 +451,12 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private static List<Icon> restoreMenu(Context context,
-			HashMap<String, AppIcon> apps) {
+			HashMap<LauncherItemKey, AppIcon> apps) {
 		ArrayList<Icon> icons = new ArrayList<>();
 		try {
 			for (String line : readLines(context.openFileInput(MENU))) {
-				Icon icon = apps.get(line);
+				Icon icon =
+					apps.get(LauncherItemKey.unflattenFromString(context, line));
 				if (icon != null) {
 					icons.add(icon);
 				}
@@ -495,9 +496,10 @@ public class AppMenu extends CanvasPieMenu {
 	private static boolean storeMenu(Context context, List<Icon> icons) {
 		ArrayList<String> items = new ArrayList<>();
 		for (CanvasPieMenu.Icon icon : icons) {
-			items.add(componentKey(
-					((AppIcon) icon).componentName,
-					((AppIcon) icon).userHandle));
+			items.add(LauncherItemKey.flattenToString(
+						context,
+						((AppIcon) icon).componentName,
+						((AppIcon) icon).userHandle));
 		}
 		try {
 			return writeLines(context.openFileOutput(MENU,
@@ -529,23 +531,6 @@ public class AppMenu extends CanvasPieMenu {
 				// Ignore, can't do anything about it.
 			}
 		}
-	}
-
-	private static String componentKey(ComponentName componentName,
-			UserHandle userHandle) {
-		if (userHandle == null) {
-			return componentName.flattenToString();
-		} else {
-			return componentAndUserHandleKey(componentName, userHandle);
-		}
-	}
-
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static String componentAndUserHandleKey(ComponentName componentName,
-			UserHandle userHandle) {
-		return Process.myUserHandle().equals(userHandle)
-				? componentName.flattenToString()
-				: componentName.flattenToString() + "#" + userHandle.hashCode();
 	}
 
 	private static int hammingDistance(String a, String b) {
