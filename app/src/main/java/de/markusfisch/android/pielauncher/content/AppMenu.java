@@ -95,14 +95,12 @@ public class AppMenu extends CanvasPieMenu {
 	public void launchApp(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
 			if (launcherApps.isActivityEnabled(icon.componentName,
-						icon.userHandle)) {
+					icon.userHandle)) {
 				launcherApps.startMainActivity(
 						icon.componentName,
 						icon.userHandle,
 						icon.rect,
 						null);
-			} else {
-				return;
 			}
 		} else {
 			PackageManager pm = context.getPackageManager();
@@ -126,8 +124,8 @@ public class AppMenu extends CanvasPieMenu {
 			Intent intent = new Intent(
 					android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 			intent.addCategory(Intent.CATEGORY_DEFAULT);
-			intent.setData(Uri.parse("package:"
-						+ icon.componentName.getPackageName()));
+			intent.setData(Uri.parse("package:" +
+					icon.componentName.getPackageName()));
 			context.startActivity(intent);
 		}
 	}
@@ -299,11 +297,11 @@ public class AppMenu extends CanvasPieMenu {
 		launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 		UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
 		List<UserHandle> profiles =
-			packageNameRestriction != null && userHandleRestriction != null
-			? Collections.singletonList(userHandleRestriction)
-			: userManager.getUserProfiles();
-			// if packageNameRestriction == null and userHandleRestriction != null
-			// apps was cleared and all profiles will be indexed
+				packageNameRestriction != null && userHandleRestriction != null
+						? Collections.singletonList(userHandleRestriction)
+						: userManager.getUserProfiles();
+		// if packageNameRestriction == null and userHandleRestriction != null
+		// apps was cleared and all profiles will be indexed
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
 					launcherApps.getActivityList(packageNameRestriction, profile)) {
@@ -425,9 +423,8 @@ public class AppMenu extends CanvasPieMenu {
 				apps.entrySet().iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next().getValue();
-			if (packageName.equals(appIcon.componentName.getPackageName())
-					&& (userHandle == null
-						|| userHandle.equals(appIcon.userHandle))) {
+			if (packageName.equals(appIcon.componentName.getPackageName()) &&
+					(userHandle == null || userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
 		}
@@ -438,9 +435,8 @@ public class AppMenu extends CanvasPieMenu {
 		Iterator<Icon> it = icons.iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = ((AppIcon) it.next());
-			if (packageName.equals(appIcon.componentName.getPackageName())
-					&& (userHandle == null
-						|| userHandle.equals(appIcon.userHandle))) {
+			if (packageName.equals(appIcon.componentName.getPackageName()) &&
+					(userHandle == null || userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
 		}

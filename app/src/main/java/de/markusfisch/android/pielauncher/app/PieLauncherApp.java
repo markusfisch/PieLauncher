@@ -18,7 +18,7 @@ public class PieLauncherApp extends Application {
 	private static final LocaleEventReceiver localeEventReceiver =
 			new LocaleEventReceiver();
 	private static final ManagedProfileEventReceiver
-		managedProfileEventReceiver = new ManagedProfileEventReceiver();
+			managedProfileEventReceiver = new ManagedProfileEventReceiver();
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
