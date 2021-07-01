@@ -317,7 +317,11 @@ public class AppPieView extends View {
 					default:
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
-						if (mode == MODE_LIST) {
+						if (mode == MODE_PIE) {
+							fadeOutPieMenu();
+							hidePieMenu();
+							invalidate();
+						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							addTouch(event);
 							initScroll(event);
@@ -666,8 +670,8 @@ public class AppPieView extends View {
 	}
 
 	private boolean performAction(Context context, Point at, boolean wasTap) {
-		boolean successful = false;
-		if (mode == MODE_PIE) {
+		if (mode == MODE_PIE && isPieVisible()) {
+			boolean result = false;
 			if (wasTap) {
 				if (listListener != null) {
 					listListener.onOpenList();
@@ -675,16 +679,17 @@ public class AppPieView extends View {
 			} else {
 				if (PieLauncherApp.appMenu.launchSelectedApp(context)) {
 					ripple.set(at);
-					successful = true;
+					result = true;
 				}
 			}
 			fadeOutPieMenu();
+			return result;
 		} else if (mode == MODE_LIST && wasTap) {
-			successful = performListAction(context, at);
+			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
-			successful = performEditAction(context);
+			return performEditAction(context);
 		}
-		return successful;
+		return false;
 	}
 
 	private boolean performListAction(Context context, Point at) {
@@ -949,11 +954,15 @@ public class AppPieView extends View {
 	}
 
 	private void fadeOutPieMenu() {
-		fadeOutFrom = SystemClock.uptimeMillis();
+		fadeOutFrom = isPieVisible() ? SystemClock.uptimeMillis() : 0;
 	}
 
 	private void hidePieMenu() {
 		fadeInFrom = 0;
+	}
+
+	private boolean isPieVisible() {
+		return fadeInFrom > 0;
 	}
 
 	private String getTip(boolean hasIcon) {
