@@ -19,6 +19,8 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.CalendarContract;
+import android.provider.MediaStore;
+import android.provider.Settings;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -105,11 +107,10 @@ public class AppMenu extends CanvasPieMenu {
 		} else {
 			PackageManager pm = context.getPackageManager();
 			Intent intent;
-			if (pm == null || (intent = pm.getLaunchIntentForPackage(
-					icon.componentName.getPackageName())) == null) {
-				return;
+			if (pm != null && (intent = pm.getLaunchIntentForPackage(
+					icon.componentName.getPackageName())) != null) {
+				context.startActivity(intent);
 			}
-			context.startActivity(intent);
 		}
 	}
 
@@ -122,7 +123,7 @@ public class AppMenu extends CanvasPieMenu {
 					null);
 		} else {
 			Intent intent = new Intent(
-					android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+					Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 			intent.addCategory(Intent.CATEGORY_DEFAULT);
 			intent.setData(Uri.parse("package:" +
 					icon.componentName.getPackageName()));
@@ -354,13 +355,13 @@ public class AppMenu extends CanvasPieMenu {
 				new Intent(Intent.ACTION_DIAL),
 				new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:")),
 				new Intent(Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
 				new Intent(Intent.ACTION_VIEW, Uri.parse("geo:47.6,-122.3")),
 				new Intent(Intent.ACTION_VIEW, Uri.parse("google.streetview:cbll=46.414382,10.013988"))
 						.setPackage("com.google.android.apps.maps"),
 				getCalendarIntent(),
 				new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")),
-				new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+				new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 		};
 		ArrayList<String> defaults = new ArrayList<>();
 		for (Intent intent : intents) {

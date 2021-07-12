@@ -17,8 +17,8 @@ import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 public class PieLauncherApp extends Application {
 	private static final LocaleEventReceiver localeEventReceiver =
 			new LocaleEventReceiver();
-	private static final ManagedProfileEventReceiver
-			managedProfileEventReceiver = new ManagedProfileEventReceiver();
+	private static final ManagedProfileEventReceiver managedProfileEventReceiver =
+			new ManagedProfileEventReceiver();
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
@@ -31,27 +31,20 @@ public class PieLauncherApp extends Application {
 		prefs.init(this);
 
 		registerLocaleEventReceiver();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			// Use LauncherApps.Callback for packages events
-			registerCallback();
-			registerManagedEventReceiver();
-		} else {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			registerPackageEventReceiver();
+		} else {
+			registerLauncherAppsCallback();
+			registerManagedEventReceiver();
 		}
+		// Note it's not required to unregister receivers because they
+		// need to be there as long as this application is running.
 	}
 
 	private void registerLocaleEventReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
 		registerReceiver(localeEventReceiver, filter);
-	}
-
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private void registerManagedEventReceiver() {
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(Intent.ACTION_MANAGED_PROFILE_ADDED);
-		filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
-		registerReceiver(managedProfileEventReceiver, filter);
 	}
 
 	private void registerPackageEventReceiver() {
@@ -63,12 +56,18 @@ public class PieLauncherApp extends Application {
 		filter.addDataScheme("package");
 		filter.addDataScheme("file");
 		registerReceiver(packageEventReceiver, filter);
-		// Note it's not required to unregister the receiver because it
-		// needs to be there as long as this application is running.
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private void registerCallback() {
+	private void registerManagedEventReceiver() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_MANAGED_PROFILE_ADDED);
+		filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
+		registerReceiver(managedProfileEventReceiver, filter);
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private void registerLauncherAppsCallback() {
 		LauncherApps launcherApps = (LauncherApps) getSystemService(
 				LAUNCHER_APPS_SERVICE);
 		launcherApps.registerCallback(new LauncherApps.Callback() {
