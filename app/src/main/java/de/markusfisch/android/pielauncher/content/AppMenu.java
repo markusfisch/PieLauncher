@@ -363,6 +363,9 @@ public class AppMenu extends CanvasPieMenu {
 				new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")),
 				new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 		};
+		UserHandle userHandle = HAS_LAUNCHER_APP
+				? Process.myUserHandle()
+				: null;
 		ArrayList<String> defaults = new ArrayList<>();
 		for (Intent intent : intents) {
 			String packageName = resolveDefaultAppForIntent(pm, intent);
@@ -376,7 +379,8 @@ public class AppMenu extends CanvasPieMenu {
 			if (launchIntent == null) {
 				continue;
 			}
-			AppIcon appIcon = apps.get(componentKey(launchIntent.getComponent(), null));
+			AppIcon appIcon = apps.get(componentKey(
+					launchIntent.getComponent(), userHandle));
 			if (appIcon != null) {
 				defaults.add(packageName);
 				addAppIcon(appIcon);
@@ -388,7 +392,9 @@ public class AppMenu extends CanvasPieMenu {
 			if (i >= max) {
 				break;
 			}
-			if (!defaults.contains(entry.getValue().componentName.getPackageName())) {
+			AppIcon appIcon = entry.getValue();
+			if ((userHandle == null || userHandle.equals(appIcon.userHandle)) &&
+					!defaults.contains(appIcon.componentName.getPackageName())) {
 				addAppIcon(entry.getValue());
 				++i;
 			}
@@ -399,8 +405,9 @@ public class AppMenu extends CanvasPieMenu {
 			Intent intent) {
 		ResolveInfo resolveInfo = pm.resolveActivity(intent,
 				PackageManager.MATCH_DEFAULT_ONLY);
-		return resolveInfo != null ?
-				resolveInfo.activityInfo.packageName : null;
+		return resolveInfo != null
+				? resolveInfo.activityInfo.packageName
+				: null;
 	}
 
 	private void addAppIcon(AppIcon appIcon) {
