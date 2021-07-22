@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
@@ -61,12 +62,10 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
 
-		Resources res = getResources();
-
 		// Restrict to current orientation, whatever that is.
 		// Makes it possible to use it on tablets in landscape and
 		// in portrait for phones. Should become a choice at some point.
-		setRequestedOrientation(res.getConfiguration().orientation);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
 		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(
@@ -78,7 +77,7 @@ public class HomeActivity extends Activity {
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
 
-		initPieView(res);
+		initPieView(getResources());
 		initSearchInput();
 
 		SystemBars.listenForWindowInsets(pieView);
