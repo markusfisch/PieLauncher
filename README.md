@@ -68,8 +68,8 @@ Use 4, 6 or 8 icons in the pie menu to make the most out of it.
 
 ### There's a short delay after doing the home gesture
 
-This is bug in Android Google needs to fix.
-All 3rd party launchers do suffer from this bug. See:
+This is bug within Android. Google needs to fix it.
+All 3rd party launchers suffer from this bug. See:
 
 * [Homescreen interaction delay with gesture navigation?](https://www.reddit.com/r/GooglePixel/comments/dp5x1i/homescreen_interaction_delay_with_gesture/)
 * [What is up with home gesture animations with 3rd party launchers.](https://www.reddit.com/r/GooglePixel/comments/ecvbiv/what_is_up_with_home_gesture_animations_with_3rd/)
