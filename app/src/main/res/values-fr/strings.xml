@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Pie Launcher</string>
+	<string name="tip_number_of_icons">Essayer 4, 6 ou 8 symboles pour une utilisation optimale</string>
+	<string name="tip_pinch_zoom">Pincer et écarter pour redimensionner le menu</string>
+	<string name="tip_drag_to_order">Faire glisser pour organiser</string>
+	<string name="please_ignore_battery_optimization">Merci de désactiver les optimisations de batterie pour Pie Launcher afin d\'économiser de l\'énergie et le faire fonctionner plus rapidement.\n\nPie Launcher ne consomme pas de batterie quand il n\'est pas utilisé. Un lanceur d\'application est une exception parce qu\'il devrait être disponible en permanence et immédiatement, ce qui est empêché par les optimisations de batterie.\n\nPour cette raison, le lanceur d\'application par défaut est aussi déjà exclu des optimisations de batterie.</string>
+	<string name="disable_battery_optimization">DÉSACTIVER LES OPTIMISATIONS DE BATTERIE</string>
+</resources>
