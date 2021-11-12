@@ -3,7 +3,6 @@ package de.markusfisch.android.pielauncher.widget;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,10 +11,8 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -739,8 +736,8 @@ public class AppPieView extends View {
 			ripple.set(touch);
 			if (grabbedIcon != null) {
 				rollback();
-				startAppInfo(((AppMenu.AppIcon) grabbedIcon)
-						.componentName.getPackageName());
+				PieLauncherApp.appMenu.launchAppInfo(context,
+						(AppMenu.AppIcon) grabbedIcon);
 			}
 			successful = true;
 		} else if (iconDoneRect.contains(touch.x, touch.y)) {
@@ -786,14 +783,6 @@ public class AppPieView extends View {
 			}
 		}
 		return true;
-	}
-
-	private void startAppInfo(String packageName) {
-		Intent intent = new Intent(
-				Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-		intent.addCategory(Intent.CATEGORY_DEFAULT);
-		intent.setData(Uri.parse("package:" + packageName));
-		getContext().startActivity(intent);
 	}
 
 	private void setCenter(Point point) {

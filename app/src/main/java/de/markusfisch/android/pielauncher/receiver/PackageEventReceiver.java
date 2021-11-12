@@ -14,10 +14,6 @@ public class PackageEventReceiver extends BroadcastReceiver {
 			return;
 		}
 		String action = intent.getAction();
-		if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context);
-			return;
-		}
 		Uri data = intent.getData();
 		if (data == null) {
 			return;
@@ -26,12 +22,12 @@ public class PackageEventReceiver extends BroadcastReceiver {
 		if (Intent.ACTION_PACKAGE_ADDED.equals(action) ||
 				// Sent when a component of a package changed.
 				Intent.ACTION_PACKAGE_CHANGED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context, packageName);
+			PieLauncherApp.appMenu.indexAppsAsync(context, packageName, null);
 		} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
 				// Skip ACTION_PACKAGE_REMOVED when replacing because it
 				// will be immediately followed by ACTION_PACKAGE_ADDED.
 				!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
-			PieLauncherApp.appMenu.removePackageAsync(packageName);
+			PieLauncherApp.appMenu.removePackageAsync(packageName, null);
 		}
 	}
 }
