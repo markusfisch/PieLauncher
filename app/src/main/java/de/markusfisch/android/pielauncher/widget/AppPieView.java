@@ -1030,12 +1030,7 @@ public class AppPieView extends View {
 				// OverScroller.springBack() stops the animation so we
 				// cannot use it and have to start a new fling instead.
 				scroller.forceFinished(true);
-				scroller.fling(
-						0, getScrollY(),
-						0, pps,
-						0, 0,
-						0, maxY,
-						0, listPadding);
+				initFling(getScrollY());
 			}
 			scrollList(scroller.getCurrY(), true);
 			update();
@@ -1048,13 +1043,17 @@ public class AppPieView extends View {
 		private void start(int pixelsPerSecond) {
 			pps = -pixelsPerSecond;
 			maxY = maxScrollY;
+			initFling(getScrollY());
+			update();
+		}
+
+		private void initFling(int y) {
 			scroller.fling(
-					0, getScrollY(),
+					0, y,
 					0, pps,
 					0, 0,
 					0, maxY,
 					0, listPadding);
-			update();
 		}
 
 		private void stop() {
