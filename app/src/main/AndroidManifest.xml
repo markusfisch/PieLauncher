@@ -28,6 +28,7 @@
 			android:stateNotNeeded="true"
 			android:taskAffinity=""
 			android:excludeFromRecents="true"
+			android:exported="true"
 			android:theme="@style/HomeTheme">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
@@ -56,6 +57,7 @@
 		</activity>
 		<activity
 			android:name=".activity.BatteryOptimizationActivity"
-			android:theme="@style/HomeTheme"/>
+			android:theme="@style/HomeTheme"
+			android:exported="true"/>
 	</application>
 </manifest>
