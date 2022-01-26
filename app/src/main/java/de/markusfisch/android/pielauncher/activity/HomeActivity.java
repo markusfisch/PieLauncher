@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -65,7 +66,10 @@ public class HomeActivity extends Activity {
 		// Restrict to current orientation, whatever that is.
 		// Makes it possible to use it on tablets in landscape and
 		// in portrait for phones. Should become a choice at some point.
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+		setRequestedOrientation(
+				Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+						? ActivityInfo.SCREEN_ORIENTATION_LOCKED
+						: ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
 		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(
