@@ -116,6 +116,7 @@ public class LauncherItemKey {
 		return sb.toString();
 	}
 
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static UserManager getUserManager(Context context) {
 		return (UserManager) context.getSystemService(Context.USER_SERVICE);
 	}
