@@ -1,5 +1,12 @@
 # Change Log
 
+# 1.13.0
+* Add support for work profiles
+* Add french translation
+* Add cancelling pie menu with two fingers
+* Add monochome launcher icon for Android 13
+* Improve locking to default screen orientation
+
 ## 1.12.0
 * Avoid rotating the menu while editing
 * Add Chinese translation
