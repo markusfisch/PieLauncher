@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+	namespace 'de.markusfisch.android.pielauncher'
 	compileSdkVersion sdk_version
 
 	defaultConfig {
