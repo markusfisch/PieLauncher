@@ -26,7 +26,8 @@
 			android:taskAffinity=""
 			android:excludeFromRecents="true"
 			android:exported="true"
-			android:theme="@style/HomeTheme">
+			android:theme="@style/HomeTheme"
+			android:configChanges="orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
