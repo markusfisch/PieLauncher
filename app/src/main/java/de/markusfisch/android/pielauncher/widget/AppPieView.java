@@ -3,6 +3,7 @@ package de.markusfisch.android.pielauncher.widget;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -77,6 +78,10 @@ public class AppPieView extends View {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
+
+	private final Rect iconRotateRect = new Rect();
+	private final Bitmap iconRotate;
+
 	private final Bitmap iconLaunchFirst;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
@@ -145,6 +150,7 @@ public class AppPieView extends View {
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
+		iconRotate = getBitmapFromDrawable(res, R.drawable.ic_rotation);
 		iconLaunchFirst = getBitmapFromDrawable(res,
 				R.drawable.ic_launch_first);
 		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
@@ -582,8 +588,8 @@ public class AppPieView extends View {
 	}
 
 	private void layoutEditorControls(boolean portrait) {
-		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconInfo, iconDone};
-		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconInfoRect,
+		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconRotate, iconInfo, iconDone};
+		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconRotateRect, iconInfoRect,
 				iconDoneRect};
 		int length = icons.length;
 		int totalWidth = 0;
@@ -747,6 +753,17 @@ public class AppPieView extends View {
 				endEditMode();
 			}
 			successful = true;
+		} else if (iconRotateRect.contains(touch.x, touch.y)) {
+			boolean isPortrait = viewHeight > viewWidth;
+			int newOrientation = isPortrait
+							? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+							: ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			PieLauncherApp.prefs.setOrientation(newOrientation);
+			// Make an attempt to apply new orientation if possible.
+			if(getContext() instanceof Activity) {
+				((Activity) getContext()).setRequestedOrientation(newOrientation);
+			}
+			successful = true;
 		}
 		grabbedIcon = null;
 		PieLauncherApp.appMenu.updateSmoothing();
@@ -867,6 +884,7 @@ public class AppPieView extends View {
 		drawTip(canvas, getTip(hasIcon));
 		drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
 		drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
+		drawIcon(canvas, iconRotate, iconRotateRect, !hasIcon);
 		drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
 		drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
 		int centerX = viewWidth >> 1;
