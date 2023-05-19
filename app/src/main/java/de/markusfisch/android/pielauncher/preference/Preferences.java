@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 public class Preferences {
 	private static final String RADIUS = "radius";
+	private static final String ORIENTATION = "orientation";
 
 	private SharedPreferences preferences;
 
@@ -20,6 +21,16 @@ public class Preferences {
 		return preferences != null
 				? preferences.getInt(RADIUS, preset)
 				: preset;
+	}
+
+	public int getOrientation(int preset) {
+		return preferences != null
+				? preferences.getInt(ORIENTATION, preset)
+				: preset;
+	}
+
+	public void setOrientation(int orientation) {
+		apply(ORIENTATION, orientation);
 	}
 
 	public void setRadius(int radius) {
