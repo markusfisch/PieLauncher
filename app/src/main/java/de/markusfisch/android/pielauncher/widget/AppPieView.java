@@ -78,10 +78,8 @@ public class AppPieView extends View {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
-
 	private final Rect iconRotateRect = new Rect();
 	private final Bitmap iconRotate;
-
 	private final Bitmap iconLaunchFirst;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
