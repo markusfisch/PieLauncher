@@ -754,10 +754,9 @@ public class AppPieView extends View {
 			}
 			successful = true;
 		} else if (iconRotateRect.contains(touch.x, touch.y)) {
-			boolean isPortrait = viewHeight > viewWidth;
-			int newOrientation = isPortrait
-							? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-							: ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+			int newOrientation = viewHeight > viewWidth
+					? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+					: ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 			PieLauncherApp.prefs.setOrientation(newOrientation);
 			// Make an attempt to apply new orientation if possible.
 			if(getContext() instanceof Activity) {

@@ -63,15 +63,13 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
 
-		// Restrict to current orientation, whatever that is.
-		// Makes it possible to use it on tablets in landscape and
-		// in portrait for phones. Should become a choice at some point.
-
-		final int defaultOrientation = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-				? ActivityInfo.SCREEN_ORIENTATION_LOCKED
-				: ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
-
-		setRequestedOrientation(PieLauncherApp.prefs.getOrientation(defaultOrientation));
+		setRequestedOrientation(PieLauncherApp.prefs.getOrientation(
+				// Default to current orientation, whatever that is.
+				// This should naturally be landscape for tablets and
+				// portrait for phones.
+				Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+						? ActivityInfo.SCREEN_ORIENTATION_LOCKED
+						: ActivityInfo.SCREEN_ORIENTATION_NOSENSOR));
 
 		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(
