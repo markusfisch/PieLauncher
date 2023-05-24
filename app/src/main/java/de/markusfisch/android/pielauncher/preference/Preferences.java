@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class Preferences {
-	private static final String RADIUS = "radius";
 	private static final String ORIENTATION = "orientation";
+	private static final String RADIUS = "radius";
 
 	private SharedPreferences preferences;
 
@@ -14,23 +14,16 @@ public class Preferences {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
-	public int getRadius(int preset) {
-		// Somehow preferences can be null here. Frankly, I have no idea how
-		// that can possibly happen and I never ever saw it on one of my
-		// devices but there is at least one NPE in Play's crash logging.
-		return preferences != null
-				? preferences.getInt(RADIUS, preset)
-				: preset;
-	}
-
 	public int getOrientation(int preset) {
-		return preferences != null
-				? preferences.getInt(ORIENTATION, preset)
-				: preset;
+		return preferences.getInt(ORIENTATION, preset);
 	}
 
 	public void setOrientation(int orientation) {
 		apply(ORIENTATION, orientation);
+	}
+
+	public int getRadius(int preset) {
+		return preferences.getInt(RADIUS, preset);
 	}
 
 	public void setRadius(int radius) {
@@ -38,9 +31,7 @@ public class Preferences {
 	}
 
 	private void apply(String key, int value) {
-		if (preferences != null) {
-			put(key, value).apply();
-		}
+		put(key, value).apply();
 	}
 
 	private SharedPreferences.Editor put(String key, int value) {
