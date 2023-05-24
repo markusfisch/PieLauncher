@@ -759,8 +759,9 @@ public class AppPieView extends View {
 					: ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 			PieLauncherApp.prefs.setOrientation(newOrientation);
 			// Make an attempt to apply new orientation if possible.
-			if(getContext() instanceof Activity) {
-				((Activity) getContext()).setRequestedOrientation(newOrientation);
+			Activity activity = (Activity) getContext();
+			if (activity != null) {
+				activity.setRequestedOrientation(newOrientation);
 			}
 			successful = true;
 		}
