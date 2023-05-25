@@ -2,7 +2,6 @@ package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
@@ -14,13 +13,10 @@ public class BatteryOptimizationActivity extends Activity {
 		super.onCreate(state);
 		setContentView(R.layout.activity_battery_optimization);
 
-		findViewById(R.id.disable_battery_optimization).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				BatteryOptimization.requestDisable(
-						BatteryOptimizationActivity.this);
-				finish();
-			}
+		findViewById(R.id.disable_battery_optimization).setOnClickListener(v -> {
+			BatteryOptimization.requestDisable(
+					BatteryOptimizationActivity.this);
+			finish();
 		});
 
 		SystemBars.setTransparentSystemBars(getWindow());

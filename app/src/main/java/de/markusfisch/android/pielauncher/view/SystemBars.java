@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 
 public class SystemBars {
@@ -32,21 +31,17 @@ public class SystemBars {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
 			return;
 		}
-		view.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-			@Override
-			public WindowInsets onApplyWindowInsets(View v,
-					WindowInsets insets) {
-				if (insets.hasSystemWindowInsets()) {
-					v.setPadding(
-							insets.getSystemWindowInsetLeft(),
-							// Never set a top padding because the list should
-							// appear under the status bar.
-							0,
-							insets.getSystemWindowInsetRight(),
-							insets.getSystemWindowInsetBottom());
-				}
-				return insets.consumeSystemWindowInsets();
+		view.setOnApplyWindowInsetsListener((v, insets) -> {
+			if (insets.hasSystemWindowInsets()) {
+				v.setPadding(
+						insets.getSystemWindowInsetLeft(),
+						// Never set a top padding because the list should
+						// appear under the status bar.
+						0,
+						insets.getSystemWindowInsetRight(),
+						insets.getSystemWindowInsetBottom());
 			}
+			return insets.consumeSystemWindowInsets();
 		});
 	}
 }

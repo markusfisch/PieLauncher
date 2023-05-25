@@ -9,17 +9,14 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
@@ -156,12 +153,9 @@ public class HomeActivity extends Activity {
 						pieView.isAppListScrolled() ? color : 0);
 			}
 		});
-		PieLauncherApp.appMenu.setUpdateListener(new AppMenu.UpdateListener() {
-			@Override
-			public void onUpdate() {
-				searchInput.setText(null);
-				updateAppList();
-			}
+		PieLauncherApp.appMenu.setUpdateListener(() -> {
+			searchInput.setText(null);
+			updateAppList();
 		});
 	}
 
@@ -184,24 +178,20 @@ public class HomeActivity extends Activity {
 				}
 			}
 		});
-		searchInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event) {
-				switch (actionId) {
-					case EditorInfo.IME_ACTION_GO:
-					case EditorInfo.IME_ACTION_SEND:
-					case EditorInfo.IME_ACTION_DONE:
-					case EditorInfo.IME_ACTION_NEXT:
-					case EditorInfo.IME_NULL:
-						if (searchInput.getText().toString().length() > 0) {
-							pieView.launchFirstApp();
-						}
-						hideAllApps();
-						return true;
-					default:
-						return false;
-				}
+		searchInput.setOnEditorActionListener((v, actionId, event) -> {
+			switch (actionId) {
+				case EditorInfo.IME_ACTION_GO:
+				case EditorInfo.IME_ACTION_SEND:
+				case EditorInfo.IME_ACTION_DONE:
+				case EditorInfo.IME_ACTION_NEXT:
+				case EditorInfo.IME_NULL:
+					if (searchInput.getText().toString().length() > 0) {
+						pieView.launchFirstApp();
+					}
+					hideAllApps();
+					return true;
+				default:
+					return false;
 			}
 		});
 	}

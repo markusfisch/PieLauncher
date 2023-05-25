@@ -494,14 +494,11 @@ public class AppPieView extends View {
 					return;
 				}
 				initRipple();
-				longPressRunnable = new Runnable() {
-					@Override
-					public void run() {
-						performHapticFeedback(
-								HapticFeedbackConstants.LONG_PRESS);
-						addIconInteractively(appIcon);
-						longPressRunnable = null;
-					}
+				longPressRunnable = () -> {
+					performHapticFeedback(
+							HapticFeedbackConstants.LONG_PRESS);
+					addIconInteractively(appIcon);
+					longPressRunnable = null;
 				};
 				postDelayed(longPressRunnable, minLongPressDuration);
 			}
@@ -517,12 +514,9 @@ public class AppPieView extends View {
 			private void initRipple() {
 				cancelRipple();
 				final Point at = new Point(touch.x, touch.y + getScrollY());
-				rippleRunnable = new Runnable() {
-					@Override
-					public void run() {
-						ripple.set(at.x, at.y);
-						invalidate();
-					}
+				rippleRunnable = () -> {
+					ripple.set(at.x, at.y);
+					invalidate();
 				};
 				postDelayed(rippleRunnable, tapTimeout);
 			}
@@ -540,17 +534,14 @@ public class AppPieView extends View {
 				cancelPerformAction();
 				final boolean wasTap = isTap(event, tapTimeout);
 				final Point at = new Point(touch.x, touch.y);
-				performActionRunnable = new Runnable() {
-					@Override
-					public void run() {
-						v.performClick();
-						if (performAction(v.getContext(), at, wasTap)) {
-							v.performHapticFeedback(HAPTIC_FEEDBACK_CONFIRM);
-						}
-						performActionRunnable = null;
-						hidePieMenu();
-						invalidate();
+				performActionRunnable = () -> {
+					v.performClick();
+					if (performAction(v.getContext(), at, wasTap)) {
+						v.performHapticFeedback(HAPTIC_FEEDBACK_CONFIRM);
 					}
+					performActionRunnable = null;
+					hidePieMenu();
+					invalidate();
 				};
 				// Wait a short time before performing the action
 				// because some touch screen drivers send
