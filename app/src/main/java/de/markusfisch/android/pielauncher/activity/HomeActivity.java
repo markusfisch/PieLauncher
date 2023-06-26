@@ -2,9 +2,7 @@ package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -60,13 +58,7 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
 
-		setRequestedOrientation(PieLauncherApp.prefs.getOrientation(
-				// Default to current orientation, whatever that is.
-				// This should naturally be landscape for tablets and
-				// portrait for phones.
-				Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-						? ActivityInfo.SCREEN_ORIENTATION_LOCKED
-						: ActivityInfo.SCREEN_ORIENTATION_NOSENSOR));
+		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
 
 		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(

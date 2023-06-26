@@ -3,7 +3,6 @@ package de.markusfisch.android.pielauncher.widget;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,6 +33,7 @@ import java.util.List;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.dialog.PreferencesDialog;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
@@ -78,8 +78,8 @@ public class AppPieView extends View {
 	private final Bitmap iconInfo;
 	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
-	private final Rect iconRotateRect = new Rect();
-	private final Bitmap iconRotate;
+	private final Rect iconPreferencesRect = new Rect();
+	private final Bitmap iconPreferences;
 	private final Bitmap iconLaunchFirst;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
@@ -148,7 +148,7 @@ public class AppPieView extends View {
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
-		iconRotate = getBitmapFromDrawable(res, R.drawable.ic_rotation);
+		iconPreferences = getBitmapFromDrawable(res, R.drawable.ic_preferences);
 		iconLaunchFirst = getBitmapFromDrawable(res,
 				R.drawable.ic_launch_first);
 		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
@@ -577,8 +577,8 @@ public class AppPieView extends View {
 	}
 
 	private void layoutEditorControls(boolean portrait) {
-		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconRotate, iconInfo, iconDone};
-		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconRotateRect, iconInfoRect,
+		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconPreferences, iconInfo, iconDone};
+		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconPreferencesRect, iconInfoRect,
 				iconDoneRect};
 		int length = icons.length;
 		int totalWidth = 0;
@@ -742,16 +742,8 @@ public class AppPieView extends View {
 				endEditMode();
 			}
 			successful = true;
-		} else if (iconRotateRect.contains(touch.x, touch.y)) {
-			int newOrientation = viewHeight > viewWidth
-					? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-					: ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-			PieLauncherApp.prefs.setOrientation(newOrientation);
-			// Make an attempt to apply new orientation if possible.
-			Activity activity = (Activity) getContext();
-			if (activity != null) {
-				activity.setRequestedOrientation(newOrientation);
-			}
+		} else if (iconPreferencesRect.contains(touch.x, touch.y)) {
+			PreferencesDialog.create(context);
 			successful = true;
 		}
 		grabbedIcon = null;
@@ -873,7 +865,7 @@ public class AppPieView extends View {
 		drawTip(canvas, getTip(hasIcon));
 		drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
 		drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
-		drawIcon(canvas, iconRotate, iconRotateRect, !hasIcon);
+		drawIcon(canvas, iconPreferences, iconPreferencesRect, !hasIcon);
 		drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
 		drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
 		int centerX = viewWidth >> 1;
