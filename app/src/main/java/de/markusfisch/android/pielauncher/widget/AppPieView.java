@@ -65,20 +65,17 @@ public class AppPieView extends View {
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
 	private final Paint paintActive = new Paint(Paint.FILTER_BITMAP_FLAG);
-	private final Paint paintDeactive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
 	private final Ripple ripple = new Ripple();
 	private final Rect drawRect = new Rect();
-	private final Rect iconAddRect = new Rect();
+	private final Rect iconStartRect = new Rect();
+	private final Rect iconCenterRect = new Rect();
+	private final Rect iconEndRect = new Rect();
 	private final Bitmap iconAdd;
-	private final Rect iconRemoveRect = new Rect();
 	private final Bitmap iconRemove;
-	private final Rect iconInfoRect = new Rect();
 	private final Bitmap iconInfo;
-	private final Rect iconDoneRect = new Rect();
 	private final Bitmap iconDone;
-	private final Rect iconPreferencesRect = new Rect();
 	private final Bitmap iconPreferences;
 	private final Bitmap iconLaunchFirst;
 	private final String numberOfIconsTip;
@@ -136,7 +133,6 @@ public class AppPieView extends View {
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
 		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
 
-		paintDeactive.setAlpha(40);
 		paintText.setColor(res.getColor(R.color.text_color));
 		paintText.setTextAlign(Paint.Align.CENTER);
 		paintText.setTextSize(14f * sp);
@@ -577,9 +573,8 @@ public class AppPieView extends View {
 	}
 
 	private void layoutEditorControls(boolean portrait) {
-		Bitmap[] icons = new Bitmap[]{iconAdd, iconRemove, iconPreferences, iconInfo, iconDone};
-		Rect[] rects = new Rect[]{iconAddRect, iconRemoveRect, iconPreferencesRect, iconInfoRect,
-				iconDoneRect};
+		Bitmap[] icons = new Bitmap[]{iconAdd, iconPreferences, iconDone};
+		Rect[] rects = new Rect[]{iconStartRect, iconCenterRect, iconEndRect};
 		int length = icons.length;
 		int totalWidth = 0;
 		int totalHeight = 0;
@@ -679,7 +674,10 @@ public class AppPieView extends View {
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
-			return performEditAction(context);
+			boolean result = performEditAction(context);
+			grabbedIcon = null;
+			PieLauncherApp.appMenu.updateSmoothing();
+			return result;
 		}
 		return false;
 	}
@@ -709,46 +707,34 @@ public class AppPieView extends View {
 	}
 
 	private boolean performEditAction(Context context) {
-		boolean successful = false;
-		if (iconAddRect.contains(touch.x, touch.y)) {
-			if (grabbedIcon != null) {
-				rollback();
-			} else {
+		if (iconStartRect.contains(touch.x, touch.y)) {
+			if (grabbedIcon == null) {
 				((Activity) context).onBackPressed();
-			}
-			successful = true;
-		} else if (iconRemoveRect.contains(touch.x, touch.y)) {
-			ripple.set(touch);
-			if (grabbedIcon != null) {
+			} else {
+				ripple.set(touch);
 				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
 				// Undo any rotation if the menu has not otherwise changed.
 				if (sameOrder(backup, PieLauncherApp.appMenu.icons)) {
 					rollback();
 				}
 			}
-			successful = true;
-		} else if (iconInfoRect.contains(touch.x, touch.y)) {
-			ripple.set(touch);
-			if (grabbedIcon != null) {
+			return true;
+		} else if (iconCenterRect.contains(touch.x, touch.y) &&
+				grabbedIcon == null) {
+			PreferencesDialog.create(context);
+			return true;
+		} else if (iconEndRect.contains(touch.x, touch.y)) {
+			if (grabbedIcon == null) {
+				endEditMode();
+			} else {
+				ripple.set(touch);
 				rollback();
 				PieLauncherApp.appMenu.launchAppInfo(context,
 						(AppMenu.AppIcon) grabbedIcon);
 			}
-			successful = true;
-		} else if (iconDoneRect.contains(touch.x, touch.y)) {
-			if (grabbedIcon != null) {
-				rollback();
-			} else {
-				endEditMode();
-			}
-			successful = true;
-		} else if (iconPreferencesRect.contains(touch.x, touch.y)) {
-			PreferencesDialog.create(context);
-			successful = true;
+			return true;
 		}
-		grabbedIcon = null;
-		PieLauncherApp.appMenu.updateSmoothing();
-		return successful;
+		return false;
 	}
 
 	private void rollback() {
@@ -863,11 +849,14 @@ public class AppPieView extends View {
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		boolean hasIcon = grabbedIcon != null;
 		drawTip(canvas, getTip(hasIcon));
-		drawIcon(canvas, iconAdd, iconAddRect, !hasIcon);
-		drawIcon(canvas, iconRemove, iconRemoveRect, hasIcon);
-		drawIcon(canvas, iconPreferences, iconPreferencesRect, !hasIcon);
-		drawIcon(canvas, iconInfo, iconInfoRect, hasIcon);
-		drawIcon(canvas, iconDone, iconDoneRect, !hasIcon);
+		if (hasIcon) {
+			drawIcon(canvas, iconRemove, iconStartRect);
+			drawIcon(canvas, iconInfo, iconEndRect);
+		} else {
+			drawIcon(canvas, iconAdd, iconStartRect);
+			drawIcon(canvas, iconPreferences, iconCenterRect);
+			drawIcon(canvas, iconDone, iconEndRect);
+		}
 		int centerX = viewWidth >> 1;
 		int centerY = viewHeight >> 1;
 		setCenter(centerX, centerY);
@@ -972,10 +961,8 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void drawIcon(Canvas canvas, Bitmap icon, Rect rect,
-			boolean active) {
-		canvas.drawBitmap(icon, null, rect,
-				active ? paintActive : paintDeactive);
+	private void drawIcon(Canvas canvas, Bitmap icon, Rect rect) {
+		canvas.drawBitmap(icon, null, rect, paintActive);
 	}
 
 	private static float distSq(Point a, Point b) {
