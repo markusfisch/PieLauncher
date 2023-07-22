@@ -46,7 +46,7 @@
 				android:resource="@drawable/ic_launcher"/>
 		</activity>
 		<activity
-			android:name=".activity.BatteryOptimizationActivity"
+			android:name=".activity.SettingsActivity"
 			android:exported="true"/>
 	</application>
 </manifest>

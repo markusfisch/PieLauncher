@@ -5,16 +5,10 @@
 		<item name="android:windowShowWallpaper">true</item>
 		<item name="android:windowNoTitle">true</item>
 	</style>
-	<style name="Button" parent="@android:style/Widget.Button">
-		<item name="android:background">@android:color/transparent</item>
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:textColor">@color/text_color</item>
-		<item name="android:textStyle">bold</item>
-	</style>
 	<style name="Preference" parent="@android:style/Widget.TextView">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_marginBottom">16dp</item>
+		<item name="android:layout_marginBottom">24dp</item>
+		<item name="android:textColor">@color/text_color</item>
 	</style>
 </resources>

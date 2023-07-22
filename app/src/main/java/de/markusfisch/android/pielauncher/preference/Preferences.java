@@ -7,10 +7,12 @@ import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
 public class Preferences {
+	private static final String INTRODUCED = "introduced";
 	private static final String RADIUS = "radius";
 	private static final String ORIENTATION = "orientation";
 
 	private SharedPreferences preferences;
+	private boolean introduced = false;
 	private int defaultOrientation;
 
 	public void init(Context context) {
@@ -19,6 +21,16 @@ public class Preferences {
 		defaultOrientation = dm.heightPixels > dm.widthPixels
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+		introduced = preferences.getBoolean(INTRODUCED, introduced);
+	}
+
+	public boolean isIntroduced() {
+		return introduced;
+	}
+
+	public void setIntroduced() {
+		introduced = true;
+		put(editor -> editor.putBoolean(INTRODUCED, introduced)).apply();
 	}
 
 	public int getOrientation() {

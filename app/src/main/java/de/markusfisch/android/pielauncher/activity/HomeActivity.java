@@ -15,7 +15,6 @@ import android.widget.EditText;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
@@ -58,14 +57,14 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
 
-		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
-
 		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
 		setContentView(R.layout.activity_home);
-		showBatteryOptimizationInfoIfNecessary();
+		if (!PieLauncherApp.prefs.isIntroduced()) {
+			SettingsActivity.start(this);
+		}
 
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
@@ -99,6 +98,12 @@ public class HomeActivity extends Activity {
 				showAllAppsOnResume = true;
 			}
 		}
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
 	}
 
 	@Override
@@ -223,12 +228,6 @@ public class HomeActivity extends Activity {
 
 	private boolean isSearchVisible() {
 		return searchInput.getVisibility() == View.VISIBLE;
-	}
-
-	private void showBatteryOptimizationInfoIfNecessary() {
-		if (!BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
-			startActivity(new Intent(this, BatteryOptimizationActivity.class));
-		}
 	}
 
 	private void updateAppList() {

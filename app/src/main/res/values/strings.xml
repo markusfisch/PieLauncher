@@ -3,11 +3,12 @@
 	<string name="tip_number_of_icons">Try 4, 6 or 8 symbols for optimal usage</string>
 	<string name="tip_pinch_zoom">Pinch &amp; spread to scale menu</string>
 	<string name="tip_drag_to_order">Drag to arrange order</string>
-	<string name="please_ignore_battery_optimization">Please disable battery optimizations for Pie Launcher to save energy and make it work faster.\n\nPie Launcher does not consume battery when not in use. A home screen launcher is an exception because it should always and immediately be available, which is prevented by battery optimizations.\n\nFor this reason, the default launcher is already excluded from battery optimizations too.</string>
-	<string name="disable_battery_optimization">DISABLE BATTERY OPTIMIZATION</string>
-	<string name="preferences">Preferences</string>
-	<string name="orientation_default"><big>Orientation</big>\nDefault</string>
+	<string name="settings">Settings</string>
+	<string name="welcome">Welcome!</string>
+	<string name="hello">Thanks for trying Pie Launcher!\nHere are a few things you might want to check:</string>
+	<string name="orientation_default"><big>Orientation</big>\nUse always the current orientation</string>
 	<string name="orientation_portrait"><big>Orientation</big>\nPortrait</string>
 	<string name="orientation_landscape"><big>Orientation</big>\nLandscape</string>
-	<string name="make_default_launcher"><big>Make default launcher</big>\nSet as default launcher</string>
+	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\nSaves energy and makes this launcher work faster</string>
+	<string name="make_default_launcher"><big>Make default launcher</big>\nAvoids returning to your previous launcher</string>
 </resources>
