@@ -3,12 +3,12 @@
 	<string name="tip_number_of_icons">尝试使用4、6或8个符号以获得最佳使用效果</string>
 	<string name="tip_pinch_zoom">并拢 &amp; 伸展手指来缩放菜单</string>
 	<string name="tip_drag_to_order">拖动以排列顺序</string>
-	<string name="settings">Settings</string>
-	<string name="welcome">Welcome!</string>
-	<string name="hello">Thanks for trying Pie Launcher!\nHere are a few things you might want to check:</string>
-	<string name="orientation_default"><big>Orientation</big>\n默认</string>
+	<string name="settings">设置</string>
+	<string name="welcome">欢迎！</string>
+	<string name="hello">感谢试用 Pie Launcher！\n以下是一些需要检查的事项：</string>
+	<string name="orientation_default"><big>Orientation</big>\n始终使用当前屏幕方向</string>
 	<string name="orientation_portrait"><big>Orientation</big>\n横屏</string>
 	<string name="orientation_landscape"><big>Orientation</big>\n竖屏</string>
-	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\nSaves energy and makes this launcher work faster</string>
-	<string name="make_default_launcher"><big>Créer un lanceur par défaut</big>\nDéfinir comme lanceur par défaut</string>
+	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\n节省电量并使本启动器可以更迅速地运行</string>
+	<string name="make_default_launcher"><big>Make default launcher</big>\n避免回到先前的启动器</string>
 </resources>
