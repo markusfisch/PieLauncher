@@ -33,12 +33,6 @@ public class SettingsActivity extends Activity {
 			headline.setText(R.string.welcome);
 		}
 
-		TextView orientationView = findViewById(R.id.orientation);
-		orientationView.setOnClickListener(
-				v -> Orientation.setOrientation(this, orientationView));
-		Orientation.setOrientationText(orientationView,
-				PieLauncherApp.prefs.getOrientation());
-
 		TextView disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
 		if (!BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
@@ -63,6 +57,12 @@ public class SettingsActivity extends Activity {
 				finish();
 			});
 		}
+
+		TextView orientationView = findViewById(R.id.orientation);
+		orientationView.setOnClickListener(
+				v -> Orientation.setOrientation(this, orientationView));
+		Orientation.setOrientationText(orientationView,
+				PieLauncherApp.prefs.getOrientation());
 
 		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
 		SystemBars.setTransparentSystemBars(getWindow());
