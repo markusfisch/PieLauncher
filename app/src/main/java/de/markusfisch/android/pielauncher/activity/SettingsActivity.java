@@ -64,6 +64,13 @@ public class SettingsActivity extends Activity {
 			});
 		}
 
+		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
 		SystemBars.setTransparentSystemBars(getWindow());
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
 	}
 }

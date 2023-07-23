@@ -72,7 +72,14 @@ public class HomeActivity extends Activity {
 		initPieView(getResources());
 		initSearchInput();
 
-		SystemBars.listenForWindowInsets(pieView);
+		SystemBars.listenForWindowInsets(pieView,
+				(left, top, right, bottom) -> pieView.setPadding(
+						left,
+						// Never set a top padding because the list should
+						// appear under the status bar.
+						0,
+						right,
+						bottom));
 		SystemBars.setTransparentSystemBars(getWindow());
 	}
 

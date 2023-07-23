@@ -1,12 +1,17 @@
 package de.markusfisch.android.pielauncher.view;
 
 import android.annotation.TargetApi;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 public class SystemBars {
+	public interface OnInsetListener {
+		void onApplyInsets(int left, int top, int right, int bottom);
+	}
+
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static void setTransparentSystemBars(Window window) {
 		if (window == null ||
@@ -26,22 +31,38 @@ public class SystemBars {
 		window.setNavigationBarColor(0);
 	}
 
-	@TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
-	public static void listenForWindowInsets(View view) {
+	public static void listenForWindowInsets(View view,
+			OnInsetListener listener) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
 			return;
 		}
 		view.setOnApplyWindowInsetsListener((v, insets) -> {
 			if (insets.hasSystemWindowInsets()) {
-				v.setPadding(
+				listener.onApplyInsets(
 						insets.getSystemWindowInsetLeft(),
-						// Never set a top padding because the list should
-						// appear under the status bar.
-						0,
+						insets.getSystemWindowInsetTop(),
 						insets.getSystemWindowInsetRight(),
 						insets.getSystemWindowInsetBottom());
 			}
 			return insets.consumeSystemWindowInsets();
 		});
+	}
+
+	public static void addPaddingFromWindowInsets(View view) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
+			return;
+		}
+		Rect padding = new Rect(
+				view.getPaddingLeft(),
+				view.getPaddingTop(),
+				view.getPaddingRight(),
+				view.getPaddingBottom());
+		SystemBars.listenForWindowInsets(
+				view,
+				(left, top, right, bottom) -> view.setPadding(
+						padding.left + left,
+						padding.top + top,
+						padding.right + right,
+						padding.bottom + bottom));
 	}
 }
