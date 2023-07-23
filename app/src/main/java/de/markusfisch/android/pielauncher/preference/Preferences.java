@@ -62,7 +62,7 @@ public class Preferences {
 
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
-		put(ORIENTATION, orientation).apply();
+		put(ORIENTATION, orientation).commit();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {
