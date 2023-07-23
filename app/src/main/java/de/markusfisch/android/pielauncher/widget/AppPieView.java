@@ -138,7 +138,7 @@ public class AppPieView extends View {
 		paintText.setTextSize(14f * sp);
 		textHeight = paintText.descent() - paintText.ascent();
 		textOffset = (textHeight / 2) - paintText.descent();
-		translucentBackgroundColor = res.getColor(R.color.background_ui);
+		translucentBackgroundColor = res.getColor(R.color.bg_ui);
 
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);

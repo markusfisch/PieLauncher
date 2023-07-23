@@ -132,7 +132,7 @@ public class HomeActivity extends Activity {
 
 	private void initPieView(Resources res) {
 		final int searchBarBackgroundColor = res.getColor(
-				R.color.background_search_bar);
+				R.color.bg_search_bar);
 		final float searchBarThreshold = res.getDisplayMetrics().density * 48f;
 		pieView.setListListener(new AppPieView.ListListener() {
 			@Override

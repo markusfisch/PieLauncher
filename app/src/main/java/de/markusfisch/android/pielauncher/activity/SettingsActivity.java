@@ -15,6 +15,9 @@ import de.markusfisch.android.pielauncher.os.Orientation;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class SettingsActivity extends Activity {
+	private View disableBatteryOptimizations;
+	private View defaultLauncherView;
+
 	public static void start(Context context) {
 		context.startActivity(new Intent(context, SettingsActivity.class));
 	}
@@ -25,56 +28,57 @@ public class SettingsActivity extends Activity {
 		setContentView(R.layout.activity_settings);
 
 		initHeadline();
-		initDisableBatteryOptimizations();
-		initDefaultLauncher();
 		initOrientation();
 		initDisplayKeyboard();
+		initDoneButton();
+
+		disableBatteryOptimizations = findViewById(
+				R.id.disable_battery_optimization);
+		defaultLauncherView = findViewById(R.id.make_default_launcher);
 
 		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
 		SystemBars.setTransparentSystemBars(getWindow());
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
+	protected void onResume() {
+		super.onResume();
 		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
+
+		// These may change once set.
+		updateDisableBatteryOptimizations();
+		updateDefaultLauncher();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		// Stop showing intro as soon as these settings are set.
+		if (!PieLauncherApp.prefs.isIntroduced() &&
+				BatteryOptimization.isIgnoringBatteryOptimizations(this) &&
+				isDefaultLauncher()) {
+			PieLauncherApp.prefs.setIntroduced();
+		}
 	}
 
 	private void initHeadline() {
 		TextView headline = findViewById(R.id.headline);
-		headline.setOnClickListener(v -> finish());
 		if (PieLauncherApp.prefs.isIntroduced()) {
+			headline.setOnClickListener(v -> finish());
 			findViewById(R.id.welcome).setVisibility(View.GONE);
 		} else {
-			PieLauncherApp.prefs.setIntroduced();
 			headline.setText(R.string.welcome);
+			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		}
 	}
 
-	private void initDisableBatteryOptimizations() {
-		TextView disableBatteryOptimizations = findViewById(
-				R.id.disable_battery_optimization);
-		if (!BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
-			disableBatteryOptimizations.setOnClickListener(v -> {
-				BatteryOptimization.requestDisable(
-						SettingsActivity.this);
-				finish();
-			});
+	private void initDoneButton() {
+		View doneButton = findViewById(R.id.done);
+		if (PieLauncherApp.prefs.isIntroduced()) {
+			doneButton.setVisibility(View.GONE);
 		} else {
-			disableBatteryOptimizations.setVisibility(View.GONE);
-		}
-	}
-
-	private void initDefaultLauncher() {
-		TextView defaultLauncherView = findViewById(
-				R.id.make_default_launcher);
-		if (DefaultLauncher.isDefault(
-				getPackageManager(),
-				getPackageName())) {
-			defaultLauncherView.setVisibility(View.GONE);
-		} else {
-			defaultLauncherView.setOnClickListener(v -> {
-				DefaultLauncher.setAsDefault(this);
+			doneButton.setOnClickListener(v -> {
+				PieLauncherApp.prefs.setIntroduced();
 				finish();
 			});
 		}
@@ -82,8 +86,8 @@ public class SettingsActivity extends Activity {
 
 	private void initOrientation() {
 		TextView orientationView = findViewById(R.id.orientation);
-		orientationView.setOnClickListener(
-				v -> Orientation.setOrientation(this, orientationView));
+		orientationView.setOnClickListener(v ->
+				Orientation.setOrientation(this, orientationView));
 		Orientation.setOrientationText(orientationView,
 				PieLauncherApp.prefs.getOrientation());
 	}
@@ -102,5 +106,28 @@ public class SettingsActivity extends Activity {
 		view.setText(PieLauncherApp.prefs.displayKeyboard()
 				? R.string.display_keyboard_yes
 				: R.string.display_keyboard_no);
+	}
+
+	private void updateDisableBatteryOptimizations() {
+		if (BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
+			disableBatteryOptimizations.setVisibility(View.GONE);
+		} else {
+			disableBatteryOptimizations.setOnClickListener(v ->
+					BatteryOptimization.requestDisable(SettingsActivity.this));
+		}
+	}
+
+	private void updateDefaultLauncher() {
+		if (isDefaultLauncher()) {
+			defaultLauncherView.setVisibility(View.GONE);
+		} else {
+			defaultLauncherView.setOnClickListener(v ->
+					DefaultLauncher.setAsDefault(this));
+		}
+	}
+
+	private boolean isDefaultLauncher() {
+		return DefaultLauncher.isDefault(
+				getPackageManager(), getPackageName());
 	}
 }

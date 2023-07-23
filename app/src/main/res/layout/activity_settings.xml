@@ -2,7 +2,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background_ui"
+	android:background="@color/bg_ui"
 	android:fillViewport="true">
 	<LinearLayout
 		android:id="@+id/content"
@@ -45,5 +45,10 @@
 			style="@style/Preference"
 			android:id="@+id/display_keyboard"
 			android:text="@string/display_keyboard_yes"/>
+		<Button
+			style="@style/Button"
+			android:id="@+id/done"
+			android:layout_gravity="end"
+			android:text="@android:string/ok"/>
 	</LinearLayout>
 </ScrollView>
