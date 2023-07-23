@@ -848,7 +848,11 @@ public class AppPieView extends View {
 	private void drawEditor(Canvas canvas) {
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		boolean hasIcon = grabbedIcon != null;
-		drawTip(canvas, getTip(hasIcon));
+		// Only draw tips in portrait orientation.
+		// There's probably not enough space in landscape.
+		if (canvas.getWidth() < canvas.getHeight()) {
+			drawTip(canvas, getTip(hasIcon));
+		}
 		if (hasIcon) {
 			drawIcon(canvas, iconRemove, iconStartRect);
 			drawIcon(canvas, iconInfo, iconEndRect);
