@@ -14,16 +14,19 @@ public class Preferences {
 
 	private SharedPreferences preferences;
 	private boolean introduced = false;
+	private int orientation;
 	private boolean displayKeyboard = true;
-	private int defaultOrientation;
 
 	public void init(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		defaultOrientation = dm.heightPixels > dm.widthPixels
+		int defaultOrientation = dm.heightPixels > dm.widthPixels
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+
 		introduced = preferences.getBoolean(INTRODUCED, introduced);
+		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		displayKeyboard = preferences.getBoolean(INTRODUCED, displayKeyboard);
 	}
 
@@ -33,7 +36,7 @@ public class Preferences {
 
 	public void setIntroduced() {
 		introduced = true;
-		put(editor -> editor.putBoolean(INTRODUCED, introduced)).apply();
+		put(INTRODUCED, true).apply();
 	}
 
 	public int getRadius(int preset) {
@@ -45,21 +48,25 @@ public class Preferences {
 	}
 
 	public int getOrientation() {
-		return preferences.getInt(ORIENTATION, defaultOrientation);
+		return orientation;
 	}
 
 	public void setOrientation(int orientation) {
-		put(ORIENTATION, orientation).commit();
+		this.orientation = orientation;
+		put(ORIENTATION, orientation).apply();
 	}
 
 	public boolean displayKeyboard() {
 		return displayKeyboard;
 	}
 
-	public void setDisplayKeyboard(boolean display) {
-		displayKeyboard = display;
-		put(editor -> editor.putBoolean(DISPLAY_KEYBOARD,
-				displayKeyboard)).apply();
+	public void setDisplayKeyboard(boolean displayKeyboard) {
+		this.displayKeyboard = displayKeyboard;
+		put(DISPLAY_KEYBOARD, displayKeyboard).apply();
+	}
+
+	private SharedPreferences.Editor put(String key, boolean value) {
+		return put(editor -> editor.putBoolean(key, value));
 	}
 
 	private SharedPreferences.Editor put(String key, int value) {
