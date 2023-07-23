@@ -28,8 +28,8 @@ public class SettingsActivity extends Activity {
 		setContentView(R.layout.activity_settings);
 
 		initHeadline();
-		initOrientation();
 		initDisplayKeyboard();
+		initOrientation();
 		initDoneButton();
 
 		disableBatteryOptimizations = findViewById(
@@ -84,14 +84,6 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void initOrientation() {
-		TextView orientationView = findViewById(R.id.orientation);
-		orientationView.setOnClickListener(v ->
-				Orientation.setOrientation(this, orientationView));
-		Orientation.setOrientationText(orientationView,
-				PieLauncherApp.prefs.getOrientation());
-	}
-
 	private void initDisplayKeyboard() {
 		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
 		displayKeyboardView.setOnClickListener(v -> {
@@ -106,6 +98,14 @@ public class SettingsActivity extends Activity {
 		view.setText(PieLauncherApp.prefs.displayKeyboard()
 				? R.string.display_keyboard_yes
 				: R.string.display_keyboard_no);
+	}
+
+	private void initOrientation() {
+		TextView orientationView = findViewById(R.id.orientation);
+		orientationView.setOnClickListener(v ->
+				Orientation.setOrientation(this, orientationView));
+		Orientation.setOrientationText(orientationView,
+				PieLauncherApp.prefs.getOrientation());
 	}
 
 	private void updateDisableBatteryOptimizations() {

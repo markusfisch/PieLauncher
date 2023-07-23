@@ -9,13 +9,13 @@ import android.util.DisplayMetrics;
 public class Preferences {
 	private static final String INTRODUCED = "introduced";
 	private static final String RADIUS = "radius";
-	private static final String ORIENTATION = "orientation";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
+	private static final String ORIENTATION = "orientation";
 
 	private SharedPreferences preferences;
 	private boolean introduced = false;
-	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean displayKeyboard = true;
+	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
 	public void init(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -26,8 +26,8 @@ public class Preferences {
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
 		introduced = preferences.getBoolean(INTRODUCED, introduced);
-		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		displayKeyboard = preferences.getBoolean(INTRODUCED, displayKeyboard);
+		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 	}
 
 	public boolean isIntroduced() {
@@ -47,15 +47,6 @@ public class Preferences {
 		put(RADIUS, radius).apply();
 	}
 
-	public int getOrientation() {
-		return orientation;
-	}
-
-	public void setOrientation(int orientation) {
-		this.orientation = orientation;
-		put(ORIENTATION, orientation).apply();
-	}
-
 	public boolean displayKeyboard() {
 		return displayKeyboard;
 	}
@@ -63,6 +54,15 @@ public class Preferences {
 	public void setDisplayKeyboard(boolean displayKeyboard) {
 		this.displayKeyboard = displayKeyboard;
 		put(DISPLAY_KEYBOARD, displayKeyboard).apply();
+	}
+
+	public int getOrientation() {
+		return orientation;
+	}
+
+	public void setOrientation(int orientation) {
+		this.orientation = orientation;
+		put(ORIENTATION, orientation).apply();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {
