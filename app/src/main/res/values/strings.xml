@@ -11,6 +11,6 @@
 	<string name="orientation_default"><big>Orientation</big>\nUse always the current orientation</string>
 	<string name="orientation_portrait"><big>Orientation</big>\nPortrait</string>
 	<string name="orientation_landscape"><big>Orientation</big>\nLandscape</string>
-	<string name="display_keyboard_yes"><big>Display keyboard</big>\nAutomatically show the keyboard in app listing.</string>
-	<string name="display_keyboard_no"><big>Display keyboard</big>\nDo not show the keyboard in app listing.</string>
+	<string name="display_keyboard_yes"><big>Display keyboard</big>\nAutomatically show the keyboard in app listing</string>
+	<string name="display_keyboard_no"><big>Display keyboard</big>\nDo not show the keyboard in app listing</string>
 </resources>
