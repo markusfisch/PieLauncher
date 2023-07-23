@@ -14,7 +14,7 @@ public class Preferences {
 
 	private SharedPreferences preferences;
 	private boolean introduced = false;
-	private int orientation;
+	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean displayKeyboard = true;
 
 	public void init(Context context) {
