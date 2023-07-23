@@ -41,5 +41,9 @@
 			style="@style/Preference"
 			android:id="@+id/orientation"
 			android:text="@string/orientation_default"/>
+		<TextView
+			style="@style/Preference"
+			android:id="@+id/display_keyboard"
+			android:text="@string/display_keyboard_yes"/>
 	</LinearLayout>
 </ScrollView>

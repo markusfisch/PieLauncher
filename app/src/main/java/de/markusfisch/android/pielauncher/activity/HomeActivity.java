@@ -206,7 +206,9 @@ public class HomeActivity extends Activity {
 		}
 
 		searchInput.setVisibility(View.VISIBLE);
-		kb.showFor(searchInput);
+		if (PieLauncherApp.prefs.displayKeyboard()) {
+			kb.showFor(searchInput);
+		}
 
 		// Clear search input.
 		boolean searchWasEmpty = searchInput.getText().toString().isEmpty();

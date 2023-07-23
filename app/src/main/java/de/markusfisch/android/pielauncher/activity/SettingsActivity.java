@@ -24,6 +24,23 @@ public class SettingsActivity extends Activity {
 		super.onCreate(state);
 		setContentView(R.layout.activity_settings);
 
+		initHeadline();
+		initDisableBatteryOptimizations();
+		initDefaultLauncher();
+		initOrientation();
+		initDisplayKeyboard();
+
+		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
+		SystemBars.setTransparentSystemBars(getWindow());
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
+	}
+
+	private void initHeadline() {
 		TextView headline = findViewById(R.id.headline);
 		headline.setOnClickListener(v -> finish());
 		if (PieLauncherApp.prefs.isIntroduced()) {
@@ -32,7 +49,9 @@ public class SettingsActivity extends Activity {
 			PieLauncherApp.prefs.setIntroduced();
 			headline.setText(R.string.welcome);
 		}
+	}
 
+	private void initDisableBatteryOptimizations() {
 		TextView disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
 		if (!BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
@@ -44,7 +63,9 @@ public class SettingsActivity extends Activity {
 		} else {
 			disableBatteryOptimizations.setVisibility(View.GONE);
 		}
+	}
 
+	private void initDefaultLauncher() {
 		TextView defaultLauncherView = findViewById(
 				R.id.make_default_launcher);
 		if (DefaultLauncher.isDefault(
@@ -57,20 +78,29 @@ public class SettingsActivity extends Activity {
 				finish();
 			});
 		}
+	}
 
+	private void initOrientation() {
 		TextView orientationView = findViewById(R.id.orientation);
 		orientationView.setOnClickListener(
 				v -> Orientation.setOrientation(this, orientationView));
 		Orientation.setOrientationText(orientationView,
 				PieLauncherApp.prefs.getOrientation());
-
-		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
-		SystemBars.setTransparentSystemBars(getWindow());
 	}
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
+	private void initDisplayKeyboard() {
+		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
+		displayKeyboardView.setOnClickListener(v -> {
+			PieLauncherApp.prefs.setDisplayKeyboard(
+					!PieLauncherApp.prefs.displayKeyboard());
+			updateDisplayKeyboardText(displayKeyboardView);
+		});
+		updateDisplayKeyboardText(displayKeyboardView);
+	}
+
+	private static void updateDisplayKeyboardText(TextView view) {
+		view.setText(PieLauncherApp.prefs.displayKeyboard()
+				? R.string.display_keyboard_yes
+				: R.string.display_keyboard_no);
 	}
 }
