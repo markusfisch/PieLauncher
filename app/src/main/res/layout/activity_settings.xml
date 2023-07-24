@@ -21,7 +21,7 @@
 			android:layout_height="wrap_content"
 			android:padding="16dp"
 			android:layout_marginBottom="1dp"
-			android:textAppearance="@android:style/TextAppearance.Small"
+			android:textAppearance="@android:style/TextAppearance.Medium"
 			android:textColor="@color/text_color"
 			android:text="@string/hello"/>
 		<de.markusfisch.android.pielauncher.widget.PreferenceView
