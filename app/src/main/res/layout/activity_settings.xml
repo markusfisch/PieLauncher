@@ -15,7 +15,7 @@
 			android:drawableLeft="@drawable/ic_back"
 			android:drawableStart="@drawable/ic_back"
 			android:text="@string/settings"/>
-		<TextView
+		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			android:id="@+id/welcome"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -24,19 +24,19 @@
 			android:textAppearance="@android:style/TextAppearance.Small"
 			android:textColor="@color/text_color"
 			android:text="@string/hello"/>
-		<TextView
+		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/disable_battery_optimization"
 			android:text="@string/disable_battery_optimization"/>
-		<TextView
+		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/make_default_launcher"
 			android:text="@string/make_default_launcher"/>
-		<TextView
+		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/display_keyboard"
 			android:text="@string/display_keyboard_yes"/>
-		<TextView
+		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/orientation"
 			android:text="@string/orientation_default"/>
