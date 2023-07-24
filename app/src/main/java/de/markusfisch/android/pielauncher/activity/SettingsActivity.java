@@ -57,7 +57,7 @@ public class SettingsActivity extends Activity {
 		// Stop showing intro as soon as these settings are set.
 		if (!PieLauncherApp.prefs.isIntroduced() &&
 				BatteryOptimization.isIgnoringBatteryOptimizations(this) &&
-				isDefaultLauncher()) {
+				DefaultLauncher.isDefault(this)) {
 			PieLauncherApp.prefs.setIntroduced();
 		}
 	}
@@ -135,16 +135,11 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void updateDefaultLauncher() {
-		if (isDefaultLauncher()) {
+		if (DefaultLauncher.isDefault(this)) {
 			defaultLauncherView.setVisibility(View.GONE);
 		} else {
 			defaultLauncherView.setOnClickListener(v ->
 					DefaultLauncher.setAsDefault(this));
 		}
-	}
-
-	private boolean isDefaultLauncher() {
-		return DefaultLauncher.isDefault(
-				getPackageManager(), getPackageName());
 	}
 }

@@ -32,6 +32,10 @@ public class DefaultLauncher {
 		}
 	}
 
+	public static boolean isDefault(Context context) {
+		return isDefault(context.getPackageManager(), context.getPackageName());
+	}
+
 	public static boolean isDefault(PackageManager packageManager,
 			String packageName) {
 		IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
