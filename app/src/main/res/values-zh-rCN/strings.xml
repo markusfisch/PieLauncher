@@ -8,9 +8,10 @@
 	<string name="hello">感谢试用 Pie Launcher！\n以下是一些需要检查的事项：</string>
 	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\n节省电量并使本启动器可以更迅速地运行</string>
 	<string name="make_default_launcher"><big>Make default launcher</big>\n避免回到先前的启动器</string>
+	<string name="display_keyboard_yes"><big>Display keyboard</big>\n在应用列表中自动显示键盘。</string>
+	<string name="display_keyboard_no"><big>Display keyboard</big>\n不要在应用列表中显示键盘。</string>
 	<string name="orientation_default"><big>Orientation</big>\n始终使用当前屏幕方向</string>
 	<string name="orientation_portrait"><big>Orientation</big>\n横屏</string>
 	<string name="orientation_landscape"><big>Orientation</big>\n竖屏</string>
-	<string name="display_keyboard_yes"><big>Display keyboard</big>\n在应用列表中自动显示键盘。</string>
-	<string name="display_keyboard_no"><big>Display keyboard</big>\n不要在应用列表中显示键盘。</string>
+	<string name="ready">Ready</string>
 </resources>

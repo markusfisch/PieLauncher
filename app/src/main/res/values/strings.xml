@@ -8,9 +8,10 @@
 	<string name="hello">Thanks for trying Pie Launcher!\nHere are a few things you might want to check:</string>
 	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\nSaves energy and makes this launcher work faster</string>
 	<string name="make_default_launcher"><big>Make default launcher</big>\nAvoids returning to your previous launcher</string>
+	<string name="display_keyboard_yes"><big>Display keyboard</big>\nAutomatically show the keyboard in app listing</string>
+	<string name="display_keyboard_no"><big>Display keyboard</big>\nDo not show the keyboard in app listing</string>
 	<string name="orientation_default"><big>Orientation</big>\nUse always the current orientation</string>
 	<string name="orientation_portrait"><big>Orientation</big>\nPortrait</string>
 	<string name="orientation_landscape"><big>Orientation</big>\nLandscape</string>
-	<string name="display_keyboard_yes"><big>Display keyboard</big>\nAutomatically show the keyboard in app listing</string>
-	<string name="display_keyboard_no"><big>Display keyboard</big>\nDo not show the keyboard in app listing</string>
+	<string name="ready">Ready</string>
 </resources>

@@ -8,9 +8,10 @@
 	<string name="hello">Merci d\'avoir essayé Pie Launcher!\nVoici quelques points à vérifier:</string>
 	<string name="disable_battery_optimization"><big>Désactiver l\'optimisation de la batterie</big>\nPermet d\'économiser de l\'énergie et de faire fonctionner ce lanceur plus rapidement</string>
 	<string name="make_default_launcher"><big>Créer un lanceur par défaut</big>\nÉvite de revenir au lanceur précédent.</string>
+	<string name="display_keyboard_yes"><big>Clavier d\'affichage</big>\nAfficher automatiquement le clavier dans la liste des applications</string>
+	<string name="display_keyboard_no"><big>Clavier d\'affichage</big>\nNe pas afficher le clavier dans la liste des applications</string>
 	<string name="orientation_default"><big>Orientation</big>\nDéfaut</string>
 	<string name="orientation_portrait"><big>Orientation</big>\nPortrait</string>
 	<string name="orientation_landscape"><big>Orientation</big>\nPaysage</string>
-	<string name="display_keyboard_yes"><big>Clavier d\'affichage</big>\nAfficher automatiquement le clavier dans la liste des applications</string>
-	<string name="display_keyboard_no"><big>Clavier d\'affichage</big>\nNe pas afficher le clavier dans la liste des applications</string>
+	<string name="ready">Prêt</string>
 </resources>
