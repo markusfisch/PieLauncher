@@ -23,6 +23,11 @@ public class SettingsActivity extends Activity {
 		context.startActivity(new Intent(context, SettingsActivity.class));
 	}
 
+	public static boolean isReady(Context context) {
+		return BatteryOptimization.isIgnoringBatteryOptimizations(context) &&
+				DefaultLauncher.isDefault(context);
+	}
+
 	@Override
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
@@ -56,8 +61,7 @@ public class SettingsActivity extends Activity {
 		super.onStop();
 		// Stop showing intro as soon as these settings are set.
 		if (!PieLauncherApp.prefs.isIntroduced() &&
-				BatteryOptimization.isIgnoringBatteryOptimizations(this) &&
-				DefaultLauncher.isDefault(this)) {
+				isReady(this)) {
 			PieLauncherApp.prefs.setIntroduced();
 		}
 	}

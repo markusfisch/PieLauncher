@@ -62,7 +62,7 @@ public class HomeActivity extends Activity {
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
 		setContentView(R.layout.activity_home);
-		if (!PieLauncherApp.prefs.isIntroduced()) {
+		if (!SettingsActivity.isReady(this)) {
 			SettingsActivity.start(this);
 		}
 
