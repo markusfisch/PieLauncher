@@ -11,6 +11,6 @@
 	<string name="orientation_default"><big>Orientation</big>\n始终使用当前屏幕方向</string>
 	<string name="orientation_portrait"><big>Orientation</big>\n横屏</string>
 	<string name="orientation_landscape"><big>Orientation</big>\n竖屏</string>
-	<string name="display_keyboard_yes"><big>Display keyboard</big>\nAutomatically show the keyboard in app listing.</string>
-	<string name="display_keyboard_no"><big>Display keyboard</big>\nDo not show the keyboard in app listing.</string>
+	<string name="display_keyboard_yes"><big>Display keyboard</big>\n在应用列表中自动显示键盘。</string>
+	<string name="display_keyboard_no"><big>Display keyboard</big>\n不要在应用列表中显示键盘。</string>
 </resources>
