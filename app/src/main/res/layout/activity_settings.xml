@@ -9,23 +9,18 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
-		android:padding="24dp">
+		android:padding="16dp">
 		<TextView
+			style="@style/Headline"
 			android:id="@+id/headline"
-			android:drawablePadding="16dp"
 			android:drawableLeft="@drawable/ic_back"
 			android:drawableStart="@drawable/ic_back"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="24dp"
-			android:textAppearance="@android:style/TextAppearance.Large"
-			android:textColor="@color/text_color"
 			android:text="@string/settings"/>
 		<TextView
 			android:id="@+id/welcome"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginBottom="24dp"
+			android:layout_marginBottom="33dp"
 			android:textAppearance="@android:style/TextAppearance.Small"
 			android:textColor="@color/text_color"
 			android:text="@string/hello"/>
