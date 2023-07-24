@@ -8,8 +8,7 @@
 		android:id="@+id/content"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:padding="16dp">
+		android:orientation="vertical">
 		<TextView
 			style="@style/Headline"
 			android:id="@+id/headline"
@@ -20,7 +19,8 @@
 			android:id="@+id/welcome"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginBottom="33dp"
+			android:padding="16dp"
+			android:layout_marginBottom="1dp"
 			android:textAppearance="@android:style/TextAppearance.Small"
 			android:textColor="@color/text_color"
 			android:text="@string/hello"/>
@@ -44,6 +44,7 @@
 			style="@style/Button"
 			android:id="@+id/done"
 			android:layout_gravity="end"
+			android:layout_margin="16dp"
 			android:text="@android:string/ok"/>
 	</LinearLayout>
 </ScrollView>

@@ -1,7 +1,7 @@
 <resources>
 	<color name="ic_launcher_background">#134dca</color>
-	<color name="bg_ui">#aa000000</color>
-	<color name="bg_search_bar">#cc000000</color>
+	<color name="bg_ui">#a000</color>
+	<color name="bg_search_bar">#c000</color>
 	<color name="bg_button">#fff</color>
 	<color name="bg_button_pressed">#afff</color>
 	<color name="button_text">#a000</color>
