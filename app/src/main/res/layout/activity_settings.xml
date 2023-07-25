@@ -17,6 +17,9 @@
 			android:text="@string/settings"/>
 		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			android:id="@+id/welcome"
+			android:drawablePadding="8dp"
+			android:drawableLeft="@drawable/ic_info"
+			android:drawableStart="@drawable/ic_info"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:padding="16dp"
