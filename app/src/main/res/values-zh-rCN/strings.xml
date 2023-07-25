@@ -13,5 +13,5 @@
 	<string name="orientation_default"><big>Orientation</big>\n始终使用当前屏幕方向</string>
 	<string name="orientation_portrait"><big>Orientation</big>\n横屏</string>
 	<string name="orientation_landscape"><big>Orientation</big>\n竖屏</string>
-	<string name="ready">Ready</string>
+	<string name="ready">已就绪</string>
 </resources>
