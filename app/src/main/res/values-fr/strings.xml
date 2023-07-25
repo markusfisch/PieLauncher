@@ -5,7 +5,7 @@
 	<string name="tip_drag_to_order">Faire glisser pour organiser</string>
 	<string name="settings">Paramètres</string>
 	<string name="welcome">Bienvenue!</string>
-	<string name="hello">Merci d\'avoir essayé Pie Launcher!\nVoici quelques points à vérifier:</string>
+	<string name="check_the_settings">Veuillez vérifier les paramètres suivants:</string>
 	<string name="disable_battery_optimization"><big>Désactiver l\'optimisation de la batterie</big>\nPermet d\'économiser de l\'énergie et de faire fonctionner ce lanceur plus rapidement</string>
 	<string name="make_default_launcher"><big>Créer un lanceur par défaut</big>\nÉvite de revenir au lanceur précédent.</string>
 	<string name="display_keyboard_yes"><big>Clavier d\'affichage</big>\nAfficher automatiquement le clavier dans la liste des applications</string>

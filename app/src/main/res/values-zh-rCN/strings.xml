@@ -5,13 +5,13 @@
 	<string name="tip_drag_to_order">拖动以排列顺序</string>
 	<string name="settings">设置</string>
 	<string name="welcome">欢迎！</string>
-	<string name="hello">感谢试用 Pie Launcher！\n以下是一些需要检查的事项：</string>
-	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\n节省电量并使本启动器可以更迅速地运行</string>
-	<string name="make_default_launcher"><big>Make default launcher</big>\n避免回到先前的启动器</string>
-	<string name="display_keyboard_yes"><big>Display keyboard</big>\n在应用列表中自动显示键盘。</string>
-	<string name="display_keyboard_no"><big>Display keyboard</big>\n不要在应用列表中显示键盘。</string>
-	<string name="orientation_default"><big>Orientation</big>\n始终使用当前屏幕方向</string>
-	<string name="orientation_portrait"><big>Orientation</big>\n横屏</string>
-	<string name="orientation_landscape"><big>Orientation</big>\n竖屏</string>
+	<string name="check_the_settings">请检查以下设置：</string>
+	<string name="disable_battery_optimization"><big>禁用电池优化</big>\n节省电量并使本启动器可以更迅速地运行</string>
+	<string name="make_default_launcher"><big>设置默认主屏幕启动器</big>\n避免回到先前的启动器</string>
+	<string name="display_keyboard_yes"><big>显示键盘</big>\n在应用列表中自动显示键盘。</string>
+	<string name="display_keyboard_no"><big>显示键盘</big>\n不要在应用列表中显示键盘。</string>
+	<string name="orientation_default"><big>屏幕方向</big>\n始终使用当前屏幕方向</string>
+	<string name="orientation_portrait"><big>屏幕方向</big>\n横屏</string>
+	<string name="orientation_landscape"><big>屏幕方向</big>\n竖屏</string>
 	<string name="ready">已就绪</string>
 </resources>

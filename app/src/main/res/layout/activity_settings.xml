@@ -26,7 +26,8 @@
 			android:layout_marginBottom="1dp"
 			android:textAppearance="@android:style/TextAppearance.Medium"
 			android:textColor="@color/text_color"
-			android:text="@string/hello"/>
+			android:textStyle="bold"
+			android:text="@string/check_the_settings"/>
 		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/disable_battery_optimization"
