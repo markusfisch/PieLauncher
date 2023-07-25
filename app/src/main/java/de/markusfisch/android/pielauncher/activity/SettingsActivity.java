@@ -16,16 +16,23 @@ import de.markusfisch.android.pielauncher.os.Orientation;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class SettingsActivity extends Activity {
+	private static final String WELCOME = "welcome";
+
 	private View disableBatteryOptimizations;
 	private View defaultLauncherView;
 
+	public static void startWelcome(Context context) {
+		start(context, true);
+	}
+
 	public static void start(Context context) {
-		context.startActivity(new Intent(context, SettingsActivity.class));
+		start(context, false);
 	}
 
 	public static boolean isReady(Context context) {
-		return BatteryOptimization.isIgnoringBatteryOptimizations(context) &&
-				DefaultLauncher.isDefault(context);
+		return PieLauncherApp.prefs.isSkippingSetup() ||
+				(BatteryOptimization.isIgnoringBatteryOptimizations(context) &&
+						DefaultLauncher.isDefault(context));
 	}
 
 	@Override
@@ -33,10 +40,14 @@ public class SettingsActivity extends Activity {
 		super.onCreate(state);
 		setContentView(R.layout.activity_settings);
 
-		initHeadline();
+		Intent intent = getIntent();
+		boolean welcome = intent != null &&
+				intent.getBooleanExtra(WELCOME, false);
+
+		initHeadline(welcome);
 		initDisplayKeyboard();
 		initOrientation();
-		initDoneButton();
+		initDoneButton(welcome);
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -56,36 +67,26 @@ public class SettingsActivity extends Activity {
 		updateDefaultLauncher();
 	}
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-		// Stop showing intro as soon as these settings are set.
-		if (!PieLauncherApp.prefs.isIntroduced() &&
-				isReady(this)) {
-			PieLauncherApp.prefs.setIntroduced();
-		}
-	}
-
-	private void initHeadline() {
+	private void initHeadline(boolean welcome) {
 		TextView headline = findViewById(R.id.headline);
-		if (PieLauncherApp.prefs.isIntroduced()) {
-			headline.setOnClickListener(v -> finish());
-			findViewById(R.id.welcome).setVisibility(View.GONE);
-		} else {
+		if (welcome) {
 			headline.setText(R.string.welcome);
 			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+		} else {
+			headline.setOnClickListener(v -> finish());
+			findViewById(R.id.welcome).setVisibility(View.GONE);
 		}
 	}
 
-	private void initDoneButton() {
+	private void initDoneButton(boolean welcome) {
 		View doneButton = findViewById(R.id.done);
-		if (PieLauncherApp.prefs.isIntroduced()) {
-			doneButton.setVisibility(View.GONE);
-		} else {
+		if (welcome) {
 			doneButton.setOnClickListener(v -> {
-				PieLauncherApp.prefs.setIntroduced();
+				PieLauncherApp.prefs.setSkipSetup();
 				finish();
 			});
+		} else {
+			doneButton.setVisibility(View.GONE);
 		}
 	}
 
@@ -145,5 +146,13 @@ public class SettingsActivity extends Activity {
 			defaultLauncherView.setOnClickListener(v ->
 					DefaultLauncher.setAsDefault(this));
 		}
+	}
+
+	private static void start(Context context, boolean welcome) {
+		Intent intent = new Intent(context, SettingsActivity.class);
+		if (welcome) {
+			intent.putExtra(WELCOME, true);
+		}
+		context.startActivity(intent);
 	}
 }

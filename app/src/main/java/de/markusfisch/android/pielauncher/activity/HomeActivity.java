@@ -63,7 +63,7 @@ public class HomeActivity extends Activity {
 
 		setContentView(R.layout.activity_home);
 		if (!SettingsActivity.isReady(this)) {
-			SettingsActivity.start(this);
+			SettingsActivity.startWelcome(this);
 		}
 
 		pieView = findViewById(R.id.pie);
