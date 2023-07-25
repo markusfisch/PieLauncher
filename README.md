@@ -18,12 +18,8 @@ by typing the first one or two letters of the app name.
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-zoomed.png"
 	alt="Screenshot Zoomed" width="160"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-centered.png"
-	alt="Screenshot Centered" width="160"/>
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-search.png"
 	alt="Screenshot Search" width="160"/>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-editor.png"
-	alt="Screenshot Editor" width="160"/>
 
 ## Download
 
@@ -87,5 +83,13 @@ This is an issue of your keyboard app that may do too much work.
 Unfortunately, GBoard is not the best choice on all devices.
 
 I recommend using a lighter alternative like
-[OpenBoard](https://play.google.com/store/apps/details?id=org.dslul.openboard.inputmethod.latin)
+[OpenBoard](https://f-droid.org/de/packages/org.dslul.openboard.inputmethod.latin/)
 which is fast even on low end devices.
+
+### Home returns to the default launcher
+
+Please set Pie Launcher as your default home screen launcher.
+
+You can either do this manually from your phones Settings → Apps → Default
+apps. Or from the settings within Pie Launcher (enter the editor and tap on
+the settings icon) where there should be an item "Make default launcher".
