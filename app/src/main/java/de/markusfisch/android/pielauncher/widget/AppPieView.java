@@ -74,7 +74,7 @@ public class AppPieView extends View {
 	private final Rect iconEndRect = new Rect();
 	private final Bitmap iconAdd;
 	private final Bitmap iconRemove;
-	private final Bitmap iconInfo;
+	private final Bitmap iconDetails;
 	private final Bitmap iconDone;
 	private final Bitmap iconPreferences;
 	private final Bitmap iconLaunchFirst;
@@ -142,7 +142,7 @@ public class AppPieView extends View {
 
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
-		iconInfo = getBitmapFromDrawable(res, R.drawable.ic_info);
+		iconDetails = getBitmapFromDrawable(res, R.drawable.ic_details);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
 		iconPreferences = getBitmapFromDrawable(res, R.drawable.ic_preferences);
 		iconLaunchFirst = getBitmapFromDrawable(res,
@@ -855,7 +855,7 @@ public class AppPieView extends View {
 		}
 		if (hasIcon) {
 			drawIcon(canvas, iconRemove, iconStartRect);
-			drawIcon(canvas, iconInfo, iconEndRect);
+			drawIcon(canvas, iconDetails, iconEndRect);
 		} else {
 			drawIcon(canvas, iconAdd, iconStartRect);
 			drawIcon(canvas, iconPreferences, iconCenterRect);
