@@ -1,0 +1,6 @@
+* Add an option to show/hide keyboard
+* Add an option to manually set an orientation
+* Add an option to set launcher as default
+* Fix loosing default orientation
+* Update Chinese translation
+
