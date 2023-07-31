@@ -1,9 +1,14 @@
 package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.text.Html;
+import android.text.Spanned;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -12,7 +17,6 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.os.DefaultLauncher;
-import de.markusfisch.android.pielauncher.os.Orientation;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class SettingsActivity extends Activity {
@@ -93,30 +97,64 @@ public class SettingsActivity extends Activity {
 	private void initDisplayKeyboard() {
 		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
 		displayKeyboardView.setOnClickListener(v -> {
-			PieLauncherApp.prefs.setDisplayKeyboard(
-					!PieLauncherApp.prefs.displayKeyboard());
-			updateDisplayKeyboardText(displayKeyboardView);
+			showOptionsDialog(
+					R.array.display_keyboard_names,
+					(view, which) -> {
+						boolean show = false;
+						switch (which) {
+							default:
+							case 0:
+								show = true;
+								break;
+							case 1:
+								show = false;
+								break;
+						}
+						PieLauncherApp.prefs.setDisplayKeyboard(show);
+						updateDisplayKeyboardText(displayKeyboardView);
+					});
 		});
 		updateDisplayKeyboardText(displayKeyboardView);
 	}
 
 	private static void updateDisplayKeyboardText(TextView tv) {
-		tv.setText(PieLauncherApp.prefs.displayKeyboard()
-				? R.string.display_keyboard_yes
-				: R.string.display_keyboard_no);
+		tv.setText(getLabelAndValue(
+				tv.getContext(),
+				R.string.display_keyboard,
+				PieLauncherApp.prefs.displayKeyboard()
+						? R.string.display_keyboard_yes
+						: R.string.display_keyboard_no));
 	}
 
 	private void initOrientation() {
 		TextView orientationView = findViewById(R.id.orientation);
 		orientationView.setOnClickListener(v -> {
-			Orientation.setOrientation(this);
-			updateOrientationText(orientationView);
+			showOptionsDialog(
+					R.array.orientation_names,
+					(view, which) -> {
+						int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+						switch (which) {
+							default:
+							case 0:
+								orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+								break;
+							case 1:
+								orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+								break;
+						}
+						PieLauncherApp.prefs.setOrientation(orientation);
+						setRequestedOrientation(orientation);
+						updateOrientationText(orientationView);
+					});
 		});
 		updateOrientationText(orientationView);
 	}
 
 	public static void updateOrientationText(TextView tv) {
-		tv.setText(getOrientationResId(PieLauncherApp.prefs.getOrientation()));
+		tv.setText(getLabelAndValue(
+				tv.getContext(),
+				R.string.orientation,
+				getOrientationResId(PieLauncherApp.prefs.getOrientation())));
 	}
 
 	public static int getOrientationResId(int orientation) {
@@ -127,6 +165,28 @@ public class SettingsActivity extends Activity {
 				return R.string.orientation_landscape;
 			case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
 				return R.string.orientation_portrait;
+		}
+	}
+
+	private void showOptionsDialog(int itemsId,
+			DialogInterface.OnClickListener onClickListener) {
+		new AlertDialog.Builder(this)
+				.setItems(itemsId, onClickListener)
+				.show();
+	}
+
+	private static Spanned getLabelAndValue(Context context,
+			int labelId, int valueId) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<big>");
+		sb.append(context.getString(labelId));
+		sb.append("</big><br/>");
+		sb.append(context.getString(valueId));
+		String html = sb.toString();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+			return Html.fromHtml(html);
+		} else {
+			return Html.fromHtml(html, 0);
 		}
 	}
 

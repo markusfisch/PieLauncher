@@ -8,10 +8,12 @@
 	<string name="check_the_settings">Please check the following settings:</string>
 	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\nSaves energy and makes this launcher work faster</string>
 	<string name="make_default_launcher"><big>Make default launcher</big>\nAvoids returning to your previous launcher</string>
-	<string name="display_keyboard_yes"><big>Display keyboard</big>\nAutomatically show the keyboard in app listing</string>
-	<string name="display_keyboard_no"><big>Display keyboard</big>\nDo not show the keyboard in app listing</string>
-	<string name="orientation_default"><big>Orientation</big>\nUse always the current orientation</string>
-	<string name="orientation_portrait"><big>Orientation</big>\nPortrait</string>
-	<string name="orientation_landscape"><big>Orientation</big>\nLandscape</string>
+	<string name="display_keyboard">Display keyboard</string>
+	<string name="display_keyboard_yes">Automatically show the keyboard in app listing</string>
+	<string name="display_keyboard_no">Do not show the keyboard in app listing</string>
+	<string name="orientation">Orientation</string>
+	<string name="orientation_default">Use always the current orientation</string>
+	<string name="orientation_portrait">Portrait</string>
+	<string name="orientation_landscape">Landscape</string>
 	<string name="ready">Ready</string>
 </resources>

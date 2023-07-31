@@ -1,0 +1,10 @@
+<resources>
+	<string-array name="display_keyboard_names">
+		<item>@string/display_keyboard_yes</item>
+		<item>@string/display_keyboard_no</item>
+	</string-array>
+	<string-array name="orientation_names">
+		<item>@string/orientation_portrait</item>
+		<item>@string/orientation_landscape</item>
+	</string-array>
+</resources>
