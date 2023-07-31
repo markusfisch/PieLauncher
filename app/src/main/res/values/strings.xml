@@ -12,7 +12,6 @@
 	<string name="display_keyboard_yes">Automatically show the keyboard in app listing</string>
 	<string name="display_keyboard_no">Do not show the keyboard in app listing</string>
 	<string name="orientation">Orientation</string>
-	<string name="orientation_default">Use always the current orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Landscape</string>
 	<string name="ready">Ready</string>

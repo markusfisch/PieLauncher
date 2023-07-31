@@ -12,7 +12,6 @@
 	<string name="display_keyboard_yes">Afficher automatiquement le clavier dans la liste des applications</string>
 	<string name="display_keyboard_no">Ne pas afficher le clavier dans la liste des applications</string>
 	<string name="orientation">Orientation</string>
-	<string name="orientation_default">Défaut</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Paysage</string>
 	<string name="ready">Prêt</string>

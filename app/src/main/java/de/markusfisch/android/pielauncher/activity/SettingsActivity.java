@@ -160,11 +160,10 @@ public class SettingsActivity extends Activity {
 	public static int getOrientationResId(int orientation) {
 		switch (orientation) {
 			default:
-				return R.string.orientation_default;
-			case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-				return R.string.orientation_landscape;
 			case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
 				return R.string.orientation_portrait;
+			case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+				return R.string.orientation_landscape;
 		}
 	}
 
