@@ -98,6 +98,7 @@ public class SettingsActivity extends Activity {
 		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
 		displayKeyboardView.setOnClickListener(v -> {
 			showOptionsDialog(
+					R.string.display_keyboard,
 					R.array.display_keyboard_names,
 					(view, which) -> {
 						boolean show = false;
@@ -130,6 +131,7 @@ public class SettingsActivity extends Activity {
 		TextView orientationView = findViewById(R.id.orientation);
 		orientationView.setOnClickListener(v -> {
 			showOptionsDialog(
+					R.string.orientation,
 					R.array.orientation_names,
 					(view, which) -> {
 						int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
@@ -167,9 +169,10 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void showOptionsDialog(int itemsId,
+	private void showOptionsDialog(int titleId, int itemsId,
 			DialogInterface.OnClickListener onClickListener) {
 		new AlertDialog.Builder(this)
+				.setTitle(titleId)
 				.setItems(itemsId, onClickListener)
 				.show();
 	}
