@@ -188,6 +188,7 @@ public class HomeActivity extends Activity {
 				case EditorInfo.IME_ACTION_SEND:
 				case EditorInfo.IME_ACTION_DONE:
 				case EditorInfo.IME_ACTION_NEXT:
+				case EditorInfo.IME_ACTION_SEARCH:
 				case EditorInfo.IME_NULL:
 					if (searchInput.getText().toString().length() > 0) {
 						pieView.launchFirstApp();
