@@ -1,0 +1,3 @@
+* Improve settings
+* Fix search action for some keyboards
+
