@@ -6,10 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.text.Html;
-import android.text.Spanned;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
 
@@ -101,7 +101,7 @@ public class SettingsActivity extends Activity {
 					R.string.display_keyboard,
 					R.array.display_keyboard_names,
 					(view, which) -> {
-						boolean show = false;
+						boolean show;
 						switch (which) {
 							default:
 							case 0:
@@ -134,7 +134,7 @@ public class SettingsActivity extends Activity {
 					R.string.orientation,
 					R.array.orientation_names,
 					(view, which) -> {
-						int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+						int orientation;
 						switch (which) {
 							default:
 							case 0:
