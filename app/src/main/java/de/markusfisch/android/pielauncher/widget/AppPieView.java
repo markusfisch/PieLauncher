@@ -57,6 +57,10 @@ public class AppPieView extends View {
 			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
 					? HapticFeedbackConstants.KEYBOARD_TAP
 					: HapticFeedbackConstants.CLOCK_TICK;
+	private static final int HAPTIC_FEEDBACK_CHOICE =
+			Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+					? HAPTIC_FEEDBACK_DOWN
+					: HapticFeedbackConstants.SEGMENT_TICK;
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
@@ -932,7 +936,7 @@ public class AppPieView extends View {
 			int selected = PieLauncherApp.appMenu.getSelectedIcon();
 			if (selected != lastSelectedIcon) {
 				lastSelectedIcon = selected;
-				performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
+				performHapticFeedback(HAPTIC_FEEDBACK_CHOICE);
 			}
 		}
 	}
