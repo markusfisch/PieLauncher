@@ -5,7 +5,8 @@ Android home screen launcher that uses a dynamic
 instead of tables of icons.
 
 Once you get used to it, you can launch your most frequently used apps
-using muscle memory without even looking at the screen.
+using [muscle memory](https://en.wikipedia.org/wiki/Muscle_memory) without
+even looking at the screen.
 
 Apps you don't use regularly are quickly available with just one tap and
 by typing the first one or two letters of the app name.
@@ -21,7 +22,7 @@ by typing the first one or two letters of the app name.
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screencap-search.png"
 	alt="Screenshot Search" width="160"/>
 
-## Download
+## Get it
 
 <a href="https://f-droid.org/de/packages/de.markusfisch.android.pielauncher/"><img
 	src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
@@ -40,10 +41,10 @@ Tap and hold to open the pie menu. Then swipe to choose an app to start.
 
 ### How to open the app list
 
-Just tap to open the list. Then type the name of an app you want to start.
-Usually one or two letters are enough even if you mistyped a letter.
-If the app in the top left is the one you want, you can also hit the
-Search key on your keyboard to start it.
+Tap once to open the list. Then type the name of an app you want to start.
+Usually one or two letters are enough, even if you mistyped a letter.
+If the app in the top left is the one you want, you can hit the Search
+key on your keyboard to start it.
 
 ![How to open the app list](svg/guide_open_list.svg)
 
@@ -69,9 +70,9 @@ All 3rd party launchers suffer from this bug. See:
 
 * [Homescreen interaction delay with gesture navigation?](https://www.reddit.com/r/GooglePixel/comments/dp5x1i/homescreen_interaction_delay_with_gesture/)
 * [What is up with home gesture animations with 3rd party launchers.](https://www.reddit.com/r/GooglePixel/comments/ecvbiv/what_is_up_with_home_gesture_animations_with_3rd/)
-* [Nove Launcher Tweet](https://twitter.com/Nova_Launcher/status/1169295641538940930)
+* [Nova Launcher Tweet](https://twitter.com/Nova_Launcher/status/1169295641538940930)
 
-A possible workaround is to use the back gesture instead of the home
+A possible workaround is to **use the back gesture** instead of the home
 gesture wherever possible (this may not be desirable in a browser app,
 as it also closes the open tab).
 
