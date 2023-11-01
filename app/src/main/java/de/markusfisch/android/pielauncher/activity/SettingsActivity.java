@@ -49,8 +49,8 @@ public class SettingsActivity extends Activity {
 				intent.getBooleanExtra(WELCOME, false);
 
 		initHeadline(welcome);
-		initDisplayKeyboard();
-		initOrientation();
+		initDisplayKeyboard(welcome);
+		initOrientation(welcome);
 		initDoneButton(welcome);
 
 		disableBatteryOptimizations = findViewById(
@@ -94,8 +94,12 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void initDisplayKeyboard() {
+	private void initDisplayKeyboard(boolean welcome) {
 		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
+		if (welcome) {
+			displayKeyboardView.setVisibility(View.GONE);
+			return;
+		}
 		displayKeyboardView.setOnClickListener(v -> {
 			showOptionsDialog(
 					R.string.display_keyboard,
@@ -127,8 +131,12 @@ public class SettingsActivity extends Activity {
 						: R.string.display_keyboard_no));
 	}
 
-	private void initOrientation() {
+	private void initOrientation(boolean welcome) {
 		TextView orientationView = findViewById(R.id.orientation);
+		if (welcome) {
+			orientationView.setVisibility(View.GONE);
+			return;
+		}
 		orientationView.setOnClickListener(v -> {
 			showOptionsDialog(
 					R.string.orientation,
