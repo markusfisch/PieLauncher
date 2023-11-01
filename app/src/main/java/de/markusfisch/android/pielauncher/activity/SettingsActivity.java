@@ -24,6 +24,7 @@ public class SettingsActivity extends Activity {
 
 	private View disableBatteryOptimizations;
 	private View defaultLauncherView;
+	private boolean isWelcomeMode = false;
 
 	public static void startWelcome(Context context) {
 		start(context, true);
@@ -45,13 +46,13 @@ public class SettingsActivity extends Activity {
 		setContentView(R.layout.activity_settings);
 
 		Intent intent = getIntent();
-		boolean welcome = intent != null &&
+		isWelcomeMode = intent != null &&
 				intent.getBooleanExtra(WELCOME, false);
 
-		initHeadline(welcome);
-		initDisplayKeyboard(welcome);
-		initOrientation(welcome);
-		initDoneButton(welcome);
+		initHeadline();
+		initDisplayKeyboard();
+		initOrientation();
+		initDoneButton();
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -66,14 +67,18 @@ public class SettingsActivity extends Activity {
 		super.onResume();
 		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
 
-		// These may change once set.
-		updateDisableBatteryOptimizations();
-		updateDefaultLauncher();
+		// These may change while this activity is shown.
+		if (updateDisableBatteryOptimizations() &&
+				updateDefaultLauncher() &&
+				// Auto close in welcome mode only.
+				isWelcomeMode) {
+			finish();
+		}
 	}
 
-	private void initHeadline(boolean welcome) {
+	private void initHeadline() {
 		TextView headline = findViewById(R.id.headline);
-		if (welcome) {
+		if (isWelcomeMode) {
 			headline.setText(R.string.welcome);
 			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		} else {
@@ -82,9 +87,9 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void initDoneButton(boolean welcome) {
+	private void initDoneButton() {
 		View doneButton = findViewById(R.id.done);
-		if (welcome) {
+		if (isWelcomeMode) {
 			doneButton.setOnClickListener(v -> {
 				PieLauncherApp.prefs.setSkipSetup();
 				finish();
@@ -94,9 +99,9 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void initDisplayKeyboard(boolean welcome) {
+	private void initDisplayKeyboard() {
 		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
-		if (welcome) {
+		if (isWelcomeMode) {
 			displayKeyboardView.setVisibility(View.GONE);
 			return;
 		}
@@ -131,9 +136,9 @@ public class SettingsActivity extends Activity {
 						: R.string.display_keyboard_no));
 	}
 
-	private void initOrientation(boolean welcome) {
+	private void initOrientation() {
 		TextView orientationView = findViewById(R.id.orientation);
-		if (welcome) {
+		if (isWelcomeMode) {
 			orientationView.setVisibility(View.GONE);
 			return;
 		}
@@ -200,21 +205,25 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void updateDisableBatteryOptimizations() {
+	private boolean updateDisableBatteryOptimizations() {
 		if (BatteryOptimization.isIgnoringBatteryOptimizations(this)) {
 			disableBatteryOptimizations.setVisibility(View.GONE);
+			return true;
 		} else {
 			disableBatteryOptimizations.setOnClickListener(v ->
 					BatteryOptimization.requestDisable(SettingsActivity.this));
+			return false;
 		}
 	}
 
-	private void updateDefaultLauncher() {
+	private boolean updateDefaultLauncher() {
 		if (DefaultLauncher.isDefault(this)) {
 			defaultLauncherView.setVisibility(View.GONE);
+			return true;
 		} else {
 			defaultLauncherView.setOnClickListener(v ->
 					DefaultLauncher.setAsDefault(this));
+			return false;
 		}
 	}
 
