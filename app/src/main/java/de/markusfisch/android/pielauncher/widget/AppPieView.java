@@ -105,6 +105,7 @@ public class AppPieView extends View {
 	private int maxScrollY;
 	private int lastScrollY;
 	private int lastInsertAt;
+	private int lastSelectedIcon;
 	private int mode = MODE_PIE;
 	private ListListener listListener;
 	private List<AppMenu.AppIcon> appList;
@@ -778,6 +779,7 @@ public class AppPieView extends View {
 				clamp(x, radius, viewWidth - radius),
 				clamp(y, radius, viewHeight - radius),
 				radius);
+		lastSelectedIcon = -1;
 	}
 
 	private void editIconAt(Point point) {
@@ -926,6 +928,11 @@ public class AppPieView extends View {
 			PieLauncherApp.appMenu.draw(canvas);
 			if (f < 1f) {
 				invalidate();
+			}
+			int selected = PieLauncherApp.appMenu.getSelectedIcon();
+			if (selected != lastSelectedIcon) {
+				lastSelectedIcon = selected;
+				performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
 			}
 		}
 	}
