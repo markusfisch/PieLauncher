@@ -86,7 +86,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	public boolean launchSelectedApp(Context context) {
 		int selectedIcon = getSelectedIcon();
-		if (selectedIcon > -1) {
+		if (selectedIcon > -1 && selectedIcon < icons.size()) {
 			launchApp(context, ((AppIcon) icons.get(selectedIcon)));
 			return true;
 		}
