@@ -94,22 +94,27 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void launchApp(Context context, AppIcon icon) {
-		if (HAS_LAUNCHER_APP) {
-			if (launcherApps.isActivityEnabled(icon.componentName,
-					icon.userHandle)) {
-				launcherApps.startMainActivity(
-						icon.componentName,
-						icon.userHandle,
-						icon.rect,
-						null);
+		try {
+			if (HAS_LAUNCHER_APP) {
+				if (launcherApps.isActivityEnabled(icon.componentName,
+						icon.userHandle)) {
+					launcherApps.startMainActivity(
+							icon.componentName,
+							icon.userHandle,
+							icon.rect,
+							null);
+				}
+			} else {
+				PackageManager pm = context.getPackageManager();
+				Intent intent;
+				if (pm != null && (intent = pm.getLaunchIntentForPackage(
+						icon.componentName.getPackageName())) != null) {
+					context.startActivity(intent);
+				}
 			}
-		} else {
-			PackageManager pm = context.getPackageManager();
-			Intent intent;
-			if (pm != null && (intent = pm.getLaunchIntentForPackage(
-					icon.componentName.getPackageName())) != null) {
-				context.startActivity(intent);
-			}
+		} catch (SecurityException e) {
+			// Ignore. According to vitals, `LauncherApps.startMainActivity()`
+			// is throwing this exception sometimes for an unknown reasons.
 		}
 	}
 
