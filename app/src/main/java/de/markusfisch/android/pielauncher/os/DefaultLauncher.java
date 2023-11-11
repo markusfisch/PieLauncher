@@ -2,15 +2,11 @@ package de.markusfisch.android.pielauncher.os;
 
 import android.app.Activity;
 import android.app.role.RoleManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DefaultLauncher {
 	public static void setAsDefault(Activity activity) {
@@ -38,20 +34,10 @@ public class DefaultLauncher {
 
 	public static boolean isDefault(PackageManager packageManager,
 			String packageName) {
-		IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
-		filter.addCategory(Intent.CATEGORY_HOME);
-
-		List<IntentFilter> filters = new ArrayList<>();
-		filters.add(filter);
-
-		List<ComponentName> activities = new ArrayList<>();
-		packageManager.getPreferredActivities(filters, activities, null);
-
-		for (ComponentName activity : activities) {
-			if (packageName.equals(activity.getPackageName())) {
-				return true;
-			}
-		}
-		return false;
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		ResolveInfo res = packageManager.resolveActivity(intent, 0);
+		return res != null && res.activityInfo != null &&
+				packageName.equals(res.activityInfo.packageName);
 	}
 }
