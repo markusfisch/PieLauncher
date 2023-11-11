@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.app;
 
 import android.annotation.TargetApi;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.LauncherApps;
@@ -15,6 +16,8 @@ import de.markusfisch.android.pielauncher.receiver.ManagedProfileEventReceiver;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
+	public static final AppMenu appMenu = new AppMenu();
+
 	private static final LocaleEventReceiver localeEventReceiver =
 			new LocaleEventReceiver();
 	private static final ManagedProfileEventReceiver managedProfileEventReceiver =
@@ -22,13 +25,28 @@ public class PieLauncherApp extends Application {
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
-	public static final Preferences prefs = new Preferences();
-	public static final AppMenu appMenu = new AppMenu();
+	// Required for the delayed initialization of prefs.
+	// It's okay to keep a reference to the application context
+	// as it can never be garbage collected, of course.
+	private static Context appContext;
+	private static Preferences prefs;
+
+	public static Preferences getPrefs() {
+		if (prefs == null) {
+			prefs = new Preferences(appContext);
+		}
+		return prefs;
+	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		prefs.init(this);
+
+		appContext = this;
+		// It's important to not use getPrefs() before the device
+		// is unlocked because credential encrypted storage is not
+		// available before, and so getDefaultSharedPreferences()
+		// will return null.
 
 		registerLocaleEventReceiver();
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

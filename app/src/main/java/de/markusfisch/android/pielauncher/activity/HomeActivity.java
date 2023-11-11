@@ -110,7 +110,7 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		setRequestedOrientation(PieLauncherApp.prefs.getOrientation());
+		setRequestedOrientation(PieLauncherApp.getPrefs().getOrientation());
 	}
 
 	@Override
@@ -207,7 +207,7 @@ public class HomeActivity extends Activity {
 		}
 
 		searchInput.setVisibility(View.VISIBLE);
-		if (PieLauncherApp.prefs.displayKeyboard()) {
+		if (PieLauncherApp.getPrefs().displayKeyboard()) {
 			kb.showFor(searchInput);
 		}
 

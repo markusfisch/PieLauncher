@@ -229,7 +229,7 @@ public class AppPieView extends View {
 		if (context != null) {
 			PieLauncherApp.appMenu.store(context);
 		}
-		PieLauncherApp.prefs.setRadius(radius);
+		PieLauncherApp.getPrefs().setRadius(radius);
 		backup.clear();
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
@@ -571,7 +571,7 @@ public class AppPieView extends View {
 		}
 		maxRadius = Math.round(min * .5f);
 		minRadius = Math.round(maxRadius * .5f);
-		radius = clampRadius(PieLauncherApp.prefs.getRadius(maxRadius));
+		radius = clampRadius(PieLauncherApp.getPrefs().getRadius(maxRadius));
 		viewWidth = width;
 		viewHeight = height;
 		layoutEditorControls(height > width);

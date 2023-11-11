@@ -12,12 +12,13 @@ public class Preferences {
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String ORIENTATION = "orientation";
 
-	private SharedPreferences preferences;
+	private final SharedPreferences preferences;
+
 	private boolean skipSetup = false;
 	private boolean displayKeyboard = true;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
-	public void init(Context context) {
+	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
@@ -40,9 +41,7 @@ public class Preferences {
 	}
 
 	public int getRadius(int preset) {
-		return preferences != null
-				? preferences.getInt(RADIUS, preset)
-				: preset;
+		return preferences.getInt(RADIUS, preset);
 	}
 
 	public void setRadius(int radius) {
