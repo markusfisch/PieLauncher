@@ -10,9 +10,11 @@ public class Converter {
 		if (drawable instanceof BitmapDrawable) {
 			return ((BitmapDrawable) drawable).getBitmap();
 		}
+		int width = drawable.getIntrinsicWidth();
+		int height = drawable.getIntrinsicHeight();
 		Bitmap bitmap = Bitmap.createBitmap(
-				drawable.getIntrinsicWidth(),
-				drawable.getIntrinsicHeight(),
+				width > 0 ? width : 48,
+				height > 0 ? height : 48,
 				Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
