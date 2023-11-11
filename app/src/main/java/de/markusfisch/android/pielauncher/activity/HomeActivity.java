@@ -264,6 +264,7 @@ public class HomeActivity extends Activity {
 			if (!pieView.isAppListScrolled() &&
 					velocityY > velocityX &&
 					velocityY >= minimumVelocity &&
+					e1 != null && e2 != null &&
 					e2.getY() - e1.getY() > 0) {
 				hideAllApps();
 				return true;
