@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.14.2
+* Perform haptic feedback when pie choice changes
+* Improve welcome screen
+* Fix initialization after boot
+
 ## 1.14.1
 * Improve settings
 * Fix search action for some keyboards

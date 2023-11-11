@@ -1,0 +1,4 @@
+* Perform haptic feedback when pie choice changes
+* Improve welcome screen
+* Fix initialization after boot
+
