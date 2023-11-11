@@ -40,7 +40,9 @@ public class Preferences {
 	}
 
 	public int getRadius(int preset) {
-		return preferences.getInt(RADIUS, preset);
+		return preferences != null
+				? preferences.getInt(RADIUS, preset)
+				: preset;
 	}
 
 	public void setRadius(int radius) {
