@@ -1,6 +1,5 @@
 package de.markusfisch.android.pielauncher.content;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,8 +12,9 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -65,6 +66,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	private static final String MENU = "menu";
 
+	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
 	private final Comparator<AppIcon> appLabelComparator = (left, right) -> {
 		// Fast enough to do it for every comparison.
@@ -174,26 +176,16 @@ public class AppMenu extends CanvasPieMenu {
 		return list;
 	}
 
-	// This AsyncTask is running for a short and finite time only
-	// and it's perfectly okay to delay garbage collection of the
-	// parent instance until this task has been terminated.
-	@SuppressLint("StaticFieldLeak")
 	public void removePackageAsync(final String packageName,
 			final UserHandle userHandle) {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... nothing) {
-				removePackage(packageName, userHandle);
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void nothing) {
+		Executors.newSingleThreadExecutor().execute(() -> {
+			removePackage(packageName, userHandle);
+			handler.post(() -> {
 				if (updateListener != null) {
 					updateListener.onUpdate();
 				}
-			}
-		}.execute();
+			});
+		});
 	}
 
 	public boolean isEmpty() {
@@ -208,10 +200,6 @@ public class AppMenu extends CanvasPieMenu {
 		indexAppsAsync(context, null, null);
 	}
 
-	// This AsyncTask is running for a short and finite time only
-	// and it's perfectly okay to delay garbage collection of the
-	// parent instance until this task has been terminated.
-	@SuppressLint("StaticFieldLeak")
 	public void indexAppsAsync(Context context,
 			final String packageNameRestriction,
 			final UserHandle userHandleRestriction) {
@@ -219,23 +207,17 @@ public class AppMenu extends CanvasPieMenu {
 		// on other Context objects.
 		final Context appContext = context.getApplicationContext();
 		indexing = true;
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... nothing) {
-				indexApps(appContext,
-						packageNameRestriction,
-						userHandleRestriction);
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void nothing) {
+		Executors.newSingleThreadExecutor().execute(() -> {
+			indexApps(appContext,
+					packageNameRestriction,
+					userHandleRestriction);
+			handler.post(() -> {
 				indexing = false;
 				if (updateListener != null) {
 					updateListener.onUpdate();
 				}
-			}
-		}.execute();
+			});
+		});
 	}
 
 	private synchronized void indexApps(Context context,
