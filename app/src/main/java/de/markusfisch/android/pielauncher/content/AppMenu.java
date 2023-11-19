@@ -97,19 +97,22 @@ public class AppMenu extends CanvasPieMenu {
 
 	public void launchApp(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
-			LauncherApps lm = getLauncherApps(context);
-			if (lm.isActivityEnabled(icon.componentName,
-					icon.userHandle)) {
-				try {
+			try {
+				LauncherApps lm = getLauncherApps(context);
+				if (lm.isActivityEnabled(icon.componentName,
+						icon.userHandle)) {
 					lm.startMainActivity(
 							icon.componentName,
 							icon.userHandle,
 							icon.rect,
 							null);
-				} catch (SecurityException e) {
-					// Ignore. According to vitals, `startMainActivity()`
-					// is throwing this exception sometimes.
 				}
+			} catch (SecurityException e) {
+				// Ignore. According to vitals, `startMainActivity()`
+				// throws this for unknown reasons.
+			} catch (IllegalArgumentException e) {
+				// Ignore. According to vitals, 'isActivityEnabled()`
+				// throws this for unknown reasons.
 			}
 		} else {
 			PackageManager pm = context.getPackageManager();
