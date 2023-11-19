@@ -304,11 +304,16 @@ public class AppMenu extends CanvasPieMenu {
 					// Always skip this package.
 					continue;
 				}
-				addApp(allApps,
-						info.getComponentName(),
-						info.getLabel().toString(),
-						info.getBadgedIcon(0),
-						profile);
+				try {
+					addApp(allApps,
+							info.getComponentName(),
+							info.getLabel().toString(),
+							info.getBadgedIcon(0),
+							profile);
+				} catch (Exception e) {
+					// According to Vitals, `getBadgedIcon()` may throw
+					// a NPE on some devices. Ignore.
+				}
 			}
 		}
 	}
