@@ -61,13 +61,13 @@ public class CanvasPieMenu extends PieMenu {
 		}
 	}
 
-	public synchronized void draw(Canvas canvas) {
+	public void draw(Canvas canvas) {
 		for (int n = icons.size(); n-- > 0; ) {
 			((CanvasIcon) icons.get(n)).draw(canvas);
 		}
 	}
 
-	public synchronized boolean drawSmoothed(Canvas canvas) {
+	public boolean drawSmoothed(Canvas canvas) {
 		long delta = SystemClock.uptimeMillis() - lastChange;
 		float t = Math.min(1f, delta / 200f);
 		for (int n = icons.size(); n-- > 0; ) {
@@ -77,12 +77,12 @@ public class CanvasPieMenu extends PieMenu {
 		return t < 1f;
 	}
 
-	public synchronized void updateSmoothing() {
+	public void updateSmoothing() {
 		lastChange = SystemClock.uptimeMillis();
 		lastT = 0;
 	}
 
-	public synchronized void initSmoothing() {
+	public void initSmoothing() {
 		for (int n = icons.size(); n-- > 0; ) {
 			((CanvasIcon) icons.get(n)).initSmoothing();
 		}

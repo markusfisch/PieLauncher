@@ -96,33 +96,34 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void launchApp(Context context, AppIcon icon) {
-		try {
-			if (HAS_LAUNCHER_APP) {
-				if (launcherApps.isActivityEnabled(icon.componentName,
-						icon.userHandle)) {
-					launcherApps.startMainActivity(
+		if (HAS_LAUNCHER_APP) {
+			LauncherApps lm = getLauncherApps(context);
+			if (lm.isActivityEnabled(icon.componentName,
+					icon.userHandle)) {
+				try {
+					lm.startMainActivity(
 							icon.componentName,
 							icon.userHandle,
 							icon.rect,
 							null);
-				}
-			} else {
-				PackageManager pm = context.getPackageManager();
-				Intent intent;
-				if (pm != null && (intent = pm.getLaunchIntentForPackage(
-						icon.componentName.getPackageName())) != null) {
-					context.startActivity(intent);
+				} catch (SecurityException e) {
+					// Ignore. According to vitals, `startMainActivity()`
+					// is throwing this exception sometimes.
 				}
 			}
-		} catch (SecurityException e) {
-			// Ignore. According to vitals, `LauncherApps.startMainActivity()`
-			// is throwing this exception sometimes for an unknown reasons.
+		} else {
+			PackageManager pm = context.getPackageManager();
+			Intent intent;
+			if (pm != null && (intent = pm.getLaunchIntentForPackage(
+					icon.componentName.getPackageName())) != null) {
+				context.startActivity(intent);
+			}
 		}
 	}
 
 	public void launchAppInfo(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
-			launcherApps.startAppDetailsActivity(
+			getLauncherApps(context).startAppDetailsActivity(
 					icon.componentName,
 					icon.userHandle,
 					icon.rect,
@@ -145,7 +146,10 @@ public class AppMenu extends CanvasPieMenu {
 		storeMenu(context, icons);
 	}
 
-	public synchronized List<AppIcon> filterAppsBy(String query) {
+	public List<AppIcon> filterAppsBy(String query) {
+		if (indexing) {
+			return null;
+		}
 		if (query == null) {
 			query = "";
 		}
@@ -201,17 +205,29 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void indexAppsAsync(Context context,
-			final String packageNameRestriction,
-			final UserHandle userHandleRestriction) {
-		// Get application context to not block garbage collection
-		// on other Context objects.
-		final Context appContext = context.getApplicationContext();
+			String packageNameRestriction,
+			UserHandle userHandleRestriction) {
 		indexing = true;
 		Executors.newSingleThreadExecutor().execute(() -> {
-			indexApps(appContext,
+			Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
+			if (packageNameRestriction != null) {
+				// Copy apps since we're indexing just one app.
+				newApps.putAll(apps);
+				removePackageFromApps(newApps, packageNameRestriction,
+						userHandleRestriction);
+				// No need to call removePackageFromPieMenu() because the
+				// menu will be re-created by createMenu() after indexing.
+			}
+			indexApps(context,
 					packageNameRestriction,
-					userHandleRestriction);
+					userHandleRestriction,
+					newApps);
+			List<Icon> newIcons = createMenu(context, newApps);
 			handler.post(() -> {
+				apps.clear();
+				apps.putAll(newApps);
+				icons.clear();
+				icons.addAll(newIcons);
 				indexing = false;
 				if (updateListener != null) {
 					updateListener.onUpdate();
@@ -220,37 +236,37 @@ public class AppMenu extends CanvasPieMenu {
 		});
 	}
 
-	private synchronized void indexApps(Context context,
+	private void indexApps(
+			Context context,
 			String packageNameRestriction,
-			UserHandle userHandleRestriction) {
+			UserHandle userHandleRestriction,
+			Map<LauncherItemKey, AppIcon> allApps) {
 		String skip = context.getPackageName();
 		if (HAS_LAUNCHER_APP) {
-			indexProfilesApps(context,
-					packageNameRestriction,
-					userHandleRestriction,
+			indexProfilesApps(
+					(LauncherApps) context.getSystemService(
+							Context.LAUNCHER_APPS_SERVICE),
+					(UserManager) context.getSystemService(
+							Context.USER_SERVICE),
+					allApps, packageNameRestriction, userHandleRestriction,
 					skip);
 		} else {
-			indexIntentsApps(context, packageNameRestriction, skip);
+			indexIntentsApps(context.getPackageManager(),
+					allApps, packageNameRestriction,
+					skip);
 		}
-		// Always reload icons because drawables may have changed.
-		createIcons(context);
 	}
 
-	private void indexIntentsApps(Context context,
+	private static void indexIntentsApps(
+			PackageManager pm,
+			Map<LauncherItemKey, AppIcon> allApps,
 			String packageNameRestriction,
 			String skipPackage) {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
-			// Remove old package and add it anew.
-			removePackageFromApps(packageNameRestriction, null);
-			// Don't call removePackageFromPieMenu() here because the
-			// icon will be updated anyway by createIcons() after indexing.
 			intent.setPackage(packageNameRestriction);
-		} else {
-			apps.clear();
 		}
-		PackageManager pm = context.getPackageManager();
 		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.applicationInfo.packageName;
@@ -258,7 +274,8 @@ public class AppMenu extends CanvasPieMenu {
 				// Always skip this package.
 				continue;
 			}
-			addApp(getComponentName(info.activityInfo),
+			addApp(allApps,
+					getComponentName(info.activityInfo),
 					info.loadLabel(pm).toString(),
 					info.loadIcon(pm),
 					null);
@@ -266,36 +283,29 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private void indexProfilesApps(Context context,
+	private static void indexProfilesApps(
+			LauncherApps la,
+			UserManager um,
+			Map<LauncherItemKey, AppIcon> allApps,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
 			String skipPackage) {
-		if (packageNameRestriction != null) {
-			// Remove old package and add it anew.
-			removePackageFromApps(packageNameRestriction,
-					userHandleRestriction);
-			// Don't call removePackageFromPieMenu() here because the
-			// icon will be updated anyway by createIcons() after indexing.
-		} else {
-			apps.clear();
-		}
-		launcherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-		UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
 		List<UserHandle> profiles =
 				packageNameRestriction != null && userHandleRestriction != null
 						? Collections.singletonList(userHandleRestriction)
-						: userManager.getUserProfiles();
-		// if packageNameRestriction == null and userHandleRestriction != null
-		// apps was cleared and all profiles will be indexed
+						: um.getUserProfiles();
+		// If packageNameRestriction == null and userHandleRestriction != null
+		// apps was cleared and all profiles will be indexed.
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
-					launcherApps.getActivityList(packageNameRestriction, profile)) {
+					la.getActivityList(packageNameRestriction, profile)) {
 				String packageName = info.getApplicationInfo().packageName;
 				if (skipPackage.equals(packageName)) {
 					// Always skip this package.
 					continue;
 				}
-				addApp(info.getComponentName(),
+				addApp(allApps,
+						info.getComponentName(),
 						info.getLabel().toString(),
 						info.getBadgedIcon(0),
 						profile);
@@ -303,37 +313,25 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
-	private void addApp(ComponentName componentName, String label,
+	private static void addApp(Map<LauncherItemKey, AppIcon> allApps,
+			ComponentName componentName, String label,
 			Drawable icon, UserHandle userHandle) {
-		apps.put(new LauncherItemKey(componentName, userHandle),
+		allApps.put(new LauncherItemKey(componentName, userHandle),
 				new AppIcon(componentName, label, icon, userHandle));
 	}
 
-	private void createIcons(Context context) {
-		icons.clear();
-		icons.addAll(restoreMenu(context, apps));
-		if (icons.isEmpty()) {
-			createInitialMenu(context.getPackageManager());
+	private static List<Icon> createMenu(Context context,
+			Map<LauncherItemKey, AppIcon> allApps) {
+		List<Icon> menu = restoreMenu(context, allApps);
+		if (menu.isEmpty()) {
+			createInitialMenu(menu, allApps, context.getPackageManager());
 		}
+		return menu;
 	}
 
-	private Intent getCalendarIntent() {
-		Intent intent = new Intent(Intent.ACTION_EDIT)
-				.setType("vnd.android.cursor.item/event");
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			return intent
-					.putExtra("title", "dummy")
-					.putExtra("beginTime", 0)
-					.putExtra("endTime", 0);
-		} else {
-			return intent
-					.putExtra(CalendarContract.Events.TITLE, "dummy")
-					.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0)
-					.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0);
-		}
-	}
-
-	private void createInitialMenu(PackageManager pm) {
+	private static void createInitialMenu(List<Icon> menu,
+			Map<LauncherItemKey, AppIcon> allApps,
+			PackageManager pm) {
 		Intent[] intents = new Intent[]{
 				new Intent(Intent.ACTION_VIEW, Uri.parse("http://")),
 				new Intent(Intent.ACTION_DIAL),
@@ -367,22 +365,28 @@ public class AppMenu extends CanvasPieMenu {
 			}
 			LauncherItemKey launcherItemKey = new LauncherItemKey(
 					launchIntent.getComponent(), userHandle);
-			AppIcon appIcon = apps.get(launcherItemKey);
+			AppIcon appIcon = allApps.get(launcherItemKey);
 			if (appIcon != null) {
 				defaults.add(launcherItemKey);
-				addAppIcon(appIcon);
+				addMenuIcon(menu, appIcon);
 			}
 		}
-		int max = Math.min(apps.size(), 8);
-		int i = icons.size();
-		for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
+		int max = Math.min(allApps.size(), 8);
+		int i = menu.size();
+		for (Map.Entry<LauncherItemKey, AppIcon> entry : allApps.entrySet()) {
 			if (i >= max) {
 				break;
 			}
 			if (!defaults.contains(entry.getKey())) {
-				addAppIcon(entry.getValue());
+				addMenuIcon(menu, entry.getValue());
 				++i;
 			}
+		}
+	}
+
+	private static void addMenuIcon(List<Icon> menu, AppIcon appIcon) {
+		if (appIcon != null) {
+			menu.add(appIcon);
 		}
 	}
 
@@ -400,25 +404,37 @@ public class AppMenu extends CanvasPieMenu {
 				userHandle);
 	}
 
-	private void addAppIcon(AppIcon appIcon) {
-		if (appIcon != null) {
-			icons.add(appIcon);
-		}
-	}
-
 	private static ComponentName getComponentName(ActivityInfo info) {
 		return new ComponentName(info.packageName, info.name);
 	}
 
+	private static Intent getCalendarIntent() {
+		Intent intent = new Intent(Intent.ACTION_EDIT)
+				.setType("vnd.android.cursor.item/event");
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			return intent
+					.putExtra("title", "dummy")
+					.putExtra("beginTime", 0)
+					.putExtra("endTime", 0);
+		} else {
+			return intent
+					.putExtra(CalendarContract.Events.TITLE, "dummy")
+					.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0)
+					.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0);
+		}
+	}
+
 	private void removePackage(String packageName, UserHandle userHandle) {
-		removePackageFromApps(packageName, userHandle);
+		removePackageFromApps(apps, packageName, userHandle);
 		removePackageFromPieMenu(packageName, userHandle);
 	}
 
-	private synchronized void removePackageFromApps(String packageName,
+	private static void removePackageFromApps(
+			Map<LauncherItemKey, AppIcon> allApps,
+			String packageName,
 			UserHandle userHandle) {
 		Iterator<Map.Entry<LauncherItemKey, AppIcon>> it =
-				apps.entrySet().iterator();
+				allApps.entrySet().iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next().getValue();
 			if (packageName.equals(appIcon.componentName.getPackageName()) &&
@@ -428,7 +444,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
-	private synchronized void removePackageFromPieMenu(String packageName,
+	private void removePackageFromPieMenu(String packageName,
 			UserHandle userHandle) {
 		Iterator<Icon> it = icons.iterator();
 		while (it.hasNext()) {
@@ -440,8 +456,17 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private LauncherApps getLauncherApps(Context context) {
+		if (launcherApps == null) {
+			launcherApps = (LauncherApps) context.getSystemService(
+					Context.LAUNCHER_APPS_SERVICE);
+		}
+		return launcherApps;
+	}
+
 	private static List<Icon> restoreMenu(Context context,
-			HashMap<LauncherItemKey, AppIcon> apps) {
+			Map<LauncherItemKey, AppIcon> apps) {
 		ArrayList<Icon> icons = new ArrayList<>();
 		try {
 			for (String line : readLines(context.openFileInput(MENU))) {

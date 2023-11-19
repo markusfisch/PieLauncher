@@ -207,7 +207,11 @@ public class AppPieView extends View {
 	}
 
 	public void filterAppList(String query) {
-		appList = PieLauncherApp.appMenu.filterAppsBy(query);
+		List<AppMenu.AppIcon> newAppList =
+				PieLauncherApp.appMenu.filterAppsBy(query);
+		if (newAppList != null) {
+			appList = newAppList;
+		}
 		showLaunchFirst = !TextUtils.isEmpty(query);
 		scrollList(0, false);
 		lastScrollY = 0;

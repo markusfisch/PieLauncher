@@ -42,18 +42,18 @@ public class PieMenu {
 		set(x, y, radius, 0);
 	}
 
-	public synchronized void set(int x, int y, double radius, double twist) {
+	public void set(int x, int y, double radius, double twist) {
 		centerX = x;
 		centerY = y;
 		this.radius = radius;
 		this.twist = twist;
 	}
 
-	public synchronized void setRadius(double radius) {
+	public void setRadius(double radius) {
 		this.radius = radius;
 	}
 
-	public synchronized void calculate(float x, float y) {
+	public void calculate(float x, float y) {
 		selectedIcon = -1;
 
 		int numberOfIcons = icons.size();
