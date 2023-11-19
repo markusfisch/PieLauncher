@@ -35,7 +35,7 @@ public class SettingsActivity extends Activity {
 	}
 
 	public static boolean isReady(Context context) {
-		return PieLauncherApp.getPrefs().isSkippingSetup() ||
+		return PieLauncherApp.getPrefs(context).isSkippingSetup() ||
 				(BatteryOptimization.isIgnoringBatteryOptimizations(context) &&
 						DefaultLauncher.isDefault(context));
 	}
@@ -65,7 +65,7 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		setRequestedOrientation(PieLauncherApp.getPrefs().getOrientation());
+		setRequestedOrientation(PieLauncherApp.getPrefs(this).getOrientation());
 
 		// These may change while this activity is shown.
 		if (updateDisableBatteryOptimizations() &&
@@ -91,7 +91,7 @@ public class SettingsActivity extends Activity {
 		View doneButton = findViewById(R.id.done);
 		if (isWelcomeMode) {
 			doneButton.setOnClickListener(v -> {
-				PieLauncherApp.getPrefs().setSkipSetup();
+				PieLauncherApp.getPrefs(this).setSkipSetup();
 				finish();
 			});
 		} else {
@@ -120,7 +120,7 @@ public class SettingsActivity extends Activity {
 								show = false;
 								break;
 						}
-						PieLauncherApp.getPrefs().setDisplayKeyboard(show);
+						PieLauncherApp.getPrefs(this).setDisplayKeyboard(show);
 						updateDisplayKeyboardText(displayKeyboardView);
 					});
 		});
@@ -128,10 +128,11 @@ public class SettingsActivity extends Activity {
 	}
 
 	private static void updateDisplayKeyboardText(TextView tv) {
+		Context context = tv.getContext();
 		tv.setText(getLabelAndValue(
-				tv.getContext(),
+				context,
 				R.string.display_keyboard,
-				PieLauncherApp.getPrefs().displayKeyboard()
+				PieLauncherApp.getPrefs(context).displayKeyboard()
 						? R.string.display_keyboard_yes
 						: R.string.display_keyboard_no));
 	}
@@ -157,7 +158,7 @@ public class SettingsActivity extends Activity {
 								orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 								break;
 						}
-						PieLauncherApp.getPrefs().setOrientation(orientation);
+						PieLauncherApp.getPrefs(this).setOrientation(orientation);
 						setRequestedOrientation(orientation);
 						updateOrientationText(orientationView);
 					});
@@ -166,10 +167,12 @@ public class SettingsActivity extends Activity {
 	}
 
 	public static void updateOrientationText(TextView tv) {
+		Context context = tv.getContext();
 		tv.setText(getLabelAndValue(
-				tv.getContext(),
+				context,
 				R.string.orientation,
-				getOrientationResId(PieLauncherApp.getPrefs().getOrientation())));
+				getOrientationResId(
+						PieLauncherApp.getPrefs(context).getOrientation())));
 	}
 
 	public static int getOrientationResId(int orientation) {

@@ -25,15 +25,11 @@ public class PieLauncherApp extends Application {
 	private static final PackageEventReceiver packageEventReceiver =
 			new PackageEventReceiver();
 
-	// Required for the delayed initialization of prefs.
-	// It's okay to keep a reference to the application context
-	// as it can never be garbage collected, of course.
-	private static Context appContext;
 	private static Preferences prefs;
 
-	public static Preferences getPrefs() {
+	public static Preferences getPrefs(Context context) {
 		if (prefs == null) {
-			prefs = new Preferences(appContext);
+			prefs = new Preferences(context);
 		}
 		return prefs;
 	}
@@ -41,12 +37,6 @@ public class PieLauncherApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		appContext = this;
-		// It's important to not use getPrefs() before the device
-		// is unlocked because credential encrypted storage is not
-		// available before, and so getDefaultSharedPreferences()
-		// will return null.
 
 		registerLocaleEventReceiver();
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
