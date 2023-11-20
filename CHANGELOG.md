@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.14.3
+* Improve app indexing
+
 ## 1.14.2
 * Perform haptic feedback when pie choice changes
 * Improve welcome screen
