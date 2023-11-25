@@ -14,7 +14,7 @@
 			android:id="@+id/headline"
 			android:drawableLeft="@drawable/ic_back"
 			android:drawableStart="@drawable/ic_back"
-			android:text="@string/settings"/>
+			android:text="@string/settings" />
 		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			android:id="@+id/welcome"
 			android:drawablePadding="8dp"
@@ -27,28 +27,34 @@
 			android:textAppearance="@android:style/TextAppearance.Medium"
 			android:textColor="@color/text_color"
 			android:textStyle="bold"
-			android:text="@string/check_the_settings"/>
+			android:text="@string/check_the_settings" />
 		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/disable_battery_optimization"
-			android:text="@string/disable_battery_optimization"/>
+			android:text="@string/disable_battery_optimization" />
 		<de.markusfisch.android.pielauncher.widget.PreferenceView
 			style="@style/Preference"
 			android:id="@+id/make_default_launcher"
-			android:text="@string/make_default_launcher"/>
-		<de.markusfisch.android.pielauncher.widget.PreferenceView
-			style="@style/Preference"
-			android:id="@+id/display_keyboard"
-			android:text="@string/display_keyboard_yes"/>
-		<de.markusfisch.android.pielauncher.widget.PreferenceView
-			style="@style/Preference"
-			android:id="@+id/orientation"
-			android:text="@string/orientation_portrait"/>
+			android:text="@string/make_default_launcher" />
+		<LinearLayout
+			android:id="@+id/hide_in_welcome_mode"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/display_keyboard"
+				android:text="@string/display_keyboard_yes" />
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/orientation"
+				android:text="@string/orientation_portrait" />
+		</LinearLayout>
 		<Button
 			style="@style/Button"
 			android:id="@+id/done"
 			android:layout_gravity="center_horizontal"
 			android:layout_margin="16dp"
-			android:text="@string/ready"/>
+			android:text="@string/ready" />
 	</LinearLayout>
 </ScrollView>

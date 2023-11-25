@@ -49,6 +49,8 @@ public class SettingsActivity extends Activity {
 		isWelcomeMode = intent != null &&
 				intent.getBooleanExtra(WELCOME, false);
 
+		findViewById(R.id.hide_in_welcome_mode).setVisibility(isWelcomeMode ? View.GONE : View.VISIBLE);
+
 		initHeadline();
 		initDisplayKeyboard();
 		initOrientation();
@@ -101,10 +103,6 @@ public class SettingsActivity extends Activity {
 
 	private void initDisplayKeyboard() {
 		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
-		if (isWelcomeMode) {
-			displayKeyboardView.setVisibility(View.GONE);
-			return;
-		}
 		displayKeyboardView.setOnClickListener(v -> {
 			showOptionsDialog(
 					R.string.display_keyboard,
@@ -139,10 +137,6 @@ public class SettingsActivity extends Activity {
 
 	private void initOrientation() {
 		TextView orientationView = findViewById(R.id.orientation);
-		if (isWelcomeMode) {
-			orientationView.setVisibility(View.GONE);
-			return;
-		}
 		orientationView.setOnClickListener(v -> {
 			showOptionsDialog(
 					R.string.orientation,
