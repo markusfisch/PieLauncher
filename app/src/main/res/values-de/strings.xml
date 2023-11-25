@@ -1,0 +1,24 @@
+<resources>
+	<string name="app_name">Pie Launcher</string>
+	<string name="tip_number_of_icons">Verwenden Sie 4, 6 oder 8 Symbole für das beste Erlebnis</string>
+	<string name="tip_pinch_zoom">Mit zwei Fingern die Größe einstellen</string>
+	<string name="tip_drag_to_order">Apps ziehen, um die Anordnung zu ändern</string>
+	<string name="settings">Einstellungen</string>
+	<string name="welcome">Willkommen!</string>
+	<string name="check_the_settings">Überprüfen Sie bitte die folgenden Einstellungen:</string>
+	<string name="disable_battery_optimization"><big>Akkuoptimierung für Pie Launcher deaktivieren</big>\nErlaubt es, den Startbildschirm immer bereitzuhalten</string>
+	<string name="make_default_launcher"><big>Zum Standard-Startbildschirm machen</big>\nÖffnet Pie Launcher anstelle des System-Stardbildschirms</string>
+	<string name="display_keyboard">Tastatur öffnen</string>
+	<string name="display_keyboard_yes">Mit der App-Liste automatisch die Tastatur öffnen</string>
+	<string name="display_keyboard_no">In der App-Liste die Tastatur geschlossen lassen</string>
+	<string name="orientation_portrait">Hochformat</string>
+	<string name="orientation_landscape">Querformat</string>
+	<string name="ready">Bereit</string>
+	<string name="search_strictness_hamming">Ähnelt Suchtext</string>
+	<string name="search_strictness_contains">Enthält Suchtext</string>
+	<string name="search_strictness_starts_with">Beginnt mit Suchtext</string>
+	<string name="autolaunch_matching_yes">Diese automatisch starten</string>
+	<string name="autolaunch_matching_no">Nicht automatisch starten</string>
+	<string name="search_strictness">Strenge bei der App-Suche</string>
+	<string name="autolaunch_matching">Wenn nur eine App der Suche entspricht:</string>
+</resources>
