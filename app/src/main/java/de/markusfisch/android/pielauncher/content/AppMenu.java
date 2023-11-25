@@ -38,8 +38,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class AppMenu extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
@@ -149,7 +151,7 @@ public class AppMenu extends CanvasPieMenu {
 		storeMenu(context, icons);
 	}
 
-	public List<AppIcon> filterAppsBy(String query) {
+	public List<AppIcon> filterAppsBy(Context context, String query) {
 		if (indexing) {
 			return null;
 		}
@@ -157,6 +159,8 @@ public class AppMenu extends CanvasPieMenu {
 			query = "";
 		}
 		query = query.trim().toLowerCase(Locale.getDefault());
+		Preferences.SearchStrictness searchStrictness = PieLauncherApp.getPrefs(context).searchStrictness();
+
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();
 		ArrayList<AppIcon> hamming = new ArrayList<>();
@@ -176,10 +180,15 @@ public class AppMenu extends CanvasPieMenu {
 			}
 		}
 		Collections.sort(list, appLabelComparator);
+		if (searchStrictness == Preferences.SearchStrictness.STARTS_WITH) return list;
+
 		Collections.sort(contain, appLabelComparator);
-		Collections.sort(hamming, appLabelComparator);
 		list.addAll(contain);
+		if (searchStrictness == Preferences.SearchStrictness.CONTAINS) return list;
+
+		Collections.sort(hamming, appLabelComparator);
 		list.addAll(hamming);
+
 		return list;
 	}
 

@@ -6,16 +6,21 @@ import android.content.pm.ActivityInfo;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
+import de.markusfisch.android.pielauncher.R;
+
 public class Preferences {
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
+	private static final String AUTOLAUNCH_MATCHING = "display_keyboard";
 	private static final String ORIENTATION = "orientation";
 
 	private final SharedPreferences preferences;
 
 	private boolean skipSetup = false;
 	private boolean displayKeyboard = true;
+	private SearchStrictness searchStrictness = SearchStrictness.HAMMING;
+	private boolean autolaunchMatching = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
 	public Preferences(Context context) {
@@ -57,6 +62,23 @@ public class Preferences {
 		put(DISPLAY_KEYBOARD, displayKeyboard).apply();
 	}
 
+	public void setSearchStrictness(SearchStrictness searchStrictness) {
+		this.searchStrictness = searchStrictness;
+	}
+
+	public SearchStrictness searchStrictness() {
+		return searchStrictness;
+	}
+
+	public boolean autolaunchMatching() {
+		return autolaunchMatching;
+	}
+
+	public void setAutolaunchMatching(boolean autolaunchMatching) {
+		this.autolaunchMatching = autolaunchMatching;
+		put(AUTOLAUNCH_MATCHING, autolaunchMatching).apply();
+	}
+
 	public int getOrientation() {
 		return orientation;
 	}
@@ -82,5 +104,23 @@ public class Preferences {
 
 	private interface PutListener {
 		void put(SharedPreferences.Editor editor);
+	}
+
+	public enum SearchStrictness {
+		HAMMING,
+		CONTAINS,
+		STARTS_WITH;
+
+		public int getDescriptionText() {
+			switch (this) {
+				default:
+				case HAMMING:
+					return R.string.search_strictness_hamming;
+				case CONTAINS:
+					return R.string.search_strictness_contains;
+				case STARTS_WITH:
+					return R.string.search_strictness_starts_with;
+			}
+		}
 	}
 }

@@ -3,6 +3,15 @@
 		<item>@string/display_keyboard_yes</item>
 		<item>@string/display_keyboard_no</item>
 	</string-array>
+	<string-array name="search_strictness_names">
+		<item>@string/search_strictness_hamming</item>
+		<item>@string/search_strictness_contains</item>
+		<item>@string/search_strictness_starts_with</item>
+	</string-array>
+	<string-array name="autolaunch_matching_names">
+		<item>@string/autolaunch_matching_yes</item>
+		<item>@string/autolaunch_matching_no</item>
+	</string-array>
 	<string-array name="orientation_names">
 		<item>@string/orientation_portrait</item>
 		<item>@string/orientation_landscape</item>

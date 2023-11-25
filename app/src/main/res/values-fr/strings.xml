@@ -11,6 +11,13 @@
 	<string name="display_keyboard">Clavier d\'affichage</string>
 	<string name="display_keyboard_yes">Afficher automatiquement le clavier dans la liste des applications</string>
 	<string name="display_keyboard_no">Ne pas afficher le clavier dans la liste des applications</string>
+	<string name="search_strictness">Rigueur dans le filtrage des applications</string>
+	<string name="search_strictness_hamming">Ressemble au texte de recherche</string>
+	<string name="search_strictness_contains">Contient le texte de recherche</string>
+	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
+	<string name="autolaunch_matching">Lors qu\'une seule application correspond à la recherche:</string>
+	<string name="autolaunch_matching_yes">La lancer automatiquement</string>
+	<string name="autolaunch_matching_no">Ne pas la lancer automatiquement</string>
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Paysage</string>

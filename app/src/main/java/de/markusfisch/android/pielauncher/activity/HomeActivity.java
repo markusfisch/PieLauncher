@@ -242,6 +242,9 @@ public class HomeActivity extends Activity {
 
 	private void updateAppList() {
 		pieView.filterAppList(searchInput.getText().toString());
+		if (pieView.getIconCount() == 1 && PieLauncherApp.getPrefs(this).autolaunchMatching()) {
+			pieView.launchFirstApp();
+		}
 	}
 
 	private static int fadeColor(int argb, float fraction) {
