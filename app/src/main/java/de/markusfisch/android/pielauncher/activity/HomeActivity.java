@@ -178,6 +178,15 @@ public class HomeActivity extends Activity {
 			@Override
 			public void afterTextChanged(Editable e) {
 				if (updateAfterTextChange) {
+					if (e.toString().endsWith("  ")) {
+						updateAfterTextChange = false;
+						String strippedQuery = e.toString().substring(0, e.toString().length() - 2);
+						e.clear();
+						e.append(strippedQuery);
+						updateAppList();
+						updateAfterTextChange = true;
+						pieView.launchFirstApp();
+					}
 					updateAppList();
 				}
 			}
