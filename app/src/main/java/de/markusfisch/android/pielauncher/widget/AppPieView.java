@@ -194,6 +194,11 @@ public class AppPieView extends View {
 		return appList == null || appList.size() < 1;
 	}
 
+	public int getIconCount() {
+		if (appList == null) return 0;
+		return appList.size();
+	}
+
 	public boolean isAppListScrolled() {
 		return mode == MODE_LIST && getScrollY() != 0;
 	}
@@ -208,7 +213,7 @@ public class AppPieView extends View {
 
 	public void filterAppList(String query) {
 		List<AppMenu.AppIcon> newAppList =
-				PieLauncherApp.appMenu.filterAppsBy(query);
+				PieLauncherApp.appMenu.filterAppsBy(getContext(), query);
 		if (newAppList != null) {
 			appList = newAppList;
 		}

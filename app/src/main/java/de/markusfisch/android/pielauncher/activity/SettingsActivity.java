@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.os.DefaultLauncher;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class SettingsActivity extends Activity {
@@ -53,6 +55,8 @@ public class SettingsActivity extends Activity {
 
 		initHeadline();
 		initDisplayKeyboard();
+		initSearchStrictness();
+		initAutolaunchMatching();
 		initOrientation();
 		initDoneButton();
 
@@ -133,6 +137,75 @@ public class SettingsActivity extends Activity {
 				PieLauncherApp.getPrefs(context).displayKeyboard()
 						? R.string.display_keyboard_yes
 						: R.string.display_keyboard_no));
+	}
+
+	private void initSearchStrictness() {
+		TextView searchStrictnessView = findViewById(R.id.search_strictness);
+		searchStrictnessView.setOnClickListener(v -> {
+			showOptionsDialog(
+					R.string.search_strictness,
+					R.array.search_strictness_names,
+					(view, which) -> {
+						Preferences.SearchStrictness searchStrictness;
+						switch (which) {
+							default:
+							case 0:
+								searchStrictness = Preferences.SearchStrictness.HAMMING;
+								break;
+							case 1:
+								searchStrictness = Preferences.SearchStrictness.CONTAINS;
+								break;
+							case 2:
+								searchStrictness = Preferences.SearchStrictness.STARTS_WITH;
+								break;
+						}
+						PieLauncherApp.getPrefs(this).setSearchStrictness(searchStrictness);
+						updateSearchStrictnessText(searchStrictnessView);
+					});
+		});
+		updateSearchStrictnessText(searchStrictnessView);
+	}
+
+	private static void updateSearchStrictnessText(TextView tv) {
+		Context context = tv.getContext();
+		tv.setText(getLabelAndValue(
+				context,
+				R.string.search_strictness,
+				PieLauncherApp.getPrefs(context).searchStrictness().getDescriptionText()));
+	}
+
+	private void initAutolaunchMatching() {
+		TextView autolaunchMatchingView = findViewById(R.id.autolaunch_matching);
+		autolaunchMatchingView.setOnClickListener(v -> {
+			showOptionsDialog(
+					R.string.autolaunch_matching,
+					R.array.autolaunch_matching_names,
+					(view, which) -> {
+						boolean autolauchMatching;
+						switch (which) {
+							default:
+							case 0:
+								autolauchMatching = true;
+								break;
+							case 1:
+								autolauchMatching = false;
+								break;
+						}
+						PieLauncherApp.getPrefs(this).setAutolaunchMatching(autolauchMatching);
+						updateAutolaunchMatchingText(autolaunchMatchingView);
+					});
+		});
+		updateAutolaunchMatchingText(autolaunchMatchingView);
+	}
+
+	private static void updateAutolaunchMatchingText(TextView tv) {
+		Context context = tv.getContext();
+		tv.setText(getLabelAndValue(
+				context,
+				R.string.autolaunch_matching,
+				PieLauncherApp.getPrefs(context).autolaunchMatching()
+						? R.string.autolaunch_matching_yes
+						: R.string.autolaunch_matching_no));
 	}
 
 	private void initOrientation() {
