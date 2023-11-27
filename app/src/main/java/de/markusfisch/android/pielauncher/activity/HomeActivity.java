@@ -177,18 +177,20 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable e) {
-				if (updateAfterTextChange) {
-					if (e.toString().endsWith("  ")) {
-						updateAfterTextChange = false;
-						String strippedQuery = e.toString().substring(0, e.toString().length() - 2);
-						e.clear();
-						e.append(strippedQuery);
-						updateAppList();
-						updateAfterTextChange = true;
-						pieView.launchFirstApp();
-					}
-					updateAppList();
+				if (!updateAfterTextChange) {
+					return;
 				}
+				String s = e.toString();
+				if (s.endsWith("  ") || s.endsWith(". ")) {
+					updateAfterTextChange = false;
+					e.clear();
+					e.append(s.substring(0, s.length() - 2));
+					updateAppList();
+					updateAfterTextChange = true;
+					pieView.launchFirstApp();
+					return;
+				}
+				updateAppList();
 			}
 		});
 		searchInput.setOnEditorActionListener((v, actionId, event) -> {
