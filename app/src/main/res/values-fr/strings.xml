@@ -15,7 +15,7 @@
 	<string name="search_strictness_hamming">Ressemble au texte de recherche</string>
 	<string name="search_strictness_contains">Contient le texte de recherche</string>
 	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
-	<string name="autolaunch_matching">Lors qu\'une seule application correspond à la recherche:</string>
+	<string name="autolaunch_matching">Lors qu\'une seule application correspond à la recherche</string>
 	<string name="autolaunch_matching_yes">La lancer automatiquement</string>
 	<string name="autolaunch_matching_no">Ne pas la lancer automatiquement</string>
 	<string name="orientation">Orientation</string>

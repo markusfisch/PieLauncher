@@ -15,7 +15,7 @@
 	<string name="search_strictness_hamming">Resembles search text</string>
 	<string name="search_strictness_contains">Contains search text</string>
 	<string name="search_strictness_starts_with">Starts with search text</string>
-	<string name="autolaunch_matching">When only one app matches search:</string>
+	<string name="autolaunch_matching">When only one app matches search</string>
 	<string name="autolaunch_matching_yes">Auto-launch it</string>
 	<string name="autolaunch_matching_no">Don\'t auto-launch it</string>
 	<string name="orientation">屏幕方向</string>
