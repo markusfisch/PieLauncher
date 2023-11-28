@@ -56,7 +56,7 @@ public class SettingsActivity extends Activity {
 		initHeadline();
 		initDisplayKeyboard();
 		initSearchStrictness();
-		initAutolaunchMatching();
+		initAutoLaunchMatching();
 		initOrientation();
 		initDoneButton();
 
@@ -174,31 +174,32 @@ public class SettingsActivity extends Activity {
 				PieLauncherApp.getPrefs(context).searchStrictness().getDescriptionText()));
 	}
 
-	private void initAutolaunchMatching() {
-		TextView autolaunchMatchingView = findViewById(R.id.auto_launch_matching);
-		autolaunchMatchingView.setOnClickListener(v -> {
+	private void initAutoLaunchMatching() {
+		TextView autoLaunchMatchingView = findViewById(R.id.auto_launch_matching);
+		autoLaunchMatchingView.setOnClickListener(v -> {
 			showOptionsDialog(
 					R.string.auto_launch_matching,
 					R.array.auto_launch_matching_names,
 					(view, which) -> {
-						boolean autolauchMatching;
+						boolean autoLaunchMatching;
 						switch (which) {
 							default:
 							case 0:
-								autolauchMatching = true;
+								autoLaunchMatching = true;
 								break;
 							case 1:
-								autolauchMatching = false;
+								autoLaunchMatching = false;
 								break;
 						}
-						PieLauncherApp.getPrefs(this).setAutolaunchMatching(autolauchMatching);
-						updateAutolaunchMatchingText(autolaunchMatchingView);
+						PieLauncherApp.getPrefs(this)
+								.setAutolaunchMatching(autoLaunchMatching);
+						updateAutoLaunchMatchingText(autoLaunchMatchingView);
 					});
 		});
-		updateAutolaunchMatchingText(autolaunchMatchingView);
+		updateAutoLaunchMatchingText(autoLaunchMatchingView);
 	}
 
-	private static void updateAutolaunchMatchingText(TextView tv) {
+	private static void updateAutoLaunchMatchingText(TextView tv) {
 		Context context = tv.getContext();
 		tv.setText(getLabelAndValue(
 				context,
