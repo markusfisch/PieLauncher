@@ -50,7 +50,8 @@ public class SettingsActivity extends Activity {
 		isWelcomeMode = intent != null &&
 				intent.getBooleanExtra(WELCOME, false);
 
-		findViewById(R.id.hide_in_welcome_mode).setVisibility(isWelcomeMode ? View.GONE : View.VISIBLE);
+		findViewById(R.id.hide_in_welcome_mode).setVisibility(
+				isWelcomeMode ? View.GONE : View.VISIBLE);
 
 		initHeadline();
 		initDisplayKeyboard();
