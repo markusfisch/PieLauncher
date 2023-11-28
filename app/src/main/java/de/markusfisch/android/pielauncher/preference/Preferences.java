@@ -30,6 +30,7 @@ public class Preferences {
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
+	private static final String SEARCH_STRICTNESS = "search_strictness";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String ORIENTATION = "orientation";
 
@@ -51,6 +52,9 @@ public class Preferences {
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		displayKeyboard = preferences.getBoolean(SKIP_SETUP, displayKeyboard);
+		searchStrictness = SearchStrictness.valueOf(
+				preferences.getString(SEARCH_STRICTNESS,
+						searchStrictness.toString()));
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
@@ -82,12 +86,13 @@ public class Preferences {
 		put(DISPLAY_KEYBOARD, displayKeyboard).apply();
 	}
 
-	public void setSearchStrictness(SearchStrictness searchStrictness) {
-		this.searchStrictness = searchStrictness;
-	}
-
 	public SearchStrictness searchStrictness() {
 		return searchStrictness;
+	}
+
+	public void setSearchStrictness(SearchStrictness searchStrictness) {
+		this.searchStrictness = searchStrictness;
+		put(SEARCH_STRICTNESS, searchStrictness.toString()).apply();
 	}
 
 	public boolean autoLaunchMatching() {
@@ -106,6 +111,10 @@ public class Preferences {
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
 		put(ORIENTATION, orientation).commit();
+	}
+
+	private SharedPreferences.Editor put(String key, String value) {
+		return put(editor -> editor.putString(key, value));
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {
