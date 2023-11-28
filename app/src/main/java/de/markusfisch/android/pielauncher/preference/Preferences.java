@@ -51,6 +51,8 @@ public class Preferences {
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		displayKeyboard = preferences.getBoolean(SKIP_SETUP, displayKeyboard);
+		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
+				autoLaunchMatching);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 	}
 
