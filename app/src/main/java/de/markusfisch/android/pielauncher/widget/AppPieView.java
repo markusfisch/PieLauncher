@@ -86,6 +86,8 @@ public class AppPieView extends View {
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
 	private final String pinchZoomTip;
+	private final String removeIconTip;
+	private final String removeAppTip;
 	private final ScaleGestureDetector scaleDetector;
 	private final long tapTimeout;
 	private final long minLongPressDuration;
@@ -139,6 +141,8 @@ public class AppPieView extends View {
 		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
 		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
+		removeIconTip = context.getString(R.string.tip_remove_icon);
+		removeAppTip = context.getString(R.string.tip_remove_app);
 
 		paintText.setColor(res.getColor(R.color.text_color));
 		paintText.setTextAlign(Paint.Align.CENTER);
@@ -970,6 +974,11 @@ public class AppPieView extends View {
 
 	private String getTip(boolean hasIcon) {
 		if (hasIcon) {
+			if (iconStartRect.contains(touch.x, touch.y)) {
+				return removeIconTip;
+			} else if (iconEndRect.contains(touch.x, touch.y)) {
+				return removeAppTip;
+			}
 			return dragToOrderTip;
 		}
 		int iconsInMenu = PieLauncherApp.appMenu.icons.size();
