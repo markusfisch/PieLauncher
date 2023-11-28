@@ -12,7 +12,7 @@ public class Preferences {
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
-	private static final String AUTOLAUNCH_MATCHING = "display_keyboard";
+	private static final String AUTOLAUNCH_MATCHING = "autolaunch_matching";
 	private static final String ORIENTATION = "orientation";
 
 	private final SharedPreferences preferences;
