@@ -180,11 +180,15 @@ public class AppMenu extends CanvasPieMenu {
 			}
 		}
 		Collections.sort(list, appLabelComparator);
-		if (searchStrictness == Preferences.SearchStrictness.STARTS_WITH) return list;
+		if (searchStrictness == Preferences.SearchStrictness.STARTS_WITH) {
+			return list;
+		}
 
 		Collections.sort(contain, appLabelComparator);
 		list.addAll(contain);
-		if (searchStrictness == Preferences.SearchStrictness.CONTAINS) return list;
+		if (searchStrictness == Preferences.SearchStrictness.CONTAINS) {
+			return list;
+		}
 
 		Collections.sort(hamming, appLabelComparator);
 		list.addAll(hamming);
