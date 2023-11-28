@@ -60,7 +60,7 @@ public class Preferences {
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 	}
 
-	public boolean isSkippingSetup() {
+	public boolean skipSetup() {
 		return skipSetup;
 	}
 

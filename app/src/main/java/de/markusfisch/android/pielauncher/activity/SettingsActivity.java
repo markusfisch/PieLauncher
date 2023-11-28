@@ -36,7 +36,7 @@ public class SettingsActivity extends Activity {
 	}
 
 	public static boolean isReady(Context context) {
-		return PieLauncherApp.getPrefs(context).isSkippingSetup() ||
+		return PieLauncherApp.getPrefs(context).skipSetup() ||
 				(BatteryOptimization.isIgnoringBatteryOptimizations(context) &&
 						DefaultLauncher.isDefault(context));
 	}
