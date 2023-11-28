@@ -15,9 +15,9 @@
 	<string name="search_strictness_hamming">Ähnelt Suchtext</string>
 	<string name="search_strictness_contains">Enthält Suchtext</string>
 	<string name="search_strictness_starts_with">Beginnt mit Suchtext</string>
-	<string name="autolaunch_matching">Wenn nur eine App der Suche entspricht</string>
-	<string name="autolaunch_matching_yes">Diese automatisch starten</string>
-	<string name="autolaunch_matching_no">Nicht automatisch starten</string>
+	<string name="auto_launch_matching">Wenn nur eine App der Suche entspricht</string>
+	<string name="auto_launch_matching_yes">Diese automatisch starten</string>
+	<string name="auto_launch_matching_no">Nicht automatisch starten</string>
 	<string name="orientation">Ausrichtung</string>
 	<string name="orientation_portrait">Hochformat</string>
 	<string name="orientation_landscape">Querformat</string>

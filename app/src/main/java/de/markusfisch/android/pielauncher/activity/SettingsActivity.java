@@ -174,11 +174,11 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void initAutolaunchMatching() {
-		TextView autolaunchMatchingView = findViewById(R.id.autolaunch_matching);
+		TextView autolaunchMatchingView = findViewById(R.id.auto_launch_matching);
 		autolaunchMatchingView.setOnClickListener(v -> {
 			showOptionsDialog(
-					R.string.autolaunch_matching,
-					R.array.autolaunch_matching_names,
+					R.string.auto_launch_matching,
+					R.array.auto_launch_matching_names,
 					(view, which) -> {
 						boolean autolauchMatching;
 						switch (which) {
@@ -201,10 +201,10 @@ public class SettingsActivity extends Activity {
 		Context context = tv.getContext();
 		tv.setText(getLabelAndValue(
 				context,
-				R.string.autolaunch_matching,
-				PieLauncherApp.getPrefs(context).autolaunchMatching()
-						? R.string.autolaunch_matching_yes
-						: R.string.autolaunch_matching_no));
+				R.string.auto_launch_matching,
+				PieLauncherApp.getPrefs(context).autoLaunchMatching()
+						? R.string.auto_launch_matching_yes
+						: R.string.auto_launch_matching_no));
 	}
 
 	private void initOrientation() {

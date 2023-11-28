@@ -15,9 +15,9 @@
 	<string name="search_strictness_hamming">与搜索文本类似</string>
 	<string name="search_strictness_contains">包括搜索文本</string>
 	<string name="search_strictness_starts_with">以搜索文本开头</string>
-	<string name="autolaunch_matching">当仅一个应用匹配搜索时</string>
-	<string name="autolaunch_matching_yes">自动启动它</string>
-	<string name="autolaunch_matching_no">不自动启动</string>
+	<string name="auto_launch_matching">当仅一个应用匹配搜索时</string>
+	<string name="auto_launch_matching_yes">自动启动它</string>
+	<string name="auto_launch_matching_no">不自动启动</string>
 	<string name="orientation"> 屏幕方向 </string>
 	<string name="orientation_portrait"> 横屏 </string>
 	<string name="orientation_landscape"> 竖屏 </string>

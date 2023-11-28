@@ -12,7 +12,7 @@ public class Preferences {
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
-	private static final String AUTOLAUNCH_MATCHING = "autolaunch_matching";
+	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String ORIENTATION = "orientation";
 
 	private final SharedPreferences preferences;
@@ -20,7 +20,7 @@ public class Preferences {
 	private boolean skipSetup = false;
 	private boolean displayKeyboard = true;
 	private SearchStrictness searchStrictness = SearchStrictness.HAMMING;
-	private boolean autolaunchMatching = false;
+	private boolean autoLaunchMatching = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
 	public Preferences(Context context) {
@@ -70,13 +70,13 @@ public class Preferences {
 		return searchStrictness;
 	}
 
-	public boolean autolaunchMatching() {
-		return autolaunchMatching;
+	public boolean autoLaunchMatching() {
+		return autoLaunchMatching;
 	}
 
-	public void setAutolaunchMatching(boolean autolaunchMatching) {
-		this.autolaunchMatching = autolaunchMatching;
-		put(AUTOLAUNCH_MATCHING, autolaunchMatching).apply();
+	public void setAutolaunchMatching(boolean autoLaunchMatching) {
+		this.autoLaunchMatching = autoLaunchMatching;
+		put(AUTO_LAUNCH_MATCHING, autoLaunchMatching).apply();
 	}
 
 	public int getOrientation() {

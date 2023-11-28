@@ -191,7 +191,7 @@ public class HomeActivity extends Activity {
 					return;
 				}
 				updateAppList();
-				if (PieLauncherApp.getPrefs(HomeActivity.this).autolaunchMatching() &&
+				if (PieLauncherApp.getPrefs(HomeActivity.this).autoLaunchMatching() &&
 						pieView.getIconCount() == 1) {
 					pieView.launchFirstApp();
 				}

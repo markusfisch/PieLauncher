@@ -51,8 +51,8 @@
 				android:text="@string/search_strictness_hamming" />
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
 				style="@style/Preference"
-				android:id="@+id/autolaunch_matching"
-				android:text="@string/autolaunch_matching_no" />
+				android:id="@+id/auto_launch_matching"
+				android:text="@string/auto_launch_matching_no" />
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
 				style="@style/Preference"
 				android:id="@+id/orientation"

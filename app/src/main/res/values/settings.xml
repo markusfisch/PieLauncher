@@ -8,9 +8,9 @@
 		<item>@string/search_strictness_contains</item>
 		<item>@string/search_strictness_starts_with</item>
 	</string-array>
-	<string-array name="autolaunch_matching_names">
-		<item>@string/autolaunch_matching_yes</item>
-		<item>@string/autolaunch_matching_no</item>
+	<string-array name="auto_launch_matching_names">
+		<item>@string/auto_launch_matching_yes</item>
+		<item>@string/auto_launch_matching_no</item>
 	</string-array>
 	<string-array name="orientation_names">
 		<item>@string/orientation_portrait</item>
