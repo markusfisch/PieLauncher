@@ -191,6 +191,10 @@ public class HomeActivity extends Activity {
 					return;
 				}
 				updateAppList();
+				if (PieLauncherApp.getPrefs(HomeActivity.this).autolaunchMatching() &&
+						pieView.getIconCount() == 1) {
+					pieView.launchFirstApp();
+				}
 			}
 		});
 		searchInput.setOnEditorActionListener((v, actionId, event) -> {
@@ -253,9 +257,6 @@ public class HomeActivity extends Activity {
 
 	private void updateAppList() {
 		pieView.filterAppList(searchInput.getText().toString());
-		if (pieView.getIconCount() == 1 && PieLauncherApp.getPrefs(this).autolaunchMatching()) {
-			pieView.launchFirstApp();
-		}
 	}
 
 	private static int fadeColor(int argb, float fraction) {
