@@ -82,6 +82,7 @@ public class AppPieView extends View {
 	private final Bitmap iconDone;
 	private final Bitmap iconPreferences;
 	private final Bitmap iconLaunchFirst;
+	private final String loadingTip;
 	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
 	private final String pinchZoomTip;
@@ -134,6 +135,7 @@ public class AppPieView extends View {
 		iconSize = Math.round(48f * dp);
 		iconTextPadding = Math.round(12f * dp);
 
+		loadingTip = context.getString(R.string.tip_loading);
 		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
 		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
@@ -272,7 +274,7 @@ public class AppPieView extends View {
 			invalidate();
 		}
 		if (PieLauncherApp.appMenu.isIndexing()) {
-			drawTip(canvas, "Loading…");
+			drawTip(canvas, loadingTip);
 		}
 	}
 
