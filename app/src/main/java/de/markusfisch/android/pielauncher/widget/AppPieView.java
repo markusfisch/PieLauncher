@@ -195,8 +195,7 @@ public class AppPieView extends View {
 	}
 
 	public int getIconCount() {
-		if (appList == null) return 0;
-		return appList.size();
+		return appList == null ? 0 : appList.size();
 	}
 
 	public boolean isAppListScrolled() {
