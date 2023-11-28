@@ -9,6 +9,24 @@ import android.util.DisplayMetrics;
 import de.markusfisch.android.pielauncher.R;
 
 public class Preferences {
+	public enum SearchStrictness {
+		HAMMING,
+		CONTAINS,
+		STARTS_WITH;
+
+		public int getDescriptionText() {
+			switch (this) {
+				default:
+				case HAMMING:
+					return R.string.search_strictness_hamming;
+				case CONTAINS:
+					return R.string.search_strictness_contains;
+				case STARTS_WITH:
+					return R.string.search_strictness_starts_with;
+			}
+		}
+	}
+
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
@@ -104,23 +122,5 @@ public class Preferences {
 
 	private interface PutListener {
 		void put(SharedPreferences.Editor editor);
-	}
-
-	public enum SearchStrictness {
-		HAMMING,
-		CONTAINS,
-		STARTS_WITH;
-
-		public int getDescriptionText() {
-			switch (this) {
-				default:
-				case HAMMING:
-					return R.string.search_strictness_hamming;
-				case CONTAINS:
-					return R.string.search_strictness_contains;
-				case STARTS_WITH:
-					return R.string.search_strictness_starts_with;
-			}
-		}
 	}
 }
