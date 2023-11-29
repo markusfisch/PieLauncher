@@ -36,7 +36,8 @@ public class DefaultLauncher {
 			String packageName) {
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_HOME);
-		ResolveInfo res = packageManager.resolveActivity(intent, 0);
+		ResolveInfo res = packageManager.resolveActivity(intent,
+				PackageManager.MATCH_DEFAULT_ONLY);
 		return res != null && res.activityInfo != null &&
 				packageName.equals(res.activityInfo.packageName);
 	}
