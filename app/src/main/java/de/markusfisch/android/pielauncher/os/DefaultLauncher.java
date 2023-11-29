@@ -11,8 +11,8 @@ import android.os.Build;
 public class DefaultLauncher {
 	public static void setAsDefault(Activity activity) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-			Intent intent = new Intent("android.intent.action.MAIN");
-			intent.addCategory("android.intent.category.HOME");
+			Intent intent = new Intent(Intent.ACTION_MAIN);
+			intent.addCategory(Intent.CATEGORY_HOME);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			activity.startActivity(intent);
 		} else {
