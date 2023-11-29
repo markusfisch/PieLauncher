@@ -15,17 +15,19 @@ public class DefaultLauncher {
 			intent.addCategory(Intent.CATEGORY_HOME);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			activity.startActivity(intent);
-		} else {
-			RoleManager roleManager = (RoleManager) activity.getSystemService(
-					Context.ROLE_SERVICE);
-			if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME) &&
-					!roleManager.isRoleHeld(RoleManager.ROLE_HOME)) {
-				activity.startActivityForResult(
-						roleManager.createRequestRoleIntent(
-								RoleManager.ROLE_HOME),
-						1);
-			}
+			return;
 		}
+		RoleManager roleManager = (RoleManager) activity.getSystemService(
+				Context.ROLE_SERVICE);
+		if (!roleManager.isRoleAvailable(RoleManager.ROLE_HOME) ||
+				roleManager.isRoleHeld(RoleManager.ROLE_HOME)) {
+			return;
+		}
+		// Must be startActivityForResult() or the chooser won't come up.
+		activity.startActivityForResult(
+				roleManager.createRequestRoleIntent(
+						RoleManager.ROLE_HOME),
+				1);
 	}
 
 	public static boolean isDefault(Context context) {
