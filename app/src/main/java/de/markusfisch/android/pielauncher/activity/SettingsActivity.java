@@ -13,6 +13,10 @@ import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
@@ -54,11 +58,32 @@ public class SettingsActivity extends Activity {
 				isWelcomeMode ? View.GONE : View.VISIBLE);
 
 		initHeadline();
-		initDisplayKeyboard();
-		initSearchStrictness();
-		initAutoLaunchMatching();
-		initOrientation();
 		initDoneButton();
+
+		initSetting(R.id.display_keyboard,
+				R.string.display_keyboard,
+				R.array.display_keyboard_names,
+				getDisplayKeyboardOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setDisplayKeyboard(value),
+				() -> PieLauncherApp.getPrefs(this).displayKeyboard());
+		initSetting(R.id.search_strictness,
+				R.string.search_strictness,
+				R.array.search_strictness_names,
+				getSearchStrictnessOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setSearchStrictness(value),
+				() -> PieLauncherApp.getPrefs(this).searchStrictness());
+		initSetting(R.id.auto_launch_matching,
+				R.string.auto_launch_matching,
+				R.array.auto_launch_matching_names,
+				getAutoLaunchMatchingOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setAutoLaunchMatching(value),
+				() -> PieLauncherApp.getPrefs(this).autoLaunchMatching());
+		initSetting(R.id.orientation,
+				R.string.orientation,
+				R.array.orientation_names,
+				getOrientationOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setOrientation(value),
+				() -> PieLauncherApp.getPrefs(this).getOrientation());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -83,174 +108,50 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void initHeadline() {
-		TextView headline = findViewById(R.id.headline);
+		TextView tv = findViewById(R.id.headline);
 		if (isWelcomeMode) {
-			headline.setText(R.string.welcome);
-			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+			tv.setText(R.string.welcome);
+			tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		} else {
-			headline.setOnClickListener(v -> finish());
+			tv.setOnClickListener(v -> finish());
 			findViewById(R.id.welcome).setVisibility(View.GONE);
 		}
 	}
 
 	private void initDoneButton() {
-		View doneButton = findViewById(R.id.done);
+		View v = findViewById(R.id.done);
 		if (isWelcomeMode) {
-			doneButton.setOnClickListener(v -> {
+			v.setOnClickListener(view -> {
 				PieLauncherApp.getPrefs(this).setSkipSetup();
 				finish();
 			});
 		} else {
-			doneButton.setVisibility(View.GONE);
+			v.setVisibility(View.GONE);
 		}
 	}
 
-	private void initDisplayKeyboard() {
-		TextView displayKeyboardView = findViewById(R.id.display_keyboard);
-		displayKeyboardView.setOnClickListener(v -> {
-			showOptionsDialog(
-					R.string.display_keyboard,
-					R.array.display_keyboard_names,
-					(view, which) -> {
-						boolean show;
-						switch (which) {
-							default:
-							case 0:
-								show = true;
-								break;
-							case 1:
-								show = false;
-								break;
-						}
-						PieLauncherApp.getPrefs(this).setDisplayKeyboard(show);
-						updateDisplayKeyboardText(displayKeyboardView);
-					});
+	private <T> void initSetting(
+			int viewId,
+			int titleId,
+			int itemsId,
+			Map<T, Integer> options,
+			SetListener<T> setter,
+			GetListener<T> getter) {
+		TextView tv = findViewById(viewId);
+		tv.setOnClickListener(v -> {
+			showOptionsDialog(titleId, itemsId, (view, which) -> {
+				Set<T> keys = options.keySet();
+				int i = 0;
+				for (T key : keys) {
+					if (i++ == which) {
+						setter.onSet(key);
+						updateSetting(tv, titleId, options.get(getter.onGet()));
+						break;
+					}
+				}
+			});
 		});
-		updateDisplayKeyboardText(displayKeyboardView);
-	}
-
-	private static void updateDisplayKeyboardText(TextView tv) {
-		Context context = tv.getContext();
-		tv.setText(getLabelAndValue(
-				context,
-				R.string.display_keyboard,
-				PieLauncherApp.getPrefs(context).displayKeyboard()
-						? R.string.display_keyboard_yes
-						: R.string.display_keyboard_no));
-	}
-
-	private void initSearchStrictness() {
-		TextView searchStrictnessView = findViewById(R.id.search_strictness);
-		searchStrictnessView.setOnClickListener(v -> {
-			showOptionsDialog(
-					R.string.search_strictness,
-					R.array.search_strictness_names,
-					(view, which) -> {
-						Preferences.SearchStrictness searchStrictness;
-						switch (which) {
-							default:
-							case 0:
-								searchStrictness = Preferences.SearchStrictness.HAMMING;
-								break;
-							case 1:
-								searchStrictness = Preferences.SearchStrictness.CONTAINS;
-								break;
-							case 2:
-								searchStrictness = Preferences.SearchStrictness.STARTS_WITH;
-								break;
-						}
-						PieLauncherApp.getPrefs(this).setSearchStrictness(searchStrictness);
-						updateSearchStrictnessText(searchStrictnessView);
-					});
-		});
-		updateSearchStrictnessText(searchStrictnessView);
-	}
-
-	private static void updateSearchStrictnessText(TextView tv) {
-		Context context = tv.getContext();
-		tv.setText(getLabelAndValue(
-				context,
-				R.string.search_strictness,
-				PieLauncherApp.getPrefs(context).searchStrictness().getDescriptionText()));
-	}
-
-	private void initAutoLaunchMatching() {
-		TextView autoLaunchMatchingView = findViewById(R.id.auto_launch_matching);
-		autoLaunchMatchingView.setOnClickListener(v -> {
-			showOptionsDialog(
-					R.string.auto_launch_matching,
-					R.array.auto_launch_matching_names,
-					(view, which) -> {
-						boolean autoLaunchMatching;
-						switch (which) {
-							default:
-							case 0:
-								autoLaunchMatching = true;
-								break;
-							case 1:
-								autoLaunchMatching = false;
-								break;
-						}
-						PieLauncherApp.getPrefs(this)
-								.setAutolaunchMatching(autoLaunchMatching);
-						updateAutoLaunchMatchingText(autoLaunchMatchingView);
-					});
-		});
-		updateAutoLaunchMatchingText(autoLaunchMatchingView);
-	}
-
-	private static void updateAutoLaunchMatchingText(TextView tv) {
-		Context context = tv.getContext();
-		tv.setText(getLabelAndValue(
-				context,
-				R.string.auto_launch_matching,
-				PieLauncherApp.getPrefs(context).autoLaunchMatching()
-						? R.string.auto_launch_matching_yes
-						: R.string.auto_launch_matching_no));
-	}
-
-	private void initOrientation() {
-		TextView orientationView = findViewById(R.id.orientation);
-		orientationView.setOnClickListener(v -> {
-			showOptionsDialog(
-					R.string.orientation,
-					R.array.orientation_names,
-					(view, which) -> {
-						int orientation;
-						switch (which) {
-							default:
-							case 0:
-								orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-								break;
-							case 1:
-								orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-								break;
-						}
-						PieLauncherApp.getPrefs(this).setOrientation(orientation);
-						setRequestedOrientation(orientation);
-						updateOrientationText(orientationView);
-					});
-		});
-		updateOrientationText(orientationView);
-	}
-
-	public static void updateOrientationText(TextView tv) {
-		Context context = tv.getContext();
-		tv.setText(getLabelAndValue(
-				context,
-				R.string.orientation,
-				getOrientationResId(
-						PieLauncherApp.getPrefs(context).getOrientation())));
-	}
-
-	public static int getOrientationResId(int orientation) {
-		switch (orientation) {
-			default:
-			case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-				return R.string.orientation_portrait;
-			case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-				return R.string.orientation_landscape;
-		}
+		updateSetting(tv, titleId, options.get(getter.onGet()));
 	}
 
 	private void showOptionsDialog(int titleId, int itemsId,
@@ -261,14 +162,17 @@ public class SettingsActivity extends Activity {
 				.show();
 	}
 
+	private static void updateSetting(TextView tv, int labelId, int valueId) {
+		tv.setText(getLabelAndValue(tv.getContext(), labelId, valueId));
+	}
+
+	@SuppressWarnings("deprecation")
 	private static Spanned getLabelAndValue(Context context,
 			int labelId, int valueId) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<big>");
-		sb.append(context.getString(labelId));
-		sb.append("</big><br/>");
-		sb.append(context.getString(valueId));
-		String html = sb.toString();
+		String html = "<big>" +
+				context.getString(labelId) +
+				"</big><br/>" +
+				context.getString(valueId);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
 			return Html.fromHtml(html);
 		} else {
@@ -304,5 +208,47 @@ public class SettingsActivity extends Activity {
 			intent.putExtra(WELCOME, true);
 		}
 		context.startActivity(intent);
+	}
+
+	private static Map<Boolean, Integer> getDisplayKeyboardOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.display_keyboard_yes);
+		map.put(Boolean.FALSE, R.string.display_keyboard_no);
+		return map;
+	}
+
+	private static Map<Preferences.SearchStrictness, Integer> getSearchStrictnessOptions() {
+		Map<Preferences.SearchStrictness, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.SearchStrictness.HAMMING,
+				R.string.search_strictness_hamming);
+		map.put(Preferences.SearchStrictness.CONTAINS,
+				R.string.search_strictness_contains);
+		map.put(Preferences.SearchStrictness.STARTS_WITH,
+				R.string.search_strictness_starts_with);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getAutoLaunchMatchingOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.auto_launch_matching_yes);
+		map.put(Boolean.FALSE, R.string.auto_launch_matching_no);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getOrientationOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
+				R.string.orientation_portrait);
+		map.put(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+				R.string.orientation_landscape);
+		return map;
+	}
+
+	private interface GetListener<T> {
+		T onGet();
+	}
+
+	private interface SetListener<T> {
+		void onSet(T value);
 	}
 }

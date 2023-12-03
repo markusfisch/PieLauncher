@@ -12,19 +12,7 @@ public class Preferences {
 	public enum SearchStrictness {
 		HAMMING,
 		CONTAINS,
-		STARTS_WITH;
-
-		public int getDescriptionText() {
-			switch (this) {
-				default:
-				case HAMMING:
-					return R.string.search_strictness_hamming;
-				case CONTAINS:
-					return R.string.search_strictness_contains;
-				case STARTS_WITH:
-					return R.string.search_strictness_starts_with;
-			}
-		}
+		STARTS_WITH
 	}
 
 	private static final String SKIP_SETUP = "skip_setup";
@@ -99,7 +87,7 @@ public class Preferences {
 		return autoLaunchMatching;
 	}
 
-	public void setAutolaunchMatching(boolean autoLaunchMatching) {
+	public void setAutoLaunchMatching(boolean autoLaunchMatching) {
 		this.autoLaunchMatching = autoLaunchMatching;
 		put(AUTO_LAUNCH_MATCHING, autoLaunchMatching).apply();
 	}
