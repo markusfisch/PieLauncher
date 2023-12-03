@@ -224,6 +224,9 @@ public class AppMenu extends CanvasPieMenu {
 	public void indexAppsAsync(Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction) {
+		if (indexing) {
+			return;
+		}
 		indexing = true;
 		Executors.newSingleThreadExecutor().execute(() -> {
 			Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
