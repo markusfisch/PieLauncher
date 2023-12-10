@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.15.0
+* Make search strictness configurable
+* Optionally auto launch perfect matches
+* Optionally darken background in pie mode
+* Launch first app by double-pressing space
+* Show tips when dragging an icon on a drop target
+* Add German translation
+* Update Chinese translation
+
 ## 1.14.3
 * Improve app indexing
 
