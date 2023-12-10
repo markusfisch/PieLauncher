@@ -217,13 +217,13 @@ public class SettingsActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Preferences.SearchStrictness, Integer> getSearchStrictnessOptions() {
-		Map<Preferences.SearchStrictness, Integer> map = new LinkedHashMap<>();
-		map.put(Preferences.SearchStrictness.HAMMING,
+	private static Map<Integer, Integer> getSearchStrictnessOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.SEARCH_STRICTNESS_HAMMING,
 				R.string.search_strictness_hamming);
-		map.put(Preferences.SearchStrictness.CONTAINS,
+		map.put(Preferences.SEARCH_STRICTNESS_CONTAINS,
 				R.string.search_strictness_contains);
-		map.put(Preferences.SearchStrictness.STARTS_WITH,
+		map.put(Preferences.SEARCH_STRICTNESS_STARTS_WITH,
 				R.string.search_strictness_starts_with);
 		return map;
 	}

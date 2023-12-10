@@ -9,16 +9,14 @@ import android.util.DisplayMetrics;
 import de.markusfisch.android.pielauncher.R;
 
 public class Preferences {
-	public enum SearchStrictness {
-		HAMMING,
-		CONTAINS,
-		STARTS_WITH
-	}
+	public static final int SEARCH_STRICTNESS_HAMMING = 1;
+	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
+	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
-	private static final String SEARCH_STRICTNESS = "search_strictness";
+	private static final String SEARCH_STRICTNESS = "strictness";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String ORIENTATION = "orientation";
 
@@ -26,7 +24,7 @@ public class Preferences {
 
 	private boolean skipSetup = false;
 	private boolean displayKeyboard = true;
-	private SearchStrictness searchStrictness = SearchStrictness.HAMMING;
+	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private boolean autoLaunchMatching = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
@@ -40,9 +38,8 @@ public class Preferences {
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		displayKeyboard = preferences.getBoolean(SKIP_SETUP, displayKeyboard);
-		searchStrictness = SearchStrictness.valueOf(
-				preferences.getString(SEARCH_STRICTNESS,
-						searchStrictness.toString()));
+		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
+				searchStrictness);
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
@@ -74,13 +71,13 @@ public class Preferences {
 		put(DISPLAY_KEYBOARD, displayKeyboard).apply();
 	}
 
-	public SearchStrictness searchStrictness() {
+	public int searchStrictness() {
 		return searchStrictness;
 	}
 
-	public void setSearchStrictness(SearchStrictness searchStrictness) {
+	public void setSearchStrictness(int searchStrictness) {
 		this.searchStrictness = searchStrictness;
-		put(SEARCH_STRICTNESS, searchStrictness.toString()).apply();
+		put(SEARCH_STRICTNESS, searchStrictness).apply();
 	}
 
 	public boolean autoLaunchMatching() {
@@ -99,10 +96,6 @@ public class Preferences {
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
 		put(ORIENTATION, orientation).commit();
-	}
-
-	private SharedPreferences.Editor put(String key, String value) {
-		return put(editor -> editor.putString(key, value));
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

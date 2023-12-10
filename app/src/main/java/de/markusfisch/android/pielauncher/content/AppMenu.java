@@ -159,7 +159,7 @@ public class AppMenu extends CanvasPieMenu {
 			query = "";
 		}
 		query = query.trim().toLowerCase(Locale.getDefault());
-		Preferences.SearchStrictness searchStrictness =
+		int searchStrictness =
 				PieLauncherApp.getPrefs(context).searchStrictness();
 
 		ArrayList<AppIcon> list = new ArrayList<>();
@@ -181,13 +181,13 @@ public class AppMenu extends CanvasPieMenu {
 			}
 		}
 		Collections.sort(list, appLabelComparator);
-		if (searchStrictness == Preferences.SearchStrictness.STARTS_WITH) {
+		if (searchStrictness == Preferences.SEARCH_STRICTNESS_STARTS_WITH) {
 			return list;
 		}
 
 		Collections.sort(contain, appLabelComparator);
 		list.addAll(contain);
-		if (searchStrictness == Preferences.SearchStrictness.CONTAINS) {
+		if (searchStrictness == Preferences.SEARCH_STRICTNESS_CONTAINS) {
 			return list;
 		}
 
