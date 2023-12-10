@@ -84,6 +84,12 @@ public class SettingsActivity extends Activity {
 				getOrientationOptions(),
 				(value) -> PieLauncherApp.getPrefs(this).setOrientation(value),
 				() -> PieLauncherApp.getPrefs(this).getOrientation());
+		initSetting(R.id.darken_background,
+				R.string.darken_background,
+				R.array.darken_background_names,
+				getDarkenBackgroundOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setDarkenBackground(value),
+				() -> PieLauncherApp.getPrefs(this).darkenBackground());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -241,6 +247,13 @@ public class SettingsActivity extends Activity {
 				R.string.orientation_portrait);
 		map.put(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
 				R.string.orientation_landscape);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getDarkenBackgroundOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.darken_background_yes);
+		map.put(Boolean.FALSE, R.string.darken_background_no);
 		return map;
 	}
 

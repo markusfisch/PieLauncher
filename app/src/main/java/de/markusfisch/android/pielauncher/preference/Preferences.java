@@ -19,6 +19,7 @@ public class Preferences {
 	private static final String SEARCH_STRICTNESS = "strictness";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String ORIENTATION = "orientation";
+	private static final String DARKEN_BACKGROUND = "darken_background";
 
 	private final SharedPreferences preferences;
 
@@ -27,6 +28,7 @@ public class Preferences {
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private boolean autoLaunchMatching = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+	private boolean darkenBackground = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -43,6 +45,8 @@ public class Preferences {
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
+		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
+				darkenBackground);
 	}
 
 	public boolean skipSetup() {
@@ -96,6 +100,15 @@ public class Preferences {
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
 		put(ORIENTATION, orientation).commit();
+	}
+
+	public boolean darkenBackground() {
+		return darkenBackground;
+	}
+
+	public void setDarkenBackground(boolean darkenBackground) {
+		this.darkenBackground = darkenBackground;
+		put(DARKEN_BACKGROUND, darkenBackground).apply();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

@@ -4,7 +4,7 @@
 	<string name="tip_number_of_icons">Verwenden Sie 4, 6 oder 8 Symbole für das beste Erlebnis</string>
 	<string name="tip_pinch_zoom">Mit zwei Fingern die Größe einstellen</string>
 	<string name="tip_drag_to_order">Apps ziehen, um die Anordnung zu ändern</string>
-	<string name="tip_remove_icon">Icon aus Pie entfernen</string>
+	<string name="tip_remove_icon">Icon aus Menu entfernen</string>
 	<string name="tip_remove_app">App deinstallieren</string>
 	<string name="settings">Einstellungen</string>
 	<string name="welcome">Willkommen!</string>
@@ -24,5 +24,8 @@
 	<string name="orientation">Ausrichtung</string>
 	<string name="orientation_portrait">Hochformat</string>
 	<string name="orientation_landscape">Querformat</string>
+	<string name="darken_background">Hintergrund in Startbildschirm abdunkeln</string>
+	<string name="darken_background_yes">Ja</string>
+	<string name="darken_background_no">Nein</string>
 	<string name="ready">Bereit</string>
 </resources>

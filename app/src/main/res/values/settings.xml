@@ -16,4 +16,8 @@
 		<item>@string/orientation_portrait</item>
 		<item>@string/orientation_landscape</item>
 	</string-array>
+	<string-array name="darken_background_names">
+		<item>@string/darken_background_yes</item>
+		<item>@string/darken_background_no</item>
+	</string-array>
 </resources>

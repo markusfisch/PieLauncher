@@ -24,5 +24,8 @@
 	<string name="orientation">屏幕方向</string>
 	<string name="orientation_portrait">横屏</string>
 	<string name="orientation_landscape">竖屏</string>
+	<string name="darken_background">主屏幕变暗</string>
+	<string name="darken_background_yes">是</string>
+	<string name="darken_background_no">没有</string>
 	<string name="ready">已就绪</string>
 </resources>

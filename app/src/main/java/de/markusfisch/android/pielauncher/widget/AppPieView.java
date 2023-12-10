@@ -64,7 +64,7 @@ public class AppPieView extends View {
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
-	private static final float FADE_DURATION = 150f;
+	private static final float FADE_DURATION = 200f;
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -941,7 +941,16 @@ public class AppPieView extends View {
 			}
 		}
 		if (f > 0) {
-			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			if (PieLauncherApp.getPrefs(getContext()).darkenBackground()) {
+				int max = (translucentBackgroundColor >> 24) & 0xff;
+				int alpha = Math.round(f * max);
+				canvas.drawColor(
+						(alpha << 24) |
+								(translucentBackgroundColor & 0xffffff),
+						PorterDuff.Mode.SRC);
+			} else {
+				canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			}
 			CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 			PieLauncherApp.appMenu.draw(canvas);
