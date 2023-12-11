@@ -717,7 +717,7 @@ public class AppPieView extends View {
 
 	private AppMenu.AppIcon getListIconAt(int x, int y) {
 		y += getScrollY();
-		for (int i = 0, l = appList.size(); i < l; ++i) {
+		for (int i = 0, l = getIconCount(); i < l; ++i) {
 			AppMenu.AppIcon appIcon = appList.get(i);
 			if (appIcon.hitRect.contains(x, y)) {
 				return appIcon;
@@ -837,7 +837,7 @@ public class AppPieView extends View {
 		int x = listPadding;
 		int y = listPadding + searchInputHeight;
 		int wrapX = listPadding + cellWidth * columns;
-		int size = appList.size();
+		int size = getIconCount();
 		if (showLaunchFirst && size > 0) {
 			canvas.drawBitmap(iconLaunchFirst,
 					x + labelX - iconLaunchFirstHalf,
