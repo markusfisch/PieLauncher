@@ -37,6 +37,7 @@ import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class AppPieView extends View {
 	public interface ListListener {
@@ -106,6 +107,8 @@ public class AppPieView extends View {
 	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
+	private int deadZoneTop;
+	private int deadZoneBottom;
 	private int minRadius;
 	private int maxRadius;
 	private int radius;
@@ -350,6 +353,9 @@ public class AppPieView extends View {
 						}
 						break;
 					case MotionEvent.ACTION_DOWN:
+						if (inDeadZone(v.getContext())) {
+							return false;
+						}
 						if (cancelPerformAction()) {
 							// Ignore additional ACTION_DOWN's when there
 							// was a pending action.
@@ -435,6 +441,27 @@ public class AppPieView extends View {
 				return index > -1 && index < event.getPointerCount()
 						? touchReferences.get(event.getPointerId(index))
 						: null;
+			}
+
+			private boolean inDeadZone(Context context) {
+				switch (PieLauncherApp.getPrefs(context).getDeadZone()) {
+					default:
+						return false;
+					case Preferences.DEAD_ZONE_TOP:
+						return inTopDeadZone();
+					case Preferences.DEAD_ZONE_BOTTOM:
+						return inBottomDeadZone();
+					case Preferences.DEAD_ZONE_BOTH:
+						return inTopDeadZone() || inBottomDeadZone();
+				}
+			}
+
+			private boolean inTopDeadZone() {
+				return touch.y < deadZoneTop;
+			}
+
+			private boolean inBottomDeadZone() {
+				return touch.y > deadZoneBottom;
 			}
 
 			private void initScroll(MotionEvent event) {
@@ -589,6 +616,8 @@ public class AppPieView extends View {
 				PieLauncherApp.getPrefs(getContext()).getRadius(maxRadius));
 		viewWidth = width;
 		viewHeight = height;
+		deadZoneTop = Math.min(viewHeight / 10, Math.round(64f * dp));
+		deadZoneBottom = viewHeight - deadZoneTop;
 		layoutEditorControls(height > width);
 	}
 

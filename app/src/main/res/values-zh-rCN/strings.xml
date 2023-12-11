@@ -27,5 +27,10 @@
 	<string name="darken_background">主屏幕变暗</string>
 	<string name="darken_background_yes">是</string>
 	<string name="darken_background_no">没有</string>
+	<string name="dead_zone">忽略触摸</string>
+	<string name="dead_zone_none">无限制</string>
+	<string name="dead_zone_top">在屏幕顶部</string>
+	<string name="dead_zone_bottom">屏幕底部</string>
+	<string name="dead_zone_both">在屏幕顶部和底部</string>
 	<string name="ready">已就绪</string>
 </resources>

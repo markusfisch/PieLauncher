@@ -27,5 +27,10 @@
 	<string name="darken_background">Darken backround in start screen</string>
 	<string name="darken_background_yes">Yes</string>
 	<string name="darken_background_no">No</string>
+	<string name="dead_zone">Ignore touches</string>
+	<string name="dead_zone_none">No restriction</string>
+	<string name="dead_zone_top">At the top</string>
+	<string name="dead_zone_bottom">At the bottom</string>
+	<string name="dead_zone_both">At the top and bottom</string>
 	<string name="ready">Ready</string>
 </resources>

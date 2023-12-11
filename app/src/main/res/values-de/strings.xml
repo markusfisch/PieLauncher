@@ -27,5 +27,10 @@
 	<string name="darken_background">Hintergrund in Startbildschirm abdunkeln</string>
 	<string name="darken_background_yes">Ja</string>
 	<string name="darken_background_no">Nein</string>
+	<string name="dead_zone">Berührungen ignorieren</string>
+	<string name="dead_zone_none">Keine Einschränkung</string>
+	<string name="dead_zone_top">Oben</string>
+	<string name="dead_zone_bottom">Unten</string>
+	<string name="dead_zone_both">Oben und unten</string>
 	<string name="ready">Bereit</string>
 </resources>

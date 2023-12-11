@@ -20,4 +20,10 @@
 		<item>@string/darken_background_yes</item>
 		<item>@string/darken_background_no</item>
 	</string-array>
+	<string-array name="dead_zone_names">
+		<item>@string/dead_zone_none</item>
+		<item>@string/dead_zone_top</item>
+		<item>@string/dead_zone_bottom</item>
+		<item>@string/dead_zone_both</item>
+	</string-array>
 </resources>

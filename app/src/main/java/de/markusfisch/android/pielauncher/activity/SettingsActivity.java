@@ -90,6 +90,12 @@ public class SettingsActivity extends Activity {
 				getDarkenBackgroundOptions(),
 				(value) -> PieLauncherApp.getPrefs(this).setDarkenBackground(value),
 				() -> PieLauncherApp.getPrefs(this).darkenBackground());
+		initSetting(R.id.dead_zone,
+				R.string.dead_zone,
+				R.array.dead_zone_names,
+				getDeadZoneOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setDeadZone(value),
+				() -> PieLauncherApp.getPrefs(this).getDeadZone());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -254,6 +260,15 @@ public class SettingsActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.darken_background_yes);
 		map.put(Boolean.FALSE, R.string.darken_background_no);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getDeadZoneOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.DEAD_ZONE_NONE, R.string.dead_zone_none);
+		map.put(Preferences.DEAD_ZONE_TOP, R.string.dead_zone_top);
+		map.put(Preferences.DEAD_ZONE_BOTTOM, R.string.dead_zone_bottom);
+		map.put(Preferences.DEAD_ZONE_BOTH, R.string.dead_zone_both);
 		return map;
 	}
 

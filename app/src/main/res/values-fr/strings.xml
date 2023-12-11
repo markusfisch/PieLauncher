@@ -27,5 +27,10 @@
 	<string name="darken_background">Obscurcir dans l\'écran principal</string>
 	<string name="darken_background_yes">Oui</string>
 	<string name="darken_background_no">Non</string>
+	<string name="dead_zone">Ignorer les touches</string>
+	<string name="dead_zone_none">Aucune restriction</string>
+	<string name="dead_zone_top">En haut de l\'écran</string>
+	<string name="dead_zone_bottom">En bas de l\'écran</string>
+	<string name="dead_zone_both">En haut et en bas de l\'écran</string>
 	<string name="ready">Prêt</string>
 </resources>

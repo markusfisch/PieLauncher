@@ -61,6 +61,10 @@
 				style="@style/Preference"
 				android:id="@+id/darken_background"
 				android:text="@string/darken_background_no" />
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/dead_zone"
+				android:text="@string/dead_zone_both" />
 		</LinearLayout>
 		<Button
 			style="@style/Button"

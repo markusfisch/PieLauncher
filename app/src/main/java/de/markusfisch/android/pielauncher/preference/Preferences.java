@@ -12,6 +12,10 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
+	public static final int DEAD_ZONE_NONE = 0;
+	public static final int DEAD_ZONE_TOP = 1;
+	public static final int DEAD_ZONE_BOTTOM = 2;
+	public static final int DEAD_ZONE_BOTH = 3;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -20,6 +24,7 @@ public class Preferences {
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String ORIENTATION = "orientation";
 	private static final String DARKEN_BACKGROUND = "darken_background";
+	private static final String DEAD_ZONE = "dead_zone";
 
 	private final SharedPreferences preferences;
 
@@ -29,6 +34,7 @@ public class Preferences {
 	private boolean autoLaunchMatching = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean darkenBackground = false;
+	private int deadZone = DEAD_ZONE_BOTH;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -47,6 +53,7 @@ public class Preferences {
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
 				darkenBackground);
+		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 	}
 
 	public boolean skipSetup() {
@@ -109,6 +116,15 @@ public class Preferences {
 	public void setDarkenBackground(boolean darkenBackground) {
 		this.darkenBackground = darkenBackground;
 		put(DARKEN_BACKGROUND, darkenBackground).apply();
+	}
+
+	public int getDeadZone() {
+		return deadZone;
+	}
+
+	public void setDeadZone(int deadZone) {
+		this.deadZone = deadZone;
+		put(DEAD_ZONE, deadZone).commit();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {
