@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.15.1
+* Add an option to ignore touches at the top/bottom
+
 ## 1.15.0
 * Make search strictness configurable
 * Optionally auto launch perfect matches

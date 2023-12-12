@@ -1,0 +1,2 @@
+* Add an option to ignore touches at the top/bottom
+
