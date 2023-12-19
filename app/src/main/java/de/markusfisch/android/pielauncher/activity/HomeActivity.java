@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -82,6 +84,21 @@ public class HomeActivity extends Activity {
 						bottom));
 		SystemBars.setTransparentSystemBars(getWindow());
 	}
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.home, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.settings)
+      SettingsActivity.start(this);
+    else
+      return super.onOptionsItemSelected(item);
+    return true;
+  }
 
 	@Override
 	protected void onNewIntent(Intent intent) {
