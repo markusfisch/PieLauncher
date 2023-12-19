@@ -85,20 +85,19 @@ public class HomeActivity extends Activity {
 		SystemBars.setTransparentSystemBars(getWindow());
 	}
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.home, menu);
-    return true;
-  }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.settings)
-      SettingsActivity.start(this);
-    else
-      return super.onOptionsItemSelected(item);
-    return true;
-  }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.settings) {
+			SettingsActivity.start(this);
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
