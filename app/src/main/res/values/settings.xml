@@ -1,17 +1,4 @@
 <resources>
-	<string-array name="display_keyboard_names">
-		<item>@string/display_keyboard_yes</item>
-		<item>@string/display_keyboard_no</item>
-	</string-array>
-	<string-array name="search_strictness_names">
-		<item>@string/search_strictness_hamming</item>
-		<item>@string/search_strictness_contains</item>
-		<item>@string/search_strictness_starts_with</item>
-	</string-array>
-	<string-array name="auto_launch_matching_names">
-		<item>@string/auto_launch_matching_yes</item>
-		<item>@string/auto_launch_matching_no</item>
-	</string-array>
 	<string-array name="orientation_names">
 		<item>@string/orientation_portrait</item>
 		<item>@string/orientation_landscape</item>
@@ -25,5 +12,18 @@
 		<item>@string/dead_zone_top</item>
 		<item>@string/dead_zone_bottom</item>
 		<item>@string/dead_zone_both</item>
+	</string-array>
+	<string-array name="display_keyboard_names">
+		<item>@string/display_keyboard_yes</item>
+		<item>@string/display_keyboard_no</item>
+	</string-array>
+	<string-array name="auto_launch_matching_names">
+		<item>@string/auto_launch_matching_yes</item>
+		<item>@string/auto_launch_matching_no</item>
+	</string-array>
+	<string-array name="search_strictness_names">
+		<item>@string/search_strictness_hamming</item>
+		<item>@string/search_strictness_contains</item>
+		<item>@string/search_strictness_starts_with</item>
 	</string-array>
 </resources>

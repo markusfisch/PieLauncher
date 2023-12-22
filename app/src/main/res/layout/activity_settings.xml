@@ -43,18 +43,6 @@
 			android:orientation="vertical">
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
 				style="@style/Preference"
-				android:id="@+id/display_keyboard"
-				android:text="@string/display_keyboard_yes" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/search_strictness"
-				android:text="@string/search_strictness_hamming" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/auto_launch_matching"
-				android:text="@string/auto_launch_matching_no" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
 				android:id="@+id/orientation"
 				android:text="@string/orientation_portrait" />
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
@@ -65,6 +53,18 @@
 				style="@style/Preference"
 				android:id="@+id/dead_zone"
 				android:text="@string/dead_zone_both" />
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/display_keyboard"
+				android:text="@string/display_keyboard_yes" />
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/auto_launch_matching"
+				android:text="@string/auto_launch_matching_no" />
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/search_strictness"
+				android:text="@string/search_strictness_hamming" />
 		</LinearLayout>
 		<Button
 			style="@style/Button"

@@ -60,24 +60,6 @@ public class SettingsActivity extends Activity {
 		initHeadline();
 		initDoneButton();
 
-		initSetting(R.id.display_keyboard,
-				R.string.display_keyboard,
-				R.array.display_keyboard_names,
-				getDisplayKeyboardOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setDisplayKeyboard(value),
-				() -> PieLauncherApp.getPrefs(this).displayKeyboard());
-		initSetting(R.id.search_strictness,
-				R.string.search_strictness,
-				R.array.search_strictness_names,
-				getSearchStrictnessOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setSearchStrictness(value),
-				() -> PieLauncherApp.getPrefs(this).searchStrictness());
-		initSetting(R.id.auto_launch_matching,
-				R.string.auto_launch_matching,
-				R.array.auto_launch_matching_names,
-				getAutoLaunchMatchingOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setAutoLaunchMatching(value),
-				() -> PieLauncherApp.getPrefs(this).autoLaunchMatching());
 		initSetting(R.id.orientation,
 				R.string.orientation,
 				R.array.orientation_names,
@@ -96,6 +78,24 @@ public class SettingsActivity extends Activity {
 				getDeadZoneOptions(),
 				(value) -> PieLauncherApp.getPrefs(this).setDeadZone(value),
 				() -> PieLauncherApp.getPrefs(this).getDeadZone());
+		initSetting(R.id.display_keyboard,
+				R.string.display_keyboard,
+				R.array.display_keyboard_names,
+				getDisplayKeyboardOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setDisplayKeyboard(value),
+				() -> PieLauncherApp.getPrefs(this).displayKeyboard());
+		initSetting(R.id.auto_launch_matching,
+				R.string.auto_launch_matching,
+				R.array.auto_launch_matching_names,
+				getAutoLaunchMatchingOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setAutoLaunchMatching(value),
+				() -> PieLauncherApp.getPrefs(this).autoLaunchMatching());
+		initSetting(R.id.search_strictness,
+				R.string.search_strictness,
+				R.array.search_strictness_names,
+				getSearchStrictnessOptions(),
+				(value) -> PieLauncherApp.getPrefs(this).setSearchStrictness(value),
+				() -> PieLauncherApp.getPrefs(this).searchStrictness());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -222,31 +222,6 @@ public class SettingsActivity extends Activity {
 		context.startActivity(intent);
 	}
 
-	private static Map<Boolean, Integer> getDisplayKeyboardOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.display_keyboard_yes);
-		map.put(Boolean.FALSE, R.string.display_keyboard_no);
-		return map;
-	}
-
-	private static Map<Integer, Integer> getSearchStrictnessOptions() {
-		Map<Integer, Integer> map = new LinkedHashMap<>();
-		map.put(Preferences.SEARCH_STRICTNESS_HAMMING,
-				R.string.search_strictness_hamming);
-		map.put(Preferences.SEARCH_STRICTNESS_CONTAINS,
-				R.string.search_strictness_contains);
-		map.put(Preferences.SEARCH_STRICTNESS_STARTS_WITH,
-				R.string.search_strictness_starts_with);
-		return map;
-	}
-
-	private static Map<Boolean, Integer> getAutoLaunchMatchingOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.auto_launch_matching_yes);
-		map.put(Boolean.FALSE, R.string.auto_launch_matching_no);
-		return map;
-	}
-
 	private static Map<Integer, Integer> getOrientationOptions() {
 		Map<Integer, Integer> map = new LinkedHashMap<>();
 		map.put(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
@@ -269,6 +244,31 @@ public class SettingsActivity extends Activity {
 		map.put(Preferences.DEAD_ZONE_TOP, R.string.dead_zone_top);
 		map.put(Preferences.DEAD_ZONE_BOTTOM, R.string.dead_zone_bottom);
 		map.put(Preferences.DEAD_ZONE_BOTH, R.string.dead_zone_both);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getDisplayKeyboardOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.display_keyboard_yes);
+		map.put(Boolean.FALSE, R.string.display_keyboard_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getAutoLaunchMatchingOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.auto_launch_matching_yes);
+		map.put(Boolean.FALSE, R.string.auto_launch_matching_no);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getSearchStrictnessOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.SEARCH_STRICTNESS_HAMMING,
+				R.string.search_strictness_hamming);
+		map.put(Preferences.SEARCH_STRICTNESS_CONTAINS,
+				R.string.search_strictness_contains);
+		map.put(Preferences.SEARCH_STRICTNESS_STARTS_WITH,
+				R.string.search_strictness_starts_with);
 		return map;
 	}
 
