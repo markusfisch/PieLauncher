@@ -92,7 +92,6 @@ public class AppPieView extends View {
 	private final ScaleGestureDetector scaleDetector;
 	private final long tapTimeout;
 	private final long minLongPressDuration;
-	private final int editorPadding;
 	private final int listPadding;
 	private final int searchInputHeight;
 	private final int iconSize;
@@ -107,6 +106,7 @@ public class AppPieView extends View {
 	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
+	private int controlsPadding;
 	private int deadZoneTop;
 	private int deadZoneBottom;
 	private int minRadius;
@@ -134,7 +134,7 @@ public class AppPieView extends View {
 		DisplayMetrics dm = res.getDisplayMetrics();
 		dp = dm.density;
 		float sp = dm.scaledDensity;
-		editorPadding = Math.round(80f * dp);
+		controlsPadding = Math.round(80f * dp);
 		listPadding = Math.round(16f * dp);
 		searchInputHeight = Math.round(112f * dp);
 		iconSize = Math.round(48f * dp);
@@ -605,19 +605,27 @@ public class AppPieView extends View {
 	}
 
 	private void initMenu(int width, int height) {
-		int min = Math.min(width, height);
+		int viewMin = Math.min(width, height);
+		int viewMax = Math.max(width, height);
+		viewWidth = width;
+		viewHeight = height;
+
 		float maxIconSize = 64f * dp;
-		if (Math.floor(min * .28f) > maxIconSize) {
-			min = Math.round(maxIconSize / .28f);
+		if (Math.floor(viewMin * .28f) > maxIconSize) {
+			viewMin = Math.round(maxIconSize / .28f);
 		}
-		maxRadius = Math.round(min * .5f);
+
+		maxRadius = Math.round(viewMin * .5f);
 		minRadius = Math.round(maxRadius * .5f);
 		radius = clampRadius(
 				PieLauncherApp.getPrefs(getContext()).getRadius(maxRadius));
-		viewWidth = width;
-		viewHeight = height;
-		deadZoneTop = Math.min(viewHeight / 10, Math.round(64f * dp));
-		deadZoneBottom = viewHeight - deadZoneTop;
+
+		int pieBottom = viewMax / 2 + maxRadius;
+		controlsPadding = (viewMax - pieBottom) / 2;
+
+		deadZoneTop = Math.min(height / 10, Math.round(64f * dp));
+		deadZoneBottom = height - deadZoneTop;
+
 		layoutEditorControls(height > width);
 	}
 
@@ -644,7 +652,7 @@ public class AppPieView extends View {
 			int step = Math.round(
 					(float) (viewWidth - totalWidth) / (length + 1));
 			int x = step;
-			int y = viewHeight - largestHeight - editorPadding;
+			int y = viewHeight - controlsPadding - largestHeight / 2;
 			for (Rect rect : rects) {
 				rect.offset(x, y);
 				x += step + rect.width();
@@ -652,7 +660,7 @@ public class AppPieView extends View {
 		} else {
 			int step = Math.round(
 					(float) (viewHeight - totalHeight) / (length + 1));
-			int x = viewWidth - largestWidth - editorPadding;
+			int x = viewWidth - controlsPadding - largestWidth / 2;
 			int y = step;
 			for (Rect rect : rects) {
 				rect.offset(x, y);
@@ -1031,7 +1039,7 @@ public class AppPieView extends View {
 
 	private void drawTip(Canvas canvas, String tip) {
 		if (tip != null) {
-			canvas.drawText(tip, viewWidth >> 1, editorPadding + textOffset,
+			canvas.drawText(tip, viewWidth >> 1, controlsPadding + textOffset,
 					paintText);
 		}
 	}
