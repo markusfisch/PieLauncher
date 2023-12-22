@@ -848,7 +848,9 @@ public class AppPieView extends View {
 		// well on low-end devices and doing it manually gives us more control.
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		int innerWidth = viewWidth - listPadding * 2;
-		int columns = Math.min(5, innerWidth / iconSize);
+		int columns = Math.min(5, innerWidth /
+				// Keep 4dp between icons so they don't touch.
+				Math.round(iconSize + 4f * dp));
 		int iconAndTextHeight = iconSize + iconTextPadding +
 				Math.round(textHeight);
 		int cellWidth = innerWidth / columns;
