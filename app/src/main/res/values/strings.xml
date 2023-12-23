@@ -24,6 +24,7 @@
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Landscape</string>
+	<string name="orientation_user">Auto</string>
 	<string name="darken_background">Darken backround in start screen</string>
 	<string name="darken_background_yes">Yes</string>
 	<string name="darken_background_no">No</string>

@@ -24,6 +24,7 @@
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Paysage</string>
+	<string name="orientation_user">Automatique</string>
 	<string name="darken_background">Obscurcir dans l\'écran principal</string>
 	<string name="darken_background_yes">Oui</string>
 	<string name="darken_background_no">Non</string>

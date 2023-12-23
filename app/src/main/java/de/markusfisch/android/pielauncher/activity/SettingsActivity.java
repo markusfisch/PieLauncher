@@ -228,6 +228,8 @@ public class SettingsActivity extends Activity {
 				R.string.orientation_portrait);
 		map.put(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
 				R.string.orientation_landscape);
+		map.put(ActivityInfo.SCREEN_ORIENTATION_USER,
+				R.string.orientation_user);
 		return map;
 	}
 

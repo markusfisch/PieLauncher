@@ -24,6 +24,7 @@
 	<string name="orientation">Ausrichtung</string>
 	<string name="orientation_portrait">Hochformat</string>
 	<string name="orientation_landscape">Querformat</string>
+	<string name="orientation_user">Automatisch</string>
 	<string name="darken_background">Hintergrund in Startbildschirm abdunkeln</string>
 	<string name="darken_background_yes">Ja</string>
 	<string name="darken_background_no">Nein</string>
