@@ -1,0 +1,6 @@
+* Add a settings button next to the search input
+* Add auto-rotation to orientation options
+* Add options menu for phones with hardware menu button
+* Improve pie editor layout on small screens
+* Improve order of settings
+

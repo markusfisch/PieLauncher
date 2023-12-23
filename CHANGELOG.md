@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.16.0
+* Add a settings button next to the search input
+* Add auto-rotation to orientation options
+* Add options menu for phones with hardware menu button
+* Improve pie editor layout on small screens
+* Improve order of settings
+
 ## 1.15.1
 * Add an option to ignore touches at the top/bottom
 
