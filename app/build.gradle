@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
 	namespace 'de.markusfisch.android.pielauncher'
-	compileSdkVersion sdk_version
+	compileSdk sdk_version
 
 	defaultConfig {
-		minSdkVersion 9
-		targetSdkVersion sdk_version
+		minSdk 9
+		targetSdk sdk_version
 
 		versionCode 26
 		versionName '1.15.1'
