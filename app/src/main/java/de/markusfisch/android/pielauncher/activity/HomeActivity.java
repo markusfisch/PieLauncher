@@ -26,6 +26,7 @@ public class HomeActivity extends Activity {
 	private GestureDetector gestureDetector;
 	private AppPieView pieView;
 	private EditText searchInput;
+	private View settingsButton;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
@@ -70,9 +71,11 @@ public class HomeActivity extends Activity {
 
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
+		settingsButton = findViewById(R.id.settings);
 
 		initPieView(getResources());
 		initSearchInput();
+		initSettingsButton();
 
 		SystemBars.listenForWindowInsets(pieView,
 				(left, top, right, bottom) -> pieView.setPadding(
@@ -166,6 +169,7 @@ public class HomeActivity extends Activity {
 				y = Math.abs(y);
 				if (isScrolling && y > 0) {
 					kb.hideFrom(searchInput);
+					hideSettingsButton();
 				}
 				int color = fadeColor(searchBarBackgroundColor,
 						y / searchBarThreshold);
@@ -195,6 +199,8 @@ public class HomeActivity extends Activity {
 			public void afterTextChanged(Editable e) {
 				if (!updateAfterTextChange) {
 					return;
+				} else if (e.length() > 0) {
+					hideSettingsButton();
 				}
 				String s = e.toString();
 				if (s.endsWith("  ") || s.endsWith(". ")) {
@@ -232,12 +238,28 @@ public class HomeActivity extends Activity {
 		});
 	}
 
+	private void initSettingsButton() {
+		settingsButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SettingsActivity.start(HomeActivity.this);
+			}
+		});
+	}
+
+	private void hideSettingsButton() {
+		if (settingsButton.getVisibility() == View.VISIBLE) {
+			settingsButton.setVisibility(View.GONE);
+		}
+	}
+
 	private void showAllApps() {
 		if (isSearchVisible()) {
 			return;
 		}
 
 		searchInput.setVisibility(View.VISIBLE);
+		settingsButton.setVisibility(View.VISIBLE);
 		if (PieLauncherApp.getPrefs(this).displayKeyboard()) {
 			kb.showFor(searchInput);
 		}
@@ -260,6 +282,7 @@ public class HomeActivity extends Activity {
 		if (isSearchVisible()) {
 			searchInput.setVisibility(View.GONE);
 			kb.hideFrom(searchInput);
+			hideSettingsButton();
 		}
 		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
