@@ -49,7 +49,8 @@ public class Preferences {
 		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
 				darkenBackground);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
-		displayKeyboard = preferences.getBoolean(SKIP_SETUP, displayKeyboard);
+		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
+				displayKeyboard);
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
