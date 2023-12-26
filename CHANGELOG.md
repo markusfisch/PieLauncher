@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.16.1
+* Fix restoring display keyboard preference
+
 ## 1.16.0
 * Add a settings button next to the search input
 * Add auto-rotation to orientation options
