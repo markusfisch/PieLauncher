@@ -291,11 +291,6 @@ public class AppPieView extends View {
 	}
 
 	@Override
-	protected int computeVerticalScrollExtent() {
-		return getHeight();
-	}
-
-	@Override
 	protected int computeVerticalScrollOffset() {
 		return getScrollY();
 	}
