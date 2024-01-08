@@ -174,8 +174,10 @@ public class SettingsActivity extends Activity {
 				.show();
 	}
 
-	private static void updateSetting(TextView tv, int labelId, int valueId) {
-		tv.setText(getLabelAndValue(tv.getContext(), labelId, valueId));
+	private static void updateSetting(TextView tv, int labelId, Integer valueId) {
+		if (valueId != null) {
+			tv.setText(getLabelAndValue(tv.getContext(), labelId, valueId));
+		}
 	}
 
 	@SuppressWarnings("deprecation")
