@@ -91,7 +91,7 @@ public class AppPieView extends View {
 	private final String removeAppTip;
 	private final ScaleGestureDetector scaleDetector;
 	private final long tapTimeout;
-	private final long minLongPressDuration;
+	private final long longPressTimeout;
 	private final int listPadding;
 	private final int searchInputHeight;
 	private final int iconSize;
@@ -168,8 +168,8 @@ public class AppPieView extends View {
 		float touchSlop = configuration.getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
 		tapTimeout = ViewConfiguration.getTapTimeout();
-		minLongPressDuration = ViewConfiguration.getLongPressTimeout();
-		ripple.setDuration(minLongPressDuration);
+		longPressTimeout = ViewConfiguration.getLongPressTimeout();
+		ripple.setDuration(longPressTimeout);
 
 		updateLongPressToEdit(context);
 
@@ -550,12 +550,11 @@ public class AppPieView extends View {
 				}
 				initRipple();
 				longPressRunnable = () -> {
-					performHapticFeedback(
-							HapticFeedbackConstants.LONG_PRESS);
+					performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 					addIconInteractively(appIcon);
 					longPressRunnable = null;
 				};
-				postDelayed(longPressRunnable, minLongPressDuration);
+				postDelayed(longPressRunnable, longPressTimeout);
 			}
 
 			private void cancelLongPress() {
