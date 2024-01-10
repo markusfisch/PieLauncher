@@ -25,6 +25,7 @@ public class Preferences {
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
+	private static final String EDITOR_BUTTON = "editor_button";
 
 	private final SharedPreferences preferences;
 
@@ -35,6 +36,7 @@ public class Preferences {
 	private boolean displayKeyboard = true;
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
+	private boolean editorButton = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -55,6 +57,7 @@ public class Preferences {
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
+		editorButton = preferences.getBoolean(EDITOR_BUTTON, editorButton);
 	}
 
 	public boolean skipSetup() {
@@ -126,6 +129,15 @@ public class Preferences {
 	public void setSearchStrictness(int searchStrictness) {
 		this.searchStrictness = searchStrictness;
 		put(SEARCH_STRICTNESS, searchStrictness).apply();
+	}
+
+	public boolean editorButton() {
+		return editorButton;
+	}
+
+	public void setEditorButton(boolean editorButton) {
+		this.editorButton = editorButton;
+		put(EDITOR_BUTTON, editorButton).apply();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

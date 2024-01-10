@@ -33,5 +33,8 @@
 	<string name="dead_zone_top">在屏幕顶部</string>
 	<string name="dead_zone_bottom">屏幕底部</string>
 	<string name="dead_zone_both">在屏幕顶部和底部</string>
+	<string name="editor_button">如何进入菜单编辑器</string>
+	<string name="editor_button_yes">应用程序列表中的按钮</string>
+	<string name="editor_button_no">长按应用程序列表中的图标</string>
 	<string name="ready">已就绪</string>
 </resources>

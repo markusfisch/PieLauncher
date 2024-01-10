@@ -33,5 +33,8 @@
 	<string name="dead_zone_top">Oben</string>
 	<string name="dead_zone_bottom">Unten</string>
 	<string name="dead_zone_both">Oben und unten</string>
+	<string name="editor_button">Ändern des Menüs</string>
+	<string name="editor_button_yes">Schaltfläche in App-Liste</string>
+	<string name="editor_button_no">Langes Drücken eines Icons in der App-Liste</string>
 	<string name="ready">Bereit</string>
 </resources>

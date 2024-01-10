@@ -65,6 +65,10 @@
 				style="@style/Preference"
 				android:id="@+id/search_strictness"
 				android:text="@string/search_strictness_hamming" />
+			<de.markusfisch.android.pielauncher.widget.PreferenceView
+				style="@style/Preference"
+				android:id="@+id/editor_button"
+				android:text="@string/editor_button_no" />
 		</LinearLayout>
 		<Button
 			style="@style/Button"

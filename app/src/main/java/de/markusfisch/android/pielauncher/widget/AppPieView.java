@@ -123,6 +123,7 @@ public class AppPieView extends View {
 	private long fadeInFrom;
 	private long fadeOutFrom;
 	private boolean showLaunchFirst = false;
+	private boolean longPressToEdit = true;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -170,6 +171,8 @@ public class AppPieView extends View {
 		minLongPressDuration = ViewConfiguration.getLongPressTimeout();
 		ripple.setDuration(minLongPressDuration);
 
+		updateLongPressToEdit(context);
+
 		if (PieLauncherApp.appMenu.isEmpty()) {
 			PieLauncherApp.appMenu.indexAppsAsync(context);
 		}
@@ -196,6 +199,7 @@ public class AppPieView extends View {
 		setVerticalScrollBarEnabled(false);
 		hidePieMenu();
 		resetFadeOutPieMenu();
+		updateLongPressToEdit(getContext());
 		invalidate();
 	}
 
@@ -209,6 +213,12 @@ public class AppPieView extends View {
 
 	public boolean isAppListScrolled() {
 		return mode == MODE_LIST && getScrollY() != 0;
+	}
+
+	public void showEditor() {
+		editIcon(null);
+		resetScrollWithoutAnimation();
+		invalidate();
 	}
 
 	public boolean inEditMode() {
@@ -242,6 +252,11 @@ public class AppPieView extends View {
 	}
 
 	public void endEditMode() {
+		exitEditMode();
+		updateLongPressToEdit(getContext());
+	}
+
+	public void exitEditMode() {
 		Context context = getContext();
 		if (context != null) {
 			PieLauncherApp.appMenu.store(context);
@@ -526,6 +541,9 @@ public class AppPieView extends View {
 
 			private void initLongPress() {
 				cancelLongPress();
+				if (!longPressToEdit) {
+					return;
+				}
 				final AppMenu.Icon appIcon = getListIconAt(touch.x, touch.y);
 				if (appIcon == null) {
 					return;
@@ -685,6 +703,7 @@ public class AppPieView extends View {
 		CanvasPieMenu.paint.setAlpha(255);
 		grabbedIcon = icon;
 		lastInsertAt = -1;
+		longPressToEdit = true;
 		mode = MODE_EDIT;
 	}
 
@@ -1013,6 +1032,10 @@ public class AppPieView extends View {
 
 	private boolean isPieVisible() {
 		return fadeInFrom > 0;
+	}
+
+	private void updateLongPressToEdit(Context context) {
+		longPressToEdit = !PieLauncherApp.getPrefs(context).editorButton();
 	}
 
 	private String getTip(boolean hasIcon) {
