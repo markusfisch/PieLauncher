@@ -576,7 +576,8 @@ public class AppPieView extends View {
 			}
 
 			private boolean isTap(MotionEvent event, long timeOut) {
-				TouchReference tr = getTouchReference(event, 0);
+				TouchReference tr = getTouchReference(event,
+						getPrimaryIndex(event));
 				if (tr == null) {
 					return false;
 				}
