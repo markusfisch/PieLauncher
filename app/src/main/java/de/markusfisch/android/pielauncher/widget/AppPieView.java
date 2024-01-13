@@ -498,9 +498,6 @@ public class AppPieView extends View {
 
 			private void scroll(MotionEvent event) {
 				int index = getPrimaryIndex(event);
-				if (index < 0) {
-					return;
-				}
 				TouchReference tr = getTouchReference(event, index);
 				if (tr == null) {
 					return;
