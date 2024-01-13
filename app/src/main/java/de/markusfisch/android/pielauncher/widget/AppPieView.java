@@ -482,20 +482,6 @@ public class AppPieView extends View {
 				scrollOffset = getScrollY();
 			}
 
-			private int getPrimaryIndex(MotionEvent event) {
-				int count = event.getPointerCount();
-				int id = -1;
-				for (int i = 0; i < count; ++i) {
-					id = event.getPointerId(i);
-					if (id == primaryId) {
-						return i;
-					}
-				}
-				// If the ID wasn't found, the pointer must have gone up.
-				primaryId = id;
-				return count - 1;
-			}
-
 			private void scroll(MotionEvent event) {
 				int index = getPrimaryIndex(event);
 				TouchReference tr = getTouchReference(event, index);
@@ -580,6 +566,20 @@ public class AppPieView extends View {
 				}
 				return event.getEventTime() - tr.time <= timeOut &&
 						distSq(tr.pos, touch) <= touchSlopSq;
+			}
+
+			private int getPrimaryIndex(MotionEvent event) {
+				int count = event.getPointerCount();
+				int id = -1;
+				for (int i = 0; i < count; ++i) {
+					id = event.getPointerId(i);
+					if (id == primaryId) {
+						return i;
+					}
+				}
+				// If the ID wasn't found, the pointer must have gone up.
+				primaryId = id;
+				return count - 1;
 			}
 
 			private void postPerformAction(final View v, MotionEvent event) {
