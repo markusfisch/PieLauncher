@@ -580,7 +580,7 @@ public class AppPieView extends View {
 				if (tr == null) {
 					return false;
 				}
-				return SystemClock.uptimeMillis() - tr.time <= timeOut &&
+				return event.getEventTime() - tr.time <= timeOut &&
 						distSq(tr.pos, touch) <= touchSlopSq;
 			}
 
