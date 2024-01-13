@@ -565,7 +565,7 @@ public class AppPieView extends View {
 					return false;
 				}
 				return event.getEventTime() - tr.time <= timeOut &&
-						distSq(tr.pos, touch) <= touchSlopSq;
+						distSq(tr.x, tr.y, touch.x, touch.y) <= touchSlopSq;
 			}
 
 			private int getPrimaryIndex(MotionEvent event) {
@@ -1063,10 +1063,6 @@ public class AppPieView extends View {
 		canvas.drawBitmap(icon, null, rect, paintActive);
 	}
 
-	private static float distSq(Point a, Point b) {
-		return distSq(a.x, a.y, b.x, b.y);
-	}
-
 	private static float distSq(int ax, int ay, int bx, int by) {
 		float dx = ax - bx;
 		float dy = ay - by;
@@ -1156,14 +1152,16 @@ public class AppPieView extends View {
 	}
 
 	private static final class TouchReference {
-		private final Point pos = new Point();
+		private final int x;
+		private final int y;
 		private final long time;
 
 		// Required to avoid modifying y, which interferes with isTap().
 		private int scrollRef;
 
 		private TouchReference(float x, float y, long time) {
-			this.scrollRef = this.pos.y;
+			this.x = Math.round(x);
+			this.scrollRef = this.y = Math.round(y);
 			this.time = time;
 		}
 	}
