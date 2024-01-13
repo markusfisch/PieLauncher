@@ -509,14 +509,14 @@ public class AppPieView extends View {
 					velocityTracker.addMovement(event);
 				}
 				int y = Math.round(event.getY(index));
-				int scrollY = scrollOffset + (tr.pos.y - y);
+				int scrollY = scrollOffset + (tr.scrollRef - y);
 				lastScrollY = clamp(scrollY, 0, maxScrollY);
 				scrollList(lastScrollY, true);
 				if (lastScrollY == 0 || lastScrollY == maxScrollY) {
-					// Move reference to current coordinate if this
-					// event wouldn't move the list to make movements
-					// in the opposite direction immediate.
-					tr.pos.y = y;
+					// Move reference to current coordinate if no scrolling
+					// (in that direction) was possible so moving into the
+					// opposite direction is immediate.
+					tr.scrollRef = y;
 					scrollOffset = getScrollY();
 				}
 			}
@@ -1161,8 +1161,11 @@ public class AppPieView extends View {
 		private final Point pos = new Point();
 		private final long time;
 
+		// Required to avoid modifying y, which interferes with isTap().
+		private int scrollRef;
+
 		private TouchReference(float x, float y, long time) {
-			this.pos.set(Math.round(x), Math.round(y));
+			this.scrollRef = this.pos.y;
 			this.time = time;
 		}
 	}
