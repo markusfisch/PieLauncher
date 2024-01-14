@@ -33,8 +33,5 @@
 	<string name="dead_zone_top">At the top</string>
 	<string name="dead_zone_bottom">At the bottom</string>
 	<string name="dead_zone_both">At the top and bottom</string>
-	<string name="editor_button">Enter pie editor</string>
-	<string name="editor_button_yes">Button in app list</string>
-	<string name="editor_button_no">Long press on an icon in the app list</string>
 	<string name="ready">Ready</string>
 </resources>

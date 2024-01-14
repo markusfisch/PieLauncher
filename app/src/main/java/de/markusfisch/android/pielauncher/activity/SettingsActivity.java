@@ -96,12 +96,6 @@ public class SettingsActivity extends Activity {
 				getSearchStrictnessOptions(),
 				(value) -> PieLauncherApp.getPrefs(this).setSearchStrictness(value),
 				() -> PieLauncherApp.getPrefs(this).searchStrictness());
-		initSetting(R.id.editor_button,
-				R.string.editor_button,
-				R.array.editor_button_names,
-				getEditorButtonOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setEditorButton(value),
-				() -> PieLauncherApp.getPrefs(this).editorButton());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -279,13 +273,6 @@ public class SettingsActivity extends Activity {
 				R.string.search_strictness_contains);
 		map.put(Preferences.SEARCH_STRICTNESS_STARTS_WITH,
 				R.string.search_strictness_starts_with);
-		return map;
-	}
-
-	private static Map<Boolean, Integer> getEditorButtonOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.editor_button_yes);
-		map.put(Boolean.FALSE, R.string.editor_button_no);
 		return map;
 	}
 

@@ -27,8 +27,4 @@
 		<item>@string/search_strictness_contains</item>
 		<item>@string/search_strictness_starts_with</item>
 	</string-array>
-	<string-array name="editor_button_names">
-		<item>@string/editor_button_yes</item>
-		<item>@string/editor_button_no</item>
-	</string-array>
 </resources>

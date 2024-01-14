@@ -33,8 +33,5 @@
 	<string name="dead_zone_top">Вгорі</string>
 	<string name="dead_zone_bottom">Внизу</string>
 	<string name="dead_zone_both">Вгорі і внизу</string>
-	<string name="editor_button">Увійти у редактор меню</string>
-	<string name="editor_button_yes">Кнопка у списку додатків</string>
-	<string name="editor_button_no">Тривале натискання на піктограму</string>
 	<string name="ready">Готовий</string>
 </resources>

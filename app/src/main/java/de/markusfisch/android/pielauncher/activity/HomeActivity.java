@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
@@ -27,7 +26,7 @@ public class HomeActivity extends Activity {
 	private GestureDetector gestureDetector;
 	private AppPieView pieView;
 	private EditText searchInput;
-	private ImageView settingsButton;
+	private View settingsButton;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
@@ -35,7 +34,7 @@ public class HomeActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		if (pieView.inEditMode()) {
-			pieView.exitEditMode();
+			pieView.endEditMode();
 			showAllApps();
 		} else {
 			hideAllApps();
@@ -131,7 +130,6 @@ public class HomeActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		setRequestedOrientation(PieLauncherApp.getPrefs(this).getOrientation());
-		updateSettingsButton();
 	}
 
 	@Override
@@ -171,7 +169,7 @@ public class HomeActivity extends Activity {
 				y = Math.abs(y);
 				if (isScrolling && y > 0) {
 					kb.hideFrom(searchInput);
-					showSettingsButton(false);
+					hideSettingsButton();
 				}
 				int color = fadeColor(searchBarBackgroundColor,
 						y / searchBarThreshold);
@@ -202,7 +200,7 @@ public class HomeActivity extends Activity {
 				if (!updateAfterTextChange) {
 					return;
 				} else if (e.length() > 0) {
-					showSettingsButton(false);
+					hideSettingsButton();
 				}
 				String s = e.toString();
 				if (s.endsWith("  ") || s.endsWith(". ")) {
@@ -244,25 +242,15 @@ public class HomeActivity extends Activity {
 		settingsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (PieLauncherApp.getPrefs(HomeActivity.this).editorButton()) {
-					hideAllApps();
-					pieView.showEditor();
-				} else {
-					SettingsActivity.start(HomeActivity.this);
-				}
+				SettingsActivity.start(HomeActivity.this);
 			}
 		});
 	}
 
-	private void updateSettingsButton() {
-		settingsButton.setImageResource(
-				PieLauncherApp.getPrefs(this).editorButton()
-						? R.drawable.ic_edit
-						: R.drawable.ic_preferences);
-	}
-
-	private void showSettingsButton(boolean show) {
-		settingsButton.setVisibility(show ? View.VISIBLE : View.GONE);
+	private void hideSettingsButton() {
+		if (settingsButton.getVisibility() == View.VISIBLE) {
+			settingsButton.setVisibility(View.GONE);
+		}
 	}
 
 	private void showAllApps() {
@@ -271,7 +259,7 @@ public class HomeActivity extends Activity {
 		}
 
 		searchInput.setVisibility(View.VISIBLE);
-		showSettingsButton(true);
+		settingsButton.setVisibility(View.VISIBLE);
 		if (PieLauncherApp.getPrefs(this).displayKeyboard()) {
 			kb.showFor(searchInput);
 		}
@@ -294,7 +282,7 @@ public class HomeActivity extends Activity {
 		if (isSearchVisible()) {
 			searchInput.setVisibility(View.GONE);
 			kb.hideFrom(searchInput);
-			showSettingsButton(false);
+			hideSettingsButton();
 		}
 		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
