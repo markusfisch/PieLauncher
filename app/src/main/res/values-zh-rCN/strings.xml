@@ -1,9 +1,9 @@
 <resources>
 	<string name="app_name">Pie 启动器</string>
 	<string name="tip_loading">正在加载</string>
-	<string name="tip_number_of_icons">尝试使用4、6或8个符号以获得最佳使用效果</string>
+	<string name="tip_number_of_icons">4、6 或 8 个图标效果最佳</string>
 	<string name="tip_pinch_zoom">并拢 &amp; 伸展手指来缩放菜单</string>
-	<string name="tip_drag_to_order">拖动以排列顺序</string>
+	<string name="tip_drag_to_order">拖动排列，圈选更改顺序</string>
 	<string name="tip_remove_icon">从饼状菜单中移除图标</string>
 	<string name="tip_remove_app">卸载应用程序</string>
 	<string name="settings">设置</string>
