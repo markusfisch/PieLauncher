@@ -287,19 +287,20 @@ public class AppPieView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		boolean invalidate;
 		switch (mode) {
 			default:
 			case MODE_PIE:
-				drawPieMenu(canvas);
+				invalidate = drawPieMenu(canvas);
 				break;
 			case MODE_LIST:
-				drawList(canvas);
+				invalidate = drawList(canvas);
 				break;
 			case MODE_EDIT:
-				drawEditor(canvas);
+				invalidate = drawEditor(canvas);
 				break;
 		}
-		if (ripple.draw(canvas)) {
+		if (ripple.draw(canvas) || invalidate) {
 			invalidate();
 		}
 		if (PieLauncherApp.appMenu.isIndexing()) {
@@ -871,7 +872,7 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void drawList(Canvas canvas) {
+	private boolean drawList(Canvas canvas) {
 		// Manually draw an icon grid because GridView doesn't perform too
 		// well on low-end devices and doing it manually gives us more control.
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
@@ -903,11 +904,12 @@ public class AppPieView extends View {
 					y - listPadding, paintActive);
 		}
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
+		boolean invalidate = false;
 		if (highlightedFrom > 0) {
 			long now = SystemClock.uptimeMillis();
 			float f = Math.min(1f, (now - highlightedFrom) / ANIM_DURATION);
 			if (f < 1f) {
-				invalidate();
+				invalidate = true;
 			}
 			magSize = Math.round(magSize * f);
 		}
@@ -934,9 +936,10 @@ public class AppPieView extends View {
 		}
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
+		return invalidate;
 	}
 
-	private void drawEditor(Canvas canvas) {
+	private boolean drawEditor(Canvas canvas) {
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		boolean hasIcon = grabbedIcon != null;
 		// Only draw tips in portrait orientation.
@@ -944,10 +947,10 @@ public class AppPieView extends View {
 		if (canvas.getWidth() < canvas.getHeight()) {
 			drawTip(canvas, getTip(hasIcon));
 		}
-		float f = 1f;
+		boolean invalidate = false;
 		if (hasIcon) {
 			long now = SystemClock.uptimeMillis();
-			f = Math.min(1f, (now - grabbedIconAt) / ANIM_DURATION);
+			float f = Math.min(1f, (now - grabbedIconAt) / ANIM_DURATION);
 			float radius = f * iconSize;
 			canvas.drawCircle(iconStartRect.centerX(), iconStartRect.centerY(),
 					radius, paintDropZone);
@@ -956,6 +959,7 @@ public class AppPieView extends View {
 				paintActive.setAlpha(Math.round((1f - f) * 255f));
 				drawIcon(canvas, iconPreferences, iconCenterRect);
 				paintActive.setAlpha(255);
+				invalidate = true;
 			}
 			canvas.drawCircle(iconEndRect.centerX(), iconEndRect.centerY(),
 					radius, paintDropZone);
@@ -973,9 +977,8 @@ public class AppPieView extends View {
 		} else {
 			PieLauncherApp.appMenu.calculate(centerX, centerY);
 		}
-		if (PieLauncherApp.appMenu.drawSmoothed(canvas) || f < 1f) {
-			invalidate();
-		}
+		// Invoke drawSmoothed() first to make sure it's always run.
+		return PieLauncherApp.appMenu.drawSmoothed(canvas) || invalidate;
 	}
 
 	private void drawEditablePie(int centerX, int centerY) {
@@ -1015,7 +1018,7 @@ public class AppPieView extends View {
 		grabbedIcon.y = touch.y;
 	}
 
-	private void drawPieMenu(Canvas canvas) {
+	private boolean drawPieMenu(Canvas canvas) {
 		float f = 0;
 		long now = SystemClock.uptimeMillis();
 		if (fadeInFrom > 0) {
@@ -1027,29 +1030,28 @@ public class AppPieView extends View {
 				f = Math.min(.99999f, 1f - delta / ANIM_DURATION);
 			}
 		}
-		if (f > 0) {
-			if (PieLauncherApp.getPrefs(getContext()).darkenBackground()) {
-				int max = (translucentBackgroundColor >> 24) & 0xff;
-				int alpha = Math.round(f * max);
-				canvas.drawColor(
-						(alpha << 24) |
-								(translucentBackgroundColor & 0xffffff),
-						PorterDuff.Mode.SRC);
-			} else {
-				canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			}
-			CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
-			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-			PieLauncherApp.appMenu.draw(canvas);
-			if (f < 1f) {
-				invalidate();
-			}
-			int selected = PieLauncherApp.appMenu.getSelectedIcon();
-			if (selected != lastSelectedIcon) {
-				lastSelectedIcon = selected;
-				performHapticFeedback(HAPTIC_FEEDBACK_CHOICE);
-			}
+		if (f <= 0) {
+			return false;
 		}
+		if (PieLauncherApp.getPrefs(getContext()).darkenBackground()) {
+			int max = (translucentBackgroundColor >> 24) & 0xff;
+			int alpha = Math.round(f * max);
+			canvas.drawColor(
+					(alpha << 24) |
+							(translucentBackgroundColor & 0xffffff),
+					PorterDuff.Mode.SRC);
+		} else {
+			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		}
+		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
+		PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+		PieLauncherApp.appMenu.draw(canvas);
+		int selected = PieLauncherApp.appMenu.getSelectedIcon();
+		if (selected != lastSelectedIcon) {
+			lastSelectedIcon = selected;
+			performHapticFeedback(HAPTIC_FEEDBACK_CHOICE);
+		}
+		return f < 1f;
 	}
 
 	private void resetFadeOutPieMenu() {
