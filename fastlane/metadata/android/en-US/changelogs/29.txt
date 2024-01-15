@@ -1,0 +1,4 @@
+* Animate drop zones in pie editor
+* Improve touch detection
+* Add Ukrainian translation
+

@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.17.0
+* Animate drop zones in pie editor
+* Improve touch detection
+* Add Ukrainian translation
+
 ## 1.16.1
 * Fix restoring display keyboard preference
 
