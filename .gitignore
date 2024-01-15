@@ -5,6 +5,5 @@
 .DS_Store
 build
 local.properties
-gradle.properties
 infer-out
 .aside
