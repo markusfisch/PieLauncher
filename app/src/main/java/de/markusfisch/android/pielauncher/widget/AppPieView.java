@@ -955,46 +955,50 @@ public class AppPieView extends View {
 		int centerY = viewHeight >> 1;
 		setCenter(centerX, centerY);
 		if (hasIcon) {
-			int lastIndex = ungrabbedIcons.size();
-			double step = AppMenu.TAU / (lastIndex + 1);
-			double angle = AppMenu.getPositiveAngle(Math.atan2(
-					touch.y - centerY,
-					touch.x - centerX) + step * .5);
-			int insertAt = Math.min(lastIndex, (int) Math.floor(angle / step));
-			if (insertAt != lastInsertAt) {
-				// Avoid (visible) rotation of the menu when the first item
-				// changes. From the user's point of view, it is not clear
-				// why the menu rotates all of a sudden. The technical
-				// reason was to keep the menu unchanged when the grabbed
-				// icon is a newly added icon that is removed again. To
-				// prevent this, the menu is now rolled back if it has the
-				// sameOrder() as before (see below).
-				if (lastInsertAt == 0 && insertAt == lastIndex) {
-					Collections.rotate(ungrabbedIcons, 1);
-				} else if (lastInsertAt == lastIndex && insertAt == 0) {
-					Collections.rotate(ungrabbedIcons, -1);
-				}
-				PieLauncherApp.appMenu.icons.clear();
-				PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
-				PieLauncherApp.appMenu.icons.add(insertAt, grabbedIcon);
-				PieLauncherApp.appMenu.updateSmoothing();
-				if (lastInsertAt < 0) {
-					PieLauncherApp.appMenu.calculate(centerX, centerY);
-					grabbedIcon.x = touch.x;
-					grabbedIcon.y = touch.y;
-					PieLauncherApp.appMenu.initSmoothing();
-				}
-				lastInsertAt = insertAt;
-			}
-			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-			grabbedIcon.x = touch.x;
-			grabbedIcon.y = touch.y;
+			drawEditablePie(centerX, centerY);
 		} else {
 			PieLauncherApp.appMenu.calculate(centerX, centerY);
 		}
 		if (PieLauncherApp.appMenu.drawSmoothed(canvas) || f < 1f) {
 			invalidate();
 		}
+	}
+
+	private void drawEditablePie(int centerX, int centerY) {
+		int lastIndex = ungrabbedIcons.size();
+		double step = AppMenu.TAU / (lastIndex + 1);
+		double angle = AppMenu.getPositiveAngle(Math.atan2(
+				touch.y - centerY,
+				touch.x - centerX) + step * .5);
+		int insertAt = Math.min(lastIndex, (int) Math.floor(angle / step));
+		if (insertAt != lastInsertAt) {
+			// Avoid (visible) rotation of the menu when the first item
+			// changes. From the user's point of view, it is not clear
+			// why the menu rotates all of a sudden. The technical
+			// reason was to keep the menu unchanged when the grabbed
+			// icon is a newly added icon that is removed again. To
+			// prevent this, the menu is now rolled back if it has the
+			// sameOrder() as before (see below).
+			if (lastInsertAt == 0 && insertAt == lastIndex) {
+				Collections.rotate(ungrabbedIcons, 1);
+			} else if (lastInsertAt == lastIndex && insertAt == 0) {
+				Collections.rotate(ungrabbedIcons, -1);
+			}
+			PieLauncherApp.appMenu.icons.clear();
+			PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
+			PieLauncherApp.appMenu.icons.add(insertAt, grabbedIcon);
+			PieLauncherApp.appMenu.updateSmoothing();
+			if (lastInsertAt < 0) {
+				PieLauncherApp.appMenu.calculate(centerX, centerY);
+				grabbedIcon.x = touch.x;
+				grabbedIcon.y = touch.y;
+				PieLauncherApp.appMenu.initSmoothing();
+			}
+			lastInsertAt = insertAt;
+		}
+		PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+		grabbedIcon.x = touch.x;
+		grabbedIcon.y = touch.y;
 	}
 
 	private void drawPieMenu(Canvas canvas) {
