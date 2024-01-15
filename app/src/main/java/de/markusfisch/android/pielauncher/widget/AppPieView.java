@@ -66,7 +66,7 @@ public class AppPieView extends View {
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
-	private static final float FADE_DURATION = 200f;
+	private static final float ANIM_DURATION = 200f;
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -894,8 +894,8 @@ public class AppPieView extends View {
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
 		if (highlightedFrom > 0) {
 			long delta = SystemClock.uptimeMillis() - highlightedFrom;
-			magSize = Math.round(magSize * Math.min(1f,
-					delta / (longPressTimeout * .5f)));
+			magSize = Math.round(magSize *
+					Math.min(1f, delta / ANIM_DURATION));
 		}
 		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
@@ -933,7 +933,7 @@ public class AppPieView extends View {
 		float f = 1f;
 		if (hasIcon) {
 			long now = SystemClock.uptimeMillis();
-			f = Math.min(1f, (now - grabbedIconAt) / FADE_DURATION);
+			f = Math.min(1f, (now - grabbedIconAt) / ANIM_DURATION);
 			float radius = f * iconSize;
 			canvas.drawCircle(iconStartRect.centerX(), iconStartRect.centerY(),
 					radius, paintDropZone);
@@ -1001,12 +1001,12 @@ public class AppPieView extends View {
 		float f = 0;
 		long now = SystemClock.uptimeMillis();
 		if (fadeInFrom > 0) {
-			f = Math.min(1f, (now - fadeInFrom) / FADE_DURATION);
+			f = Math.min(1f, (now - fadeInFrom) / ANIM_DURATION);
 		} else {
 			long delta = now - fadeOutFrom;
-			if (delta < FADE_DURATION) {
+			if (delta < ANIM_DURATION) {
 				// Ensure f < 1f so invalidate() is invoked.
-				f = Math.min(.99999f, 1f - delta / FADE_DURATION);
+				f = Math.min(.99999f, 1f - delta / ANIM_DURATION);
 			}
 		}
 		if (f > 0) {
