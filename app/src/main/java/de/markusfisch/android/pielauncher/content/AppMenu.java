@@ -109,12 +109,10 @@ public class AppMenu extends CanvasPieMenu {
 							icon.rect,
 							null);
 				}
-			} catch (SecurityException e) {
-				// Ignore. According to vitals, `startMainActivity()`
-				// throws this for unknown reasons.
-			} catch (IllegalArgumentException e) {
-				// Ignore. According to vitals, 'isActivityEnabled()`
-				// throws this for unknown reasons.
+			} catch (Exception e) {
+				// According to vitals, `startMainActivity()`
+				// and `isActivityEnabled()` can throw all kinds
+				// of exceptions this app can do nothing about.
 			}
 		} else {
 			PackageManager pm = context.getPackageManager();
