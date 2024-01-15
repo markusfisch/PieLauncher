@@ -106,7 +106,6 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 
-	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
 	private int controlsPadding;
@@ -123,6 +122,8 @@ public class AppPieView extends View {
 	private ListListener listListener;
 	private List<AppMenu.AppIcon> appList;
 	private AppMenu.Icon grabbedIcon;
+	private AppMenu.Icon highlightedIcon;
+	private long highlightedFrom;
 	private long grabbedIconAt;
 	private long fadeInFrom;
 	private long fadeOutFrom;
@@ -180,7 +181,6 @@ public class AppPieView extends View {
 		touchSlopSq = touchSlop * touchSlop;
 		tapTimeout = ViewConfiguration.getTapTimeout();
 		longPressTimeout = ViewConfiguration.getLongPressTimeout();
-		ripple.setDuration(longPressTimeout);
 
 		if (PieLauncherApp.appMenu.isEmpty()) {
 			PieLauncherApp.appMenu.indexAppsAsync(context);
@@ -369,6 +369,7 @@ public class AppPieView extends View {
 							break;
 						}
 						addTouch(event);
+						long eventTime = event.getEventTime();
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch);
@@ -376,13 +377,13 @@ public class AppPieView extends View {
 								break;
 							case MODE_LIST:
 								initScroll(event);
-								initLongPress();
+								initLongPress(eventTime);
 								break;
 							case MODE_EDIT:
 								editIconAt(touch);
 								break;
 						}
-						fadeInFrom = event.getEventTime();
+						fadeInFrom = eventTime;
 						resetFadeOutPieMenu();
 						invalidate();
 						break;
@@ -519,22 +520,25 @@ public class AppPieView extends View {
 				}
 			}
 
-			private void initLongPress() {
+			private void initLongPress(long eventTime) {
 				cancelLongPress();
 				final AppMenu.Icon appIcon = getListIconAt(touch.x, touch.y);
 				if (appIcon == null) {
 					return;
 				}
-				initRipple();
+				highlightedIcon = appIcon;
+				highlightedFrom = eventTime;
 				longPressRunnable = () -> {
 					performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 					addIconInteractively(appIcon);
 					longPressRunnable = null;
+					cancelHighlight();
 				};
 				postDelayed(longPressRunnable, longPressTimeout);
 			}
 
 			private void cancelLongPress() {
+				cancelHighlight();
 				cancelRipple();
 				if (longPressRunnable != null) {
 					removeCallbacks(longPressRunnable);
@@ -542,14 +546,9 @@ public class AppPieView extends View {
 				}
 			}
 
-			private void initRipple() {
-				cancelRipple();
-				final Point at = new Point(touch.x, touch.y + getScrollY());
-				rippleRunnable = () -> {
-					ripple.set(at.x, at.y);
-					invalidate();
-				};
-				postDelayed(rippleRunnable, tapTimeout);
+			private void cancelHighlight() {
+				highlightedIcon = null;
+				highlightedFrom = 0;
 			}
 
 			private boolean isTap(MotionEvent event, long timeOut) {
@@ -712,10 +711,6 @@ public class AppPieView extends View {
 
 	private void cancelRipple() {
 		ripple.cancel();
-		if (rippleRunnable != null) {
-			removeCallbacks(rippleRunnable);
-			rippleRunnable = null;
-		}
 	}
 
 	private boolean performAction(Context context, Point at, boolean wasTap) {
@@ -896,13 +891,21 @@ public class AppPieView extends View {
 					x + labelX - iconLaunchFirstHalf,
 					y - listPadding, paintActive);
 		}
+		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
+		if (highlightedFrom > 0) {
+			long delta = SystemClock.uptimeMillis() - highlightedFrom;
+			magSize = Math.round(magSize * Math.min(1f,
+					delta / (longPressTimeout * .5f)));
+		}
 		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
 				AppMenu.AppIcon appIcon = appList.get(i);
 				appIcon.hitRect.set(x, y, x + cellWidth, y + cellHeight);
 				int ix = x + hpad;
 				int iy = y + vpad;
-				drawRect.set(ix, iy, ix + iconSize, iy + iconSize);
+				int mag = appIcon == highlightedIcon ? magSize : 0;
+				drawRect.set(ix - mag, iy - mag,
+						ix + iconSize + mag, iy + iconSize + mag);
 				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintActive);
 				CharSequence label = TextUtils.ellipsize(appIcon.label,
 						paintText, maxTextWidth, TextUtils.TruncateAt.END);
