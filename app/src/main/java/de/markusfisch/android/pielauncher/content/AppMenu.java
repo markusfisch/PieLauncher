@@ -499,11 +499,11 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private static List<Icon> restoreMenu(Context context,
-			Map<LauncherItemKey, AppIcon> apps) {
+			Map<LauncherItemKey, AppIcon> allApps) {
 		ArrayList<Icon> icons = new ArrayList<>();
 		try {
 			for (String line : readLines(context.openFileInput(MENU))) {
-				Icon icon = apps.get(
+				Icon icon = allApps.get(
 						LauncherItemKey.unflattenFromString(context, line));
 				if (icon != null) {
 					icons.add(icon);
