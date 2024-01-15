@@ -904,9 +904,12 @@ public class AppPieView extends View {
 		}
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
 		if (highlightedFrom > 0) {
-			long delta = SystemClock.uptimeMillis() - highlightedFrom;
-			magSize = Math.round(magSize *
-					Math.min(1f, delta / ANIM_DURATION));
+			long now = SystemClock.uptimeMillis();
+			float f = Math.min(1f, (now - highlightedFrom) / ANIM_DURATION);
+			if (f < 1f) {
+				invalidate();
+			}
+			magSize = Math.round(magSize * f);
 		}
 		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
