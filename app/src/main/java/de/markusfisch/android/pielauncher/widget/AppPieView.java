@@ -128,6 +128,7 @@ public class AppPieView extends View {
 	private long fadeInFrom;
 	private long fadeOutFrom;
 	private boolean showLaunchFirst = false;
+	private boolean keepMode = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -203,12 +204,20 @@ public class AppPieView extends View {
 	}
 
 	public void hideList() {
+		if (keepMode) {
+			keepMode = false;
+			return;
+		}
 		mode = MODE_PIE;
 		resetScrollWithoutAnimation();
 		setVerticalScrollBarEnabled(false);
 		hidePieMenu();
 		resetFadeOutPieMenu();
 		invalidate();
+	}
+
+	public void keepMode() {
+		keepMode = true;
 	}
 
 	public boolean isEmpty() {
@@ -263,6 +272,7 @@ public class AppPieView extends View {
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
 		mode = MODE_PIE;
+		keepMode = false;
 		invalidate();
 	}
 
@@ -778,6 +788,7 @@ public class AppPieView extends View {
 			return true;
 		} else if (contains(iconCenterRect, touch) &&
 				grabbedIcon == null) {
+			keepMode();
 			SettingsActivity.start(context);
 			return true;
 		} else if (contains(iconEndRect, touch)) {

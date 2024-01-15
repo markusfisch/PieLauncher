@@ -243,6 +243,7 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				SettingsActivity.start(HomeActivity.this);
+				pieView.keepMode();
 			}
 		});
 	}
