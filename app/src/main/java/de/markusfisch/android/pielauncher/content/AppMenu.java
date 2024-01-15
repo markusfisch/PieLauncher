@@ -163,18 +163,22 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();
 		ArrayList<AppIcon> hamming = new ArrayList<>();
-		if (query.length() < 1) {
-			list.addAll(apps.values());
-		} else {
-			for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
-				AppIcon appIcon = entry.getValue();
-				String label = appIcon.label.toLowerCase(Locale.getDefault());
-				if (label.startsWith(query)) {
-					list.add(appIcon);
-				} else if (label.contains(query)) {
-					contain.add(appIcon);
-				} else if (hammingDistance(label, query) < 2) {
-					hamming.add(appIcon);
+		synchronized (apps) {
+			if (query.length() < 1) {
+				list.addAll(apps.values());
+			} else {
+				for (Map.Entry<LauncherItemKey, AppIcon> entry :
+						apps.entrySet()) {
+					AppIcon appIcon = entry.getValue();
+					String label = appIcon.label.toLowerCase(
+							Locale.getDefault());
+					if (label.startsWith(query)) {
+						list.add(appIcon);
+					} else if (label.contains(query)) {
+						contain.add(appIcon);
+					} else if (hammingDistance(label, query) < 2) {
+						hamming.add(appIcon);
+					}
 				}
 			}
 		}
@@ -230,7 +234,9 @@ public class AppMenu extends CanvasPieMenu {
 			Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 			if (packageNameRestriction != null) {
 				// Copy apps since we're indexing just one app.
-				newApps.putAll(apps);
+				synchronized (apps) {
+					newApps.putAll(apps);
+				}
 				removePackageFromApps(newApps, packageNameRestriction,
 						userHandleRestriction);
 				// No need to call removePackageFromPieMenu() because the
@@ -242,10 +248,12 @@ public class AppMenu extends CanvasPieMenu {
 					newApps);
 			List<Icon> newIcons = createMenu(context, newApps);
 			handler.post(() -> {
-				apps.clear();
-				apps.putAll(newApps);
-				icons.clear();
-				icons.addAll(newIcons);
+				synchronized (apps) {
+					apps.clear();
+					apps.putAll(newApps);
+					icons.clear();
+					icons.addAll(newIcons);
+				}
 				indexing = false;
 				if (updateListener != null) {
 					updateListener.onUpdate();
@@ -448,8 +456,10 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	private void removePackage(String packageName, UserHandle userHandle) {
-		removePackageFromApps(apps, packageName, userHandle);
-		removePackageFromPieMenu(packageName, userHandle);
+		synchronized (apps) {
+			removePackageFromApps(apps, packageName, userHandle);
+			removePackageFromPieMenu(packageName, userHandle);
+		}
 	}
 
 	private static void removePackageFromApps(
