@@ -1,0 +1,3 @@
+* Improve animations
+* Fix back navigation
+

@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.17.1
+* Improve animations
+* Fix back navigation
+
 ## 1.17.0
 * Animate drop zones in pie editor
 * Improve touch detection
