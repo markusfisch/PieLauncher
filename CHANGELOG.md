@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.17.3
+* Improve touch feedback in app drawer
+
 ## 1.17.1
 * Improve animations
 * Fix back navigation
