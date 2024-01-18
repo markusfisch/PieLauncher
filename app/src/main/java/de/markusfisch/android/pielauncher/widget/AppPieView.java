@@ -106,6 +106,7 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 
+	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
 	private int controlsPadding;
@@ -537,6 +538,7 @@ public class AppPieView extends View {
 				if (appIcon == null) {
 					return;
 				}
+				initRipple();
 				highlightedIcon = appIcon;
 				highlightedFrom = eventTime;
 				longPressRunnable = () -> {
@@ -560,6 +562,16 @@ public class AppPieView extends View {
 			private void cancelHighlight() {
 				highlightedIcon = null;
 				highlightedFrom = 0;
+			}
+
+			private void initRipple() {
+				cancelRipple();
+				final Point at = new Point(touch.x, touch.y + getScrollY());
+				rippleRunnable = () -> {
+					ripple.set(at.x, at.y);
+					invalidate();
+				};
+				postDelayed(rippleRunnable, tapTimeout);
 			}
 
 			private boolean isTap(MotionEvent event, long timeOut) {
@@ -722,6 +734,10 @@ public class AppPieView extends View {
 
 	private void cancelRipple() {
 		ripple.cancel();
+		if (rippleRunnable != null) {
+			removeCallbacks(rippleRunnable);
+			rippleRunnable = null;
+		}
 	}
 
 	private boolean performAction(Context context, Point at, boolean wasTap) {
