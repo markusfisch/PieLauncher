@@ -571,7 +571,8 @@ public class AppPieView extends View {
 					ripple.set(at.x, at.y);
 					invalidate();
 				};
-				postDelayed(rippleRunnable, tapTimeout);
+				// Delay touch feedback to not make it feel too sensitive.
+				postDelayed(rippleRunnable, longPressTimeout >> 1);
 			}
 
 			private boolean isTap(MotionEvent event, long timeOut) {
