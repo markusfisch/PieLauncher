@@ -95,7 +95,7 @@ public class SettingsActivity extends Activity {
 				R.array.search_strictness_names,
 				getSearchStrictnessOptions(),
 				(value) -> PieLauncherApp.getPrefs(this).setSearchStrictness(value),
-				() -> PieLauncherApp.getPrefs(this).searchStrictness());
+				() -> PieLauncherApp.getPrefs(this).getSearchStrictness());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);

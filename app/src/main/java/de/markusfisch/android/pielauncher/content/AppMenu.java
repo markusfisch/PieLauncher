@@ -158,7 +158,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		query = query.trim().toLowerCase(Locale.getDefault());
 		int searchStrictness =
-				PieLauncherApp.getPrefs(context).searchStrictness();
+				PieLauncherApp.getPrefs(context).getSearchStrictness();
 
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();

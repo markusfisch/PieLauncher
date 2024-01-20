@@ -119,7 +119,7 @@ public class Preferences {
 		put(AUTO_LAUNCH_MATCHING, autoLaunchMatching).apply();
 	}
 
-	public int searchStrictness() {
+	public int getSearchStrictness() {
 		return searchStrictness;
 	}
 
