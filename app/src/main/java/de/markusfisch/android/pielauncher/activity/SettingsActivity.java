@@ -53,16 +53,55 @@ public class SettingsActivity extends Activity {
 
 		prefs = PieLauncherApp.getPrefs(this);
 
+		TextView headline = findViewById(R.id.headline);
+		View doneButton = findViewById(R.id.done);
+
+		disableBatteryOptimizations = findViewById(
+				R.id.disable_battery_optimization);
+		defaultLauncherView = findViewById(R.id.make_default_launcher);
+
 		Intent intent = getIntent();
 		isWelcomeMode = intent != null &&
 				intent.getBooleanExtra(WELCOME, false);
 
-		findViewById(R.id.hide_in_welcome_mode).setVisibility(
-				isWelcomeMode ? View.GONE : View.VISIBLE);
+		if (isWelcomeMode) {
+			headline.setText(R.string.welcome);
+			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
-		initHeadline();
-		initDoneButton();
+			doneButton.setOnClickListener(view -> {
+				prefs.setSkipSetup();
+				finish();
+			});
 
+			findViewById(R.id.hide_in_welcome_mode).setVisibility(View.GONE);
+		} else {
+			headline.setOnClickListener(v -> finish());
+			findViewById(R.id.welcome).setVisibility(View.GONE);
+
+			doneButton.setVisibility(View.GONE);
+
+			initSettings();
+		}
+
+		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
+		SystemBars.setTransparentSystemBars(getWindow());
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		setRequestedOrientation(prefs.getOrientation());
+
+		// These may change while this activity is shown.
+		if (updateDisableBatteryOptimizations() &&
+				updateDefaultLauncher() &&
+				// Auto close in welcome mode only.
+				isWelcomeMode) {
+			finish();
+		}
+	}
+
+	private void initSettings() {
 		initSetting(R.id.orientation,
 				R.string.orientation,
 				R.array.orientation_names,
@@ -105,50 +144,6 @@ public class SettingsActivity extends Activity {
 				getSearchStrictnessOptions(),
 				(value) -> prefs.setSearchStrictness(value),
 				() -> prefs.getSearchStrictness());
-
-		disableBatteryOptimizations = findViewById(
-				R.id.disable_battery_optimization);
-		defaultLauncherView = findViewById(R.id.make_default_launcher);
-
-		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
-		SystemBars.setTransparentSystemBars(getWindow());
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		setRequestedOrientation(prefs.getOrientation());
-
-		// These may change while this activity is shown.
-		if (updateDisableBatteryOptimizations() &&
-				updateDefaultLauncher() &&
-				// Auto close in welcome mode only.
-				isWelcomeMode) {
-			finish();
-		}
-	}
-
-	private void initHeadline() {
-		TextView tv = findViewById(R.id.headline);
-		if (isWelcomeMode) {
-			tv.setText(R.string.welcome);
-			tv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-		} else {
-			tv.setOnClickListener(v -> finish());
-			findViewById(R.id.welcome).setVisibility(View.GONE);
-		}
-	}
-
-	private void initDoneButton() {
-		View v = findViewById(R.id.done);
-		if (isWelcomeMode) {
-			v.setOnClickListener(view -> {
-				prefs.setSkipSetup();
-				finish();
-			});
-		} else {
-			v.setVisibility(View.GONE);
-		}
 	}
 
 	private <T> void initSetting(

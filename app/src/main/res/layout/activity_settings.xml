@@ -1,80 +1,85 @@
-<ScrollView
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/content"
+	android:background="@color/bg_ui"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/bg_ui"
-	android:fillViewport="true">
-	<LinearLayout
-		android:id="@+id/content"
+	android:orientation="vertical">
+	<TextView
+		style="@style/Headline"
+		android:id="@+id/headline"
+		android:drawableLeft="@drawable/ic_back"
+		android:drawableStart="@drawable/ic_back"
+		android:text="@string/settings" />
+	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
-		<TextView
-			style="@style/Headline"
-			android:id="@+id/headline"
-			android:drawableLeft="@drawable/ic_back"
-			android:drawableStart="@drawable/ic_back"
-			android:text="@string/settings" />
-		<de.markusfisch.android.pielauncher.widget.PreferenceView
-			android:id="@+id/welcome"
-			android:drawablePadding="8dp"
-			android:drawableLeft="@drawable/ic_info"
-			android:drawableStart="@drawable/ic_info"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:padding="16dp"
-			android:layout_marginBottom="1dp"
-			android:textAppearance="@android:style/TextAppearance.Medium"
-			android:textColor="@color/text_color"
-			android:textStyle="bold"
-			android:text="@string/check_the_settings" />
-		<de.markusfisch.android.pielauncher.widget.PreferenceView
-			style="@style/Preference"
-			android:id="@+id/disable_battery_optimization"
-			android:text="@string/disable_battery_optimization" />
-		<de.markusfisch.android.pielauncher.widget.PreferenceView
-			style="@style/Preference"
-			android:id="@+id/make_default_launcher"
-			android:text="@string/make_default_launcher" />
+		android:layout_height="match_parent"
+		android:fillViewport="true">
 		<LinearLayout
-			android:id="@+id/hide_in_welcome_mode"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/orientation"
-				android:text="@string/orientation_portrait" />
+				android:id="@+id/welcome"
+				android:drawablePadding="8dp"
+				android:drawableLeft="@drawable/ic_info"
+				android:drawableStart="@drawable/ic_info"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="16dp"
+				android:layout_marginBottom="1dp"
+				android:textAppearance="@android:style/TextAppearance.Medium"
+				android:textColor="@color/text_color"
+				android:textStyle="bold"
+				android:text="@string/check_the_settings" />
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
 				style="@style/Preference"
-				android:id="@+id/darken_background"
-				android:text="@string/darken_background_no" />
+				android:id="@+id/disable_battery_optimization"
+				android:text="@string/disable_battery_optimization" />
 			<de.markusfisch.android.pielauncher.widget.PreferenceView
 				style="@style/Preference"
-				android:id="@+id/dead_zone"
-				android:text="@string/dead_zone_both" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/display_keyboard"
-				android:text="@string/display_keyboard_yes" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/space_action"
-				android:text="@string/space_action_move_selection" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/auto_launch_matching"
-				android:text="@string/auto_launch_matching_no" />
-			<de.markusfisch.android.pielauncher.widget.PreferenceView
-				style="@style/Preference"
-				android:id="@+id/search_strictness"
-				android:text="@string/search_strictness_hamming" />
+				android:id="@+id/make_default_launcher"
+				android:text="@string/make_default_launcher" />
+			<LinearLayout
+				android:id="@+id/hide_in_welcome_mode"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/orientation"
+					android:text="@string/orientation_portrait" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/darken_background"
+					android:text="@string/darken_background_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/dead_zone"
+					android:text="@string/dead_zone_both" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/display_keyboard"
+					android:text="@string/display_keyboard_yes" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/space_action"
+					android:text="@string/space_action_move_selection" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/auto_launch_matching"
+					android:text="@string/auto_launch_matching_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/search_strictness"
+					android:text="@string/search_strictness_hamming" />
+			</LinearLayout>
+			<Button
+				style="@style/Button"
+				android:id="@+id/done"
+				android:layout_gravity="center_horizontal"
+				android:layout_margin="16dp"
+				android:text="@string/ready" />
 		</LinearLayout>
-		<Button
-			style="@style/Button"
-			android:id="@+id/done"
-			android:layout_gravity="center_horizontal"
-			android:layout_margin="16dp"
-			android:text="@string/ready" />
-	</LinearLayout>
-</ScrollView>
+	</ScrollView>
+</LinearLayout>
