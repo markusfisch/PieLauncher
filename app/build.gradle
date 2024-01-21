@@ -1,16 +1,19 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
 	namespace 'de.markusfisch.android.pielauncher'
 	compileSdk sdk_version
 
 	defaultConfig {
-		minSdk 9
+		minSdk min_sdk_version
 		targetSdk sdk_version
 
 		versionCode 32
 		versionName '1.17.3'
 	}
+
+	kotlinOptions { jvmTarget = '1.8' }
 
 	signingConfigs {
 		release {
@@ -33,4 +36,9 @@ android {
 			signingConfig signingConfigs.release
 		}
 	}
+}
+
+dependencies {
+	implementation 'androidx.core:core-ktx:1.9.0'
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

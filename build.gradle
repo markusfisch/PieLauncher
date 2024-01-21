@@ -2,6 +2,8 @@ buildscript {
 	ext {
 		tools_version = '8.2.1'
 		sdk_version = 34
+		min_sdk_version = 21
+		kotlin_version = '1.9.22'
 	}
 
 	repositories {
@@ -11,6 +13,7 @@ buildscript {
 
 	dependencies {
 		classpath "com.android.tools.build:gradle:$tools_version"
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 	}
 }
 
