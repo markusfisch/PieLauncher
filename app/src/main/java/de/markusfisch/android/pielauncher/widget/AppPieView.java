@@ -120,6 +120,7 @@ public class AppPieView extends View {
 	private int lastScrollY;
 	private int lastInsertAt;
 	private int lastSelectedIcon;
+	private int selectedApp = -1;
 	private int mode = MODE_PIE;
 	private ListListener listListener;
 	private List<AppMenu.AppIcon> appList;
@@ -129,7 +130,6 @@ public class AppPieView extends View {
 	private long grabbedIconAt;
 	private long fadeInFrom;
 	private long fadeOutFrom;
-	private boolean showLaunchFirst = false;
 	private boolean keepMode = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
@@ -245,7 +245,9 @@ public class AppPieView extends View {
 		if (newAppList != null) {
 			appList = newAppList;
 		}
-		showLaunchFirst = !TextUtils.isEmpty(query);
+		selectedApp = prefs.doubleSpaceLaunch()
+				? (TextUtils.isEmpty(query) ? -1 : 0)
+				: getSelectedAppFromTrailingSpace(query);
 		scrollList(0, false);
 		lastScrollY = 0;
 		hidePieMenu();
@@ -253,11 +255,12 @@ public class AppPieView extends View {
 		invalidate();
 	}
 
-	public void launchFirstApp() {
-		if (isEmpty()) {
+	public void launchSelectedApp() {
+		if (selectedApp < 0 || isEmpty()) {
 			return;
 		}
-		AppMenu.AppIcon appIcon = appList.get(0);
+		AppMenu.AppIcon appIcon = appList.get(
+				clamp(selectedApp, 0, getIconCount() - 1));
 		PieLauncherApp.appMenu.launchApp(getContext(), appIcon);
 	}
 
@@ -912,10 +915,14 @@ public class AppPieView extends View {
 		int y = listPadding + searchInputHeight;
 		int wrapX = listPadding + cellWidth * columns;
 		int size = getIconCount();
-		if (showLaunchFirst && size > 0) {
+		if (selectedApp > -1 && size > 0) {
+			int offset = Math.min(selectedApp, size - 1);
+			int ix = x + offset % columns * cellWidth;
+			int iy = y + offset / columns * cellHeight;
 			canvas.drawBitmap(iconLaunchFirst,
-					x + labelX - iconLaunchFirstHalf,
-					y - listPadding, paintActive);
+					ix + labelX - iconLaunchFirstHalf,
+					iy - listPadding,
+					paintActive);
 		}
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
 		boolean invalidate = false;
@@ -1060,9 +1067,9 @@ public class AppPieView extends View {
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 		PieLauncherApp.appMenu.draw(canvas);
-		int selected = PieLauncherApp.appMenu.getSelectedIcon();
-		if (selected != lastSelectedIcon) {
-			lastSelectedIcon = selected;
+		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
+		if (selectedIcon != lastSelectedIcon) {
+			lastSelectedIcon = selectedIcon;
 			performHapticFeedback(HAPTIC_FEEDBACK_CHOICE);
 		}
 		return f < 1f;
@@ -1135,6 +1142,23 @@ public class AppPieView extends View {
 		radius *= factor;
 		radius = clampRadius(radius);
 		PieLauncherApp.appMenu.setRadius(radius);
+	}
+
+	private static int getSelectedAppFromTrailingSpace(String s) {
+		int l = s == null ? 0 : s.length();
+		if (l < 1) {
+			return -1; // No selection.
+		}
+		--l;
+		int i = l;
+		for (; i > -1; --i) {
+			if (s.charAt(i) != ' ') {
+				break;
+			}
+		}
+		return i == -1
+				? l // Only spaces, so treat first space as show icon.
+				: l - i; // Return number of trailing spaces.
 	}
 
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

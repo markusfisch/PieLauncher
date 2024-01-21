@@ -205,21 +205,12 @@ public class HomeActivity extends Activity {
 				} else if (e.length() > 0) {
 					hideSettingsButton();
 				}
-				String s = e.toString();
-				if (s.endsWith("  ") || s.endsWith(". ")) {
-					updateAfterTextChange = false;
-					e.clear();
-					e.append(s.substring(0, s.length() - 2));
-					updateAppList();
-					updateAfterTextChange = true;
-					pieView.launchFirstApp();
-					return;
+				if (endsWithDoubleSpace(e) ||
+						(prefs.autoLaunchMatching() &&
+								pieView.getIconCount() == 1)) {
+					pieView.launchSelectedApp();
 				}
 				updateAppList();
-				if (prefs.autoLaunchMatching() &&
-						pieView.getIconCount() == 1) {
-					pieView.launchFirstApp();
-				}
 			}
 		});
 		searchInput.setOnEditorActionListener((v, actionId, event) -> {
@@ -231,7 +222,7 @@ public class HomeActivity extends Activity {
 				case EditorInfo.IME_ACTION_SEARCH:
 				case EditorInfo.IME_NULL:
 					if (searchInput.getText().toString().length() > 0) {
-						pieView.launchFirstApp();
+						pieView.launchSelectedApp();
 					}
 					hideAllApps();
 					return true;
@@ -239,6 +230,26 @@ public class HomeActivity extends Activity {
 					return false;
 			}
 		});
+	}
+
+	private boolean endsWithDoubleSpace(Editable e) {
+		boolean doubleSpaceLaunch = prefs.doubleSpaceLaunch();
+		String s = e.toString();
+		if ((doubleSpaceLaunch && s.endsWith("  ")) ||
+				// Some keyboards auto-replace two spaces with ". ",
+				// which means a new, different search result.
+				s.endsWith(". ")) {
+			updateAfterTextChange = false;
+			e.clear();
+			e.append(s.substring(0, s.length() - 2));
+			if (!doubleSpaceLaunch) {
+				// Restore the two spaces for moving the selection.
+				e.append("  ");
+			}
+			updateAfterTextChange = true;
+			return doubleSpaceLaunch;
+		}
+		return false;
 	}
 
 	private void initSettingsButton() {

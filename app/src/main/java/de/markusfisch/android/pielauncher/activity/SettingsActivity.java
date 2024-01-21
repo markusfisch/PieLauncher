@@ -87,6 +87,12 @@ public class SettingsActivity extends Activity {
 				getDisplayKeyboardOptions(),
 				(value) -> prefs.setDisplayKeyboard(value),
 				() -> prefs.displayKeyboard());
+		initSetting(R.id.space_action,
+				R.string.space_action,
+				R.array.space_action_names,
+				getSpaceActionOptions(),
+				(value) -> prefs.setDoubleSpaceLaunch(value),
+				() -> prefs.doubleSpaceLaunch());
 		initSetting(R.id.auto_launch_matching,
 				R.string.auto_launch_matching,
 				R.array.auto_launch_matching_names,
@@ -258,6 +264,13 @@ public class SettingsActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.display_keyboard_yes);
 		map.put(Boolean.FALSE, R.string.display_keyboard_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getSpaceActionOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.space_action_double_launch);
+		map.put(Boolean.FALSE, R.string.space_action_move_selection);
 		return map;
 	}
 

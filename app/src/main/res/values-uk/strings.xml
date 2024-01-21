@@ -11,16 +11,6 @@
 	<string name="check_the_settings">Будь ласка, перевірте наступні налаштування:</string>
 	<string name="disable_battery_optimization"><big>Вимкніть оптимізацію батареї</big>\nЕкономить енергію та пришвидшує роботу програми запуску</string>
 	<string name="make_default_launcher"><big>Зробити програмою запуску за замовчування</big>\nУникає повернення до попередньої програми запуску</string>
-	<string name="display_keyboard">Показувати клавіатуру в списку додатків</string>
-	<string name="display_keyboard_yes">Так</string>
-	<string name="display_keyboard_no">Ні</string>
-	<string name="search_strictness">Строгість пошуку</string>
-	<string name="search_strictness_hamming">Схоже на текст пошуку</string>
-	<string name="search_strictness_contains">Містить текст пошуку</string>
-	<string name="search_strictness_starts_with">Починається з тексту пошуку</string>
-	<string name="auto_launch_matching">Автоматичний запуск ідеальних збігів</string>
-	<string name="auto_launch_matching_yes">Так</string>
-	<string name="auto_launch_matching_no">Ні</string>
 	<string name="orientation">Орієнтація</string>
 	<string name="orientation_portrait">Портрет</string>
 	<string name="orientation_landscape">Пейзаж</string>
@@ -33,5 +23,18 @@
 	<string name="dead_zone_top">Вгорі</string>
 	<string name="dead_zone_bottom">Внизу</string>
 	<string name="dead_zone_both">Вгорі і внизу</string>
+	<string name="display_keyboard">Показувати клавіатуру в списку додатків</string>
+	<string name="display_keyboard_yes">Так</string>
+	<string name="display_keyboard_no">Ні</string>
+	<string name="space_action">Пробіл в кінці пошукового запиту</string>
+	<string name="space_action_move_selection">Вибір ходів</string>
+	<string name="space_action_double_launch">Натисніть двічі, щоб запустити додаток</string>
+	<string name="search_strictness">Строгість пошуку</string>
+	<string name="search_strictness_hamming">Схоже на текст пошуку</string>
+	<string name="search_strictness_contains">Містить текст пошуку</string>
+	<string name="search_strictness_starts_with">Починається з тексту пошуку</string>
+	<string name="auto_launch_matching">Автоматичний запуск ідеальних збігів</string>
+	<string name="auto_launch_matching_yes">Так</string>
+	<string name="auto_launch_matching_no">Ні</string>
 	<string name="ready">Готовий</string>
 </resources>

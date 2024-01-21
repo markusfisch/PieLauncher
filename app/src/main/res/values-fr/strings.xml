@@ -11,16 +11,6 @@
 	<string name="check_the_settings">Veuillez vérifier les paramètres suivants :</string>
 	<string name="disable_battery_optimization"><big>Désactiver l\'optimisation de la batterie</big>\nÉconomise de l\'énergie et rend ce lanceur plus rapide</string>
 	<string name="make_default_launcher"><big>Définir comme lanceur par défaut</big>\nÉvite de revenir à votre lanceur précédent</string>
-	<string name="display_keyboard">Afficher le clavier dans la liste des applications</string>
-	<string name="display_keyboard_yes">Oui</string>
-	<string name="display_keyboard_no">Non</string>
-	<string name="search_strictness">Strictesse de la recherche</string>
-	<string name="search_strictness_hamming">Ressemble au texte de recherche</string>
-	<string name="search_strictness_contains">Contient le texte de recherche</string>
-	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
-	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
-	<string name="auto_launch_matching_yes">Oui</string>
-	<string name="auto_launch_matching_no">Non</string>
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Paysage</string>
@@ -33,5 +23,18 @@
 	<string name="dead_zone_top">En haut de l\'écran</string>
 	<string name="dead_zone_bottom">En bas de l\'écran</string>
 	<string name="dead_zone_both">En haut et en bas de l\'écran</string>
+	<string name="display_keyboard">Afficher le clavier dans la liste des applications</string>
+	<string name="display_keyboard_yes">Oui</string>
+	<string name="display_keyboard_no">Non</string>
+	<string name="space_action">Espace à la fin de la recherche</string>
+	<string name="space_action_move_selection">Déplace la sélection</string>
+	<string name="space_action_double_launch">Appuyer deux fois pour lancer l\'app</string>
+	<string name="search_strictness">Strictesse de la recherche</string>
+	<string name="search_strictness_hamming">Ressemble au texte de recherche</string>
+	<string name="search_strictness_contains">Contient le texte de recherche</string>
+	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
+	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
+	<string name="auto_launch_matching_yes">Oui</string>
+	<string name="auto_launch_matching_no">Non</string>
 	<string name="ready">Prêt</string>
 </resources>

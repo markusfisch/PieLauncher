@@ -16,6 +16,8 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
+	public static final int DOUBLE_SPACE_MOVE_COURSOR = 0;
+	public static final int DOUBLE_SPACE_LAUNCH = 1;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -25,6 +27,7 @@ public class Preferences {
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
+	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
 
 	private final SharedPreferences preferences;
 
@@ -35,6 +38,7 @@ public class Preferences {
 	private boolean displayKeyboard = true;
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
+	private boolean doubleSpaceLaunch = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -55,6 +59,8 @@ public class Preferences {
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
+		doubleSpaceLaunch = preferences.getBoolean(DOUBE_SPACE_LAUNCH,
+				doubleSpaceLaunch);
 	}
 
 	public boolean skipSetup() {
@@ -126,6 +132,15 @@ public class Preferences {
 	public void setSearchStrictness(int searchStrictness) {
 		this.searchStrictness = searchStrictness;
 		put(SEARCH_STRICTNESS, searchStrictness).apply();
+	}
+
+	public boolean doubleSpaceLaunch() {
+		return doubleSpaceLaunch;
+	}
+
+	public void setDoubleSpaceLaunch(boolean doubleSpaceLaunch) {
+		this.doubleSpaceLaunch = doubleSpaceLaunch;
+		put(DOUBE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

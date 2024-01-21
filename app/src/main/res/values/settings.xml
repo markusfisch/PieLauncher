@@ -18,6 +18,10 @@
 		<item>@string/display_keyboard_yes</item>
 		<item>@string/display_keyboard_no</item>
 	</string-array>
+	<string-array name="space_action_names">
+		<item>@string/space_action_double_launch</item>
+		<item>@string/space_action_move_selection</item>
+	</string-array>
 	<string-array name="auto_launch_matching_names">
 		<item>@string/auto_launch_matching_yes</item>
 		<item>@string/auto_launch_matching_no</item>
