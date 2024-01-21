@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.17.4
+* Use space to move keyboard selection
+* Delay touch feedback in app drawer
+
 ## 1.17.3
 * Improve touch feedback in app drawer
 
