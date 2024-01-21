@@ -27,6 +27,7 @@ import de.markusfisch.android.pielauncher.view.SystemBars;
 public class SettingsActivity extends Activity {
 	private static final String WELCOME = "welcome";
 
+	private Preferences prefs;
 	private View disableBatteryOptimizations;
 	private View defaultLauncherView;
 	private boolean isWelcomeMode = false;
@@ -50,6 +51,8 @@ public class SettingsActivity extends Activity {
 		super.onCreate(state);
 		setContentView(R.layout.activity_settings);
 
+		prefs = PieLauncherApp.getPrefs(this);
+
 		Intent intent = getIntent();
 		isWelcomeMode = intent != null &&
 				intent.getBooleanExtra(WELCOME, false);
@@ -64,38 +67,38 @@ public class SettingsActivity extends Activity {
 				R.string.orientation,
 				R.array.orientation_names,
 				getOrientationOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setOrientation(value),
-				() -> PieLauncherApp.getPrefs(this).getOrientation());
+				(value) -> prefs.setOrientation(value),
+				() -> prefs.getOrientation());
 		initSetting(R.id.darken_background,
 				R.string.darken_background,
 				R.array.darken_background_names,
 				getDarkenBackgroundOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setDarkenBackground(value),
-				() -> PieLauncherApp.getPrefs(this).darkenBackground());
+				(value) -> prefs.setDarkenBackground(value),
+				() -> prefs.darkenBackground());
 		initSetting(R.id.dead_zone,
 				R.string.dead_zone,
 				R.array.dead_zone_names,
 				getDeadZoneOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setDeadZone(value),
-				() -> PieLauncherApp.getPrefs(this).getDeadZone());
+				(value) -> prefs.setDeadZone(value),
+				() -> prefs.getDeadZone());
 		initSetting(R.id.display_keyboard,
 				R.string.display_keyboard,
 				R.array.display_keyboard_names,
 				getDisplayKeyboardOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setDisplayKeyboard(value),
-				() -> PieLauncherApp.getPrefs(this).displayKeyboard());
+				(value) -> prefs.setDisplayKeyboard(value),
+				() -> prefs.displayKeyboard());
 		initSetting(R.id.auto_launch_matching,
 				R.string.auto_launch_matching,
 				R.array.auto_launch_matching_names,
 				getAutoLaunchMatchingOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setAutoLaunchMatching(value),
-				() -> PieLauncherApp.getPrefs(this).autoLaunchMatching());
+				(value) -> prefs.setAutoLaunchMatching(value),
+				() -> prefs.autoLaunchMatching());
 		initSetting(R.id.search_strictness,
 				R.string.search_strictness,
 				R.array.search_strictness_names,
 				getSearchStrictnessOptions(),
-				(value) -> PieLauncherApp.getPrefs(this).setSearchStrictness(value),
-				() -> PieLauncherApp.getPrefs(this).getSearchStrictness());
+				(value) -> prefs.setSearchStrictness(value),
+				() -> prefs.getSearchStrictness());
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -108,7 +111,7 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		setRequestedOrientation(PieLauncherApp.getPrefs(this).getOrientation());
+		setRequestedOrientation(prefs.getOrientation());
 
 		// These may change while this activity is shown.
 		if (updateDisableBatteryOptimizations() &&
@@ -134,7 +137,7 @@ public class SettingsActivity extends Activity {
 		View v = findViewById(R.id.done);
 		if (isWelcomeMode) {
 			v.setOnClickListener(view -> {
-				PieLauncherApp.getPrefs(this).setSkipSetup();
+				prefs.setSkipSetup();
 				finish();
 			});
 		} else {

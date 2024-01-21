@@ -91,6 +91,7 @@ public class AppPieView extends View {
 	private final String pinchZoomTip;
 	private final String removeIconTip;
 	private final String removeAppTip;
+	private final Preferences prefs;
 	private final ScaleGestureDetector scaleDetector;
 	private final long tapTimeout;
 	private final long longPressTimeout;
@@ -134,6 +135,7 @@ public class AppPieView extends View {
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
 
+		prefs = PieLauncherApp.getPrefs(context);
 		scaleDetector = new ScaleGestureDetector(context,
 				new ScaleListener());
 
@@ -264,7 +266,7 @@ public class AppPieView extends View {
 		if (context != null) {
 			PieLauncherApp.appMenu.store(context);
 		}
-		PieLauncherApp.getPrefs(context).setRadius(radius);
+		prefs.setRadius(radius);
 		backup.clear();
 		ungrabbedIcons.clear();
 		grabbedIcon = null;
@@ -368,7 +370,7 @@ public class AppPieView extends View {
 						}
 						break;
 					case MotionEvent.ACTION_DOWN:
-						if (inDeadZone(v.getContext())) {
+						if (inDeadZone()) {
 							return false;
 						}
 						if (cancelPerformAction()) {
@@ -459,8 +461,8 @@ public class AppPieView extends View {
 						: null;
 			}
 
-			private boolean inDeadZone(Context context) {
-				switch (PieLauncherApp.getPrefs(context).getDeadZone()) {
+			private boolean inDeadZone() {
+				switch (prefs.getDeadZone()) {
 					default:
 						return false;
 					case Preferences.DEAD_ZONE_TOP:
@@ -640,8 +642,7 @@ public class AppPieView extends View {
 
 		maxRadius = Math.round(viewMin * .5f);
 		minRadius = Math.round(maxRadius * .5f);
-		radius = clampRadius(
-				PieLauncherApp.getPrefs(getContext()).getRadius(maxRadius));
+		radius = clampRadius(prefs.getRadius(maxRadius));
 
 		int pieBottom = viewMax / 2 + maxRadius;
 		controlsPadding = (viewMax - pieBottom) / 2;
@@ -1046,7 +1047,7 @@ public class AppPieView extends View {
 		if (f <= 0) {
 			return false;
 		}
-		if (PieLauncherApp.getPrefs(getContext()).darkenBackground()) {
+		if (prefs.darkenBackground()) {
 			int max = (translucentBackgroundColor >> 24) & 0xff;
 			int alpha = Math.round(f * max);
 			canvas.drawColor(

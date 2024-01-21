@@ -17,11 +17,13 @@ import android.widget.EditText;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 
 public class HomeActivity extends Activity {
+	private Preferences prefs;
 	private SoftKeyboard kb;
 	private GestureDetector gestureDetector;
 	private AppPieView pieView;
@@ -60,6 +62,7 @@ public class HomeActivity extends Activity {
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
 
+		prefs = PieLauncherApp.getPrefs(this);
 		kb = new SoftKeyboard(this);
 		gestureDetector = new GestureDetector(this, new FlingListener(
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
@@ -129,7 +132,7 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		setRequestedOrientation(PieLauncherApp.getPrefs(this).getOrientation());
+		setRequestedOrientation(prefs.getOrientation());
 	}
 
 	@Override
@@ -213,7 +216,7 @@ public class HomeActivity extends Activity {
 					return;
 				}
 				updateAppList();
-				if (PieLauncherApp.getPrefs(HomeActivity.this).autoLaunchMatching() &&
+				if (prefs.autoLaunchMatching() &&
 						pieView.getIconCount() == 1) {
 					pieView.launchFirstApp();
 				}
@@ -261,7 +264,7 @@ public class HomeActivity extends Activity {
 
 		searchInput.setVisibility(View.VISIBLE);
 		settingsButton.setVisibility(View.VISIBLE);
-		if (PieLauncherApp.getPrefs(this).displayKeyboard()) {
+		if (prefs.displayKeyboard()) {
 			kb.showFor(searchInput);
 		}
 
