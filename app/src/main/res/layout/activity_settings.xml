@@ -49,11 +49,11 @@
 					style="@style/SectionHeader"
 					android:text="@string/section_general" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeperator"
 					android:id="@+id/orientation"
 					android:text="@string/orientation_portrait" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeperator"
 					android:id="@+id/darken_background"
 					android:text="@string/darken_background_no" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
@@ -64,15 +64,15 @@
 					style="@style/SectionHeader"
 					android:text="@string/section_search" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeperator"
 					android:id="@+id/display_keyboard"
 					android:text="@string/display_keyboard_yes" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeperator"
 					android:id="@+id/space_action"
 					android:text="@string/space_action_move_selection" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeperator"
 					android:id="@+id/auto_launch_matching"
 					android:text="@string/auto_launch_matching_no" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

@@ -26,10 +26,12 @@
 	<style name="Preference" parent="@android:style/Widget.TextView">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_marginBottom">1dp</item>
 		<item name="android:padding">16dp</item>
 		<item name="android:textColor">@color/text_color_preference</item>
 		<item name="android:lineSpacingExtra">3dp</item>
+	</style>
+	<style name="PreferenceWithSeperator" parent="Preference">
+		<item name="android:background">@drawable/bottom_border</item>
 	</style>
 	<style name="Button" parent="@android:style/Widget.Button">
 		<item name="android:layout_width">wrap_content</item>
