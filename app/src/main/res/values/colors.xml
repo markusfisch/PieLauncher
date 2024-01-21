@@ -6,4 +6,5 @@
 	<color name="bg_button_pressed">#afff</color>
 	<color name="button_text">#a000</color>
 	<color name="text_color">#fff</color>
+	<color name="text_color_preference">#afff</color>
 </resources>

@@ -187,9 +187,9 @@ public class SettingsActivity extends Activity {
 	@SuppressWarnings("deprecation")
 	private static Spanned getLabelAndValue(Context context,
 			int labelId, int valueId) {
-		String html = "<big>" +
+		String html = "<big><font color=\"#ffffff\">" +
 				context.getString(labelId) +
-				"</big><br/>" +
+				"</font></big><br/>" +
 				context.getString(valueId);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
 			return Html.fromHtml(html);
