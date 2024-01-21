@@ -11,6 +11,7 @@
 	<string name="check_the_settings">Überprüfen Sie bitte die folgenden Einstellungen:</string>
 	<string name="disable_battery_optimization"><big>Akkuoptimierung deaktivieren</big>\nSpart Energie und sorgt dafür, dass der Launcher schneller arbeitet</string>
 	<string name="make_default_launcher"><big>Zum Standard machen</big>\nÖffnet Pie Launcher anstelle des Systemstartbildschirms</string>
+	<string name="section_general">Allgemein</string>
 	<string name="orientation">Ausrichtung</string>
 	<string name="orientation_portrait">Hochformat</string>
 	<string name="orientation_landscape">Querformat</string>
@@ -23,6 +24,7 @@
 	<string name="dead_zone_top">Oben</string>
 	<string name="dead_zone_bottom">Unten</string>
 	<string name="dead_zone_both">Oben und unten</string>
+	<string name="section_search">Suche</string>
 	<string name="display_keyboard">Tastatur in App-Liste öffnen</string>
 	<string name="display_keyboard_yes">Ja</string>
 	<string name="display_keyboard_no">Nein</string>

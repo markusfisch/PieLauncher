@@ -11,6 +11,7 @@
 	<string name="check_the_settings"> 请检查以下设置：</string>
 	<string name="disable_battery_optimization"><big>禁用电池优化</big>\n节省电量并使本启动器可以更迅速地运行</string>
 	<string name="make_default_launcher"><big>设为默认主屏幕启动器</big>\n避免回到先前的启动器</string>
+	<string name="section_general">一般情况</string>
 	<string name="orientation">屏幕方向</string>
 	<string name="orientation_portrait">横屏</string>
 	<string name="orientation_landscape">竖屏</string>
@@ -23,6 +24,7 @@
 	<string name="dead_zone_top">在屏幕顶部</string>
 	<string name="dead_zone_bottom">屏幕底部</string>
 	<string name="dead_zone_both">在屏幕顶部和底部</string>
+	<string name="section_search">搜索</string>
 	<string name="display_keyboard">显示键盘</string>
 	<string name="display_keyboard_yes">在应用列表中自动显示键盘。</string>
 	<string name="display_keyboard_no">不要在应用列表中自动显示键盘。</string>

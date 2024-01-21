@@ -45,6 +45,9 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
+				<TextView
+					style="@style/SectionHeader"
+					android:text="@string/section_general" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/orientation"
@@ -57,6 +60,9 @@
 					style="@style/Preference"
 					android:id="@+id/dead_zone"
 					android:text="@string/dead_zone_both" />
+				<TextView
+					style="@style/SectionHeader"
+					android:text="@string/section_search" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/display_keyboard"

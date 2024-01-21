@@ -11,6 +11,7 @@
 	<string name="check_the_settings">Please check the following settings:</string>
 	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\nSaves energy and makes this launcher work faster</string>
 	<string name="make_default_launcher"><big>Make default launcher</big>\nAvoids returning to your previous launcher</string>
+	<string name="section_general">General</string>
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Landscape</string>
@@ -23,6 +24,7 @@
 	<string name="dead_zone_top">At the top</string>
 	<string name="dead_zone_bottom">At the bottom</string>
 	<string name="dead_zone_both">At the top and bottom</string>
+	<string name="section_search">Search</string>
 	<string name="display_keyboard">Show keyboard in app list</string>
 	<string name="display_keyboard_yes">Yes</string>
 	<string name="display_keyboard_no">No</string>

@@ -15,6 +15,14 @@
 		<item name="android:textSize">20sp</item>
 		<item name="android:textStyle">bold</item>
 	</style>
+	<style name="SectionHeader" parent="@android:style/Widget.TextView">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:padding">16dp</item>
+		<item name="android:textColor">@color/text_color</item>
+		<item name="android:textSize">14sp</item>
+		<item name="android:textStyle">bold</item>
+	</style>
 	<style name="Preference" parent="@android:style/Widget.TextView">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
