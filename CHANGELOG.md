@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.17.5
+* Improve tap detection
+* Improve preferences screen
+
 ## 1.17.4
 * Use space to move keyboard selection
 * Delay touch feedback in app drawer
