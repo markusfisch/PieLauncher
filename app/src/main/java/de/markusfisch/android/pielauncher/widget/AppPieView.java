@@ -93,7 +93,7 @@ public class AppPieView extends View {
 	private final String removeAppTip;
 	private final Preferences prefs;
 	private final ScaleGestureDetector scaleDetector;
-	private final long tapTimeout;
+	private final long tapOrScrollTimeout;
 	private final long longPressTimeout;
 	private final int listPadding;
 	private final int searchInputHeight;
@@ -183,7 +183,7 @@ public class AppPieView extends View {
 		ViewConfiguration configuration = ViewConfiguration.get(context);
 		float touchSlop = configuration.getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
-		tapTimeout = ViewConfiguration.getTapTimeout();
+		tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
 		longPressTimeout = ViewConfiguration.getLongPressTimeout();
 
 		if (PieLauncherApp.appMenu.isEmpty()) {
@@ -402,7 +402,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_MOVE:
 						if (mode == MODE_LIST) {
-							if (!isTap(event, Long.MAX_VALUE)) {
+							if (isScroll(event)) {
 								cancelLongPress();
 							}
 							scroll(event);
@@ -496,7 +496,7 @@ public class AppPieView extends View {
 			private void scroll(MotionEvent event) {
 				int index = getPrimaryIndex(event);
 				TouchReference tr = getTouchReference(event, index);
-				if (tr == null) {
+				if (tr == null || isTap(event, tapOrScrollTimeout)) {
 					return;
 				}
 				if (velocityTracker != null) {
@@ -576,13 +576,15 @@ public class AppPieView extends View {
 				postDelayed(rippleRunnable, longPressTimeout >> 1);
 			}
 
+			private boolean isScroll(MotionEvent event) {
+				return !isTap(event, Long.MAX_VALUE);
+			}
+
 			private boolean isTap(MotionEvent event, long timeOut) {
 				TouchReference tr = getTouchReference(event,
 						getPrimaryIndex(event));
-				if (tr == null) {
-					return false;
-				}
-				return event.getEventTime() - tr.time <= timeOut &&
+				return tr != null &&
+						event.getEventTime() - tr.time <= timeOut &&
 						distSq(tr.x, tr.y, touch.x, touch.y) <= touchSlopSq;
 			}
 
@@ -602,7 +604,9 @@ public class AppPieView extends View {
 
 			private void postPerformAction(final View v, MotionEvent event) {
 				cancelPerformAction();
-				final boolean wasTap = isTap(event, tapTimeout);
+				// Any duration shorter than the long press timeout is
+				// considered to be a press/tap.
+				final boolean wasTap = isTap(event, longPressTimeout);
 				final Point at = new Point(touch.x, touch.y);
 				performActionRunnable = () -> {
 					v.performClick();
