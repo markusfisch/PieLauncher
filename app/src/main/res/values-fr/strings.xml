@@ -6,9 +6,9 @@
 	<string name="tip_drag_to_order">Entourer pour changer l\'ordre</string>
 	<string name="tip_remove_icon">Supprimer l\'icône de Pie</string>
 	<string name="tip_remove_app">Désinstaller l\'application</string>
-	<string name="settings">Paramètres</string>
+	<string name="preferences">Paramètres</string>
 	<string name="welcome">Bienvenue!</string>
-	<string name="check_the_settings">Veuillez vérifier les paramètres suivants :</string>
+	<string name="check_these_settings">Veuillez vérifier les paramètres suivants :</string>
 	<string name="disable_battery_optimization"><big>Désactiver l\'optimisation de la batterie</big>\nÉconomise de l\'énergie et rend ce lanceur plus rapide</string>
 	<string name="make_default_launcher"><big>Définir comme lanceur par défaut</big>\nÉvite de revenir à votre lanceur précédent</string>
 	<string name="section_general">Général</string>

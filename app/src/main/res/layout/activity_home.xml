@@ -23,14 +23,14 @@
 		android:importantForAutofill="no"
 		android:visibility="gone"/>
 	<ImageView
-		android:id="@+id/settings"
+		android:id="@+id/preferences"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="44dp"
 		android:layout_marginRight="16dp"
 		android:layout_marginEnd="16dp"
 		android:layout_gravity="end"
-		android:contentDescription="@string/settings"
+		android:contentDescription="@string/preferences"
 		android:src="@drawable/ic_preferences"
 		android:visibility="gone"/>
 </merge>

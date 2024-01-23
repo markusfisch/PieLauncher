@@ -6,9 +6,9 @@
 	<string name="tip_drag_to_order">Drag to arrange, circle to change order</string>
 	<string name="tip_remove_icon">Remove icon from pie menu</string>
 	<string name="tip_remove_app">Uninstall app</string>
-	<string name="settings">Settings</string>
+	<string name="preferences">Settings</string>
 	<string name="welcome">Welcome!</string>
-	<string name="check_the_settings">Please check the following settings:</string>
+	<string name="check_these_settings">Please check the following settings:</string>
 	<string name="disable_battery_optimization"><big>Disable battery optimizations</big>\nSaves energy and makes this launcher work faster</string>
 	<string name="make_default_launcher"><big>Make default launcher</big>\nAvoids returning to your previous launcher</string>
 	<string name="section_general">General</string>

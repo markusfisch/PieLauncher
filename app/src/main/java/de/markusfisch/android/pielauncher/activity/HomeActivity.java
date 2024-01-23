@@ -28,7 +28,7 @@ public class HomeActivity extends Activity {
 	private GestureDetector gestureDetector;
 	private AppPieView pieView;
 	private EditText searchInput;
-	private View settingsButton;
+	private View prefsButton;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
@@ -68,17 +68,17 @@ public class HomeActivity extends Activity {
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
 		setContentView(R.layout.activity_home);
-		if (!SettingsActivity.isReady(this)) {
-			SettingsActivity.startWelcome(this);
+		if (!PreferencesActivity.isReady(this)) {
+			PreferencesActivity.startWelcome(this);
 		}
 
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
-		settingsButton = findViewById(R.id.settings);
+		prefsButton = findViewById(R.id.preferences);
 
 		initPieView(getResources());
 		initSearchInput();
-		initSettingsButton();
+		initPrefsButton();
 
 		SystemBars.listenForWindowInsets(pieView,
 				(left, top, right, bottom) -> pieView.setPadding(
@@ -99,8 +99,8 @@ public class HomeActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.settings) {
-			SettingsActivity.start(this);
+		if (item.getItemId() == R.id.preferences) {
+			PreferencesActivity.start(this);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -172,7 +172,7 @@ public class HomeActivity extends Activity {
 				y = Math.abs(y);
 				if (isScrolling && y > 0) {
 					kb.hideFrom(searchInput);
-					hideSettingsButton();
+					hidePrefsButton();
 				}
 				int color = fadeColor(searchBarBackgroundColor,
 						y / searchBarThreshold);
@@ -203,7 +203,7 @@ public class HomeActivity extends Activity {
 				if (!updateAfterTextChange) {
 					return;
 				} else if (e.length() > 0) {
-					hideSettingsButton();
+					hidePrefsButton();
 				}
 				if (endsWithDoubleSpace(e) ||
 						(prefs.autoLaunchMatching() &&
@@ -252,19 +252,19 @@ public class HomeActivity extends Activity {
 		return false;
 	}
 
-	private void initSettingsButton() {
-		settingsButton.setOnClickListener(new View.OnClickListener() {
+	private void initPrefsButton() {
+		prefsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SettingsActivity.start(HomeActivity.this);
+				PreferencesActivity.start(HomeActivity.this);
 				showAllAppsOnResume = true;
 			}
 		});
 	}
 
-	private void hideSettingsButton() {
-		if (settingsButton.getVisibility() == View.VISIBLE) {
-			settingsButton.setVisibility(View.GONE);
+	private void hidePrefsButton() {
+		if (prefsButton.getVisibility() == View.VISIBLE) {
+			prefsButton.setVisibility(View.GONE);
 		}
 	}
 
@@ -274,7 +274,7 @@ public class HomeActivity extends Activity {
 		}
 
 		searchInput.setVisibility(View.VISIBLE);
-		settingsButton.setVisibility(View.VISIBLE);
+		prefsButton.setVisibility(View.VISIBLE);
 		if (prefs.displayKeyboard()) {
 			kb.showFor(searchInput);
 		}
@@ -297,7 +297,7 @@ public class HomeActivity extends Activity {
 		if (isSearchVisible()) {
 			searchInput.setVisibility(View.GONE);
 			kb.hideFrom(searchInput);
-			hideSettingsButton();
+			hidePrefsButton();
 		}
 		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every

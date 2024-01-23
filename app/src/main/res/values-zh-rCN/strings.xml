@@ -6,9 +6,9 @@
 	<string name="tip_drag_to_order">拖动排列，圈选更改顺序</string>
 	<string name="tip_remove_icon">从饼状菜单中移除图标</string>
 	<string name="tip_remove_app">卸载应用程序</string>
-	<string name="settings">设置</string>
+	<string name="preferences">设置</string>
 	<string name="welcome">欢迎！</string>
-	<string name="check_the_settings"> 请检查以下设置：</string>
+	<string name="check_these_settings"> 请检查以下设置：</string>
 	<string name="disable_battery_optimization"><big>禁用电池优化</big>\n节省电量并使本启动器可以更迅速地运行</string>
 	<string name="make_default_launcher"><big>设为默认主屏幕启动器</big>\n避免回到先前的启动器</string>
 	<string name="section_general">一般情况</string>

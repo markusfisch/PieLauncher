@@ -24,7 +24,7 @@ import de.markusfisch.android.pielauncher.os.DefaultLauncher;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 
-public class SettingsActivity extends Activity {
+public class PreferencesActivity extends Activity {
 	private static final String WELCOME = "welcome";
 
 	private Preferences prefs;
@@ -49,7 +49,7 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
-		setContentView(R.layout.activity_settings);
+		setContentView(R.layout.activity_preferences);
 
 		prefs = PieLauncherApp.getPrefs(this);
 
@@ -80,7 +80,7 @@ public class SettingsActivity extends Activity {
 
 			doneButton.setVisibility(View.GONE);
 
-			initSettings();
+			initPreferences();
 		}
 
 		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
@@ -101,44 +101,44 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
-	private void initSettings() {
-		initSetting(R.id.orientation,
+	private void initPreferences() {
+		initPreference(R.id.orientation,
 				R.string.orientation,
 				R.array.orientation_names,
 				getOrientationOptions(),
 				(value) -> prefs.setOrientation(value),
 				() -> prefs.getOrientation());
-		initSetting(R.id.darken_background,
+		initPreference(R.id.darken_background,
 				R.string.darken_background,
 				R.array.darken_background_names,
 				getDarkenBackgroundOptions(),
 				(value) -> prefs.setDarkenBackground(value),
 				() -> prefs.darkenBackground());
-		initSetting(R.id.dead_zone,
+		initPreference(R.id.dead_zone,
 				R.string.dead_zone,
 				R.array.dead_zone_names,
 				getDeadZoneOptions(),
 				(value) -> prefs.setDeadZone(value),
 				() -> prefs.getDeadZone());
-		initSetting(R.id.display_keyboard,
+		initPreference(R.id.display_keyboard,
 				R.string.display_keyboard,
 				R.array.display_keyboard_names,
 				getDisplayKeyboardOptions(),
 				(value) -> prefs.setDisplayKeyboard(value),
 				() -> prefs.displayKeyboard());
-		initSetting(R.id.space_action,
+		initPreference(R.id.space_action,
 				R.string.space_action,
 				R.array.space_action_names,
 				getSpaceActionOptions(),
 				(value) -> prefs.setDoubleSpaceLaunch(value),
 				() -> prefs.doubleSpaceLaunch());
-		initSetting(R.id.auto_launch_matching,
+		initPreference(R.id.auto_launch_matching,
 				R.string.auto_launch_matching,
 				R.array.auto_launch_matching_names,
 				getAutoLaunchMatchingOptions(),
 				(value) -> prefs.setAutoLaunchMatching(value),
 				() -> prefs.autoLaunchMatching());
-		initSetting(R.id.search_strictness,
+		initPreference(R.id.search_strictness,
 				R.string.search_strictness,
 				R.array.search_strictness_names,
 				getSearchStrictnessOptions(),
@@ -146,7 +146,7 @@ public class SettingsActivity extends Activity {
 				() -> prefs.getSearchStrictness());
 	}
 
-	private <T> void initSetting(
+	private <T> void initPreference(
 			int viewId,
 			int titleId,
 			int itemsId,
@@ -161,13 +161,13 @@ public class SettingsActivity extends Activity {
 				for (T key : keys) {
 					if (i++ == which) {
 						setter.onSet(key);
-						updateSetting(tv, titleId, options.get(getter.onGet()));
+						updatePreference(tv, titleId, options.get(getter.onGet()));
 						break;
 					}
 				}
 			});
 		});
-		updateSetting(tv, titleId, options.get(getter.onGet()));
+		updatePreference(tv, titleId, options.get(getter.onGet()));
 	}
 
 	private void showOptionsDialog(int titleId, int itemsId,
@@ -178,7 +178,7 @@ public class SettingsActivity extends Activity {
 				.show();
 	}
 
-	private static void updateSetting(TextView tv, int labelId, Integer valueId) {
+	private static void updatePreference(TextView tv, int labelId, Integer valueId) {
 		if (valueId != null) {
 			tv.setText(getLabelAndValue(tv.getContext(), labelId, valueId));
 		}
@@ -204,7 +204,7 @@ public class SettingsActivity extends Activity {
 			return true;
 		} else {
 			disableBatteryOptimizations.setOnClickListener(v ->
-					BatteryOptimization.requestDisable(SettingsActivity.this));
+					BatteryOptimization.requestDisable(PreferencesActivity.this));
 			return false;
 		}
 	}
@@ -221,7 +221,7 @@ public class SettingsActivity extends Activity {
 	}
 
 	private static void start(Context context, boolean welcome) {
-		Intent intent = new Intent(context, SettingsActivity.class);
+		Intent intent = new Intent(context, PreferencesActivity.class);
 		if (welcome) {
 			intent.putExtra(WELCOME, true);
 		}

@@ -6,9 +6,9 @@
 	<string name="tip_drag_to_order">Обведіть, щоб змінити порядок</string>
 	<string name="tip_remove_icon">Видалити значок із кругового меню</string>
 	<string name="tip_remove_app">Видалити додаток</string>
-	<string name="settings">Налаштування</string>
+	<string name="preferences">Налаштування</string>
 	<string name="welcome">Ласкаво просимо!</string>
-	<string name="check_the_settings">Будь ласка, перевірте наступні налаштування:</string>
+	<string name="check_these_settings">Будь ласка, перевірте наступні налаштування:</string>
 	<string name="disable_battery_optimization"><big>Вимкніть оптимізацію батареї</big>\nЕкономить енергію та пришвидшує роботу програми запуску</string>
 	<string name="make_default_launcher"><big>Зробити програмою запуску за замовчування</big>\nУникає повернення до попередньої програми запуску</string>
 	<string name="section_general">Генерал</string>

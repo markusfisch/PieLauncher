@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.markusfisch.android.pielauncher.R;
-import de.markusfisch.android.pielauncher.activity.SettingsActivity;
+import de.markusfisch.android.pielauncher.activity.PreferencesActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
@@ -811,7 +811,7 @@ public class AppPieView extends View {
 		} else if (contains(iconCenterRect, touch) &&
 				grabbedIcon == null) {
 			keepMode = true;
-			SettingsActivity.start(context);
+			PreferencesActivity.start(context);
 			return true;
 		} else if (contains(iconEndRect, touch)) {
 			if (grabbedIcon == null) {

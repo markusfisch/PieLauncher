@@ -6,9 +6,9 @@
 	<string name="tip_drag_to_order">Umkreisen um Reihenfolge zu ändern</string>
 	<string name="tip_remove_icon">Icon aus Menu entfernen</string>
 	<string name="tip_remove_app">App deinstallieren</string>
-	<string name="settings">Einstellungen</string>
+	<string name="preferences">Einstellungen</string>
 	<string name="welcome">Willkommen!</string>
-	<string name="check_the_settings">Überprüfen Sie bitte die folgenden Einstellungen:</string>
+	<string name="check_these_settings">Überprüfen Sie bitte die folgenden Einstellungen:</string>
 	<string name="disable_battery_optimization"><big>Akkuoptimierung deaktivieren</big>\nSpart Energie und sorgt dafür, dass der Launcher schneller arbeitet</string>
 	<string name="make_default_launcher"><big>Zum Standard machen</big>\nÖffnet Pie Launcher anstelle des Systemstartbildschirms</string>
 	<string name="section_general">Allgemein</string>
