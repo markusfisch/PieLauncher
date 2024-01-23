@@ -82,10 +82,10 @@
 			</LinearLayout>
 			<Button
 				style="@style/Button"
-				android:id="@+id/done"
+				android:id="@+id/skip"
 				android:layout_gravity="center_horizontal"
 				android:layout_margin="16dp"
-				android:text="@string/ready" />
+				android:text="@string/skip" />
 		</LinearLayout>
 	</ScrollView>
 </LinearLayout>

@@ -38,5 +38,5 @@
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
 	<string name="auto_launch_matching_no">No</string>
-	<string name="ready">Ready</string>
+	<string name="skip">Skip</string>
 </resources>

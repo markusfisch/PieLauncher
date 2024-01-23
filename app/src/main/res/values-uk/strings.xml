@@ -38,5 +38,5 @@
 	<string name="auto_launch_matching">Автоматичний запуск ідеальних збігів</string>
 	<string name="auto_launch_matching_yes">Так</string>
 	<string name="auto_launch_matching_no">Ні</string>
-	<string name="ready">Готовий</string>
+	<string name="skip">Пропустити.</string>
 </resources>

@@ -54,7 +54,7 @@ public class PreferencesActivity extends Activity {
 		prefs = PieLauncherApp.getPrefs(this);
 
 		TextView headline = findViewById(R.id.headline);
-		View doneButton = findViewById(R.id.done);
+		View skipButton = findViewById(R.id.skip);
 
 		disableBatteryOptimizations = findViewById(
 				R.id.disable_battery_optimization);
@@ -68,7 +68,7 @@ public class PreferencesActivity extends Activity {
 			headline.setText(R.string.welcome);
 			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
-			doneButton.setOnClickListener(view -> {
+			skipButton.setOnClickListener(view -> {
 				prefs.setSkipSetup();
 				finish();
 			});
@@ -78,7 +78,7 @@ public class PreferencesActivity extends Activity {
 			headline.setOnClickListener(v -> finish());
 			findViewById(R.id.welcome).setVisibility(View.GONE);
 
-			doneButton.setVisibility(View.GONE);
+			skipButton.setVisibility(View.GONE);
 
 			initPreferences();
 		}
