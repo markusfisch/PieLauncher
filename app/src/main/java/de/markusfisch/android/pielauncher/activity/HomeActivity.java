@@ -253,12 +253,9 @@ public class HomeActivity extends Activity {
 	}
 
 	private void initPrefsButton() {
-		prefsButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				PreferencesActivity.start(HomeActivity.this);
-				showAllAppsOnResume = true;
-			}
+		prefsButton.setOnClickListener(v -> {
+			PreferencesActivity.start(HomeActivity.this);
+			showAllAppsOnResume = true;
 		});
 	}
 
