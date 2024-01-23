@@ -30,7 +30,7 @@
 		<item name="android:textColor">@color/text_color_preference</item>
 		<item name="android:lineSpacingExtra">3dp</item>
 	</style>
-	<style name="PreferenceWithSeperator" parent="Preference">
+	<style name="PreferenceWithSeparator" parent="Preference">
 		<item name="android:background">@drawable/bottom_border</item>
 	</style>
 	<style name="Button" parent="@android:style/Widget.Button">
