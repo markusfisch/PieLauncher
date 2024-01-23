@@ -99,6 +99,13 @@ public class PreferencesActivity extends Activity {
 				isWelcomeMode) {
 			finish();
 		}
+
+		// Ugly hack to hide the separator between these views when
+		// defaultLauncherView is invisible.
+		if (disableBatteryOptimizations.getVisibility() == View.VISIBLE &&
+				defaultLauncherView.getVisibility() == View.GONE) {
+			disableBatteryOptimizations.setBackgroundResource(0);
+		}
 	}
 
 	private void initPreferences() {
