@@ -9,8 +9,8 @@
 	<string name="preferences">Налаштування</string>
 	<string name="welcome">Ласкаво просимо!</string>
 	<string name="check_these_settings">Будь ласка, перевірте наступні налаштування:</string>
-	<string name="disable_battery_optimization"><big>Вимкніть оптимізацію батареї</big>\nЕкономить енергію та пришвидшує роботу програми запуску</string>
-	<string name="make_default_launcher"><big>Зробити програмою запуску за замовчування</big>\nУникає повернення до попередньої програми запуску</string>
+	<string name="disable_battery_optimization"><big><font color="#ffffff">Вимкніть оптимізацію батареї</font></big>\nЕкономить енергію та пришвидшує роботу програми запуску</string>
+	<string name="make_default_launcher"><big><font color="#ffffff">Зробити програмою запуску за замовчування</font></big>\nУникає повернення до попередньої програми запуску</string>
 	<string name="section_general">Генерал</string>
 	<string name="orientation">Орієнтація</string>
 	<string name="orientation_portrait">Портрет</string>

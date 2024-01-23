@@ -9,8 +9,8 @@
 	<string name="preferences">Paramètres</string>
 	<string name="welcome">Bienvenue!</string>
 	<string name="check_these_settings">Veuillez vérifier les paramètres suivants :</string>
-	<string name="disable_battery_optimization"><big>Désactiver l\'optimisation de la batterie</big>\nÉconomise de l\'énergie et rend ce lanceur plus rapide</string>
-	<string name="make_default_launcher"><big>Définir comme lanceur par défaut</big>\nÉvite de revenir à votre lanceur précédent</string>
+	<string name="disable_battery_optimization"><big><font color="#ffffff">Désactiver l\'optimisation de la batterie</font></big>\nÉconomise de l\'énergie et rend ce lanceur plus rapide</string>
+	<string name="make_default_launcher"><big><font color="#ffffff">Définir comme lanceur par défaut</font></big>\nÉvite de revenir à votre lanceur précédent</string>
 	<string name="section_general">Général</string>
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
