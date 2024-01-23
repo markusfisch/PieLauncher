@@ -46,7 +46,7 @@
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
 				<TextView
-					style="@style/SectionHeader"
+					style="@style/CategoryHeader"
 					android:text="@string/section_general" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
@@ -61,7 +61,7 @@
 					android:id="@+id/dead_zone"
 					android:text="@string/dead_zone_both" />
 				<TextView
-					style="@style/SectionHeader"
+					style="@style/CategoryHeader"
 					android:text="@string/section_search" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
