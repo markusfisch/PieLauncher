@@ -22,7 +22,7 @@
 		android:maxLength="128"
 		android:importantForAutofill="no"
 		android:visibility="gone"/>
-	<ImageView
+	<de.markusfisch.android.pielauncher.widget.ActionButton
 		android:id="@+id/preferences"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"

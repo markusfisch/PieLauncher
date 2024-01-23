@@ -74,7 +74,7 @@ public class AppPieView extends View {
 	private final Paint paintDropZone = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
-	private final Ripple ripple = new Ripple();
+	private final Ripple ripple = Ripple.newFadingRipple();
 	private final Rect drawRect = new Rect();
 	private final Rect iconStartRect = new Rect();
 	private final Rect iconCenterRect = new Rect();

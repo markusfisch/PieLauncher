@@ -3,24 +3,24 @@ package de.markusfisch.android.pielauncher.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import de.markusfisch.android.pielauncher.graphics.Ripple;
 
-public class PreferenceView extends TextView {
+public class ActionButton extends ImageView {
 	private final Ripple ripple = Ripple.newPressRipple();
 
-	public PreferenceView(Context context) {
+	public ActionButton(Context context) {
 		super(context);
 		initTouchListener();
 	}
 
-	public PreferenceView(Context context, AttributeSet attrs) {
+	public ActionButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initTouchListener();
 	}
 
-	public PreferenceView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public ActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		initTouchListener();
 	}
