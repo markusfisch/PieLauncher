@@ -181,7 +181,7 @@ public class HomeActivity extends Activity {
 			}
 		});
 		PieLauncherApp.appMenu.setUpdateListener(() -> {
-			searchInput.setText(null);
+			searchInput.getText().clear();
 			updateAppList();
 		});
 	}
@@ -286,7 +286,7 @@ public class HomeActivity extends Activity {
 		// Clear search input.
 		boolean searchWasEmpty = searchInput.getText().toString().isEmpty();
 		updateAfterTextChange = false;
-		searchInput.setText(null);
+		searchInput.getText().clear();
 		updateAfterTextChange = true;
 
 		// Remove filter and reset last scroll position.
