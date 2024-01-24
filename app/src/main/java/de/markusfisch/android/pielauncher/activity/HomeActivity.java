@@ -205,6 +205,11 @@ public class HomeActivity extends Activity {
 				} else if (e.length() > 0) {
 					hidePrefsButton();
 				}
+				if (e.toString().equals("..")) {
+					e.clear();
+					showPreferences();
+					return;
+				}
 				if (endsWithDoubleSpace(e) ||
 						(prefs.autoLaunchMatching() &&
 								pieView.getIconCount() == 1)) {
