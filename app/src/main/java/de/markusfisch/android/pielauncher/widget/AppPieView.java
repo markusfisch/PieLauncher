@@ -382,7 +382,6 @@ public class AppPieView extends View {
 							break;
 						}
 						addTouch(event);
-						long eventTime = event.getEventTime();
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch);
@@ -390,13 +389,13 @@ public class AppPieView extends View {
 								break;
 							case MODE_LIST:
 								initScroll(event);
-								initLongPress(eventTime);
+								initLongPress();
 								break;
 							case MODE_EDIT:
 								editIconAt(touch);
 								break;
 						}
-						fadeInFrom = eventTime;
+						fadeInFrom = event.getEventTime();
 						resetFadeOutPieMenu();
 						invalidate();
 						break;
@@ -533,15 +532,13 @@ public class AppPieView extends View {
 				}
 			}
 
-			private void initLongPress(long eventTime) {
+			private void initLongPress() {
 				cancelLongPress();
 				final AppMenu.Icon appIcon = getListIconAt(touch.x, touch.y);
 				if (appIcon == null) {
 					return;
 				}
-				initRipple();
-				highlightedIcon = appIcon;
-				highlightedFrom = eventTime;
+				initLongPressFeedback(appIcon);
 				longPressRunnable = () -> {
 					performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 					addIconInteractively(appIcon);
@@ -565,10 +562,12 @@ public class AppPieView extends View {
 				highlightedFrom = 0;
 			}
 
-			private void initRipple() {
+			private void initLongPressFeedback(AppMenu.Icon appIcon) {
 				cancelRipple();
 				final Point at = new Point(touch.x, touch.y + getScrollY());
 				rippleRunnable = () -> {
+					highlightedIcon = appIcon;
+					highlightedFrom = SystemClock.uptimeMillis();
 					ripple.set(at.x, at.y);
 					invalidate();
 				};
