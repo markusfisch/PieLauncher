@@ -320,16 +320,30 @@ public class AppMenu extends CanvasPieMenu {
 					// Always skip this package.
 					continue;
 				}
-				try {
-					addApp(allApps,
-							info.getComponentName(),
-							info.getLabel().toString(),
-							info.getBadgedIcon(0),
-							profile);
-				} catch (Exception e) {
-					// According to Vitals, `getBadgedIcon()` may throw
-					// a NPE on some devices. Ignore.
+				Drawable icon = getBadgedIcon(info);
+				if (icon == null) {
+					continue;
 				}
+				addApp(allApps,
+						info.getComponentName(),
+						info.getLabel().toString(),
+						icon,
+						profile);
+			}
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private static Drawable getBadgedIcon(LauncherActivityInfo info) {
+		// According to Vitals, `getBadgedIcon()` can throw a NPE
+		// for some unknown reason. Let's try `getIcon()` then.
+		try {
+			return info.getBadgedIcon(0);
+		} catch (Exception e) {
+			try {
+				return info.getIcon(0);
+			} catch (Exception e2) {
+				return null;
 			}
 		}
 	}
