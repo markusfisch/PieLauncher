@@ -205,9 +205,15 @@ public class HomeActivity extends Activity {
 				} else if (e.length() > 0) {
 					hidePrefsButton();
 				}
-				if (e.toString().equals("..")) {
+				String s = e.toString();
+				if (s.equals("..")) {
 					e.clear();
 					showPreferences();
+					return;
+				} else if (s.equals(",,")) {
+					e.clear();
+					hideAllApps();
+					pieView.showEditor();
 					return;
 				}
 				if (endsWithDoubleSpace(e) ||

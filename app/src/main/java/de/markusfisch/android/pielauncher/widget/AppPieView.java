@@ -219,6 +219,11 @@ public class AppPieView extends View {
 		invalidate();
 	}
 
+	public void showEditor() {
+		editIcon(null);
+		invalidate();
+	}
+
 	public boolean isEmpty() {
 		return appList == null || appList.size() < 1;
 	}
