@@ -160,22 +160,20 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();
 		ArrayList<AppIcon> hamming = new ArrayList<>();
-		synchronized (apps) {
-			if (query.length() < 1) {
-				list.addAll(apps.values());
-			} else {
-				for (Map.Entry<LauncherItemKey, AppIcon> entry :
-						apps.entrySet()) {
-					AppIcon appIcon = entry.getValue();
-					String label = appIcon.label.toLowerCase(
-							Locale.getDefault());
-					if (label.startsWith(query)) {
-						list.add(appIcon);
-					} else if (label.contains(query)) {
-						contain.add(appIcon);
-					} else if (hammingDistance(label, query) < 2) {
-						hamming.add(appIcon);
-					}
+		if (query.length() < 1) {
+			list.addAll(apps.values());
+		} else {
+			for (Map.Entry<LauncherItemKey, AppIcon> entry :
+					apps.entrySet()) {
+				AppIcon appIcon = entry.getValue();
+				String label = appIcon.label.toLowerCase(
+						Locale.getDefault());
+				if (label.startsWith(query)) {
+					list.add(appIcon);
+				} else if (label.contains(query)) {
+					contain.add(appIcon);
+				} else if (hammingDistance(label, query) < 2) {
+					hamming.add(appIcon);
 				}
 			}
 		}
@@ -199,16 +197,12 @@ public class AppMenu extends CanvasPieMenu {
 		return list;
 	}
 
-	public void removePackageAsync(final String packageName,
-			final UserHandle userHandle) {
-		Executors.newSingleThreadExecutor().execute(() -> {
-			removePackage(packageName, userHandle);
-			handler.post(() -> {
-				if (updateListener != null) {
-					updateListener.onUpdate();
-				}
-			});
-		});
+	public void removePackage(String packageName, UserHandle userHandle) {
+		removePackageFromApps(apps, packageName, userHandle);
+		removePackageFromPieMenu(packageName, userHandle);
+		if (updateListener != null) {
+			updateListener.onUpdate();
+		}
 	}
 
 	public boolean isEmpty() {
@@ -230,30 +224,26 @@ public class AppMenu extends CanvasPieMenu {
 			return;
 		}
 		indexing = true;
+		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
+		if (packageNameRestriction != null) {
+			// Copy apps since we're indexing just one app.
+			newApps.putAll(apps);
+			removePackageFromApps(newApps, packageNameRestriction,
+					userHandleRestriction);
+			// No need to call removePackageFromPieMenu() because the
+			// menu will be re-created by createMenu() after indexing.
+		}
 		Executors.newSingleThreadExecutor().execute(() -> {
-			Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
-			if (packageNameRestriction != null) {
-				// Copy apps since we're indexing just one app.
-				synchronized (apps) {
-					newApps.putAll(apps);
-				}
-				removePackageFromApps(newApps, packageNameRestriction,
-						userHandleRestriction);
-				// No need to call removePackageFromPieMenu() because the
-				// menu will be re-created by createMenu() after indexing.
-			}
 			indexApps(context,
 					packageNameRestriction,
 					userHandleRestriction,
 					newApps);
 			List<Icon> newIcons = createMenu(context, newApps);
 			handler.post(() -> {
-				synchronized (apps) {
-					apps.clear();
-					apps.putAll(newApps);
-					icons.clear();
-					icons.addAll(newIcons);
-				}
+				apps.clear();
+				apps.putAll(newApps);
+				icons.clear();
+				icons.addAll(newIcons);
 				indexing = false;
 				if (updateListener != null) {
 					updateListener.onUpdate();
@@ -452,13 +442,6 @@ public class AppMenu extends CanvasPieMenu {
 					.putExtra(CalendarContract.Events.TITLE, "dummy")
 					.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0)
 					.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0);
-		}
-	}
-
-	private void removePackage(String packageName, UserHandle userHandle) {
-		synchronized (apps) {
-			removePackageFromApps(apps, packageName, userHandle);
-			removePackageFromPieMenu(packageName, userHandle);
 		}
 	}
 
