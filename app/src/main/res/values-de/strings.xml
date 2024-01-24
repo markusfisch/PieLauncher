@@ -11,12 +11,12 @@
 	<string name="check_these_settings">Überprüfen Sie bitte die folgenden Einstellungen:</string>
 	<string name="disable_battery_optimization"><big><font color="#ffffff">Akkuoptimierung deaktivieren</font></big>\nSpart Energie und sorgt dafür, dass der Launcher schneller arbeitet</string>
 	<string name="make_default_launcher"><big><font color="#ffffff">Zum Standard machen</font></big>\nÖffnet Pie Launcher anstelle des Systemstartbildschirms</string>
-	<string name="section_general">Allgemein</string>
+	<string name="category_home">Startbildschirm</string>
 	<string name="orientation">Ausrichtung</string>
 	<string name="orientation_portrait">Hochformat</string>
 	<string name="orientation_landscape">Querformat</string>
 	<string name="orientation_user">Automatisch</string>
-	<string name="darken_background">Hintergrund in Startbildschirm abdunkeln</string>
+	<string name="darken_background">Hintergrund abdunkeln</string>
 	<string name="darken_background_yes">Ja</string>
 	<string name="darken_background_no">Nein</string>
 	<string name="dead_zone">Berührungen ignorieren</string>
@@ -24,14 +24,14 @@
 	<string name="dead_zone_top">Oben</string>
 	<string name="dead_zone_bottom">Unten</string>
 	<string name="dead_zone_both">Oben und unten</string>
-	<string name="section_search">Suche</string>
-	<string name="display_keyboard">Tastatur in App-Liste öffnen</string>
+	<string name="category_app_drawer">App Liste</string>
+	<string name="display_keyboard">Tastatur automatisch öffnen</string>
 	<string name="display_keyboard_yes">Ja</string>
 	<string name="display_keyboard_no">Nein</string>
 	<string name="space_action">Leertaste am Ende des Suchfelds</string>
 	<string name="space_action_move_selection">Bewegt die Auswahl</string>
 	<string name="space_action_double_launch">Zweimal drücken startet die gewählte App</string>
-	<string name="search_strictness">Suchfilter</string>
+	<string name="search_strictness">Suchbegriff</string>
 	<string name="search_strictness_hamming">Ähnelt Suchtext</string>
 	<string name="search_strictness_contains">Enthält Suchtext</string>
 	<string name="search_strictness_starts_with">Beginnt mit Suchtext</string>

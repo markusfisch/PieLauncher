@@ -11,12 +11,12 @@
 	<string name="check_these_settings">Veuillez vérifier les paramètres suivants :</string>
 	<string name="disable_battery_optimization"><big><font color="#ffffff">Désactiver l\'optimisation de la batterie</font></big>\nÉconomise de l\'énergie et rend ce lanceur plus rapide</string>
 	<string name="make_default_launcher"><big><font color="#ffffff">Définir comme lanceur par défaut</font></big>\nÉvite de revenir à votre lanceur précédent</string>
-	<string name="section_general">Général</string>
+	<string name="category_home">Écran d\'accueil</string>
 	<string name="orientation">Orientation</string>
 	<string name="orientation_portrait">Portrait</string>
 	<string name="orientation_landscape">Paysage</string>
 	<string name="orientation_user">Automatique</string>
-	<string name="darken_background">Obscurcir dans l\'écran principal</string>
+	<string name="darken_background">Assombrir le fond</string>
 	<string name="darken_background_yes">Oui</string>
 	<string name="darken_background_no">Non</string>
 	<string name="dead_zone">Ignorer les touches</string>
@@ -24,14 +24,14 @@
 	<string name="dead_zone_top">En haut de l\'écran</string>
 	<string name="dead_zone_bottom">En bas de l\'écran</string>
 	<string name="dead_zone_both">En haut et en bas de l\'écran</string>
-	<string name="section_search">Recherche</string>
-	<string name="display_keyboard">Afficher le clavier dans la liste des applications</string>
+	<string name="category_app_drawer">Liste d\'apps</string>
+	<string name="display_keyboard">Affichage automatique du clavier</string>
 	<string name="display_keyboard_yes">Oui</string>
 	<string name="display_keyboard_no">Non</string>
 	<string name="space_action">Espace à la fin de la recherche</string>
 	<string name="space_action_move_selection">Déplace la sélection</string>
 	<string name="space_action_double_launch">Appuyer deux fois pour lancer l\'app</string>
-	<string name="search_strictness">Strictesse de la recherche</string>
+	<string name="search_strictness">Recherche de mots-clés</string>
 	<string name="search_strictness_hamming">Ressemble au texte de recherche</string>
 	<string name="search_strictness_contains">Contient le texte de recherche</string>
 	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
