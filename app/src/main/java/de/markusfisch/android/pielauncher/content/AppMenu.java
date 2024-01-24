@@ -210,7 +210,7 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public boolean isIndexing() {
-		return indexing;
+		return apps.isEmpty() && indexing;
 	}
 
 	public void indexAppsAsync(Context context) {
