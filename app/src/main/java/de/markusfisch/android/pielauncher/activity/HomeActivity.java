@@ -262,6 +262,8 @@ public class HomeActivity extends Activity {
 	}
 
 	private void showPreferences() {
+		// Hide searchInput to avoid inactive InputConnection.
+		hideAllApps();
 		PreferencesActivity.start(this);
 		showAllAppsOnResume = true;
 	}
