@@ -13,30 +13,30 @@
 	<string name="make_default_launcher"><big><font color="#ffffff">Définir comme lanceur par défaut</font></big>\nÉvite de revenir à votre lanceur précédent</string>
 	<string name="category_home">Écran d\'accueil</string>
 	<string name="orientation">Orientation</string>
-	<string name="orientation_portrait">Portrait</string>
+	<string name="orientation_portrait">Portrait (d\'usine)</string>
 	<string name="orientation_landscape">Paysage</string>
 	<string name="orientation_user">Automatique</string>
 	<string name="darken_background">Assombrir le fond</string>
 	<string name="darken_background_yes">Oui</string>
-	<string name="darken_background_no">Non</string>
+	<string name="darken_background_no">Non (d\'usine)</string>
 	<string name="dead_zone">Ignorer les touches</string>
 	<string name="dead_zone_none">Aucune restriction</string>
 	<string name="dead_zone_top">En haut de l\'écran</string>
 	<string name="dead_zone_bottom">En bas de l\'écran</string>
-	<string name="dead_zone_both">En haut et en bas de l\'écran</string>
+	<string name="dead_zone_both">En haut et en bas de l\'écran (d\'usine)</string>
 	<string name="category_app_drawer">Liste d\'apps</string>
 	<string name="display_keyboard">Affichage automatique du clavier</string>
-	<string name="display_keyboard_yes">Oui</string>
+	<string name="display_keyboard_yes">Oui (d\'usine)</string>
 	<string name="display_keyboard_no">Non</string>
 	<string name="space_action">Espace à la fin de la recherche</string>
-	<string name="space_action_move_selection">Déplace la sélection</string>
+	<string name="space_action_move_selection">Déplace la sélection (d\'usine)</string>
 	<string name="space_action_double_launch">Appuyer deux fois pour lancer l\'app</string>
 	<string name="search_strictness">Recherche de mots-clés</string>
-	<string name="search_strictness_hamming">Ressemble au texte de recherche</string>
+	<string name="search_strictness_hamming">Ressemble au texte de recherche (d\'usine)</string>
 	<string name="search_strictness_contains">Contient le texte de recherche</string>
 	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
 	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
 	<string name="auto_launch_matching_yes">Oui</string>
-	<string name="auto_launch_matching_no">Non</string>
+	<string name="auto_launch_matching_no">Non (d\'usine)</string>
 	<string name="skip">Sauter</string>
 </resources>

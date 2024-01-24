@@ -13,30 +13,30 @@
 	<string name="make_default_launcher"><big><font color="#ffffff">Make default launcher</font></big>\nAvoids returning to your previous launcher</string>
 	<string name="category_home">Home</string>
 	<string name="orientation">Orientation</string>
-	<string name="orientation_portrait">Portrait</string>
+	<string name="orientation_portrait">Portrait (Default)</string>
 	<string name="orientation_landscape">Landscape</string>
 	<string name="orientation_user">Auto</string>
 	<string name="darken_background">Darken background</string>
 	<string name="darken_background_yes">Yes</string>
-	<string name="darken_background_no">No</string>
+	<string name="darken_background_no">No (Default)</string>
 	<string name="dead_zone">Ignore touches</string>
 	<string name="dead_zone_none">No restriction</string>
 	<string name="dead_zone_top">At the top</string>
 	<string name="dead_zone_bottom">At the bottom</string>
-	<string name="dead_zone_both">At the top and bottom</string>
+	<string name="dead_zone_both">At the top and bottom (Default)</string>
 	<string name="category_app_drawer">App Drawer</string>
 	<string name="display_keyboard">Show keyboard automatically</string>
-	<string name="display_keyboard_yes">Yes</string>
+	<string name="display_keyboard_yes">Yes (Default)</string>
 	<string name="display_keyboard_no">No</string>
 	<string name="space_action">Space at the end of search input</string>
-	<string name="space_action_move_selection">Moves selection</string>
+	<string name="space_action_move_selection">Moves selection (Default)</string>
 	<string name="space_action_double_launch">Press twice to launch app</string>
 	<string name="search_strictness">Search term</string>
-	<string name="search_strictness_hamming">Resembles search text</string>
+	<string name="search_strictness_hamming">Resembles search text (Default)</string>
 	<string name="search_strictness_contains">Contains search text</string>
 	<string name="search_strictness_starts_with">Starts with search text</string>
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
-	<string name="auto_launch_matching_no">No</string>
+	<string name="auto_launch_matching_no">No (Default)</string>
 	<string name="skip">Skip</string>
 </resources>

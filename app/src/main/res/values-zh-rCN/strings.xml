@@ -13,30 +13,30 @@
 	<string name="make_default_launcher"><big><font color="#ffffff">设为默认主屏幕启动器</font></big>\n避免回到先前的启动器</string>
 	<string name="category_home">启动屏幕</string>
 	<string name="orientation">屏幕方向</string>
-	<string name="orientation_portrait">横屏</string>
+	<string name="orientation_portrait">横屏 (默认)</string>
 	<string name="orientation_landscape">竖屏</string>
 	<string name="orientation_user">自动</string>
 	<string name="darken_background">使背景变暗</string>
 	<string name="darken_background_yes">是</string>
-	<string name="darken_background_no">没有</string>
+	<string name="darken_background_no">没有 (默认)</string>
 	<string name="dead_zone">忽略触摸</string>
 	<string name="dead_zone_none">无限制</string>
 	<string name="dead_zone_top">在屏幕顶部</string>
 	<string name="dead_zone_bottom">屏幕底部</string>
-	<string name="dead_zone_both">在屏幕顶部和底部</string>
+	<string name="dead_zone_both">在屏幕顶部和底部 (默认)</string>
 	<string name="category_app_drawer">应用程序列表</string>
 	<string name="display_keyboard">自动显示键盘</string>
-	<string name="display_keyboard_yes">在应用列表中自动显示键盘。</string>
+	<string name="display_keyboard_yes">在应用列表中自动显示键盘。 (默认)</string>
 	<string name="display_keyboard_no">不要在应用列表中自动显示键盘。</string>
 	<string name="space_action">搜索输入末尾的空格</string>
-	<string name="space_action_move_selection">移动选择</string>
+	<string name="space_action_move_selection">移动选择 (默认)</string>
 	<string name="space_action_double_launch">按两次启动应用程序</string>
 	<string name="search_strictness">搜索词</string>
-	<string name="search_strictness_hamming">与搜索文本类似</string>
+	<string name="search_strictness_hamming">与搜索文本类似 (默认)</string>
 	<string name="search_strictness_contains">包括搜索文本</string>
 	<string name="search_strictness_starts_with">以搜索文本开头</string>
 	<string name="auto_launch_matching">当仅一个应用匹配搜索时</string>
 	<string name="auto_launch_matching_yes">自动启动它</string>
-	<string name="auto_launch_matching_no">不自动启动</string>
+	<string name="auto_launch_matching_no">不自动启动 (默认)</string>
 	<string name="skip">跳过</string>
 </resources>
