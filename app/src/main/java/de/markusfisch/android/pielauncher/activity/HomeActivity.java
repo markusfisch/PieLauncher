@@ -100,7 +100,7 @@ public class HomeActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.preferences) {
-			PreferencesActivity.start(this);
+			showPreferences();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -253,10 +253,12 @@ public class HomeActivity extends Activity {
 	}
 
 	private void initPrefsButton() {
-		prefsButton.setOnClickListener(v -> {
-			PreferencesActivity.start(HomeActivity.this);
-			showAllAppsOnResume = true;
-		});
+		prefsButton.setOnClickListener(v -> showPreferences());
+	}
+
+	private void showPreferences() {
+		PreferencesActivity.start(this);
+		showAllAppsOnResume = true;
 	}
 
 	private void hidePrefsButton() {
