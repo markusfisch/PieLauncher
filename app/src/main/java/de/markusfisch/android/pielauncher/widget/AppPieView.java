@@ -250,8 +250,6 @@ public class AppPieView extends View {
 				: getSelectedAppFromTrailingSpace(query);
 		scrollList(0, false);
 		lastScrollY = 0;
-		hidePieMenu();
-		resetFadeOutPieMenu();
 		invalidate();
 	}
 
