@@ -286,9 +286,10 @@ public class HomeActivity extends Activity {
 		}
 
 		// Clear search input.
-		boolean searchWasEmpty = searchInput.getText().toString().isEmpty();
+		Editable editable = searchInput.getText();
+		boolean searchWasEmpty = editable.toString().isEmpty();
 		updateAfterTextChange = false;
-		searchInput.getText().clear();
+		editable.clear();
 		updateAfterTextChange = true;
 
 		// Remove filter and reset last scroll position.
