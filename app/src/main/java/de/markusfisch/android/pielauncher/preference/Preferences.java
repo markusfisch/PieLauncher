@@ -6,8 +6,6 @@ import android.content.pm.ActivityInfo;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
-import de.markusfisch.android.pielauncher.R;
-
 public class Preferences {
 	public static final int DEAD_ZONE_NONE = 0;
 	public static final int DEAD_ZONE_TOP = 1;
@@ -16,8 +14,6 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
-	public static final int DOUBLE_SPACE_MOVE_COURSOR = 0;
-	public static final int DOUBLE_SPACE_LAUNCH = 1;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
