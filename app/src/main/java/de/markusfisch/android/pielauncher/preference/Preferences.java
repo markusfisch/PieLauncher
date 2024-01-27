@@ -24,6 +24,7 @@ public class Preferences {
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
 	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
+	private static final String ICON_PACK = "icon_pack";
 
 	private final SharedPreferences preferences;
 
@@ -35,6 +36,7 @@ public class Preferences {
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private boolean doubleSpaceLaunch = false;
+	private String iconPack;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -57,6 +59,7 @@ public class Preferences {
 				searchStrictness);
 		doubleSpaceLaunch = preferences.getBoolean(DOUBE_SPACE_LAUNCH,
 				doubleSpaceLaunch);
+		iconPack = preferences.getString(ICON_PACK, iconPack);
 	}
 
 	public boolean skipSetup() {
@@ -139,12 +142,25 @@ public class Preferences {
 		put(DOUBE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
 	}
 
+	public String getIconPack() {
+		return iconPack;
+	}
+
+	public void setIconPack(String iconPack) {
+		this.iconPack = iconPack;
+		put(ICON_PACK, iconPack).apply();
+	}
+
 	private SharedPreferences.Editor put(String key, boolean value) {
 		return put(editor -> editor.putBoolean(key, value));
 	}
 
 	private SharedPreferences.Editor put(String key, int value) {
 		return put(editor -> editor.putInt(key, value));
+	}
+
+	private SharedPreferences.Editor put(String key, String value) {
+		return put(editor -> editor.putString(key, value));
 	}
 
 	private SharedPreferences.Editor put(PutListener listener) {

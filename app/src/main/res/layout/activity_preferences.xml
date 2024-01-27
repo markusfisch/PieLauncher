@@ -79,6 +79,13 @@
 					style="@style/Preference"
 					android:id="@+id/search_strictness"
 					android:text="@string/search_strictness_hamming" />
+				<TextView
+					style="@style/CategoryHeader"
+					android:text="@string/category_icons" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/icon_pack"
+					android:text="@string/icon_pack_default" />
 			</LinearLayout>
 			<Button
 				style="@style/Button"

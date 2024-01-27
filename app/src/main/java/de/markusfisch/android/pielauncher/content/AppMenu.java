@@ -257,6 +257,9 @@ public class AppMenu extends CanvasPieMenu {
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
 			Map<LauncherItemKey, AppIcon> allApps) {
+		PackageManager pm = context.getPackageManager();
+		PieLauncherApp.icons.selectPack(pm,
+				PieLauncherApp.getPrefs(context).getIconPack());
 		String skip = context.getPackageName();
 		if (HAS_LAUNCHER_APP) {
 			indexProfilesApps(
@@ -267,7 +270,7 @@ public class AppMenu extends CanvasPieMenu {
 					allApps, packageNameRestriction, userHandleRestriction,
 					skip);
 		} else {
-			indexIntentsApps(context.getPackageManager(),
+			indexIntentsApps(pm,
 					allApps, packageNameRestriction,
 					skip);
 		}
@@ -290,10 +293,14 @@ public class AppMenu extends CanvasPieMenu {
 				// Always skip this package.
 				continue;
 			}
+			Drawable icon = PieLauncherApp.icons.getIcon(packageName);
+			if (icon == null) {
+				icon = info.loadIcon(pm);
+			}
 			addApp(allApps,
 					getComponentName(info.activityInfo),
 					info.loadLabel(pm).toString(),
-					info.loadIcon(pm),
+					icon,
 					null);
 		}
 	}
@@ -320,8 +327,9 @@ public class AppMenu extends CanvasPieMenu {
 					// Always skip this package.
 					continue;
 				}
-				Drawable icon = getBadgedIcon(info);
-				if (icon == null) {
+				Drawable icon = PieLauncherApp.icons.getIcon(packageName);
+				if (icon == null &&
+						(icon = getBadgedIcon(info)) == null) {
 					continue;
 				}
 				addApp(allApps,

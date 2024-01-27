@@ -38,5 +38,8 @@
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
 	<string name="auto_launch_matching_no">No (Default)</string>
+	<string name="category_icons">Icon Pack</string>
+	<string name="icon_pack">Icon Pack</string>
+	<string name="icon_pack_default">System (Default)</string>
 	<string name="skip">Skip</string>
 </resources>

@@ -38,5 +38,8 @@
 	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
 	<string name="auto_launch_matching_yes">Oui</string>
 	<string name="auto_launch_matching_no">Non (d\'usine)</string>
+	<string name="category_icons">Pack d\'icônes</string>
+	<string name="icon_pack">Pack d\'icônes</string>
+	<string name="icon_pack_default">Système (d\'usine)</string>
 	<string name="skip">Sauter</string>
 </resources>

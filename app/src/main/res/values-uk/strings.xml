@@ -38,5 +38,8 @@
 	<string name="auto_launch_matching">Автоматичний запуск ідеальних збігів</string>
 	<string name="auto_launch_matching_yes">Так</string>
 	<string name="auto_launch_matching_no">Ні (за замовчуванням)</string>
+	<string name="category_icons">Пакет іконок</string>
+	<string name="icon_pack">Пакет іконок</string>
+	<string name="icon_pack_default">Система (за замовчуванням)</string>
 	<string name="skip">Пропустити.</string>
 </resources>

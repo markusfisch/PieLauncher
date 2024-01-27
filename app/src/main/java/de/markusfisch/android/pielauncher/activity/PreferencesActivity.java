@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
@@ -26,6 +29,8 @@ import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class PreferencesActivity extends Activity {
 	private static final String WELCOME = "welcome";
+
+	private final Handler handler = new Handler(Looper.getMainLooper());
 
 	private Preferences prefs;
 	private View disableBatteryOptimizations;
@@ -111,93 +116,153 @@ public class PreferencesActivity extends Activity {
 	private void initPreferences() {
 		initPreference(R.id.orientation,
 				R.string.orientation,
-				R.array.orientation_names,
-				getOrientationOptions(),
-				(value) -> prefs.setOrientation(value),
-				() -> prefs.getOrientation());
+				PreferencesActivity::getOrientationOptions,
+				() -> prefs.getOrientation(),
+				(value) -> prefs.setOrientation(value));
 		initPreference(R.id.darken_background,
 				R.string.darken_background,
-				R.array.darken_background_names,
-				getDarkenBackgroundOptions(),
-				(value) -> prefs.setDarkenBackground(value),
-				() -> prefs.darkenBackground());
+				PreferencesActivity::getDarkenBackgroundOptions,
+				() -> prefs.darkenBackground(),
+				(value) -> prefs.setDarkenBackground(value));
 		initPreference(R.id.dead_zone,
 				R.string.dead_zone,
-				R.array.dead_zone_names,
-				getDeadZoneOptions(),
-				(value) -> prefs.setDeadZone(value),
-				() -> prefs.getDeadZone());
+				PreferencesActivity::getDeadZoneOptions,
+				() -> prefs.getDeadZone(),
+				(value) -> prefs.setDeadZone(value));
 		initPreference(R.id.display_keyboard,
 				R.string.display_keyboard,
-				R.array.display_keyboard_names,
-				getDisplayKeyboardOptions(),
-				(value) -> prefs.setDisplayKeyboard(value),
-				() -> prefs.displayKeyboard());
+				PreferencesActivity::getDisplayKeyboardOptions,
+				() -> prefs.displayKeyboard(),
+				(value) -> prefs.setDisplayKeyboard(value));
 		initPreference(R.id.space_action,
 				R.string.space_action,
-				R.array.space_action_names,
-				getSpaceActionOptions(),
-				(value) -> prefs.setDoubleSpaceLaunch(value),
-				() -> prefs.doubleSpaceLaunch());
+				PreferencesActivity::getSpaceActionOptions,
+				() -> prefs.doubleSpaceLaunch(),
+				(value) -> prefs.setDoubleSpaceLaunch(value));
 		initPreference(R.id.auto_launch_matching,
 				R.string.auto_launch_matching,
-				R.array.auto_launch_matching_names,
-				getAutoLaunchMatchingOptions(),
-				(value) -> prefs.setAutoLaunchMatching(value),
-				() -> prefs.autoLaunchMatching());
+				PreferencesActivity::getAutoLaunchMatchingOptions,
+				() -> prefs.autoLaunchMatching(),
+				(value) -> prefs.setAutoLaunchMatching(value));
 		initPreference(R.id.search_strictness,
 				R.string.search_strictness,
-				R.array.search_strictness_names,
-				getSearchStrictnessOptions(),
-				(value) -> prefs.setSearchStrictness(value),
-				() -> prefs.getSearchStrictness());
+				PreferencesActivity::getSearchStrictnessOptions,
+				() -> prefs.getSearchStrictness(),
+				(value) -> prefs.setSearchStrictness(value));
+		initPreference(R.id.icon_pack,
+				R.string.icon_pack,
+				this::getIconPackOptions,
+				() -> prefs.getIconPack(),
+				(value) -> {
+					prefs.setIconPack(value);
+					PieLauncherApp.appMenu.indexAppsAsync(this);
+				},
+				() -> PieLauncherApp.icons.updatePacks(getPackageManager()));
 	}
 
-	private <T> void initPreference(
+	private <T, G> void initPreference(
 			int viewId,
 			int titleId,
-			int itemsId,
-			Map<T, Integer> options,
+			GetOptionsListener<T, G> options,
+			GetListener<T> getter,
+			SetListener<T> setter) {
+		initPreference(viewId, titleId, options, getter, setter, null);
+	}
+
+	private <T, G> void initPreference(
+			int viewId,
+			int titleId,
+			GetOptionsListener<T, G> options,
+			GetListener<T> getter,
 			SetListener<T> setter,
-			GetListener<T> getter) {
+			Initializer initializer) {
 		TextView tv = findViewById(viewId);
+		initPreference(tv, titleId, options, getter, setter, initializer);
+	}
+
+	private <T, G> void initPreference(
+			TextView tv,
+			int titleId,
+			GetOptionsListener<T, G> options,
+			GetListener<T> getter,
+			SetListener<T> setter,
+			Initializer initializer) {
+		if (initializer != null) {
+			Executors.newSingleThreadExecutor().execute(() -> {
+				initializer.onInit();
+				handler.post(() -> initPreference(
+						tv, titleId, options, getter, setter, null));
+			});
+			updatePreference(tv, titleId, R.string.tip_loading);
+			return;
+		}
+		Map<T, G> optionsMap = options.onGetOptions();
 		tv.setOnClickListener(v -> {
-			showOptionsDialog(titleId, itemsId, (view, which) -> {
-				Set<T> keys = options.keySet();
+			CharSequence[] items = getItemsFromOptions(optionsMap);
+			showOptionsDialog(titleId, items, (view, which) -> {
+				Set<T> keys = optionsMap.keySet();
 				int i = 0;
 				for (T key : keys) {
 					if (i++ == which) {
 						setter.onSet(key);
-						updatePreference(tv, titleId, options.get(getter.onGet()));
+						updatePreference(tv, titleId,
+								optionsMap.get(getter.onGet()));
 						break;
 					}
 				}
 			});
 		});
-		updatePreference(tv, titleId, options.get(getter.onGet()));
+		updatePreference(tv, titleId, optionsMap.get(getter.onGet()));
 	}
 
-	private void showOptionsDialog(int titleId, int itemsId,
+	private <T, G> CharSequence[] getItemsFromOptions(Map<T, G> options) {
+		CharSequence[] items = new CharSequence[options.size()];
+		int i = 0;
+		for (G value : options.values()) {
+			items[i++] = getName(value);
+		}
+		return items;
+	}
+
+	private <T> String getName(T value) {
+		if (value instanceof Integer) {
+			return getString((int) value);
+		} else if (value instanceof String) {
+			return (String) value;
+		} else {
+			return null;
+		}
+	}
+
+	private void showOptionsDialog(int titleId, CharSequence[] items,
 			DialogInterface.OnClickListener onClickListener) {
 		new AlertDialog.Builder(this)
 				.setTitle(titleId)
-				.setItems(itemsId, onClickListener)
+				.setItems(items, onClickListener)
 				.show();
 	}
 
-	private static void updatePreference(TextView tv, int labelId, Integer valueId) {
-		if (valueId != null) {
-			tv.setText(getLabelAndValue(tv.getContext(), labelId, valueId));
+	private static <T> void updatePreference(TextView tv, int labelId, T value) {
+		if (value != null) {
+			tv.setText(getLabelAndValue(tv.getContext(), labelId, value));
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	private static Spanned getLabelAndValue(Context context,
-			int labelId, int valueId) {
+	private static <T> Spanned getLabelAndValue(Context context,
+			int labelId, T value) {
+		String valueString;
+		if (value instanceof Integer) {
+			valueString = context.getString((Integer) value);
+		} else if (value instanceof String) {
+			valueString = (String) value;
+		} else {
+			return null;
+		}
 		String html = "<big><font color=\"#ffffff\">" +
 				context.getString(labelId) +
 				"</font></big><br/>" +
-				context.getString(valueId);
+				valueString;
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
 			return Html.fromHtml(html);
 		} else {
@@ -294,11 +359,26 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
+	private Map<String, String> getIconPackOptions() {
+		Map<String, String> map = new LinkedHashMap<>();
+		map.put(null, getString(R.string.icon_pack_default));
+		map.putAll(PieLauncherApp.icons.packs);
+		return map;
+	}
+
+	private interface GetOptionsListener<T, G> {
+		Map<T, G> onGetOptions();
+	}
+
 	private interface GetListener<T> {
 		T onGet();
 	}
 
 	private interface SetListener<T> {
 		void onSet(T value);
+	}
+
+	private interface Initializer {
+		void onInit();
 	}
 }

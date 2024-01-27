@@ -38,5 +38,8 @@
 	<string name="auto_launch_matching">当仅一个应用匹配搜索时</string>
 	<string name="auto_launch_matching_yes">自动启动它</string>
 	<string name="auto_launch_matching_no">不自动启动 (默认)</string>
+	<string name="category_icons">图标包</string>
+	<string name="icon_pack">图标包</string>
+	<string name="icon_pack_default">系统（默认）</string>
 	<string name="skip">跳过</string>
 </resources>
