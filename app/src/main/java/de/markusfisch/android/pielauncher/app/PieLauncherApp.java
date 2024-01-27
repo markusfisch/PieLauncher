@@ -27,6 +27,11 @@ public class PieLauncherApp extends Application {
 
 	private static Preferences prefs;
 
+	// Necessary because PreferenceManager.getDefaultSharedPreferences()
+	// requires a context after encrypted storage has been unlocked.
+	// The application context may be initialized before that when this
+	// app is started at boot, but before the user has (initially) unlocked
+	// the device (and encrypted storage with it).
 	public static Preferences getPrefs(Context context) {
 		if (prefs == null) {
 			prefs = new Preferences(context);
