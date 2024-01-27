@@ -13,8 +13,10 @@ public class Converter {
 		int width = drawable.getIntrinsicWidth();
 		int height = drawable.getIntrinsicHeight();
 		Bitmap bitmap = Bitmap.createBitmap(
-				width > 0 ? width : 48,
-				height > 0 ? height : 48,
+				// Limit the size, as some apps incorrectly
+				// use too large resources for their icon.
+				Math.min(256, width > 0 ? width : 48),
+				Math.min(256, height > 0 ? height : 48),
 				Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
