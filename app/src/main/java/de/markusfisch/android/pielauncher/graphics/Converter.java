@@ -6,17 +6,29 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 public class Converter {
+	// Limit the icon size, as some apps incorrectly use too large resources
+	// for their icon.
+	private static final int MAX_ICON_SIZE = 256;
+
 	public static Bitmap getBitmapFromDrawable(Drawable drawable) {
 		if (drawable instanceof BitmapDrawable) {
-			return ((BitmapDrawable) drawable).getBitmap();
+			Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+			int max = Math.max(bitmap.getWidth(), bitmap.getHeight());
+			if (max <= MAX_ICON_SIZE) {
+				return bitmap;
+			}
+			float f = (float) MAX_ICON_SIZE / max;
+			return Bitmap.createScaledBitmap(
+					bitmap,
+					Math.round(bitmap.getWidth() * f),
+					Math.round(bitmap.getHeight() * f),
+					true);
 		}
 		int width = drawable.getIntrinsicWidth();
 		int height = drawable.getIntrinsicHeight();
 		Bitmap bitmap = Bitmap.createBitmap(
-				// Limit the size, as some apps incorrectly
-				// use too large resources for their icon.
-				Math.min(256, width > 0 ? width : 48),
-				Math.min(256, height > 0 ? height : 48),
+				Math.min(MAX_ICON_SIZE, width > 0 ? width : 48),
+				Math.min(MAX_ICON_SIZE, height > 0 ? height : 48),
 				Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
