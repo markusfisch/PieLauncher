@@ -100,6 +100,7 @@ public class AppPieView extends View {
 	private final int iconSize;
 	private final int iconSizeSq;
 	private final int iconTextPadding;
+	private final int spaceBetween;
 	private final int iconLaunchFirstHalf;
 	private final int translucentBackgroundColor;
 	private final float dp;
@@ -149,6 +150,7 @@ public class AppPieView extends View {
 		iconSize = Math.round(48f * dp);
 		iconSizeSq = iconSize * iconSize;
 		iconTextPadding = Math.round(12f * dp);
+		spaceBetween = Math.round(4f * dp);
 
 		loadingTip = context.getString(R.string.tip_loading);
 		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
@@ -900,9 +902,7 @@ public class AppPieView extends View {
 		// well on low-end devices and doing it manually gives us more control.
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		int innerWidth = viewWidth - listPadding * 2;
-		int columns = Math.min(5, innerWidth /
-				// Keep 4dp between icons so they don't touch.
-				Math.round(iconSize + 4f * dp));
+		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
 		int iconAndTextHeight = iconSize + iconTextPadding +
 				Math.round(textHeight);
 		int cellWidth = innerWidth / columns;
