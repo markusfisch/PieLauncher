@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 
-public class Icons {
+public class IconPack {
 	public final HashMap<String, String> packs = new HashMap<>();
 
 	private final HashMap<String, String> componentToDrawableNames = new HashMap<>();

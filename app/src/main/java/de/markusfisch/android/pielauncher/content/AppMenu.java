@@ -258,7 +258,7 @@ public class AppMenu extends CanvasPieMenu {
 			UserHandle userHandleRestriction,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		PackageManager pm = context.getPackageManager();
-		PieLauncherApp.icons.selectPack(pm,
+		PieLauncherApp.iconPack.selectPack(pm,
 				PieLauncherApp.getPrefs(context).getIconPack());
 		String skip = context.getPackageName();
 		if (HAS_LAUNCHER_APP) {
@@ -293,7 +293,7 @@ public class AppMenu extends CanvasPieMenu {
 				// Always skip this package.
 				continue;
 			}
-			Drawable icon = PieLauncherApp.icons.getIcon(packageName);
+			Drawable icon = PieLauncherApp.iconPack.getIcon(packageName);
 			if (icon == null) {
 				icon = info.loadIcon(pm);
 			}
@@ -327,7 +327,7 @@ public class AppMenu extends CanvasPieMenu {
 					// Always skip this package.
 					continue;
 				}
-				Drawable icon = PieLauncherApp.icons.getIcon(packageName);
+				Drawable icon = PieLauncherApp.iconPack.getIcon(packageName);
 				if (icon == null &&
 						(icon = getBadgedIcon(info)) == null) {
 					continue;

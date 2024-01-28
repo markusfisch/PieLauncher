@@ -157,7 +157,7 @@ public class PreferencesActivity extends Activity {
 					prefs.setIconPack(value);
 					PieLauncherApp.appMenu.indexAppsAsync(this);
 				},
-				() -> PieLauncherApp.icons.updatePacks(getPackageManager()));
+				() -> PieLauncherApp.iconPack.updatePacks(getPackageManager()));
 	}
 
 	private <T, G> void initPreference(
@@ -362,7 +362,7 @@ public class PreferencesActivity extends Activity {
 	private Map<String, String> getIconPackOptions() {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put(null, getString(R.string.icon_pack_default));
-		map.putAll(PieLauncherApp.icons.packs);
+		map.putAll(PieLauncherApp.iconPack.packs);
 		return map;
 	}
 

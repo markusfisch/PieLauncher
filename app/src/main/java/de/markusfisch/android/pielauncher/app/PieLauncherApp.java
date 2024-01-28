@@ -10,7 +10,7 @@ import android.os.Build;
 import android.os.UserHandle;
 
 import de.markusfisch.android.pielauncher.content.AppMenu;
-import de.markusfisch.android.pielauncher.graphics.Icons;
+import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.receiver.LocaleEventReceiver;
 import de.markusfisch.android.pielauncher.receiver.ManagedProfileEventReceiver;
@@ -18,7 +18,7 @@ import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
 	public static final AppMenu appMenu = new AppMenu();
-	public static final Icons icons = new Icons();
+	public static final IconPack iconPack = new IconPack();
 
 	private static final LocaleEventReceiver localeEventReceiver =
 			new LocaleEventReceiver();
