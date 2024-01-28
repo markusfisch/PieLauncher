@@ -50,6 +50,8 @@ public class Icons {
 
 	public void selectPack(PackageManager pm, String packageName) {
 		selectedPackage = null;
+		packageManager = null;
+		componentToDrawableNames.clear();
 		if (pm == null || packageName == null || packageName.isEmpty()) {
 			return;
 		}
