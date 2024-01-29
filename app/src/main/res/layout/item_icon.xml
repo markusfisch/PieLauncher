@@ -1,0 +1,6 @@
+<ImageView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/icon"
+	android:layout_width="@dimen/icon_size"
+	android:layout_height="@dimen/icon_size"
+	android:contentDescription="@string/app_name"/>

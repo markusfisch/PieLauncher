@@ -258,6 +258,7 @@ public class AppMenu extends CanvasPieMenu {
 			UserHandle userHandleRestriction,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		PackageManager pm = context.getPackageManager();
+		PieLauncherApp.iconPack.restoreMappingsIfEmpty(context);
 		PieLauncherApp.iconPack.selectPack(pm,
 				PieLauncherApp.getPrefs(context).getIconPack());
 		String skip = context.getPackageName();

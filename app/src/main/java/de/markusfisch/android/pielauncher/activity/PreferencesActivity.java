@@ -1,9 +1,7 @@
 package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
@@ -26,6 +24,7 @@ import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.os.DefaultLauncher;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SystemBars;
+import de.markusfisch.android.pielauncher.widget.OptionsDialog;
 
 public class PreferencesActivity extends Activity {
 	private static final String WELCOME = "welcome";
@@ -199,7 +198,7 @@ public class PreferencesActivity extends Activity {
 		Map<T, G> optionsMap = options.onGetOptions();
 		tv.setOnClickListener(v -> {
 			CharSequence[] items = getItemsFromOptions(optionsMap);
-			showOptionsDialog(titleId, items, (view, which) -> {
+			OptionsDialog.show(this, titleId, items, (view, which) -> {
 				Set<T> keys = optionsMap.keySet();
 				int i = 0;
 				for (T key : keys) {
@@ -232,14 +231,6 @@ public class PreferencesActivity extends Activity {
 		} else {
 			return null;
 		}
-	}
-
-	private void showOptionsDialog(int titleId, CharSequence[] items,
-			DialogInterface.OnClickListener onClickListener) {
-		new AlertDialog.Builder(this)
-				.setTitle(titleId)
-				.setItems(items, onClickListener)
-				.show();
 	}
 
 	private static <T> void updatePreference(TextView tv, int labelId, T value) {
@@ -362,7 +353,7 @@ public class PreferencesActivity extends Activity {
 	private Map<String, String> getIconPackOptions() {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put(null, getString(R.string.icon_pack_default));
-		map.putAll(PieLauncherApp.iconPack.packs);
+		map.putAll(PieLauncherApp.iconPack.getIconPacks());
 		return map;
 	}
 

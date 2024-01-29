@@ -5,6 +5,7 @@
 	<string name="tip_pinch_zoom">Відрегулюйте розмір двома пальцями</string>
 	<string name="tip_drag_to_order">Обведіть, щоб змінити порядок</string>
 	<string name="tip_remove_icon">Видалити значок із кругового меню</string>
+	<string name="tip_edit_app">Змінити піктограму</string>
 	<string name="tip_remove_app">Видалити додаток</string>
 	<string name="preferences">Налаштування</string>
 	<string name="welcome">Ласкаво просимо!</string>
@@ -42,4 +43,5 @@
 	<string name="icon_pack">Пакет іконок</string>
 	<string name="icon_pack_default">Система (за замовчуванням)</string>
 	<string name="skip">Пропустити.</string>
+	<string name="reset">Перезавантаження</string>
 </resources>

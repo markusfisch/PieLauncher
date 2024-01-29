@@ -48,5 +48,8 @@
 		<activity
 			android:name=".activity.PreferencesActivity"
 			android:exported="true"/>
+		<activity
+			android:name=".activity.PickIconActivity"
+			android:exported="true"/>
 	</application>
 </manifest>

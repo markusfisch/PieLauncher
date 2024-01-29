@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.graphics;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -14,20 +15,152 @@ import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-public class IconPack {
-	public final HashMap<String, String> packs = new HashMap<>();
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 
-	private final HashMap<String, String> componentToDrawableNames = new HashMap<>();
+public class IconPack {
+	public static class Pack {
+		public final String packageName;
+		public final String name;
+		public final Resources resources;
+
+		public Pack(String packageName, String name, Resources resources) {
+			this.packageName = packageName;
+			this.name = name;
+			this.resources = resources;
+		}
+
+		public Drawable getDrawable(String drawableName) {
+			if (drawableName == null) {
+				return null;
+			}
+			@SuppressLint("DiscouragedApi")
+			int id = resources.getIdentifier(drawableName, "drawable",
+					packageName);
+			return id > 0 ? resources.getDrawable(id) : null;
+		}
+
+		public ArrayList<String> getDrawableNames() {
+			LinkedHashMap<String, String> map = new LinkedHashMap<>();
+			loadComponentAndDrawableNames(map);
+			return new ArrayList<>(new LinkedHashSet<>(map.values()));
+		}
+
+		public void loadComponentAndDrawableNames(
+				LinkedHashMap<String, String> map) {
+			try {
+				InputStream is = resources.getAssets().open("appfilter.xml");
+				XmlPullParser parser = Xml.newPullParser();
+				parser.setInput(new InputStreamReader(is));
+				for (int eventType = parser.getEventType();
+						eventType != XmlPullParser.END_DOCUMENT;
+						eventType = parser.next()) {
+					if (eventType == XmlPullParser.START_TAG &&
+							"item".equals(parser.getName())) {
+						String component = parser.getAttributeValue(
+								null, "component");
+						String drawable = parser.getAttributeValue(
+								null, "drawable");
+						if (component != null && !component.isEmpty() &&
+								drawable != null && !drawable.isEmpty()) {
+							map.put(component, drawable);
+						}
+					}
+				}
+			} catch (XmlPullParserException | IOException e) {
+				// Ignore.
+			}
+		}
+	}
+
+	public final LinkedHashMap<String, Pack> packs = new LinkedHashMap<>();
+	public final LinkedHashMap<String, String> componentToDrawableNames =
+			new LinkedHashMap<>();
+
+	private static final String MAPPINGS_FILE = "mappings";
+
+	private final HashMap<String, PackAndDrawable> mappings =
+			new HashMap<>();
 
 	private PackageManager packageManager;
-	private Resources iconPackRes;
-	private String selectedPackage;
+	private IconPack.Pack selectedPack;
+
+	public void restoreMappingsIfEmpty(Context context) {
+		if (mappings.isEmpty()) {
+			restoreMappings(context);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void restoreMappings(Context context) {
+		try {
+			FileInputStream fis = context.openFileInput(MAPPINGS_FILE);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			mappings.clear();
+			mappings.putAll((HashMap<String, PackAndDrawable>)
+					ois.readObject());
+			ois.close();
+			fis.close();
+		} catch (IOException | ClassCastException | ClassNotFoundException e) {
+			// Ignore, can't do nothing about this.
+		}
+	}
+
+	public void storeMappings(Context context) {
+		try {
+			FileOutputStream fos = context.openFileOutput(
+					MAPPINGS_FILE, Context.MODE_PRIVATE);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(mappings);
+			oos.close();
+			fos.close();
+		} catch (IOException e) {
+			// Ignore, can't do nothing about this.
+		}
+	}
+
+	public boolean hasMapping(String packageName) {
+		return mappings.containsKey(packageName);
+	}
+
+	public void addMapping(String iconPackageName, String packageName,
+			String drawableName) {
+		mappings.put(packageName,
+				new PackAndDrawable(iconPackageName, drawableName));
+	}
+
+	public void removeMapping(String packageName) {
+		mappings.remove(packageName);
+	}
+
+	public String getSelectedIconPackageName() {
+		return selectedPack != null ? selectedPack.packageName : null;
+	}
+
+	public boolean packSelected() {
+		return selectedPack != null;
+	}
+
+	public HashMap<String, String> getIconPacks() {
+		HashMap<String, String> map = new HashMap<>();
+		for (Pack pack : packs.values()) {
+			map.put(pack.packageName, pack.name);
+		}
+		return map;
+	}
 
 	public void updatePacks(PackageManager pm) {
 		packs.clear();
@@ -39,8 +172,11 @@ public class IconPack {
 					pm, new Intent(theme))) {
 				String packageName = info.activityInfo.packageName;
 				try {
-					packs.put(packageName, pm.getApplicationLabel(
-							getApplicationInfo(pm, packageName)).toString());
+					packs.put(packageName, new Pack(
+							packageName,
+							pm.getApplicationLabel(getApplicationInfo(
+									pm, packageName)).toString(),
+							pm.getResourcesForApplication(packageName)));
 				} catch (PackageManager.NameNotFoundException e) {
 					// Ignore.
 				}
@@ -49,34 +185,26 @@ public class IconPack {
 	}
 
 	public void selectPack(PackageManager pm, String packageName) {
-		selectedPackage = null;
+		selectedPack = null;
 		packageManager = null;
 		componentToDrawableNames.clear();
 		if (pm == null || packageName == null || packageName.isEmpty()) {
 			return;
 		}
-		try {
-			iconPackRes = pm.getResourcesForApplication(packageName);
-		} catch (PackageManager.NameNotFoundException e) {
-			return;
-		}
 		// Always update because packs may have been added/removed.
 		updatePacks(pm);
+		selectedPack = packs.get(packageName);
+		if (selectedPack == null) {
+			return;
+		}
 		// Always reload packages and drawables as the pack may have
 		// been updated.
-		try {
-			addComponentAndDrawableNames(
-					componentToDrawableNames,
-					iconPackRes.getAssets().open("appfilter.xml"));
-			packageManager = pm;
-			selectedPackage = packageName;
-		} catch (XmlPullParserException | IOException e) {
-			// Ignore.
-		}
+		selectedPack.loadComponentAndDrawableNames(componentToDrawableNames);
+		packageManager = pm;
 	}
 
 	public Drawable getIcon(String packageName) {
-		if (selectedPackage == null) {
+		if (selectedPack == null) {
 			return null;
 		}
 		Intent intent = packageManager.getLaunchIntentForPackage(packageName);
@@ -87,15 +215,23 @@ public class IconPack {
 		if (componentName == null) {
 			return null;
 		}
-		String drawableName = componentToDrawableNames.get(
-				componentName.toString());
-		if (drawableName == null || drawableName.isEmpty()) {
-			return null;
+		PackAndDrawable pad = mappings.get(packageName);
+		String drawableName = null;
+		if (pad != null) {
+			if (pad.packageName.equals(selectedPack.packageName)) {
+				drawableName = pad.drawableName;
+			} else {
+				Pack pack = packs.get(pad.packageName);
+				if (pack != null) {
+					return pack.getDrawable(pad.drawableName);
+				}
+			}
 		}
-		@SuppressLint("DiscouragedApi")
-		int id = iconPackRes.getIdentifier(drawableName, "drawable",
-				selectedPackage);
-		return id > 0 ? iconPackRes.getDrawable(id) : null;
+		if (drawableName == null) {
+			drawableName = componentToDrawableNames.get(
+					componentName.toString());
+		}
+		return selectedPack.getDrawable(drawableName);
 	}
 
 	private static List<ResolveInfo> queryIntentActivities(
@@ -125,21 +261,13 @@ public class IconPack {
 		}
 	}
 
-	private static void addComponentAndDrawableNames(
-			HashMap<String, String> map,
-			InputStream is)
-			throws XmlPullParserException, IOException {
-		XmlPullParser parser = Xml.newPullParser();
-		parser.setInput(new InputStreamReader(is));
-		for (int eventType = parser.getEventType();
-				eventType != XmlPullParser.END_DOCUMENT;
-				eventType = parser.next()) {
-			if (eventType == XmlPullParser.START_TAG &&
-					"item".equals(parser.getName())) {
-				map.put(
-						parser.getAttributeValue(null, "component"),
-						parser.getAttributeValue(null, "drawable"));
-			}
+	private static class PackAndDrawable implements Serializable {
+		public final String packageName;
+		public final String drawableName;
+
+		public PackAndDrawable(String packageName, String drawableName) {
+			this.packageName = packageName;
+			this.drawableName = drawableName;
 		}
 	}
 }
