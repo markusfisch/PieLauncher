@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -73,6 +72,7 @@ public class AppPieView extends View {
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
 	private final Paint paintActive = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint paintDropZone = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Paint paintPressed = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
 	private final Ripple ripple = Ripple.newFadingRipple();
@@ -128,6 +128,7 @@ public class AppPieView extends View {
 	private int mode = MODE_PIE;
 	private ListListener listListener;
 	private List<AppMenu.AppIcon> appList;
+	private Rect highlightedAction;
 	private AppMenu.Icon grabbedIcon;
 	private AppMenu.Icon highlightedIcon;
 	private long highlightedFrom;
@@ -163,14 +164,12 @@ public class AppPieView extends View {
 		editAppTip = context.getString(R.string.tip_edit_app);
 		removeAppTip = context.getString(R.string.tip_remove_app);
 
-		int textColor = res.getColor(R.color.text_color);
-		paintDropZone.setColor(textColor);
-		paintDropZone.setStyle(Paint.Style.STROKE);
-		paintDropZone.setStrokeWidth(dp * 2f);
-		paintDropZone.setPathEffect(new DashPathEffect(
-				new float[]{10f * dp, 10f * dp}, 0f));
+		paintDropZone.setColor(res.getColor(R.color.bg_drop_zone));
+		paintDropZone.setStyle(Paint.Style.FILL);
+		paintPressed.setColor(res.getColor(R.color.bg_action_pressed));
+		paintPressed.setStyle(Paint.Style.FILL);
 
-		paintText.setColor(textColor);
+		paintText.setColor(res.getColor(R.color.text_color));
 		paintText.setTextAlign(Paint.Align.CENTER);
 		paintText.setTextSize(14f * sp);
 		textHeight = paintText.descent() - paintText.ascent();
@@ -623,6 +622,7 @@ public class AppPieView extends View {
 						v.performHapticFeedback(HAPTIC_FEEDBACK_CONFIRM);
 					}
 					performActionRunnable = null;
+					resetHighlightedAction();
 					hidePieMenu();
 					invalidate();
 				};
@@ -903,10 +903,14 @@ public class AppPieView extends View {
 	}
 
 	private void editActionsFeedback() {
-		if (contains(iconStartRect, touch) ||
-				(contains(iconCenterRect, touch) && grabbedIcon == null) ||
-				contains(iconEndRect, touch)) {
-			ripple.set(touch);
+		if (contains(iconStartRect, touch)) {
+			setHighlightedAction(iconStartRect);
+		} else if (contains(iconCenterRect, touch) && grabbedIcon == null) {
+			setHighlightedAction(iconCenterRect);
+		} else if (contains(iconEndRect, touch)) {
+			setHighlightedAction(iconEndRect);
+		} else {
+			resetHighlightedAction();
 		}
 	}
 
@@ -995,25 +999,19 @@ public class AppPieView extends View {
 				invalidate = true;
 			}
 			float radius = f * iconSize;
-			canvas.drawCircle(iconStartRect.centerX(), iconStartRect.centerY(),
-					radius, paintDropZone);
-			drawIcon(canvas, iconRemove, iconStartRect);
+			drawAction(canvas, iconRemove, iconStartRect, radius);
 			if (PieLauncherApp.iconPack.packSelected()) {
-				canvas.drawCircle(iconCenterRect.centerX(), iconCenterRect.centerY(),
-						radius, paintDropZone);
-				drawIcon(canvas, iconEdit, iconCenterRect);
+				drawAction(canvas, iconEdit, iconCenterRect, radius);
 			} else if (invalidate) {
 				paintActive.setAlpha(Math.round((1f - f) * 255f));
-				drawIcon(canvas, iconPreferences, iconCenterRect);
+				drawAction(canvas, iconPreferences, iconCenterRect);
 				paintActive.setAlpha(255);
 			}
-			canvas.drawCircle(iconEndRect.centerX(), iconEndRect.centerY(),
-					radius, paintDropZone);
-			drawIcon(canvas, iconDetails, iconEndRect);
+			drawAction(canvas, iconDetails, iconEndRect, radius);
 		} else {
-			drawIcon(canvas, iconAdd, iconStartRect);
-			drawIcon(canvas, iconPreferences, iconCenterRect);
-			drawIcon(canvas, iconDone, iconEndRect);
+			drawAction(canvas, iconAdd, iconStartRect);
+			drawAction(canvas, iconPreferences, iconCenterRect);
+			drawAction(canvas, iconDone, iconEndRect);
 		}
 		int centerX = viewWidth >> 1;
 		int centerY = viewHeight >> 1;
@@ -1119,13 +1117,17 @@ public class AppPieView extends View {
 	private String getTip(boolean hasIcon) {
 		if (hasIcon) {
 			if (contains(iconStartRect, touch)) {
+				setHighlightedAction(iconStartRect);
 				return removeIconTip;
 			} else if (PieLauncherApp.iconPack.packSelected() &&
 					contains(iconCenterRect, touch)) {
+				setHighlightedAction(iconCenterRect);
 				return editAppTip;
 			} else if (contains(iconEndRect, touch)) {
+				setHighlightedAction(iconEndRect);
 				return removeAppTip;
 			}
+			resetHighlightedAction();
 			return dragToOrderTip;
 		}
 		int iconsInMenu = PieLauncherApp.appMenu.icons.size();
@@ -1136,6 +1138,14 @@ public class AppPieView extends View {
 		}
 	}
 
+	private void resetHighlightedAction() {
+		setHighlightedAction(null);
+	}
+
+	private void setHighlightedAction(Rect rect) {
+		highlightedAction = rect;
+	}
+
 	private void drawTip(Canvas canvas, String tip) {
 		if (tip != null) {
 			canvas.drawText(tip, viewWidth >> 1, controlsPadding + textOffset,
@@ -1143,7 +1153,23 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void drawIcon(Canvas canvas, Bitmap icon, Rect rect) {
+	private void drawAction(Canvas canvas, Bitmap icon, Rect rect) {
+		drawAction(canvas, icon, rect, 0f);
+	}
+
+	private void drawAction(Canvas canvas, Bitmap icon, Rect rect,
+			float radius) {
+		boolean pressed = rect == highlightedAction;
+		Paint paint = null;
+		if (radius > 0) {
+			paint = pressed ? paintPressed : paintDropZone;
+		} else if (pressed) {
+			radius = iconSize;
+			paint = paintPressed;
+		}
+		if (paint != null) {
+			canvas.drawCircle(rect.centerX(), rect.centerY(), radius, paint);
+		}
 		canvas.drawBitmap(icon, null, rect, paintActive);
 	}
 

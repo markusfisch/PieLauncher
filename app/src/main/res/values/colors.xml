@@ -4,6 +4,8 @@
 	<color name="bg_search_bar">#c000</color>
 	<color name="bg_button">#fff</color>
 	<color name="bg_button_pressed">#afff</color>
+	<color name="bg_action_pressed">#2fff</color>
+	<color name="bg_drop_zone">#8000</color>
 	<color name="button_text">#a000</color>
 	<color name="text_color">#fff</color>
 	<color name="text_color_preference">#afff</color>
