@@ -15,13 +15,9 @@ import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.io.IconMappings;
 
 public class IconPack {
 	public static class Pack {
@@ -86,11 +82,19 @@ public class IconPack {
 		}
 	}
 
+	public static class PackAndDrawable implements Serializable {
+		public final String packageName;
+		public final String drawableName;
+
+		public PackAndDrawable(String packageName, String drawableName) {
+			this.packageName = packageName;
+			this.drawableName = drawableName;
+		}
+	}
+
 	public final LinkedHashMap<String, Pack> packs = new LinkedHashMap<>();
 	public final LinkedHashMap<String, String> componentToDrawableNames =
 			new LinkedHashMap<>();
-
-	private static final String MAPPINGS_FILE = "mappings";
 
 	private final HashMap<String, PackAndDrawable> mappings =
 			new HashMap<>();
@@ -100,36 +104,12 @@ public class IconPack {
 
 	public void restoreMappingsIfEmpty(Context context) {
 		if (mappings.isEmpty()) {
-			restoreMappings(context);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public void restoreMappings(Context context) {
-		try {
-			FileInputStream fis = context.openFileInput(MAPPINGS_FILE);
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			mappings.clear();
-			mappings.putAll((HashMap<String, PackAndDrawable>)
-					ois.readObject());
-			ois.close();
-			fis.close();
-		} catch (IOException | ClassCastException | ClassNotFoundException e) {
-			// Ignore, can't do nothing about this.
+			IconMappings.restore(context, mappings);
 		}
 	}
 
 	public void storeMappings(Context context) {
-		try {
-			FileOutputStream fos = context.openFileOutput(
-					MAPPINGS_FILE, Context.MODE_PRIVATE);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(mappings);
-			oos.close();
-			fos.close();
-		} catch (IOException e) {
-			// Ignore, can't do nothing about this.
-		}
+		IconMappings.store(context, mappings);
 	}
 
 	public boolean hasMapping(String packageName) {
@@ -258,16 +238,6 @@ public class IconPack {
 		} else {
 			return pm.getApplicationInfo(packageName,
 					PackageManager.GET_META_DATA);
-		}
-	}
-
-	private static class PackAndDrawable implements Serializable {
-		public final String packageName;
-		public final String drawableName;
-
-		public PackAndDrawable(String packageName, String drawableName) {
-			this.packageName = packageName;
-			this.drawableName = drawableName;
 		}
 	}
 }
