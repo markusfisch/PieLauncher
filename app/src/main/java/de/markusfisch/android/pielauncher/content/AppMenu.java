@@ -22,12 +22,6 @@ import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +35,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
+import de.markusfisch.android.pielauncher.io.Menu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class AppMenu extends CanvasPieMenu {
@@ -65,8 +60,6 @@ public class AppMenu extends CanvasPieMenu {
 
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-
-	private static final String MENU = "menu";
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
@@ -146,7 +139,7 @@ public class AppMenu extends CanvasPieMenu {
 	}
 
 	public void store(Context context) {
-		storeMenu(context, icons);
+		Menu.store(context, icons);
 	}
 
 	public List<AppIcon> filterAppsBy(Context context, String query) {
@@ -366,7 +359,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	private static List<Icon> createMenu(Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
-		List<Icon> menu = restoreMenu(context, allApps);
+		List<Icon> menu = Menu.restore(context, allApps);
 		if (menu.isEmpty()) {
 			createInitialMenu(menu, allApps, context.getPackageManager());
 		}
@@ -502,89 +495,6 @@ public class AppMenu extends CanvasPieMenu {
 					Context.LAUNCHER_APPS_SERVICE);
 		}
 		return launcherApps;
-	}
-
-	private static List<Icon> restoreMenu(Context context,
-			Map<LauncherItemKey, AppIcon> allApps) {
-		ArrayList<Icon> icons = new ArrayList<>();
-		try {
-			for (String line : readLines(context.openFileInput(MENU))) {
-				Icon icon = allApps.get(
-						LauncherItemKey.unflattenFromString(context, line));
-				if (icon != null) {
-					icons.add(icon);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			// Return an empty array.
-		}
-		return icons;
-	}
-
-	private static List<String> readLines(InputStream is) {
-		ArrayList<String> list = new ArrayList<>();
-		BufferedReader reader = null;
-		// It's not possible to use automatic resource management
-		// for this statement because it requires minSDK 19.
-		try {
-			// StandardCharsets.UTF_8 cannot be used because it requires
-			// minSDK 19.
-			reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			while (reader.ready()) {
-				list.add(reader.readLine());
-			}
-		} catch (IOException e) {
-			// Return what we got so far.
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				// Ignore, can't do anything about it.
-			}
-		}
-		return list;
-	}
-
-	private static boolean storeMenu(Context context, List<Icon> icons) {
-		ArrayList<String> items = new ArrayList<>();
-		for (CanvasPieMenu.Icon icon : icons) {
-			items.add(LauncherItemKey.flattenToString(
-					context,
-					((AppIcon) icon).componentName,
-					((AppIcon) icon).userHandle));
-		}
-		try {
-			return writeLines(context.openFileOutput(MENU,
-					Context.MODE_PRIVATE), items);
-		} catch (IOException e) {
-			return false;
-		}
-	}
-
-	private static boolean writeLines(OutputStream os, List<String> lines) {
-		if (os == null) {
-			return false;
-		}
-		try {
-			// StandardCharsets.UTF_8 cannot be used because it requires
-			// minSDK 19.
-			byte[] lf = "\n".getBytes("UTF-8");
-			for (String line : lines) {
-				os.write(line.getBytes("UTF-8"));
-				os.write(lf);
-			}
-			return true;
-		} catch (IOException e) {
-			return false;
-		} finally {
-			try {
-				os.close();
-			} catch (IOException e) {
-				// Ignore, can't do anything about it.
-			}
-		}
 	}
 
 	private static int hammingDistance(String a, String b) {
