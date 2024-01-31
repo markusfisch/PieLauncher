@@ -76,7 +76,7 @@ public class PickIconActivity extends Activity {
 					packageName,
 					iconAdapter.getItem(position));
 			PieLauncherApp.iconPack.storeMappings(this);
-			PieLauncherApp.appMenu.indexAppsAsync(this);
+			PieLauncherApp.appMenu.updateIconsAsync(this);
 			finish();
 		});
 		loadPack(iconPackageName);
@@ -117,7 +117,7 @@ public class PickIconActivity extends Activity {
 			resetButton.setOnClickListener((v) -> {
 				PieLauncherApp.iconPack.removeMapping(packageName);
 				PieLauncherApp.iconPack.storeMappings(this);
-				PieLauncherApp.appMenu.indexAppsAsync(this);
+				PieLauncherApp.appMenu.updateIconsAsync(this);
 				finish();
 			});
 		} else {

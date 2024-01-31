@@ -198,6 +198,12 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	public void updateIconsAsync(Context context) {
+		if (!indexAppsAsync(context)) {
+			handler.postDelayed(() -> updateIconsAsync(context), 1000L);
+		}
+	}
+
 	public boolean isEmpty() {
 		return apps.isEmpty();
 	}
@@ -206,15 +212,15 @@ public class AppMenu extends CanvasPieMenu {
 		return apps.isEmpty() && indexing;
 	}
 
-	public void indexAppsAsync(Context context) {
-		indexAppsAsync(context, null, null);
+	public boolean indexAppsAsync(Context context) {
+		return indexAppsAsync(context, null, null);
 	}
 
-	public void indexAppsAsync(Context context,
+	public boolean indexAppsAsync(Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction) {
 		if (indexing) {
-			return;
+			return false;
 		}
 		indexing = true;
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
@@ -243,6 +249,7 @@ public class AppMenu extends CanvasPieMenu {
 				}
 			});
 		});
+		return true;
 	}
 
 	private void indexApps(

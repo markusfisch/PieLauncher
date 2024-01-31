@@ -159,7 +159,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.getIconPack(),
 				(value) -> {
 					prefs.setIconPack(value);
-					PieLauncherApp.appMenu.indexAppsAsync(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
 				},
 				() -> PieLauncherApp.iconPack.updatePacks(getPackageManager()));
 	}
