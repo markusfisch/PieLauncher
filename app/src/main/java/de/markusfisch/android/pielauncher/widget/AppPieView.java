@@ -190,7 +190,9 @@ public class AppPieView extends View {
 		float touchSlop = configuration.getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
 		tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
-		longPressTimeout = ViewConfiguration.getLongPressTimeout();
+		longPressTimeout = ViewConfiguration.getLongPressTimeout() *
+				(prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
+						? 2L : 1L);
 
 		if (PieLauncherApp.appMenu.isEmpty()) {
 			PieLauncherApp.appMenu.indexAppsAsync(context);
@@ -398,7 +400,7 @@ public class AppPieView extends View {
 								break;
 							case MODE_LIST:
 								initScroll(event);
-								initLongPress();
+								initLongPress(v.getContext());
 								break;
 							case MODE_EDIT:
 								editIconAt(touch);
@@ -541,7 +543,7 @@ public class AppPieView extends View {
 				}
 			}
 
-			private void initLongPress() {
+			private void initLongPress(Context context) {
 				cancelLongPress();
 				final AppMenu.Icon appIcon = getListIconAt(touch.x, touch.y);
 				if (appIcon == null) {
@@ -550,7 +552,11 @@ public class AppPieView extends View {
 				initLongPressFeedback(appIcon);
 				longPressRunnable = () -> {
 					performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-					addIconInteractively(appIcon);
+					if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
+						showIconOptions(context, appIcon);
+					} else {
+						addIconInteractively(appIcon);
+					}
 					longPressRunnable = null;
 					cancelHighlight();
 				};
@@ -709,6 +715,29 @@ public class AppPieView extends View {
 		}
 	}
 
+	private void showIconOptions(Context context, AppMenu.Icon icon) {
+		if (icon == null) {
+			return;
+		}
+		CharSequence[] items = new CharSequence[] {
+			context.getString(R.string.add_to_pie_menu),
+			context.getString(R.string.change_icon),
+		};
+		OptionsDialog.show(context, R.string.tip_edit_app, items, (view, which) -> {
+			switch (which) {
+				case 0:
+					addIconInteractively(icon);
+					postDelayed(() -> {
+						grabbedIcon = null;
+					}, 100);
+					break;
+				case 1:
+					changeIcon(context, icon);
+					break;
+			}
+		});
+	}
+
 	private void addIconInteractively(AppMenu.Icon appIcon) {
 		if (appIcon == null) {
 			return;
@@ -824,10 +853,7 @@ public class AppPieView extends View {
 			} else if (PieLauncherApp.iconPack.packSelected()) {
 				ripple.set(touch);
 				rollback();
-				keepMode = true;
-				AppMenu.AppIcon appIcon = (AppMenu.AppIcon) grabbedIcon;
-				PickIconActivity.start(context,
-						appIcon.componentName.getPackageName());
+				changeIcon(context, grabbedIcon);
 			}
 			return true;
 		} else if (contains(iconEndRect, touch)) {
@@ -874,6 +900,13 @@ public class AppPieView extends View {
 			}
 		}
 		return true;
+	}
+
+	private void changeIcon(Context context, AppMenu.Icon icon) {
+		keepMode = true;
+		AppMenu.AppIcon appIcon = (AppMenu.AppIcon) icon;
+		PickIconActivity.start(context,
+				appIcon.componentName.getPackageName());
 	}
 
 	private void setCenter(Point point) {

@@ -39,9 +39,15 @@
 	<string name="auto_launch_matching">Автоматичний запуск ідеальних збігів</string>
 	<string name="auto_launch_matching_yes">Так</string>
 	<string name="auto_launch_matching_no">Ні (за замовчуванням)</string>
+	<string name="icon_press">Натисніть на іконку, щоб додати</string>
+	<string name="icon_press_default">Тривалість роботи системи (за замовчуванням)</string>
+	<string name="icon_press_longer">На довший час</string>
+	<string name="icon_press_menu">Замість цього показати меню</string>
 	<string name="category_icons">Пакет іконок</string>
 	<string name="icon_pack">Пакет іконок</string>
 	<string name="icon_pack_default">Система (за замовчуванням)</string>
 	<string name="skip">Пропустити.</string>
 	<string name="reset">Перезавантаження</string>
+	<string name="add_to_pie_menu">Додати в меню</string>
+	<string name="change_icon">Змінити піктограму</string>
 </resources>

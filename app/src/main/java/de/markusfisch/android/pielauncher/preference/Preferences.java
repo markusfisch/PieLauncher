@@ -14,6 +14,9 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
+	public static final int ICON_PRESS_DEFAULT = 0;
+	public static final int ICON_PRESS_LONGER = 1;
+	public static final int ICON_PRESS_MENU = 2;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -21,9 +24,10 @@ public class Preferences {
 	private static final String DARKEN_BACKGROUND = "darken_background";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
+	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
-	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
+	private static final String ICON_PRESS = "icon_press";
 	private static final String ICON_PACK = "icon_pack";
 
 	private final SharedPreferences preferences;
@@ -33,9 +37,10 @@ public class Preferences {
 	private boolean darkenBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
 	private boolean displayKeyboard = true;
+	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
-	private boolean doubleSpaceLaunch = false;
+	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 
 	public Preferences(Context context) {
@@ -53,12 +58,13 @@ public class Preferences {
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
+		doubleSpaceLaunch = preferences.getBoolean(DOUBE_SPACE_LAUNCH,
+				doubleSpaceLaunch);
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
-		doubleSpaceLaunch = preferences.getBoolean(DOUBE_SPACE_LAUNCH,
-				doubleSpaceLaunch);
+		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 	}
 
@@ -115,6 +121,15 @@ public class Preferences {
 		put(DISPLAY_KEYBOARD, displayKeyboard).apply();
 	}
 
+	public boolean doubleSpaceLaunch() {
+		return doubleSpaceLaunch;
+	}
+
+	public void setDoubleSpaceLaunch(boolean doubleSpaceLaunch) {
+		this.doubleSpaceLaunch = doubleSpaceLaunch;
+		put(DOUBE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
+	}
+
 	public boolean autoLaunchMatching() {
 		return autoLaunchMatching;
 	}
@@ -133,13 +148,13 @@ public class Preferences {
 		put(SEARCH_STRICTNESS, searchStrictness).apply();
 	}
 
-	public boolean doubleSpaceLaunch() {
-		return doubleSpaceLaunch;
+	public int getIconPress() {
+		return iconPress;
 	}
 
-	public void setDoubleSpaceLaunch(boolean doubleSpaceLaunch) {
-		this.doubleSpaceLaunch = doubleSpaceLaunch;
-		put(DOUBE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
+	public void setIconPress(int iconPress) {
+		this.iconPress = iconPress;
+		put(ICON_PRESS, iconPress).apply();
 	}
 
 	public String getIconPack() {

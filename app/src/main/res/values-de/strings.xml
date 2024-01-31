@@ -39,9 +39,15 @@
 	<string name="auto_launch_matching">Bei Übereinstimmung automatisch starten</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nein (Standard)</string>
+	<string name="icon_press">Icon gedrückt halten</string>
+	<string name="icon_press_default">Systemdauer (Standard)</string>
+	<string name="icon_press_longer">Länger</string>
+	<string name="icon_press_menu">Zeige Menu stattdessen</string>
 	<string name="category_icons">Icon Pack</string>
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Standard)</string>
 	<string name="skip">Überspringen</string>
 	<string name="reset">Zurücksetzen</string>
+	<string name="add_to_pie_menu">Zum Menu hinzufügen</string>
+	<string name="change_icon">Icon ändern</string>
 </resources>

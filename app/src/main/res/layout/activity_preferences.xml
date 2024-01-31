@@ -76,9 +76,13 @@
 					android:id="@+id/auto_launch_matching"
 					android:text="@string/auto_launch_matching_no" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/search_strictness"
 					android:text="@string/search_strictness_hamming" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/icon_press"
+					android:text="@string/icon_press_default" />
 				<TextView
 					style="@style/CategoryHeader"
 					android:text="@string/category_icons" />

@@ -39,9 +39,15 @@
 	<string name="auto_launch_matching">Автоматически запускать лучшее вхождение</string>
 	<string name="auto_launch_matching_yes">Да</string>
 	<string name="auto_launch_matching_no">Нет (Стандартно)</string>
+	<string name="icon_press">Нажмите на значок, чтобы добавить</string>
+	<string name="icon_press_default">Продолжительность работы системы (Стандартно)</string>
+	<string name="icon_press_longer">В течение длительного времени</string>
+	<string name="icon_press_menu">Показать меню</string>
 	<string name="category_icons">Набор иконок</string>
 	<string name="icon_pack">Набор иконок</string>
 	<string name="icon_pack_default">Системные (Стандартно)</string>
 	<string name="skip">Далее</string>
 	<string name="reset">Сброс</string>
+	<string name="add_to_pie_menu">Добавить в меню</string>
+	<string name="change_icon">Значок изменения</string>
 </resources>

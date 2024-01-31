@@ -39,9 +39,15 @@
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
 	<string name="auto_launch_matching_no">No (Default)</string>
+	<string name="icon_press">Press icon to add</string>
+	<string name="icon_press_default">System duration (Default)</string>
+	<string name="icon_press_longer">Longer</string>
+	<string name="icon_press_menu">Show menu instead</string>
 	<string name="category_icons">Icon Pack</string>
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Default)</string>
 	<string name="skip">Skip</string>
 	<string name="reset">Reset</string>
+	<string name="add_to_pie_menu">Add to pie menu</string>
+	<string name="change_icon">Change icon</string>
 </resources>

@@ -148,6 +148,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getSearchStrictnessOptions,
 				() -> prefs.getSearchStrictness(),
 				(value) -> prefs.setSearchStrictness(value));
+		initPreference(R.id.icon_press,
+				R.string.icon_press,
+				PreferencesActivity::getIconPressOptions,
+				() -> prefs.getIconPress(),
+				(value) -> prefs.setIconPress(value));
 		initPreference(R.id.icon_pack,
 				R.string.icon_pack,
 				this::getIconPackOptions,
@@ -347,6 +352,14 @@ public class PreferencesActivity extends Activity {
 				R.string.search_strictness_contains);
 		map.put(Preferences.SEARCH_STRICTNESS_STARTS_WITH,
 				R.string.search_strictness_starts_with);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getIconPressOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.ICON_PRESS_DEFAULT, R.string.icon_press_default);
+		map.put(Preferences.ICON_PRESS_LONGER, R.string.icon_press_longer);
+		map.put(Preferences.ICON_PRESS_MENU, R.string.icon_press_menu);
 		return map;
 	}
 
