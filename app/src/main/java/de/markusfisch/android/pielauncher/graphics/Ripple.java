@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 public class Ripple {
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -33,6 +34,8 @@ public class Ripple {
 
 	@SuppressLint("ClickableViewAccessibility")
 	public View.OnTouchListener getOnTouchListener() {
+		final long tapTimeout = ViewConfiguration.getTapTimeout();
+		final int touchSlop = ViewConfiguration.getTouchSlop();
 		final Rect viewRect = new Rect();
 		return (v, event) -> {
 			int x = Math.round(event.getX());
@@ -40,14 +43,21 @@ public class Ripple {
 			switch (event.getActionMasked()) {
 				case MotionEvent.ACTION_DOWN:
 					pressed = true;
-					set(x, y);
+					set(x, y, tapTimeout);
 					v.invalidate();
 					break;
 				case MotionEvent.ACTION_MOVE:
-					v.getLocalVisibleRect(viewRect);
-					if (!viewRect.contains(x, y)) {
+					if (SystemClock.uptimeMillis() - offset < 0 &&
+							Math.hypot(x - hotSpot.x, y - hotSpot.y) >
+									touchSlop) {
 						cancel();
 						v.invalidate();
+					} else {
+						v.getLocalVisibleRect(viewRect);
+						if (!viewRect.contains(x, y)) {
+							cancel();
+							v.invalidate();
+						}
 					}
 					break;
 				case MotionEvent.ACTION_UP:
@@ -68,8 +78,12 @@ public class Ripple {
 	}
 
 	public void set(int x, int y) {
+		set(x, y, 0L);
+	}
+
+	public void set(int x, int y, long delay) {
 		hotSpot.set(x, y);
-		offset = SystemClock.uptimeMillis();
+		offset = SystemClock.uptimeMillis() + delay;
 	}
 
 	public void cancel() {
@@ -80,7 +94,10 @@ public class Ripple {
 	public boolean draw(Canvas canvas) {
 		long delta = SystemClock.uptimeMillis() - offset;
 		long duration = 300L;
-		if (delta < 0 || delta > duration) {
+		if (delta < 0) {
+			return offset > 0;
+		}
+		if (delta > duration) {
 			if (!fade && pressed) {
 				canvas.drawColor(paint.getColor());
 			}
