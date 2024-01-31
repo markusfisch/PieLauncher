@@ -722,6 +722,7 @@ public class AppPieView extends View {
 		CharSequence[] items = new CharSequence[]{
 				context.getString(R.string.add_to_pie_menu),
 				context.getString(R.string.change_icon),
+				context.getString(R.string.tip_remove_app),
 		};
 		OptionsDialog.show(context, R.string.tip_edit_app, items, (view, which) -> {
 			switch (which) {
@@ -733,6 +734,10 @@ public class AppPieView extends View {
 					break;
 				case 1:
 					changeIcon(context, icon);
+					break;
+				case 2:
+					PieLauncherApp.appMenu.launchAppInfo(context,
+							(AppMenu.AppIcon) icon);
 					break;
 			}
 		});
