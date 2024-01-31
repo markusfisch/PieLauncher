@@ -719,28 +719,31 @@ public class AppPieView extends View {
 		if (icon == null) {
 			return;
 		}
-		CharSequence[] items = new CharSequence[]{
-				context.getString(R.string.add_to_pie_menu),
-				context.getString(R.string.change_icon),
-				context.getString(R.string.tip_remove_app),
-		};
-		OptionsDialog.show(context, R.string.tip_edit_app, items, (view, which) -> {
-			switch (which) {
-				case 0:
-					addIconInteractively(icon);
-					postDelayed(() -> {
-						grabbedIcon = null;
-					}, 100);
-					break;
-				case 1:
-					changeIcon(context, icon);
-					break;
-				case 2:
-					PieLauncherApp.appMenu.launchAppInfo(context,
-							(AppMenu.AppIcon) icon);
-					break;
-			}
-		});
+		ArrayList<String> list = new ArrayList<>();
+		list.add(context.getString(R.string.add_to_pie_menu));
+		list.add(context.getString(R.string.tip_remove_app));
+		if (PieLauncherApp.iconPack.packSelected()) {
+			list.add(context.getString(R.string.change_icon));
+		}
+		OptionsDialog.show(context, R.string.tip_edit_app,
+				list.toArray(new CharSequence[0]),
+				(view, which) -> {
+					switch (which) {
+						case 0:
+							addIconInteractively(icon);
+							postDelayed(() -> {
+								grabbedIcon = null;
+							}, 100);
+							break;
+						case 1:
+							PieLauncherApp.appMenu.launchAppInfo(context,
+									(AppMenu.AppIcon) icon);
+							break;
+						case 2:
+							changeIcon(context, icon);
+							break;
+					}
+				});
 	}
 
 	private void addIconInteractively(AppMenu.Icon appIcon) {
