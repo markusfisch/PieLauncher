@@ -102,6 +102,10 @@ public class IconPack {
 	private PackageManager packageManager;
 	private IconPack.Pack selectedPack;
 
+	public boolean hasPacks() {
+		return packs.size() > 0;
+	}
+
 	public void restoreMappingsIfEmpty(Context context) {
 		if (mappings.isEmpty()) {
 			IconMappings.restore(context, mappings);
@@ -128,10 +132,6 @@ public class IconPack {
 
 	public String getSelectedIconPackageName() {
 		return selectedPack != null ? selectedPack.packageName : null;
-	}
-
-	public boolean packSelected() {
-		return selectedPack != null;
 	}
 
 	public HashMap<String, String> getIconPacks() {

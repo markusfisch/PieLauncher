@@ -722,7 +722,7 @@ public class AppPieView extends View {
 		ArrayList<String> list = new ArrayList<>();
 		list.add(context.getString(R.string.add_to_pie_menu));
 		list.add(context.getString(R.string.tip_remove_app));
-		if (PieLauncherApp.iconPack.packSelected()) {
+		if (PieLauncherApp.iconPack.hasPacks()) {
 			list.add(context.getString(R.string.change_icon));
 		}
 		OptionsDialog.show(context, R.string.tip_edit_app,
@@ -858,7 +858,7 @@ public class AppPieView extends View {
 			if (grabbedIcon == null) {
 				keepMode = true;
 				PreferencesActivity.start(context);
-			} else if (PieLauncherApp.iconPack.packSelected()) {
+			} else if (PieLauncherApp.iconPack.hasPacks()) {
 				ripple.set(touch);
 				rollback();
 				changeIcon(context, grabbedIcon);
@@ -1041,7 +1041,7 @@ public class AppPieView extends View {
 			}
 			float radius = f * iconSize;
 			drawAction(canvas, iconRemove, iconStartRect, radius);
-			if (PieLauncherApp.iconPack.packSelected()) {
+			if (PieLauncherApp.iconPack.hasPacks()) {
 				drawAction(canvas, iconEdit, iconCenterRect, radius);
 			} else if (invalidate) {
 				paintActive.setAlpha(Math.round((1f - f) * 255f));
@@ -1160,7 +1160,7 @@ public class AppPieView extends View {
 			if (contains(iconStartRect, touch)) {
 				setHighlightedAction(iconStartRect);
 				return removeIconTip;
-			} else if (PieLauncherApp.iconPack.packSelected() &&
+			} else if (PieLauncherApp.iconPack.hasPacks() &&
 					contains(iconCenterRect, touch)) {
 				setHighlightedAction(iconCenterRect);
 				return editAppTip;
