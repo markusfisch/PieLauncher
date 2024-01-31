@@ -719,9 +719,9 @@ public class AppPieView extends View {
 		if (icon == null) {
 			return;
 		}
-		CharSequence[] items = new CharSequence[] {
-			context.getString(R.string.add_to_pie_menu),
-			context.getString(R.string.change_icon),
+		CharSequence[] items = new CharSequence[]{
+				context.getString(R.string.add_to_pie_menu),
+				context.getString(R.string.change_icon),
 		};
 		OptionsDialog.show(context, R.string.tip_edit_app, items, (view, which) -> {
 			switch (which) {
