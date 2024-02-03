@@ -48,21 +48,52 @@ public class SystemBars {
 		});
 	}
 
-	public static void addPaddingFromWindowInsets(View view) {
+	public static void addPaddingFromWindowInsets(
+			View toolbar, View content) {
+		Rect contentPadding = new Rect(
+				content.getPaddingLeft(),
+				content.getPaddingTop(),
+				content.getPaddingRight(),
+				content.getPaddingBottom());
+		final int toolbarHeight;
+		final Rect toolbarPadding;
+		if (toolbar == null) {
+			toolbarHeight = 0;
+			toolbarPadding = null;
+		} else {
+			toolbar.measure(0, 0);
+			toolbarHeight = toolbar.getMeasuredHeight();
+			toolbarPadding = new Rect(
+					toolbar.getPaddingLeft(),
+					toolbar.getPaddingTop(),
+					toolbar.getPaddingRight(),
+					toolbar.getPaddingBottom());
+		}
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
+			content.setPadding(
+					contentPadding.left,
+					contentPadding.top + toolbarHeight,
+					contentPadding.right,
+					contentPadding.bottom);
 			return;
 		}
-		Rect padding = new Rect(
-				view.getPaddingLeft(),
-				view.getPaddingTop(),
-				view.getPaddingRight(),
-				view.getPaddingBottom());
 		SystemBars.listenForWindowInsets(
-				view,
-				(left, top, right, bottom) -> view.setPadding(
-						padding.left + left,
-						padding.top + top,
-						padding.right + right,
-						padding.bottom + bottom));
+				content,
+				(left, top, right, bottom) -> {
+					content.setPadding(
+							contentPadding.left + left,
+							contentPadding.top + top + toolbarHeight,
+							contentPadding.right + right,
+							contentPadding.bottom + bottom);
+					if (toolbar != null) {
+						toolbar.setPadding(
+								toolbarPadding.left + left,
+								toolbarPadding.top + top,
+								toolbarPadding.right + right,
+								// Skip bottom inset because the toolbar
+								// doesn't touch the lower edge.
+								toolbarPadding.bottom);
+					}
+				});
 	}
 }

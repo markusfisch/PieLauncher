@@ -2,7 +2,6 @@ package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +16,7 @@ import android.widget.EditText;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
@@ -26,6 +26,7 @@ public class HomeActivity extends Activity {
 	private Preferences prefs;
 	private SoftKeyboard kb;
 	private GestureDetector gestureDetector;
+	private ToolbarBackground toolbarBackground;
 	private AppPieView pieView;
 	private EditText searchInput;
 	private View prefsButton;
@@ -72,11 +73,12 @@ public class HomeActivity extends Activity {
 			PreferencesActivity.startWelcome(this);
 		}
 
+		toolbarBackground = new ToolbarBackground(getResources());
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
 		prefsButton = findViewById(R.id.preferences);
 
-		initPieView(getResources());
+		initPieView();
 		initSearchInput();
 		initPrefsButton();
 
@@ -152,10 +154,7 @@ public class HomeActivity extends Activity {
 		pausedAt = System.currentTimeMillis();
 	}
 
-	private void initPieView(Resources res) {
-		final int searchBarBackgroundColor = res.getColor(
-				R.color.bg_search_bar);
-		final float searchBarThreshold = res.getDisplayMetrics().density * 48f;
+	private void initPieView() {
 		pieView.setListListener(new AppPieView.ListListener() {
 			@Override
 			public void onOpenList() {
@@ -169,15 +168,11 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void onScrollList(int y, boolean isScrolling) {
-				y = Math.abs(y);
-				if (isScrolling && y > 0) {
+				if (isScrolling && y != 0) {
 					kb.hideFrom(searchInput);
 					hidePrefsButton();
 				}
-				int color = fadeColor(searchBarBackgroundColor,
-						y / searchBarThreshold);
-				searchInput.setBackgroundColor(
-						pieView.isAppListScrolled() ? color : 0);
+				searchInput.setBackgroundColor(toolbarBackground.getColor(y));
 			}
 		});
 		PieLauncherApp.appMenu.setUpdateListener(() -> {
@@ -324,13 +319,6 @@ public class HomeActivity extends Activity {
 
 	private void updateAppList() {
 		pieView.filterAppList(searchInput.getText().toString());
-	}
-
-	private static int fadeColor(int argb, float fraction) {
-		fraction = Math.max(0f, Math.min(1f, fraction));
-		int alpha = (argb >> 24) & 0xff;
-		int rgb = argb & 0xffffff;
-		return rgb | Math.round(fraction * alpha) << 24;
 	}
 
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {

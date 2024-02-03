@@ -1,17 +1,8 @@
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/content"
-	android:background="@color/bg_ui"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical">
-	<TextView
-		style="@style/Headline"
-		android:id="@+id/headline"
-		android:drawableLeft="@drawable/ic_back"
-		android:drawableStart="@drawable/ic_back"
-		android:text="@string/preferences" />
-	<ScrollView
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+	<de.markusfisch.android.pielauncher.widget.ScrollWithListenerView
+		android:id="@+id/content"
+		android:background="@color/bg_ui"
+		android:clipToPadding="false"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:fillViewport="true">
@@ -98,5 +89,11 @@
 				android:layout_margin="16dp"
 				android:text="@string/skip" />
 		</LinearLayout>
-	</ScrollView>
-</LinearLayout>
+	</de.markusfisch.android.pielauncher.widget.ScrollWithListenerView>
+	<TextView
+		style="@style/Toolbar"
+		android:id="@+id/toolbar"
+		android:drawableLeft="@drawable/ic_back"
+		android:drawableStart="@drawable/ic_back"
+		android:text="@string/preferences" />
+</merge>

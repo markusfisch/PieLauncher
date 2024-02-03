@@ -5,7 +5,7 @@
 		<item name="android:windowShowWallpaper">true</item>
 		<item name="android:windowNoTitle">true</item>
 	</style>
-	<style name="Headline" parent="@android:style/Widget.TextView">
+	<style name="Toolbar" parent="@android:style/Widget.TextView">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:padding">16dp</item>

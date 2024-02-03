@@ -20,11 +20,13 @@ import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.os.DefaultLauncher;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.OptionsDialog;
+import de.markusfisch.android.pielauncher.widget.ScrollWithListenerView;
 
 public class PreferencesActivity extends Activity {
 	private static final String WELCOME = "welcome";
@@ -32,6 +34,7 @@ public class PreferencesActivity extends Activity {
 	private final Handler handler = new Handler(Looper.getMainLooper());
 
 	private Preferences prefs;
+	private ToolbarBackground toolbarBackground;
 	private View disableBatteryOptimizations;
 	private View defaultLauncherView;
 	private boolean isWelcomeMode = false;
@@ -56,8 +59,9 @@ public class PreferencesActivity extends Activity {
 		setContentView(R.layout.activity_preferences);
 
 		prefs = PieLauncherApp.getPrefs(this);
+		toolbarBackground = new ToolbarBackground(getResources());
 
-		TextView headline = findViewById(R.id.headline);
+		TextView toolbar = findViewById(R.id.toolbar);
 		View skipButton = findViewById(R.id.skip);
 
 		disableBatteryOptimizations = findViewById(
@@ -69,8 +73,8 @@ public class PreferencesActivity extends Activity {
 				intent.getBooleanExtra(WELCOME, false);
 
 		if (isWelcomeMode) {
-			headline.setText(R.string.welcome);
-			headline.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+			toolbar.setText(R.string.welcome);
+			toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
 			skipButton.setOnClickListener(view -> {
 				prefs.setSkipSetup();
@@ -79,7 +83,7 @@ public class PreferencesActivity extends Activity {
 
 			findViewById(R.id.hide_in_welcome_mode).setVisibility(View.GONE);
 		} else {
-			headline.setOnClickListener(v -> finish());
+			toolbar.setOnClickListener(v -> finish());
 			findViewById(R.id.welcome).setVisibility(View.GONE);
 
 			skipButton.setVisibility(View.GONE);
@@ -87,7 +91,11 @@ public class PreferencesActivity extends Activity {
 			initPreferences();
 		}
 
-		SystemBars.addPaddingFromWindowInsets(findViewById(R.id.content));
+		ScrollWithListenerView scrollView = findViewById(R.id.content);
+		scrollView.setOnScrollPositionListener((int y) -> {
+			toolbar.setBackgroundColor(toolbarBackground.getColor(y));
+		});
+		SystemBars.addPaddingFromWindowInsets(toolbar, scrollView);
 		SystemBars.setTransparentSystemBars(getWindow());
 	}
 

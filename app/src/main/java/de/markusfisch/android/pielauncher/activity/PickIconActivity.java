@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.GridView;
 
@@ -22,6 +23,8 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.PickIconAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
+import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
+import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.OptionsDialog;
 
@@ -30,6 +33,8 @@ public class PickIconActivity extends Activity {
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 
+	private SoftKeyboard kb;
+	private ToolbarBackground toolbarBackground;
 	private View progressView;
 	private String iconPackageName;
 	private GridView gridView;
@@ -57,6 +62,9 @@ public class PickIconActivity extends Activity {
 
 		setContentView(R.layout.activity_pick_icon);
 
+		kb = new SoftKeyboard(this);
+		toolbarBackground = new ToolbarBackground(getResources());
+		View toolbar = findViewById(R.id.toolbar);
 		progressView = findViewById(R.id.progress);
 		iconPackageName = PieLauncherApp.iconPack.getSelectedIconPackageName();
 
@@ -65,6 +73,29 @@ public class PickIconActivity extends Activity {
 		initReset(packageName);
 		initSwitchPack();
 
+		gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				if (visibleItemCount < 1) {
+					return;
+				}
+				int y = 0xffff;
+				if (firstVisibleItem == 0) {
+					View child = view.getChildAt(firstVisibleItem);
+					y = child.getTop() - view.getPaddingTop();
+					if (y != 0) {
+						kb.hideFrom(searchInput);
+					}
+				}
+				toolbar.setBackgroundColor(toolbarBackground.getColor(y));
+			}
+		});
+		SystemBars.addPaddingFromWindowInsets(toolbar, gridView);
 		SystemBars.setTransparentSystemBars(getWindow());
 	}
 
