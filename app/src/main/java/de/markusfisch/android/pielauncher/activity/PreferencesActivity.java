@@ -105,8 +105,9 @@ public class PreferencesActivity extends Activity {
 		setRequestedOrientation(prefs.getOrientation());
 
 		// These may change while this activity is shown.
-		if (updateDisableBatteryOptimizations() &&
-				updateDefaultLauncher() &&
+		boolean disableBatteryVisible = updateDisableBatteryOptimizations();
+		boolean updateDefaultVisible = updateDefaultLauncher();
+		if (disableBatteryVisible && updateDefaultVisible &&
 				// Auto close in welcome mode only.
 				isWelcomeMode) {
 			finish();
