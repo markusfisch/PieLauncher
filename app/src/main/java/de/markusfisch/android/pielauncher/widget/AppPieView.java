@@ -42,7 +42,7 @@ import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class AppPieView extends View {
 	public interface ListListener {
-		void onOpenList();
+		void onOpenList(boolean resume);
 
 		void onHideList();
 
@@ -136,6 +136,7 @@ public class AppPieView extends View {
 	private long fadeInFrom;
 	private long fadeOutFrom;
 	private boolean keepMode = false;
+	private boolean neverDropped = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -283,7 +284,7 @@ public class AppPieView extends View {
 		prefs.setRadius(radius);
 		backup.clear();
 		ungrabbedIcons.clear();
-		grabbedIcon = null;
+		releaseIcon();
 		mode = MODE_PIE;
 		keepMode = false;
 		invalidate();
@@ -433,7 +434,7 @@ public class AppPieView extends View {
 							cancelLongPress();
 							recycleVelocityTracker();
 						}
-						grabbedIcon = null;
+						releaseIcon();
 						hidePieMenu();
 						invalidate();
 						break;
@@ -731,15 +732,14 @@ public class AppPieView extends View {
 					switch (which) {
 						case 0:
 							addIconInteractively(icon);
-							postDelayed(() -> {
-								grabbedIcon = null;
-							}, 100);
+							postDelayed(this::releaseIcon, 100);
 							break;
 						case 1:
 							PieLauncherApp.appMenu.launchAppInfo(context,
 									(AppMenu.AppIcon) icon);
 							break;
 						case 2:
+							returnToList();
 							changeIcon(context, icon);
 							break;
 					}
@@ -753,6 +753,7 @@ public class AppPieView extends View {
 		if (listListener != null) {
 			listListener.onHideList();
 		}
+		neverDropped = true;
 		editIcon(appIcon);
 		resetScrollWithoutAnimation();
 		invalidate();
@@ -769,6 +770,11 @@ public class AppPieView extends View {
 		grabbedIconAt = SystemClock.uptimeMillis();
 		lastInsertAt = -1;
 		mode = MODE_EDIT;
+	}
+
+	private void releaseIcon() {
+		grabbedIcon = null;
+		neverDropped = false;
 	}
 
 	private void resetScrollWithoutAnimation() {
@@ -796,7 +802,7 @@ public class AppPieView extends View {
 			boolean result = false;
 			if (wasTap) {
 				if (listListener != null) {
-					listListener.onOpenList();
+					listListener.onOpenList(false);
 				}
 			} else {
 				if (PieLauncherApp.appMenu.launchSelectedApp(context)) {
@@ -810,7 +816,7 @@ public class AppPieView extends View {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
 			boolean result = performEditAction(context);
-			grabbedIcon = null;
+			releaseIcon();
 			PieLauncherApp.appMenu.updateSmoothing();
 			return result;
 		}
@@ -861,6 +867,9 @@ public class AppPieView extends View {
 			} else if (PieLauncherApp.iconPack.hasPacks()) {
 				ripple.set(touch);
 				rollback();
+				if (neverDropped) {
+					returnToList();
+				}
 				changeIcon(context, grabbedIcon);
 			}
 			return true;
@@ -911,10 +920,15 @@ public class AppPieView extends View {
 	}
 
 	private void changeIcon(Context context, AppMenu.Icon icon) {
-		keepMode = true;
 		AppMenu.AppIcon appIcon = (AppMenu.AppIcon) icon;
 		PickIconActivity.start(context,
 				appIcon.componentName.getPackageName());
+	}
+
+	private void returnToList() {
+		if (listListener != null) {
+			listListener.onOpenList(true);
+		}
 	}
 
 	private void setCenter(Point point) {

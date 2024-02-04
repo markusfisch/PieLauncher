@@ -157,7 +157,8 @@ public class HomeActivity extends Activity {
 	private void initPieView() {
 		pieView.setListListener(new AppPieView.ListListener() {
 			@Override
-			public void onOpenList() {
+			public void onOpenList(boolean resume) {
+				showAllAppsOnResume = resume;
 				showAllApps();
 			}
 
