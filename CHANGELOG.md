@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.18.0
+* Support for Icon Packs
+* Hide apps from the launcher
+* Add a preference to control long press time
+* Improve touch feedback
+* Fix handling large icons
+* Fix make default launcher button
+* Make ".." open the preferences and ",," the pie editor
+* Add Russian translation
+
 ## 1.17.5
 * Improve tap detection
 * Improve preferences screen
