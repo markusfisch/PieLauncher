@@ -46,8 +46,17 @@
 	<string name="category_icons">Icon Pack</string>
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Default)</string>
+	<string name="show_hidden_apps"><big><font color="#ffffff">Hidden apps</font></big>\nList of hidden apps</string>
 	<string name="skip">Skip</string>
 	<string name="reset">Reset</string>
 	<string name="add_to_pie_menu">Add to pie menu</string>
 	<string name="change_icon">Change icon</string>
+	<string name="hidden_apps">Hidden apps</string>
+	<string name="hide_app">Hide app</string>
+	<string name="no_hidden_apps">No hidden apps</string>
+	<string name="unhide_app">Show app</string>
+	<string name="want_to_unhide_app">Do you want to show this app again?</string>
+	<string name="want_to_hide_app">Do you want to hide this app?</string>
+	<string name="want_to_restore_icon">Restore original icon?</string>
+	<string name="app_icon">App icon</string>
 </resources>

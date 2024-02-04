@@ -46,8 +46,17 @@
 	<string name="category_icons">Пакет іконок</string>
 	<string name="icon_pack">Пакет іконок</string>
 	<string name="icon_pack_default">Система (за замовчуванням)</string>
+	<string name="show_hidden_apps"><big><font color="#ffffff">Приховані програми</font></big>\nСписок прихованих програм</string>
 	<string name="skip">Пропустити.</string>
 	<string name="reset">Перезавантаження</string>
 	<string name="add_to_pie_menu">Додати в меню</string>
 	<string name="change_icon">Змінити піктограму</string>
+	<string name="hidden_apps">Приховані програми</string>
+	<string name="hide_app">Приховати додаток</string>
+	<string name="no_hidden_apps">Прихованих додатків поки що немає</string>
+	<string name="unhide_app">Показати додаток</string>
+	<string name="want_to_unhide_app">Ви хочете показати цю програму ще раз?</string>
+	<string name="want_to_hide_app">Ви хочете приховати цей додаток?</string>
+	<string name="want_to_restore_icon">Відновити оригінальну іконку?</string>
+	<string name="app_icon">Іконка програми</string>
 </resources>

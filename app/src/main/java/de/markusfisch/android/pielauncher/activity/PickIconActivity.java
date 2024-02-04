@@ -1,6 +1,7 @@
 package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,11 +26,16 @@ import de.markusfisch.android.pielauncher.adapter.PickIconAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
+import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.OptionsDialog;
 
 public class PickIconActivity extends Activity {
+	public interface OnHideListener {
+		void onHide();
+	}
+
 	private static final String PACKAGE_NAME = "package_name";
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -47,6 +53,28 @@ public class PickIconActivity extends Activity {
 		Intent intent = new Intent(context, PickIconActivity.class);
 		intent.putExtra(PACKAGE_NAME, packageName);
 		context.startActivity(intent);
+	}
+
+	public static void askToHide(Context context, String packageName) {
+		askToHide(context, packageName, null);
+	}
+
+	public static void askToHide(Context context, String packageName,
+			OnHideListener hideListener) {
+		new AlertDialog.Builder(context)
+				.setTitle(R.string.hide_app)
+				.setMessage(R.string.want_to_hide_app)
+				.setPositiveButton(android.R.string.ok, (d, w) -> {
+					PieLauncherApp.appMenu.hiddenApps.add(packageName);
+					HiddenApps.store(context, PieLauncherApp.appMenu.hiddenApps);
+					PieLauncherApp.appMenu.updateIconsAsync(context);
+					if (hideListener != null) {
+						hideListener.onHide();
+					}
+				})
+				.setNegativeButton(android.R.string.cancel, (d, w) -> {
+				})
+				.show();
 	}
 
 	@Override
@@ -71,6 +99,7 @@ public class PickIconActivity extends Activity {
 
 		initGridView(packageName);
 		initSearch();
+		initHide(packageName);
 		initReset(packageName);
 		initSwitchPack();
 
@@ -149,14 +178,32 @@ public class PickIconActivity extends Activity {
 		View resetButton = findViewById(R.id.reset);
 		if (PieLauncherApp.iconPack.hasMapping(packageName)) {
 			resetButton.setOnClickListener((v) -> {
-				PieLauncherApp.iconPack.removeMapping(packageName);
-				PieLauncherApp.iconPack.storeMappings(this);
-				PieLauncherApp.appMenu.updateIconsAsync(this);
-				finish();
+				askToRestore(packageName);
 			});
 		} else {
 			resetButton.setVisibility(View.INVISIBLE);
 		}
+	}
+
+	private void askToRestore(String packageName) {
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.change_icon)
+				.setMessage(R.string.want_to_restore_icon)
+				.setPositiveButton(android.R.string.ok, (d, w) -> {
+					PieLauncherApp.iconPack.removeMapping(packageName);
+					PieLauncherApp.iconPack.storeMappings(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
+					finish();
+				})
+				.setNegativeButton(android.R.string.cancel, (d, w) -> {
+				})
+				.show();
+	}
+
+	private void initHide(String packageName) {
+		View hideButton = findViewById(R.id.hide_app);
+		hideButton.setOnClickListener((v) -> askToHide(
+				this, packageName, this::finish));
 	}
 
 	private void initSwitchPack() {

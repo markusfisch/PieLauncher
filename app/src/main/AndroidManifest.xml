@@ -51,5 +51,8 @@
 		<activity
 			android:name=".activity.PickIconActivity"
 			android:exported="true"/>
+		<activity
+			android:name=".activity.HiddenAppsActivity"
+			android:exported="true"/>
 	</application>
 </manifest>

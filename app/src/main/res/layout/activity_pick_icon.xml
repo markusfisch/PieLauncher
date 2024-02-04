@@ -41,11 +41,20 @@
 			android:id="@+id/reset"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@id/switch_pack"
-			android:layout_toStartOf="@id/switch_pack"
+			android:layout_toLeftOf="@id/hide_app"
+			android:layout_toStartOf="@id/hide_app"
 			android:padding="16dp"
 			android:contentDescription="@string/reset"
 			android:src="@drawable/ic_remove"/>
+		<de.markusfisch.android.pielauncher.widget.ActionButton
+			android:id="@+id/hide_app"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@id/switch_pack"
+			android:layout_toStartOf="@id/switch_pack"
+			android:padding="16dp"
+			android:contentDescription="@string/hide_app"
+			android:src="@drawable/ic_hide"/>
 		<de.markusfisch.android.pielauncher.widget.ActionButton
 			android:id="@+id/switch_pack"
 			android:layout_width="wrap_content"

@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.widget;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -730,6 +731,7 @@ public class AppPieView extends View {
 		ArrayList<String> list = new ArrayList<>();
 		list.add(context.getString(R.string.add_to_pie_menu));
 		list.add(context.getString(R.string.tip_remove_app));
+		list.add(context.getString(R.string.hide_app));
 		if (PieLauncherApp.iconPack.hasPacks()) {
 			list.add(context.getString(R.string.change_icon));
 		}
@@ -746,6 +748,10 @@ public class AppPieView extends View {
 									(AppMenu.AppIcon) icon);
 							break;
 						case 2:
+							PickIconActivity.askToHide(context, ((AppMenu.AppIcon) icon)
+									.componentName.getPackageName());
+							break;
+						case 3:
 							returnToList();
 							changeIcon(context, icon);
 							break;

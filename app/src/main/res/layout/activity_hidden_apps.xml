@@ -1,0 +1,44 @@
+<merge
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+	<ListView
+		android:id="@+id/apps"
+		android:background="@color/bg_ui"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scrollbarStyle="outsideOverlay"
+		android:clipToPadding="false"
+		android:choiceMode="multipleChoice"
+		android:divider="@color/separator"
+		android:dividerHeight="1px"/>
+	<TextView
+		android:id="@+id/no_hidden_apps"
+		android:background="@color/bg_ui"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="center"
+		android:padding="16dp"
+		android:text="@string/no_hidden_apps"
+		android:visibility="gone"/>
+	<FrameLayout
+		android:id="@+id/progress"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/bg_ui"
+		android:clickable="true"
+		android:focusable="true"
+		android:visibility="gone">
+		<ProgressBar
+			style="?android:attr/progressBarStyleLarge"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:gravity="center"/>
+	</FrameLayout>
+	<TextView
+		style="@style/Toolbar"
+		android:id="@+id/toolbar"
+		android:drawableLeft="@drawable/ic_back"
+		android:drawableStart="@drawable/ic_back"
+		android:text="@string/hidden_apps" />
+</merge>

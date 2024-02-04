@@ -21,20 +21,24 @@ import android.os.UserManager;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
+import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.io.Menu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
@@ -60,6 +64,8 @@ public class AppMenu extends CanvasPieMenu {
 
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+
+	public final HashSet<String> hiddenApps = new HashSet<>();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
@@ -140,6 +146,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	public void store(Context context) {
 		Menu.store(context, icons);
+		HiddenApps.store(context, hiddenApps);
 	}
 
 	public List<AppIcon> filterAppsBy(Context context, String query) {
@@ -193,6 +200,7 @@ public class AppMenu extends CanvasPieMenu {
 	public void removePackage(String packageName, UserHandle userHandle) {
 		removePackageFromApps(apps, packageName, userHandle);
 		removePackageFromPieMenu(packageName, userHandle);
+		hiddenApps.remove(packageName);
 		if (updateListener != null) {
 			updateListener.onUpdate();
 		}
@@ -223,6 +231,8 @@ public class AppMenu extends CanvasPieMenu {
 			return false;
 		}
 		indexing = true;
+		HiddenApps.restore(context, hiddenApps);
+		HashSet<String> hideApps = new HashSet<>(hiddenApps);
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 		if (packageNameRestriction != null) {
 			// Copy apps since we're indexing just one app.
@@ -236,6 +246,7 @@ public class AppMenu extends CanvasPieMenu {
 			indexApps(context,
 					packageNameRestriction,
 					userHandleRestriction,
+					hideApps,
 					newApps);
 			List<Icon> newIcons = createMenu(context, newApps);
 			handler.post(() -> {
@@ -252,16 +263,17 @@ public class AppMenu extends CanvasPieMenu {
 		return true;
 	}
 
-	private void indexApps(
+	private static void indexApps(
 			Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
+			HashSet<String> hideApps,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		PackageManager pm = context.getPackageManager();
 		PieLauncherApp.iconPack.restoreMappingsIfEmpty(context);
 		PieLauncherApp.iconPack.selectPack(pm,
 				PieLauncherApp.getPrefs(context).getIconPack());
-		String skip = context.getPackageName();
+		hideApps.add(context.getPackageName());
 		if (HAS_LAUNCHER_APP) {
 			indexProfilesApps(
 					(LauncherApps) context.getSystemService(
@@ -269,11 +281,9 @@ public class AppMenu extends CanvasPieMenu {
 					(UserManager) context.getSystemService(
 							Context.USER_SERVICE),
 					allApps, packageNameRestriction, userHandleRestriction,
-					skip);
+					hideApps);
 		} else {
-			indexIntentsApps(pm,
-					allApps, packageNameRestriction,
-					skip);
+			indexIntentsApps(pm, allApps, packageNameRestriction, hideApps);
 		}
 	}
 
@@ -281,7 +291,7 @@ public class AppMenu extends CanvasPieMenu {
 			PackageManager pm,
 			Map<LauncherItemKey, AppIcon> allApps,
 			String packageNameRestriction,
-			String skipPackage) {
+			Set<String> hideApps) {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
@@ -290,8 +300,7 @@ public class AppMenu extends CanvasPieMenu {
 		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
 		for (ResolveInfo info : activities) {
 			String packageName = info.activityInfo.applicationInfo.packageName;
-			if (skipPackage.equals(packageName)) {
-				// Always skip this package.
+			if (hideApps.contains(packageName)) {
 				continue;
 			}
 			Drawable icon = PieLauncherApp.iconPack.getIcon(packageName);
@@ -313,7 +322,7 @@ public class AppMenu extends CanvasPieMenu {
 			Map<LauncherItemKey, AppIcon> allApps,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
-			String skipPackage) {
+			Set<String> hideApps) {
 		List<UserHandle> profiles =
 				packageNameRestriction != null && userHandleRestriction != null
 						? Collections.singletonList(userHandleRestriction)
@@ -324,7 +333,7 @@ public class AppMenu extends CanvasPieMenu {
 			for (LauncherActivityInfo info :
 					la.getActivityList(packageNameRestriction, profile)) {
 				String packageName = info.getApplicationInfo().packageName;
-				if (skipPackage.equals(packageName)) {
+				if (hideApps.contains(packageName)) {
 					// Always skip this package.
 					continue;
 				}

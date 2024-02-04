@@ -90,6 +90,9 @@ public class PreferencesActivity extends Activity {
 			skipButton.setVisibility(View.GONE);
 
 			initPreferences();
+			findViewById(R.id.hidden_apps).setOnClickListener((view) -> {
+				HiddenAppsActivity.start(this);
+			});
 		}
 
 		Window window = getWindow();

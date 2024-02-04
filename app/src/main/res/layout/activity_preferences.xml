@@ -78,9 +78,13 @@
 					style="@style/CategoryHeader"
 					android:text="@string/category_icons" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/icon_pack"
 					android:text="@string/icon_pack_default" />
+				<TextView
+					style="@style/Preference"
+					android:id="@+id/hidden_apps"
+					android:text="@string/show_hidden_apps" />
 			</LinearLayout>
 			<Button
 				style="@style/Button"
