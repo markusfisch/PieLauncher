@@ -101,7 +101,6 @@ public class AppPieView extends View {
 	private final int listPadding;
 	private final int searchInputHeight;
 	private final int iconSize;
-	private final int iconSizeSq;
 	private final int iconTextPadding;
 	private final int spaceBetween;
 	private final int iconLaunchFirstHalf;
@@ -115,6 +114,8 @@ public class AppPieView extends View {
 	private int viewWidth;
 	private int viewHeight;
 	private int controlsPadding;
+	private int actionSize;
+	private int actionSizeSq;
 	private int deadZoneTop;
 	private int deadZoneBottom;
 	private int minRadius;
@@ -149,11 +150,11 @@ public class AppPieView extends View {
 		DisplayMetrics dm = res.getDisplayMetrics();
 		dp = dm.density;
 		float sp = dm.scaledDensity;
+
 		controlsPadding = Math.round(80f * dp);
 		listPadding = Math.round(16f * dp);
 		searchInputHeight = Math.round(112f * dp);
 		iconSize = Math.round(48f * dp);
-		iconSizeSq = iconSize * iconSize;
 		iconTextPadding = Math.round(12f * dp);
 		spaceBetween = Math.round(4f * dp);
 
@@ -295,7 +296,7 @@ public class AppPieView extends View {
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (changed) {
-			initMenu(right - left, bottom - top);
+			layoutView(right - left, bottom - top);
 		}
 	}
 
@@ -652,7 +653,7 @@ public class AppPieView extends View {
 		});
 	}
 
-	private void initMenu(int width, int height) {
+	private void layoutView(int width, int height) {
 		int viewMin = Math.min(width, height);
 		int viewMax = Math.max(width, height);
 		viewWidth = width;
@@ -695,9 +696,12 @@ public class AppPieView extends View {
 			totalWidth += w;
 			totalHeight += h;
 		}
+		// Evenly distribute rects in parent.
+		int spaces = length + 1;
+		int max;
 		if (portrait) {
-			int step = Math.round(
-					(float) (viewWidth - totalWidth) / (length + 1));
+			int step = Math.round((float) (viewWidth - totalWidth) / spaces);
+			max = largestWidth + step;
 			int x = step;
 			int y = viewHeight - controlsPadding - largestHeight / 2;
 			for (Rect rect : rects) {
@@ -705,8 +709,8 @@ public class AppPieView extends View {
 				x += step + rect.width();
 			}
 		} else {
-			int step = Math.round(
-					(float) (viewHeight - totalHeight) / (length + 1));
+			int step = Math.round((float) (viewHeight - totalHeight) / spaces);
+			max = largestHeight + step;
 			int x = viewWidth - controlsPadding - largestWidth / 2;
 			int y = step;
 			for (Rect rect : rects) {
@@ -714,6 +718,9 @@ public class AppPieView extends View {
 				y += step + rect.height();
 			}
 		}
+		// Calculate size of circular action buttons.
+		actionSize = Math.min(iconSize, max / 2 - spaceBetween);
+		actionSizeSq = actionSize * actionSize;
 	}
 
 	private void showIconOptions(Context context, AppMenu.Icon icon) {
@@ -1053,7 +1060,7 @@ public class AppPieView extends View {
 			if (f < 1f) {
 				invalidate = true;
 			}
-			float radius = f * iconSize;
+			float radius = f * actionSize;
 			drawAction(canvas, iconRemove, iconStartRect, radius);
 			if (PieLauncherApp.iconPack.hasPacks()) {
 				drawAction(canvas, iconEdit, iconCenterRect, radius);
@@ -1219,7 +1226,7 @@ public class AppPieView extends View {
 		if (radius > 0) {
 			paint = pressed ? paintPressed : paintDropZone;
 		} else if (pressed) {
-			radius = iconSize;
+			radius = actionSize;
 			paint = paintPressed;
 		}
 		if (paint != null) {
@@ -1230,7 +1237,7 @@ public class AppPieView extends View {
 
 	private boolean contains(Rect rect, Point point) {
 		return distSq(rect.centerX(), rect.centerY(), point.x, point.y) <
-				iconSizeSq;
+				actionSizeSq;
 	}
 
 	private static float distSq(int ax, int ay, int bx, int by) {
