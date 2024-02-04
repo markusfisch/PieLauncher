@@ -31,6 +31,14 @@ public class SystemBars {
 		window.setNavigationBarColor(0);
 	}
 
+	public static void setNavigationBarColor(Window window, int color) {
+		if (window == null ||
+				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			return;
+		}
+		window.setNavigationBarColor(color);
+	}
+
 	public static void listenForWindowInsets(View view,
 			OnInsetListener listener) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {

@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -73,6 +74,7 @@ public class PickIconActivity extends Activity {
 		initReset(packageName);
 		initSwitchPack();
 
+		Window window = getWindow();
 		gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -96,7 +98,8 @@ public class PickIconActivity extends Activity {
 			}
 		});
 		SystemBars.addPaddingFromWindowInsets(toolbar, gridView);
-		SystemBars.setTransparentSystemBars(getWindow());
+		SystemBars.setTransparentSystemBars(window);
+		SystemBars.setNavigationBarColor(window, toolbarBackground.backgroundColor);
 	}
 
 	private void initGridView(String packageName) {

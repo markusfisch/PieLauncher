@@ -5,7 +5,8 @@ import android.content.res.Resources;
 import de.markusfisch.android.pielauncher.R;
 
 public class ToolbarBackground {
-	private final int backgroundColor;
+	public final int backgroundColor;
+
 	private final float threshold;
 
 	public ToolbarBackground(Resources res) {

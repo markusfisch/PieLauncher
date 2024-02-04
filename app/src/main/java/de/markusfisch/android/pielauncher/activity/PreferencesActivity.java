@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 
 import java.util.LinkedHashMap;
@@ -91,12 +92,15 @@ public class PreferencesActivity extends Activity {
 			initPreferences();
 		}
 
+		Window window = getWindow();
 		ScrollWithListenerView scrollView = findViewById(R.id.content);
-		scrollView.setOnScrollPositionListener((int y) -> {
+		scrollView.setOnScrollPositionListener((int y, boolean scrollable) -> {
 			toolbar.setBackgroundColor(toolbarBackground.getColor(y));
+			SystemBars.setNavigationBarColor(window,
+					scrollable ? toolbarBackground.backgroundColor : 0);
 		});
 		SystemBars.addPaddingFromWindowInsets(toolbar, scrollView);
-		SystemBars.setTransparentSystemBars(getWindow());
+		SystemBars.setTransparentSystemBars(window);
 	}
 
 	@Override
