@@ -43,7 +43,7 @@
 	<string name="icon_press_default">Тривалість роботи системи (за замовчуванням)</string>
 	<string name="icon_press_longer">На довший час</string>
 	<string name="icon_press_menu">Замість цього показати меню</string>
-	<string name="category_icons">Пакет іконок</string>
+	<string name="category_advanced">Розширені налаштування</string>
 	<string name="icon_pack">Пакет іконок</string>
 	<string name="icon_pack_default">Система (за замовчуванням)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Приховані програми</font></big>\nСписок прихованих програм</string>

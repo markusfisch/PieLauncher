@@ -43,7 +43,7 @@
 	<string name="icon_press_default">系统持续时间 (默认)</string>
 	<string name="icon_press_longer">更长的时间</string>
 	<string name="icon_press_menu">显示菜单</string>
-	<string name="category_icons">图标包</string>
+	<string name="category_advanced">高级设置</string>
 	<string name="icon_pack">图标包</string>
 	<string name="icon_pack_default">系统（默认）</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">隐藏的应用程序</font></big>\n隐藏应用程序列表。</string>

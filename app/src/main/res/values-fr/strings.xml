@@ -43,7 +43,7 @@
 	<string name="icon_press_default">Durée du système (d\'usine)</string>
 	<string name="icon_press_longer">Plus long</string>
 	<string name="icon_press_menu">Afficher le menu à la place</string>
-	<string name="category_icons">Pack d\'icônes</string>
+	<string name="category_advanced">Paramètres avancés</string>
 	<string name="icon_pack">Pack d\'icônes</string>
 	<string name="icon_pack_default">Système (d\'usine)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">App cachées</font></big>\nListe des applications cachées</string>

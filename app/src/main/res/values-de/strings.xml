@@ -43,7 +43,7 @@
 	<string name="icon_press_default">Systemdauer (Standard)</string>
 	<string name="icon_press_longer">Länger</string>
 	<string name="icon_press_menu">Zeige Menu stattdessen</string>
-	<string name="category_icons">Icon Pack</string>
+	<string name="category_advanced">Erweitert</string>
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Standard)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Versteckte Apps</font></big>\nListe der nicht sichtbaren apps</string>
