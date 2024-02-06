@@ -54,9 +54,9 @@
 	<string name="hidden_apps">Скрытые приложения</string>
 	<string name="hide_app">Скрыть приложение</string>
 	<string name="no_hidden_apps">Скрытых приложений пока нет</string>
-	<string name="unhide_app">Скрыть приложение</string>
-	<string name="want_to_unhide_app">Хотите ли вы показать это приложение снова?</string>
+	<string name="unhide_app">Показывать приложение</string>
+	<string name="want_to_unhide_app">Хотите показывать это приложение?</string>
 	<string name="want_to_hide_app">Хотите скрыть это приложение?</string>
-	<string name="want_to_restore_icon">Восстановить оригинальный значок?</string>
-	<string name="app_icon">Значок приложения</string>
+	<string name="want_to_restore_icon">Восстановить оригинальный иконку?</string>
+	<string name="app_icon">Иконка приложения</string>
 </resources>
