@@ -46,7 +46,7 @@
 	<string name="category_advanced">Erweitert</string>
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Standard)</string>
-	<string name="show_hidden_apps"><big><font color="#ffffff">Versteckte Apps</font></big>\nListe der nicht sichtbaren apps</string>
+	<string name="show_hidden_apps"><big><font color="#ffffff">Versteckte Apps</font></big>\nListe der nicht sichtbaren Apps</string>
 	<string name="skip">Überspringen</string>
 	<string name="reset">Zurücksetzen</string>
 	<string name="add_to_pie_menu">Zum Menu hinzufügen</string>
