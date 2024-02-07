@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.HiddenAppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.view.SystemBars;
@@ -49,6 +50,8 @@ public class HiddenAppsActivity extends Activity {
 
 		setContentView(R.layout.activity_hidden_apps);
 
+		BackgroundBlur.blurIfTrue(getWindow(),
+				PieLauncherApp.getPrefs(this).blurBackground());
 		toolbarBackground = new ToolbarBackground(getResources());
 		View toolbar = findViewById(R.id.toolbar);
 		toolbar.setOnClickListener(v -> finish());

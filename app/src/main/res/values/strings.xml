@@ -20,6 +20,9 @@
 	<string name="darken_background">Darken background</string>
 	<string name="darken_background_yes">Yes</string>
 	<string name="darken_background_no">No (Default)</string>
+	<string name="blur_background">Blur background</string>
+	<string name="blur_background_yes">Yes</string>
+	<string name="blur_background_no">No (Default)</string>
 	<string name="dead_zone">Ignore touches</string>
 	<string name="dead_zone_none">No restriction</string>
 	<string name="dead_zone_top">At the top</string>

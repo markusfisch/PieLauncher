@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.PickIconAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.io.HiddenApps;
@@ -91,6 +92,8 @@ public class PickIconActivity extends Activity {
 
 		setContentView(R.layout.activity_pick_icon);
 
+		BackgroundBlur.blurIfTrue(getWindow(),
+				PieLauncherApp.getPrefs(this).blurBackground());
 		kb = new SoftKeyboard(this);
 		toolbarBackground = new ToolbarBackground(getResources());
 		View toolbar = findViewById(R.id.toolbar);

@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.os.BatteryOptimization;
 import de.markusfisch.android.pielauncher.os.DefaultLauncher;
@@ -60,6 +61,7 @@ public class PreferencesActivity extends Activity {
 		setContentView(R.layout.activity_preferences);
 
 		prefs = PieLauncherApp.getPrefs(this);
+		BackgroundBlur.blurIfTrue(getWindow(), prefs.blurBackground());
 		toolbarBackground = new ToolbarBackground(getResources());
 
 		TextView toolbar = findViewById(R.id.toolbar);
@@ -139,6 +141,18 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getDarkenBackgroundOptions,
 				() -> prefs.darkenBackground(),
 				(value) -> prefs.setDarkenBackground(value));
+		if (BackgroundBlur.canBlur(getWindow())) {
+			initPreference(R.id.blur_background,
+					R.string.blur_background,
+					PreferencesActivity::getBlurBackgroundOptions,
+					() -> prefs.blurBackground(),
+					(value) -> {
+						prefs.setBlurBackground(value);
+						BackgroundBlur.setBlur(getWindow(), value);
+					});
+		} else {
+			findViewById(R.id.blur_background).setVisibility(View.GONE);
+		}
 		initPreference(R.id.dead_zone,
 				R.string.dead_zone,
 				PreferencesActivity::getDeadZoneOptions,
@@ -327,6 +341,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.darken_background_yes);
 		map.put(Boolean.FALSE, R.string.darken_background_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getBlurBackgroundOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.blur_background_yes);
+		map.put(Boolean.FALSE, R.string.blur_background_no);
 		return map;
 	}
 

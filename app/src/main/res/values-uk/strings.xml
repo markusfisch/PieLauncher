@@ -20,6 +20,9 @@
 	<string name="darken_background">Затемнити фон</string>
 	<string name="darken_background_yes">Так</string>
 	<string name="darken_background_no">Ні (за замовчуванням)</string>
+	<string name="blur_background">Розмити фон</string>
+	<string name="blur_background_yes">Так</string>
+	<string name="blur_background_no">Ні (за замовчуванням)</string>
 	<string name="dead_zone">Ігнорувати дотики</string>
 	<string name="dead_zone_none">Без обмежень</string>
 	<string name="dead_zone_top">Вгорі</string>

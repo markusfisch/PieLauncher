@@ -156,6 +156,7 @@ public class HomeActivity extends Activity {
 	}
 
 	private void initPieView() {
+		pieView.setWindow(getWindow());
 		pieView.setListListener(new AppPieView.ListListener() {
 			@Override
 			public void onOpenList(boolean resume) {
