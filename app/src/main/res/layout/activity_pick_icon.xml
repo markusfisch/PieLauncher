@@ -45,7 +45,7 @@
 			android:layout_toStartOf="@id/hide_app"
 			android:padding="16dp"
 			android:contentDescription="@string/reset"
-			android:src="@drawable/ic_remove"/>
+			android:src="@drawable/ic_restore"/>
 		<de.markusfisch.android.pielauncher.widget.ActionButton
 			android:id="@+id/hide_app"
 			android:layout_width="wrap_content"
