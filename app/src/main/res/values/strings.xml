@@ -53,6 +53,7 @@
 	<string name="change_icon">Change icon</string>
 	<string name="hidden_apps">Hidden apps</string>
 	<string name="hide_app">Hide app</string>
+	<string name="show_app_info">Show app info</string>
 	<string name="no_hidden_apps">No hidden apps</string>
 	<string name="unhide_app">Show app</string>
 	<string name="want_to_unhide_app">Do you want to show this app again?</string>

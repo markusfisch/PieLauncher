@@ -729,7 +729,7 @@ public class AppPieView extends View {
 		}
 		ArrayList<String> list = new ArrayList<>();
 		list.add(context.getString(R.string.add_to_pie_menu));
-		list.add(context.getString(R.string.tip_remove_app));
+		list.add(context.getString(R.string.show_app_info));
 		list.add(context.getString(R.string.hide_app));
 		if (PieLauncherApp.iconPack.hasPacks()) {
 			list.add(context.getString(R.string.change_icon));

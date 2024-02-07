@@ -53,6 +53,7 @@
 	<string name="change_icon">Змінити піктограму</string>
 	<string name="hidden_apps">Приховані програми</string>
 	<string name="hide_app">Приховати додаток</string>
+	<string name="show_app_info">Показати інформацію про програму</string>
 	<string name="no_hidden_apps">Прихованих додатків поки що немає</string>
 	<string name="unhide_app">Показати додаток</string>
 	<string name="want_to_unhide_app">Ви хочете показати цю програму ще раз?</string>
