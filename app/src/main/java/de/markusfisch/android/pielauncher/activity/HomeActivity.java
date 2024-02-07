@@ -212,12 +212,16 @@ public class HomeActivity extends Activity {
 					showEditor();
 					return;
 				}
-				if (endsWithDoubleSpace(e) ||
-						(prefs.autoLaunchMatching() &&
-								pieView.getIconCount() == 1)) {
+				// Replace ". " before updateAppList().
+				if (endsWithDoubleSpace(e)) {
 					pieView.launchSelectedApp();
 				}
 				updateAppList();
+				// Check icon count after the list was updated.
+				if (prefs.autoLaunchMatching() &&
+						pieView.getIconCount() == 1) {
+					pieView.launchSelectedApp();
+				}
 			}
 		});
 		searchInput.setOnEditorActionListener((v, actionId, event) -> {
