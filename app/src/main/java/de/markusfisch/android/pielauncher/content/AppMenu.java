@@ -21,7 +21,6 @@ import android.os.UserManager;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -2,7 +2,6 @@ package de.markusfisch.android.pielauncher.widget;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
