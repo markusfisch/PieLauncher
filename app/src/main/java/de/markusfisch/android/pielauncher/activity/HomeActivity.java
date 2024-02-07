@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
@@ -29,7 +30,7 @@ public class HomeActivity extends Activity {
 	private ToolbarBackground toolbarBackground;
 	private AppPieView pieView;
 	private EditText searchInput;
-	private View prefsButton;
+	private ImageView prefsButton;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private long pausedAt = 0L;
@@ -80,7 +81,6 @@ public class HomeActivity extends Activity {
 
 		initPieView();
 		initSearchInput();
-		initPrefsButton();
 
 		SystemBars.listenForWindowInsets(pieView,
 				(left, top, right, bottom) -> pieView.setPadding(
@@ -140,6 +140,7 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		updatePrefsButton();
 		if (showAllAppsOnResume) {
 			showAllApps();
 			showAllAppsOnResume = false;
@@ -208,8 +209,7 @@ public class HomeActivity extends Activity {
 					return;
 				} else if (s.equals(",,")) {
 					e.clear();
-					hideAllApps();
-					pieView.showEditor();
+					showEditor();
 					return;
 				}
 				if (endsWithDoubleSpace(e) ||
@@ -259,8 +259,14 @@ public class HomeActivity extends Activity {
 		return false;
 	}
 
-	private void initPrefsButton() {
-		prefsButton.setOnClickListener(v -> showPreferences());
+	private void updatePrefsButton() {
+		if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
+			prefsButton.setImageResource(R.drawable.ic_edit);
+			prefsButton.setOnClickListener(v -> showEditor());
+		} else {
+			prefsButton.setImageResource(R.drawable.ic_preferences);
+			prefsButton.setOnClickListener(v -> showPreferences());
+		}
 	}
 
 	private void showPreferences() {
@@ -268,6 +274,11 @@ public class HomeActivity extends Activity {
 		hideAllApps();
 		PreferencesActivity.start(this);
 		showAllAppsOnResume = true;
+	}
+
+	private void showEditor() {
+		hideAllApps();
+		pieView.showEditor();
 	}
 
 	private void hidePrefsButton() {
