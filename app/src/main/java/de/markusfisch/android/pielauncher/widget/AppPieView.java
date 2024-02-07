@@ -85,6 +85,7 @@ public class AppPieView extends View {
 	private final Bitmap iconAdd;
 	private final Bitmap iconRemove;
 	private final Bitmap iconEdit;
+	private final Bitmap iconHide;
 	private final Bitmap iconDetails;
 	private final Bitmap iconDone;
 	private final Bitmap iconPreferences;
@@ -95,6 +96,7 @@ public class AppPieView extends View {
 	private final String pinchZoomTip;
 	private final String removeIconTip;
 	private final String editAppTip;
+	private final String hideAppTip;
 	private final String removeAppTip;
 	private final Preferences prefs;
 	private final ScaleGestureDetector scaleDetector;
@@ -168,6 +170,7 @@ public class AppPieView extends View {
 		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
 		removeIconTip = context.getString(R.string.tip_remove_icon);
 		editAppTip = context.getString(R.string.tip_edit_app);
+		hideAppTip = context.getString(R.string.hide_app);
 		removeAppTip = context.getString(R.string.tip_remove_app);
 
 		paintDropZone.setColor(res.getColor(R.color.bg_drop_zone));
@@ -184,6 +187,7 @@ public class AppPieView extends View {
 
 		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconEdit = getBitmapFromDrawable(res, R.drawable.ic_edit);
+		iconHide = getBitmapFromDrawable(res, R.drawable.ic_hide);
 		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
 		iconDetails = getBitmapFromDrawable(res, R.drawable.ic_details);
 		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
@@ -891,13 +895,19 @@ public class AppPieView extends View {
 			if (grabbedIcon == null) {
 				keepMode = true;
 				PreferencesActivity.start(context);
-			} else if (PieLauncherApp.iconPack.hasPacks()) {
+			} else {
 				ripple.set(touch);
 				rollback();
 				if (neverDropped) {
 					returnToList();
 				}
-				changeIcon(context, grabbedIcon);
+				if (PieLauncherApp.iconPack.hasPacks()) {
+					changeIcon(context, grabbedIcon);
+				} else {
+					PickIconActivity.askToHide(context,
+							((AppMenu.AppIcon) grabbedIcon)
+									.componentName.getPackageName());
+				}
 			}
 			return true;
 		} else if (contains(iconEndRect, touch)) {
@@ -987,7 +997,7 @@ public class AppPieView extends View {
 	private void editActionsFeedback() {
 		if (contains(iconStartRect, touch)) {
 			setHighlightedAction(iconStartRect);
-		} else if (contains(iconCenterRect, touch) && grabbedIcon == null) {
+		} else if (contains(iconCenterRect, touch)) {
 			setHighlightedAction(iconCenterRect);
 		} else if (contains(iconEndRect, touch)) {
 			setHighlightedAction(iconEndRect);
@@ -1082,13 +1092,8 @@ public class AppPieView extends View {
 			}
 			float radius = f * actionSize;
 			drawAction(canvas, iconRemove, iconStartRect, radius);
-			if (PieLauncherApp.iconPack.hasPacks()) {
-				drawAction(canvas, iconEdit, iconCenterRect, radius);
-			} else if (invalidate) {
-				paintActive.setAlpha(Math.round((1f - f) * 255f));
-				drawAction(canvas, iconPreferences, iconCenterRect);
-				paintActive.setAlpha(255);
-			}
+			drawAction(canvas, PieLauncherApp.iconPack.hasPacks()
+					? iconEdit : iconHide, iconCenterRect, radius);
 			drawAction(canvas, iconDetails, iconEndRect, radius);
 		} else {
 			drawAction(canvas, iconAdd, iconStartRect);
@@ -1201,10 +1206,10 @@ public class AppPieView extends View {
 			if (contains(iconStartRect, touch)) {
 				setHighlightedAction(iconStartRect);
 				return removeIconTip;
-			} else if (PieLauncherApp.iconPack.hasPacks() &&
-					contains(iconCenterRect, touch)) {
+			} else if (contains(iconCenterRect, touch)) {
 				setHighlightedAction(iconCenterRect);
-				return editAppTip;
+				return PieLauncherApp.iconPack.hasPacks()
+						? editAppTip : hideAppTip;
 			} else if (contains(iconEndRect, touch)) {
 				setHighlightedAction(iconEndRect);
 				return removeAppTip;
