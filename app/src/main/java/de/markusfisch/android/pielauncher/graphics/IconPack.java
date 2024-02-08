@@ -168,11 +168,14 @@ public class IconPack {
 		selectedPack = null;
 		packageManager = null;
 		componentToDrawableNames.clear();
-		if (pm == null || packageName == null || packageName.isEmpty()) {
+		if (pm == null) {
 			return;
 		}
 		// Always update because packs may have been added/removed.
 		updatePacks(pm);
+		if (packageName == null || packageName.isEmpty()) {
+			return;
+		}
 		selectedPack = packs.get(packageName);
 		if (selectedPack == null) {
 			return;
