@@ -32,18 +32,18 @@
 	<string name="space_action">Пробел в конце запроса…</string>
 	<string name="space_action_move_selection">…Двигает выбор (Стандартно)</string>
 	<string name="space_action_double_launch">…Запускает приложение (Два пробела)</string>
-	<string name="search_strictness">Поисковый запрос</string>
-	<string name="search_strictness_hamming">Вхождения схоже с запросом (Стандартно)</string>
-	<string name="search_strictness_contains">Вхождения содержит запрос</string>
-	<string name="search_strictness_starts_with">Вхождения начинается с запроса</string>
 	<string name="auto_launch_matching">Автоматически запускать лучшее вхождение</string>
 	<string name="auto_launch_matching_yes">Да</string>
 	<string name="auto_launch_matching_no">Нет (Стандартно)</string>
-	<string name="icon_press">Нажатие на иконку</string>
-	<string name="icon_press_default">Быстрое (Стандартно)</string>
-	<string name="icon_press_longer">Долгое</string>
-	<string name="icon_press_menu">Показавает меню</string>
-	<string name="icon_lock_menu">Функция заблокирована</string>
+	<string name="search_strictness">Поиск приложений</string>
+	<string name="search_strictness_hamming">Название похоже на поисковый запрос (Стандартно)</string>
+	<string name="search_strictness_contains">Имя содержит поисковый запрос</string>
+	<string name="search_strictness_starts_with">Имя начинается с поискового термина</string>
+	<string name="icon_press">Длительное нажатие</string>
+	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>
+	<string name="icon_press_longer">Требуется длительное нажатие</string>
+	<string name="icon_press_menu">Показать всплывающее меню</string>
+	<string name="icon_lock_menu">Инвалиды</string>
 	<string name="category_advanced">Дополнительные настройки</string>
 	<string name="icon_pack">Набор иконок</string>
 	<string name="icon_pack_default">Системные (Стандартно)</string>
@@ -59,6 +59,6 @@
 	<string name="unhide_app">Показывать приложение</string>
 	<string name="want_to_unhide_app">Хотите показывать это приложение?</string>
 	<string name="want_to_hide_app">Хотите скрыть это приложение?</string>
-	<string name="want_to_restore_icon">Восстановить оригинальный иконку?</string>
+	<string name="want_to_restore_icon">Удалить назначение значка?</string>
 	<string name="app_icon">Иконка приложения</string>
 </resources>

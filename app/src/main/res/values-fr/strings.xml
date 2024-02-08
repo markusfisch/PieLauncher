@@ -32,18 +32,18 @@
 	<string name="space_action">Espace à la fin de la recherche</string>
 	<string name="space_action_move_selection">Déplace la sélection (d\'usine)</string>
 	<string name="space_action_double_launch">Appuyer deux fois pour lancer l\'app</string>
-	<string name="search_strictness">Recherche de mots-clés</string>
-	<string name="search_strictness_hamming">Ressemble au texte de recherche (d\'usine)</string>
-	<string name="search_strictness_contains">Contient le texte de recherche</string>
-	<string name="search_strictness_starts_with">Commence par le texte de recherche</string>
 	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
 	<string name="auto_launch_matching_yes">Oui</string>
 	<string name="auto_launch_matching_no">Non (d\'usine)</string>
-	<string name="icon_press">Appuyer sur l\'icône pour ajouter</string>
-	<string name="icon_press_default">Durée du système (d\'usine)</string>
-	<string name="icon_press_longer">Plus long</string>
-	<string name="icon_press_menu">Afficher le menu à la place</string>
-	<string name="icon_lock_menu">Fonction verrouillée</string>
+	<string name="search_strictness">Recherche d\'application</string>
+	<string name="search_strictness_hamming">Le nom ressemble au terme recherché (d\'usine)</string>
+	<string name="search_strictness_contains">Le nom contient le terme recherché</string>
+	<string name="search_strictness_starts_with">Le nom commence par le terme recherché</string>
+	<string name="icon_press">Appui long</string>
+	<string name="icon_press_default">Lancer l\'app dans le menu (d\'usine)</string>
+	<string name="icon_press_longer">Nécessite une pression prolongée</string>
+	<string name="icon_press_menu">Afficher un menu contextuel</string>
+	<string name="icon_lock_menu">Désactivé</string>
 	<string name="category_advanced">Paramètres avancés</string>
 	<string name="icon_pack">Pack d\'icônes</string>
 	<string name="icon_pack_default">Système (d\'usine)</string>
@@ -59,6 +59,6 @@
 	<string name="unhide_app">Désactiver l\'app</string>
 	<string name="want_to_unhide_app">Voulez-vous montrer cette application à nouveau ?</string>
 	<string name="want_to_hide_app">Vous voulez cacher cette app ?</string>
-	<string name="want_to_restore_icon">Restaurer l\'icône d\'origine ?</string>
+	<string name="want_to_restore_icon">Supprimer l\'association d\'icônes ?</string>
 	<string name="app_icon">Icône de l\'app</string>
 </resources>

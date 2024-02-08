@@ -32,18 +32,18 @@
 	<string name="space_action">搜索输入末尾的空格</string>
 	<string name="space_action_move_selection">移动选择 (默认)</string>
 	<string name="space_action_double_launch">按两次启动应用程序</string>
-	<string name="search_strictness">搜索词</string>
-	<string name="search_strictness_hamming">与搜索文本类似 (默认)</string>
-	<string name="search_strictness_contains">包括搜索文本</string>
-	<string name="search_strictness_starts_with">以搜索文本开头</string>
 	<string name="auto_launch_matching">当仅一个应用匹配搜索时</string>
 	<string name="auto_launch_matching_yes">自动启动它</string>
 	<string name="auto_launch_matching_no">不自动启动 (默认)</string>
-	<string name="icon_press">按图标添加</string>
-	<string name="icon_press_default">系统持续时间 (默认)</string>
-	<string name="icon_press_longer">更长的时间</string>
-	<string name="icon_press_menu">显示菜单</string>
-	<string name="icon_lock_menu">功能锁定</string>
+	<string name="search_strictness">应用程序搜索</string>
+	<string name="search_strictness_hamming">名称与搜索词相似 (默认)</string>
+	<string name="search_strictness_contains">名称包含搜索词</string>
+	<string name="search_strictness_starts_with">名称以搜索词开头</string>
+	<string name="icon_press">长按</string>
+	<string name="icon_press_default">在菜单中添加应用程序 (默认)</string>
+	<string name="icon_press_longer">需要长时间按压</string>
+	<string name="icon_press_menu">显示弹出菜单</string>
+	<string name="icon_lock_menu">残疾</string>
 	<string name="category_advanced">高级设置</string>
 	<string name="icon_pack">图标包</string>
 	<string name="icon_pack_default">系统（默认）</string>
@@ -59,6 +59,6 @@
 	<string name="unhide_app">取消隐藏应用程序</string>
 	<string name="want_to_unhide_app">您想再次展示这款应用程序吗？</string>
 	<string name="want_to_hide_app">您想隐藏此应用程序吗？</string>
-	<string name="want_to_restore_icon">恢复原始图标？</string>
+	<string name="want_to_restore_icon">删除图标分配？</string>
 	<string name="app_icon">应用程序图标</string>
 </resources>

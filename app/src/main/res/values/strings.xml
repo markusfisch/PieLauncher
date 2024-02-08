@@ -32,18 +32,18 @@
 	<string name="space_action">Space at the end of search input</string>
 	<string name="space_action_move_selection">Moves selection (Default)</string>
 	<string name="space_action_double_launch">Press twice to launch app</string>
-	<string name="search_strictness">Search term</string>
-	<string name="search_strictness_hamming">Resembles search text (Default)</string>
-	<string name="search_strictness_contains">Contains search text</string>
-	<string name="search_strictness_starts_with">Starts with search text</string>
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
 	<string name="auto_launch_matching_no">No (Default)</string>
-	<string name="icon_press">Press icon to add</string>
-	<string name="icon_press_default">System duration (Default)</string>
-	<string name="icon_press_longer">Longer</string>
-	<string name="icon_press_menu">Show menu instead</string>
-	<string name="icon_lock_menu">Locked</string>
+	<string name="search_strictness">App search</string>
+	<string name="search_strictness_hamming">Name resembles search term (Default)</string>
+	<string name="search_strictness_contains">Name contains search term</string>
+	<string name="search_strictness_starts_with">Name starts with search term</string>
+	<string name="icon_press">Long press</string>
+	<string name="icon_press_default">Adds app to the pie menu (Default)</string>
+	<string name="icon_press_longer">Requires prolonged pressing</string>
+	<string name="icon_press_menu">Show pop-up menu</string>
+	<string name="icon_lock_menu">Disabled</string>
 	<string name="category_advanced">Advanced</string>
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Default)</string>
@@ -59,6 +59,6 @@
 	<string name="unhide_app">Show app</string>
 	<string name="want_to_unhide_app">Do you want to show this app again?</string>
 	<string name="want_to_hide_app">Do you want to hide this app?</string>
-	<string name="want_to_restore_icon">Restore original icon?</string>
+	<string name="want_to_restore_icon">Remove icon mapping?</string>
 	<string name="app_icon">App icon</string>
 </resources>
