@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.18.1
+* Add an option to lock the menu
+* Add drop target to hide an app
+* Fix auto-launching perfect matches
+* Update Russian translation
+
 ## 1.18.0
 * Support for Icon Packs
 * Hide apps from the launcher

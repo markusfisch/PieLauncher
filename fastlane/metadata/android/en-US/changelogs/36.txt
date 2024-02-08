@@ -1,0 +1,4 @@
+* Add an option to lock the menu
+* Add drop target to hide an app
+* Fix auto-launching perfect matches
+* Update Russian translation
