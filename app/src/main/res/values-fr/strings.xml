@@ -43,6 +43,7 @@
 	<string name="icon_press_default">Durée du système (d\'usine)</string>
 	<string name="icon_press_longer">Plus long</string>
 	<string name="icon_press_menu">Afficher le menu à la place</string>
+	<string name="icon_lock_menu">Fonction verrouillée</string>
 	<string name="category_advanced">Paramètres avancés</string>
 	<string name="icon_pack">Pack d\'icônes</string>
 	<string name="icon_pack_default">Système (d\'usine)</string>

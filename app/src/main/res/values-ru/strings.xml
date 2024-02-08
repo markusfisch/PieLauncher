@@ -43,6 +43,7 @@
 	<string name="icon_press_default">Быстрое (Стандартно)</string>
 	<string name="icon_press_longer">Долгое</string>
 	<string name="icon_press_menu">Показавает меню</string>
+	<string name="icon_lock_menu">Функция заблокирована</string>
 	<string name="category_advanced">Дополнительные настройки</string>
 	<string name="icon_pack">Набор иконок</string>
 	<string name="icon_pack_default">Системные (Стандартно)</string>

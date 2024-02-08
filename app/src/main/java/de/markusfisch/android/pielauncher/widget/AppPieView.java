@@ -550,6 +550,9 @@ public class AppPieView extends View {
 			}
 
 			private void initLongPress(Context context) {
+				if (prefs.getIconPress() == Preferences.ICON_LOCK_MENU) {
+					return;
+				}
 				cancelLongPress();
 				final AppMenu.Icon appIcon = getListIconAt(touch.x, touch.y);
 				if (appIcon == null) {

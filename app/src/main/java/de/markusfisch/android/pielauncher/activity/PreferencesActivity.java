@@ -378,6 +378,7 @@ public class PreferencesActivity extends Activity {
 		map.put(Preferences.ICON_PRESS_DEFAULT, R.string.icon_press_default);
 		map.put(Preferences.ICON_PRESS_LONGER, R.string.icon_press_longer);
 		map.put(Preferences.ICON_PRESS_MENU, R.string.icon_press_menu);
+		map.put(Preferences.ICON_LOCK_MENU, R.string.icon_lock_menu);
 		return map;
 	}
 

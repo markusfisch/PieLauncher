@@ -17,6 +17,7 @@ public class Preferences {
 	public static final int ICON_PRESS_DEFAULT = 0;
 	public static final int ICON_PRESS_LONGER = 1;
 	public static final int ICON_PRESS_MENU = 2;
+	public static final int ICON_LOCK_MENU = 3;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
