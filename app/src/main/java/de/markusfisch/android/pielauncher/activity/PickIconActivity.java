@@ -44,7 +44,7 @@ public class PickIconActivity extends Activity {
 	private SoftKeyboard kb;
 	private ToolbarBackground toolbarBackground;
 	private View progressView;
-	private String iconPackageName;
+	private String iconPackPackageName;
 	private GridView gridView;
 	private EditText searchInput;
 	private ArrayList<String> drawableNames;
@@ -98,7 +98,20 @@ public class PickIconActivity extends Activity {
 		toolbarBackground = new ToolbarBackground(getResources());
 		View toolbar = findViewById(R.id.toolbar);
 		progressView = findViewById(R.id.progress);
-		iconPackageName = PieLauncherApp.iconPack.getSelectedIconPackageName();
+
+		iconPackPackageName = PieLauncherApp.iconPack
+				.getSelectedIconPackageName();
+		if (iconPackPackageName == null) {
+			IconPack.Pack pack =
+					PieLauncherApp.iconPack.packs.values().iterator().next();
+			if (pack != null) {
+				iconPackPackageName = pack.packageName;
+			}
+		}
+		if (iconPackPackageName == null) {
+			finish();
+			return;
+		}
 
 		initGridView(packageName);
 		initSearch();
@@ -131,21 +144,22 @@ public class PickIconActivity extends Activity {
 		});
 		SystemBars.addPaddingFromWindowInsets(toolbar, gridView);
 		SystemBars.setTransparentSystemBars(window);
-		SystemBars.setNavigationBarColor(window, toolbarBackground.backgroundColor);
+		SystemBars.setNavigationBarColor(window,
+				toolbarBackground.backgroundColor);
 	}
 
 	private void initGridView(String packageName) {
 		gridView = findViewById(R.id.icons);
 		gridView.setOnItemClickListener((parent, view, position, id) -> {
 			PieLauncherApp.iconPack.addMapping(
-					iconPackageName,
+					iconPackPackageName,
 					packageName,
 					iconAdapter.getItem(position));
 			PieLauncherApp.iconPack.storeMappings(this);
 			PieLauncherApp.appMenu.updateIconsAsync(this);
 			finish();
 		});
-		loadPack(iconPackageName);
+		loadPack(iconPackPackageName);
 	}
 
 	private void initSearch() {
@@ -163,12 +177,15 @@ public class PickIconActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable e) {
+				if (iconAdapter == null) {
+					return;
+				}
 				iconAdapter.clear();
 				String query = e.toString();
 				Locale defaultLocale = Locale.getDefault();
 				for (int i = 0, size = drawableNames.size(); i < size; ++i) {
-					if (drawableNames.get(i).toLowerCase(defaultLocale).contains(
-							query.toLowerCase(defaultLocale))) {
+					if (drawableNames.get(i).toLowerCase(defaultLocale)
+							.contains(query.toLowerCase(defaultLocale))) {
 						iconAdapter.add(drawableNames.get(i));
 					}
 				}
@@ -228,18 +245,24 @@ public class PickIconActivity extends Activity {
 	}
 
 	private void loadPack(String packageName) {
+		if (iconPackPackageName == null) {
+			return;
+		}
 		progressView.setVisibility(View.VISIBLE);
 		Executors.newSingleThreadExecutor().execute(() -> {
-			IconPack.Pack pack = PieLauncherApp.iconPack.packs.get(packageName);
-			if (pack == null) {
-				return;
+			IconPack.Pack pack = PieLauncherApp.iconPack.packs.get(
+					packageName);
+			if (pack != null) {
+				iconPackPackageName = packageName;
+				drawableNames = pack.getDrawableNames();
 			}
-			iconPackageName = packageName;
-			drawableNames = pack.getDrawableNames();
 			handler.post(() -> {
 				progressView.setVisibility(View.GONE);
+				if (pack == null) {
+					return;
+				}
 				iconAdapter = new PickIconAdapter(this,
-						iconPackageName,
+						iconPackPackageName,
 						new ArrayList<>(drawableNames));
 				gridView.setAdapter(iconAdapter);
 				searchInput.getText().clear();
