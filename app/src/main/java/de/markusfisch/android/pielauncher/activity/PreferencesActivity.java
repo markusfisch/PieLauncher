@@ -191,7 +191,8 @@ public class PreferencesActivity extends Activity {
 					prefs.setIconPack(value);
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 				},
-				() -> PieLauncherApp.iconPack.updatePacks(getPackageManager()));
+				() -> PieLauncherApp.iconPack.updatePacks(
+						getPackageManager()));
 	}
 
 	private <T, G> void initPreference(
@@ -302,7 +303,8 @@ public class PreferencesActivity extends Activity {
 			return true;
 		} else {
 			disableBatteryOptimizations.setOnClickListener(v ->
-					BatteryOptimization.requestDisable(PreferencesActivity.this));
+					BatteryOptimization.requestDisable(
+							PreferencesActivity.this));
 			return false;
 		}
 	}
