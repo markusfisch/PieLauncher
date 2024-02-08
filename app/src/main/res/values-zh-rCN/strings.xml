@@ -20,9 +20,6 @@
 	<string name="darken_background">使背景变暗</string>
 	<string name="darken_background_yes">是</string>
 	<string name="darken_background_no">没有 (默认)</string>
-	<string name="blur_background">模糊背景</string>
-	<string name="blur_background_yes">是</string>
-	<string name="blur_background_no">没有 (默认)</string>
 	<string name="dead_zone">忽略触摸</string>
 	<string name="dead_zone_none">无限制</string>
 	<string name="dead_zone_top">在屏幕顶部</string>

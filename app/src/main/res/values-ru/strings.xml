@@ -20,9 +20,6 @@
 	<string name="darken_background">Тёмный задний план</string>
 	<string name="darken_background_yes">Да</string>
 	<string name="darken_background_no">Нет (Стандартно)</string>
-	<string name="blur_background">Размытие фона</string>
-	<string name="blur_background_yes">Да</string>
-	<string name="blur_background_no">Нет (Стандартно)</string>
 	<string name="dead_zone">Игнорировать косания</string>
 	<string name="dead_zone_none">Никакие</string>
 	<string name="dead_zone_top">Наверху</string>

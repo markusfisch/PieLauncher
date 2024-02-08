@@ -24,7 +24,6 @@ import android.view.ScaleGestureDetector;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.Window;
 import android.widget.OverScroller;
 
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import de.markusfisch.android.pielauncher.activity.PickIconActivity;
 import de.markusfisch.android.pielauncher.activity.PreferencesActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppMenu;
-import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
@@ -114,7 +112,6 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 
-	private Window window;
 	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
@@ -143,7 +140,6 @@ public class AppPieView extends View {
 	private long fadeOutFrom;
 	private boolean keepMode = false;
 	private boolean neverDropped = false;
-	private boolean blurState = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -208,10 +204,6 @@ public class AppPieView extends View {
 			PieLauncherApp.appMenu.indexAppsAsync(context);
 		}
 		initTouchListener();
-	}
-
-	public void setWindow(Window window) {
-		this.window = window;
 	}
 
 	public void setListListener(ListListener listener) {
@@ -314,13 +306,6 @@ public class AppPieView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		if (prefs.blurBackground()) {
-			boolean blur = mode != MODE_PIE || isPieVisible();
-			if (blur != blurState) {
-				BackgroundBlur.setBlur(window, blur);
-				blurState = blur;
-			}
-		}
 		boolean invalidate;
 		switch (mode) {
 			default:
