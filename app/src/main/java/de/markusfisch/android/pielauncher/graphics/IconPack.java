@@ -187,21 +187,11 @@ public class IconPack {
 	}
 
 	public Drawable getIcon(String packageName) {
-		if (selectedPack == null) {
-			return null;
-		}
-		Intent intent = packageManager.getLaunchIntentForPackage(packageName);
-		if (intent == null) {
-			return null;
-		}
-		ComponentName componentName = intent.getComponent();
-		if (componentName == null) {
-			return null;
-		}
 		PackAndDrawable pad = mappings.get(packageName);
 		String drawableName = null;
 		if (pad != null) {
-			if (pad.packageName.equals(selectedPack.packageName)) {
+			if (selectedPack != null &&
+					pad.packageName.equals(selectedPack.packageName)) {
 				drawableName = pad.drawableName;
 			} else {
 				Pack pack = packs.get(pad.packageName);
@@ -210,7 +200,18 @@ public class IconPack {
 				}
 			}
 		}
+		if (selectedPack == null) {
+			return null;
+		}
 		if (drawableName == null) {
+			Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+			if (intent == null) {
+				return null;
+			}
+			ComponentName componentName = intent.getComponent();
+			if (componentName == null) {
+				return null;
+			}
 			drawableName = componentToDrawableNames.get(
 					componentName.toString());
 		}
