@@ -20,6 +20,9 @@
 	<string name="darken_background">Assombrir le fond</string>
 	<string name="darken_background_yes">Oui</string>
 	<string name="darken_background_no">Non (d\'usine)</string>
+	<string name="blur_background">Flouter le fond</string>
+	<string name="blur_background_yes">Oui</string>
+	<string name="blur_background_no">Non (d\'usine)</string>
 	<string name="dead_zone">Ignorer les touches</string>
 	<string name="dead_zone_none">Aucune restriction</string>
 	<string name="dead_zone_top">En haut de l\'écran</string>

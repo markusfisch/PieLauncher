@@ -23,6 +23,7 @@ public class Preferences {
 	private static final String RADIUS = "radius";
 	private static final String ORIENTATION = "orientation";
 	private static final String DARKEN_BACKGROUND = "darken_background";
+	private static final String BLUR_BACKGROUND = "blur_background";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
@@ -36,6 +37,7 @@ public class Preferences {
 	private boolean skipSetup = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean darkenBackground = false;
+	private boolean blurBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
@@ -56,6 +58,8 @@ public class Preferences {
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
 				darkenBackground);
+		blurBackground = preferences.getBoolean(BLUR_BACKGROUND,
+				blurBackground);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
@@ -102,6 +106,15 @@ public class Preferences {
 	public void setDarkenBackground(boolean darkenBackground) {
 		this.darkenBackground = darkenBackground;
 		put(DARKEN_BACKGROUND, darkenBackground).apply();
+	}
+
+	public boolean blurBackground() {
+		return blurBackground;
+	}
+
+	public void setBlurBackground(boolean blurBackground) {
+		this.blurBackground = blurBackground;
+		put(BLUR_BACKGROUND, blurBackground).apply();
 	}
 
 	public int getDeadZone() {
