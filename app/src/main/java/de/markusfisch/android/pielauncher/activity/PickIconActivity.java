@@ -26,7 +26,6 @@ import de.markusfisch.android.pielauncher.adapter.PickIconAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
-import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.OptionsDialog;
@@ -65,8 +64,8 @@ public class PickIconActivity extends Activity {
 				.setTitle(R.string.hide_app)
 				.setMessage(R.string.want_to_hide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
-					PieLauncherApp.appMenu.hiddenApps.add(packageName);
-					HiddenApps.store(context, PieLauncherApp.appMenu.hiddenApps);
+					PieLauncherApp.appMenu.hiddenApps.addAndStore(context,
+							packageName);
 					PieLauncherApp.appMenu.updateIconsAsync(context);
 					if (hideListener != null) {
 						hideListener.onHide();

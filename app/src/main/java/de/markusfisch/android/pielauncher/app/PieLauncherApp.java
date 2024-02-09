@@ -100,7 +100,7 @@ public class PieLauncherApp extends Application {
 			@Override
 			public void onPackageRemoved(String packageName,
 					UserHandle user) {
-				appMenu.removePackage(packageName, user);
+				appMenu.removePackage(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override

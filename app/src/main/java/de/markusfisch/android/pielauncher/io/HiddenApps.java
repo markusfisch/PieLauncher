@@ -9,24 +9,35 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashSet;
-import java.util.Set;
 
 public class HiddenApps {
 	private static final String HIDDEN_APPS_FILE = "hidden";
 
-	private static boolean restored = false;
+	public final HashSet<String> packageNames = new HashSet<>();
 
-	public static void restore(Context context, HashSet<String> hiddenApps) {
+	private boolean restored = false;
+
+	public void addAndStore(Context context, String packageName) {
+		packageNames.add(packageName);
+		store(context);
+	}
+
+	public void removeAndStore(Context context, String packageName) {
+		packageNames.remove(packageName);
+		store(context);
+	}
+
+	public void restore(Context context) {
 		if (restored) {
 			return;
 		}
-		hiddenApps.clear();
+		packageNames.clear();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					context.openFileInput(HIDDEN_APPS_FILE)));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				hiddenApps.add(line);
+				packageNames.add(line);
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
@@ -37,11 +48,12 @@ public class HiddenApps {
 		restored = true;
 	}
 
-	public static void store(Context context, Set<String> hiddenApps) {
+	public void store(Context context) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					context.openFileOutput(HIDDEN_APPS_FILE, Context.MODE_PRIVATE)));
-			for (String packageName : hiddenApps) {
+					context.openFileOutput(HIDDEN_APPS_FILE,
+							Context.MODE_PRIVATE)));
+			for (String packageName : packageNames) {
 				writer.write(packageName);
 				writer.newLine();
 			}

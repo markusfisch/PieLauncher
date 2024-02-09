@@ -64,7 +64,7 @@ public class AppMenu extends CanvasPieMenu {
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-	public final HashSet<String> hiddenApps = new HashSet<>();
+	public final HiddenApps hiddenApps = new HiddenApps();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
@@ -145,7 +145,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	public void store(Context context) {
 		Menu.store(context, icons);
-		HiddenApps.store(context, hiddenApps);
+		hiddenApps.store(context);
 	}
 
 	public List<AppIcon> filterAppsBy(Context context, String query) {
@@ -196,10 +196,11 @@ public class AppMenu extends CanvasPieMenu {
 		return list;
 	}
 
-	public void removePackage(String packageName, UserHandle userHandle) {
+	public void removePackage(Context context, String packageName,
+			UserHandle userHandle) {
 		removePackageFromApps(apps, packageName, userHandle);
 		removePackageFromPieMenu(packageName, userHandle);
-		hiddenApps.remove(packageName);
+		hiddenApps.removeAndStore(context, packageName);
 		if (updateListener != null) {
 			updateListener.onUpdate();
 		}
@@ -230,8 +231,8 @@ public class AppMenu extends CanvasPieMenu {
 			return false;
 		}
 		indexing = true;
-		HiddenApps.restore(context, hiddenApps);
-		HashSet<String> hideApps = new HashSet<>(hiddenApps);
+		hiddenApps.restore(context);
+		HashSet<String> hideApps = new HashSet<>(hiddenApps.packageNames);
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 		if (packageNameRestriction != null) {
 			// Copy apps since we're indexing just one app.

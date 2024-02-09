@@ -28,7 +28,6 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.HiddenAppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
-import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class HiddenAppsActivity extends Activity {
@@ -98,8 +97,8 @@ public class HiddenAppsActivity extends Activity {
 				.setTitle(R.string.unhide_app)
 				.setMessage(R.string.want_to_unhide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
-					PieLauncherApp.appMenu.hiddenApps.remove(packageName);
-					HiddenApps.store(this, PieLauncherApp.appMenu.hiddenApps);
+					PieLauncherApp.appMenu.hiddenApps.removeAndStore(this,
+							packageName);
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 					loadHiddenApps();
 				})
@@ -111,8 +110,10 @@ public class HiddenAppsActivity extends Activity {
 	private void loadHiddenApps() {
 		progressView.setVisibility(View.VISIBLE);
 		Executors.newSingleThreadExecutor().execute(() -> {
-			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps = new ArrayList<>();
-			for (String packageName : PieLauncherApp.appMenu.hiddenApps) {
+			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps =
+					new ArrayList<>();
+			for (String packageName :
+					PieLauncherApp.appMenu.hiddenApps.packageNames) {
 				Pair<String, Drawable> nameAndIcon = getAppNameAndIcon(
 						this, packageName);
 				if (nameAndIcon != null) {
