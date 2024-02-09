@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.18.2
+* Improve preference labels
+* Add a preference to blur the background (if supported)
+
 ## 1.18.1
 * Add an option to lock the menu
 * Add drop target to hide an app

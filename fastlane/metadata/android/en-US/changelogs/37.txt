@@ -1,0 +1,3 @@
+* Improve preference labels
+* Add a preference to blur the background (if supported)
+
