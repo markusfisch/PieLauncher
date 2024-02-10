@@ -46,7 +46,7 @@
 	<string name="icon_press_default">在菜单中添加应用程序 (默认)</string>
 	<string name="icon_press_longer">需要长时间按压</string>
 	<string name="icon_press_menu">显示弹出菜单</string>
-	<string name="icon_lock_menu">残疾</string>
+	<string name="icon_lock_menu">已停用</string>
 	<string name="category_advanced">高级设置</string>
 	<string name="icon_pack">图标包</string>
 	<string name="icon_pack_default">系统（默认）</string>
