@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.18.3
+* Fix icon mappings
+* Update Chinese translation
+* Update Russian translation
+
 ## 1.18.2
 * Improve preference labels
 * Add a preference to blur the background (if supported)

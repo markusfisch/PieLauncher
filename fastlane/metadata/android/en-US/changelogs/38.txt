@@ -1,0 +1,4 @@
+* Fix icon mappings
+* Update Chinese translation
+* Update Russian translation
+
