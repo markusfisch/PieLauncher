@@ -187,8 +187,8 @@ public class IconPack {
 	}
 
 	public Drawable getIcon(String packageName) {
-		PackAndDrawable pad = mappings.get(packageName);
 		String drawableName = null;
+		PackAndDrawable pad = mappings.get(packageName);
 		if (pad != null) {
 			if (selectedPack != null &&
 					pad.packageName.equals(selectedPack.packageName)) {
