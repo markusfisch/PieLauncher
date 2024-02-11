@@ -838,11 +838,9 @@ public class AppPieView extends View {
 				if (listListener != null) {
 					listListener.onOpenList(false);
 				}
-			} else {
-				if (PieLauncherApp.appMenu.launchSelectedApp(context)) {
-					ripple.set(at);
-					result = true;
-				}
+			} else if (PieLauncherApp.appMenu.launchSelectedApp(context)) {
+				ripple.set(at);
+				result = true;
 			}
 			fadeOutPieMenu();
 			return result;
