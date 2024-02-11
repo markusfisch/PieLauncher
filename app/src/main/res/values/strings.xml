@@ -63,5 +63,6 @@
 	<string name="want_to_unhide_app">Do you want to show this app again?</string>
 	<string name="want_to_hide_app">Do you want to hide this app?</string>
 	<string name="want_to_restore_icon">Remove icon mapping?</string>
+	<string name="all">All</string>
 	<string name="app_icon">App icon</string>
 </resources>

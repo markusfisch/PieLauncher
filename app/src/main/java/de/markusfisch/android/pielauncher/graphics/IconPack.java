@@ -130,6 +130,10 @@ public class IconPack {
 		mappings.remove(packageName);
 	}
 
+	public void clearMappings() {
+		mappings.clear();
+	}
+
 	public String getSelectedIconPackageName() {
 		return selectedPack != null ? selectedPack.packageName : null;
 	}

@@ -63,5 +63,6 @@
 	<string name="want_to_unhide_app">您想再次展示这款应用程序吗？</string>
 	<string name="want_to_hide_app">您想隐藏此应用程序吗？</string>
 	<string name="want_to_restore_icon">删除图标分配？</string>
+	<string name="all">全部</string>
 	<string name="app_icon">应用程序图标</string>
 </resources>

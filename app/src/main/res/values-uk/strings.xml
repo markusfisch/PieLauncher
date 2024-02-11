@@ -63,5 +63,6 @@
 	<string name="want_to_unhide_app">Ви хочете показати цю програму ще раз?</string>
 	<string name="want_to_hide_app">Ви хочете приховати цей додаток?</string>
 	<string name="want_to_restore_icon">Видалити призначення іконок?</string>
+	<string name="all">Усе</string>
 	<string name="app_icon">Іконка програми</string>
 </resources>

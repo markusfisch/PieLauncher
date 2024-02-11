@@ -63,5 +63,6 @@
 	<string name="want_to_unhide_app">Möchten Sie diese App wieder zeigen?</string>
 	<string name="want_to_hide_app">Möchten Sie diese App verstecken?</string>
 	<string name="want_to_restore_icon">Symbolzuordnung entfernen?</string>
+	<string name="all">Alle</string>
 	<string name="app_icon">App Icon</string>
 </resources>

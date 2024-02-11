@@ -63,5 +63,6 @@
 	<string name="want_to_unhide_app">Показывать это приложение?</string>
 	<string name="want_to_hide_app">Скрыть это приложение?</string>
 	<string name="want_to_restore_icon">Восстановить оригинальную иконку?</string>
+	<string name="all">Все</string>
 	<string name="app_icon">Иконка приложения</string>
 </resources>

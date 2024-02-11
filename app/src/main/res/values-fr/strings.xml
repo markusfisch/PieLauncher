@@ -63,5 +63,6 @@
 	<string name="want_to_unhide_app">Voulez-vous montrer cette application à nouveau ?</string>
 	<string name="want_to_hide_app">Vous voulez cacher cette app ?</string>
 	<string name="want_to_restore_icon">Supprimer l\'association d\'icônes ?</string>
+	<string name="all">Tous les</string>
 	<string name="app_icon">Icône de l\'app</string>
 </resources>

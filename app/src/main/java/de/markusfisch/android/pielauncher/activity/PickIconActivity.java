@@ -214,6 +214,12 @@ public class PickIconActivity extends Activity {
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 					finish();
 				})
+				.setNeutralButton(R.string.all, (d, w) -> {
+					PieLauncherApp.iconPack.clearMappings();
+					PieLauncherApp.iconPack.storeMappings(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
+					finish();
+				})
 				.setNegativeButton(android.R.string.cancel, (d, w) -> {
 				})
 				.show();
