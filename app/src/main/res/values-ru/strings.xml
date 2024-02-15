@@ -3,18 +3,18 @@
 	<string name="tip_loading">Загрузка…</string>
 	<string name="tip_number_of_icons">4, 6 или 8 работает лучше</string>
 	<string name="tip_pinch_zoom">Разомкни, чтобы масштабировать меню</string>
-	<string name="tip_drag_to_order">Удерживай и крути, чтобы измененить порядок</string>
+	<string name="tip_drag_to_order">Удерживай и крути, чтобы изменить порядок</string>
 	<string name="tip_remove_icon">Удалить иконку</string>
-	<string name="tip_edit_app">Замененить иконку</string>
+	<string name="tip_edit_app">Заменить иконку</string>
 	<string name="tip_remove_app">Удалить приложение</string>
 	<string name="preferences">Настройки</string>
 	<string name="welcome">Добро пожаловать!</string>
 	<string name="check_these_settings">Пожалуйста просмотрите эти настройки:</string>
 	<string name="disable_battery_optimization"><big><font color="#ffffff">Отключить оптимизацию заряда</font></big>\nСохранить заряд и сделать Лаунчер шустрее</string>
-	<string name="make_default_launcher"><big><font color="#ffffff">Сделать лаунчером по-умолчанию</font></big>\nЧтобы не возврачатся к предидучему лаунчеру</string>
+	<string name="make_default_launcher"><big><font color="#ffffff">Сделать лаунчером по-умолчанию</font></big>\nЧтобы не возвращаться к предыдущему лаунчеру</string>
 	<string name="category_home">Домашний экран</string>
 	<string name="orientation">Ориентация</string>
-	<string name="orientation_portrait">Портетная (Стандартно)</string>
+	<string name="orientation_portrait">Портерная (Стандартно)</string>
 	<string name="orientation_landscape">Альбомная</string>
 	<string name="orientation_user">Автоматическая</string>
 	<string name="darken_background">Затемнять фон</string>
@@ -23,7 +23,7 @@
 	<string name="blur_background">Размывать фон</string>
 	<string name="blur_background_yes">Да</string>
 	<string name="blur_background_no">Нет (Стандартно)</string>
-	<string name="dead_zone">Игнорировать косания</string>
+	<string name="dead_zone">Игнорировать касания</string>
 	<string name="dead_zone_none">Никакие</string>
 	<string name="dead_zone_top">Наверху</string>
 	<string name="dead_zone_bottom">Внизу</string>
@@ -45,7 +45,7 @@
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение на меню (Стандартно)</string>
 	<string name="icon_press_longer">Добавляет приложение на меню (С задержкой)</string>
-	<string name="icon_press_menu">Показавает всплывающее меню</string>
+	<string name="icon_press_menu">Показывает всплывающее меню</string>
 	<string name="icon_lock_menu">Ничего не делает</string>
 	<string name="category_advanced">Дополнительные настройки</string>
 	<string name="icon_pack">Набор иконок</string>
@@ -54,7 +54,7 @@
 	<string name="skip">Далее</string>
 	<string name="reset">Сброс</string>
 	<string name="add_to_pie_menu">Добавить в меню</string>
-	<string name="change_icon">Замененить иконку</string>
+	<string name="change_icon">Заменить иконку</string>
 	<string name="hidden_apps">Скрытые приложения</string>
 	<string name="hide_app">Скрыть приложение</string>
 	<string name="show_app_info">Показать информацию о приложении</string>
