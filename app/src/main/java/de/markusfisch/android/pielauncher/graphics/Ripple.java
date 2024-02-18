@@ -10,6 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import de.markusfisch.android.pielauncher.preference.Preferences;
+
 public class Ripple {
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Point hotSpot = new Point();
@@ -91,9 +93,12 @@ public class Ripple {
 		offset = 0;
 	}
 
-	public boolean draw(Canvas canvas) {
+	public boolean draw(Canvas canvas, Preferences prefs) {
+		long duration = Math.round(prefs.getAnimationDuration());
+		if (duration <= 0) {
+			return false;
+		}
 		long delta = SystemClock.uptimeMillis() - offset;
-		long duration = 300L;
 		if (delta < 0) {
 			return offset > 0;
 		}

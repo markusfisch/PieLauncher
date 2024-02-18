@@ -33,6 +33,7 @@ public class Preferences {
 	private static final String ICON_PACK = "icon_pack";
 
 	private final SharedPreferences preferences;
+	private final SystemSettings systemSettings;
 
 	private boolean skipSetup = false;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
@@ -48,6 +49,7 @@ public class Preferences {
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		systemSettings = new SystemSettings(context.getContentResolver());
 
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 		int defaultOrientation = dm.heightPixels > dm.widthPixels
@@ -178,6 +180,10 @@ public class Preferences {
 	public void setIconPack(String iconPack) {
 		this.iconPack = iconPack;
 		put(ICON_PACK, iconPack).apply();
+	}
+
+	public float getAnimationDuration() {
+		return 200f * systemSettings.getAnimatorDurationScale();
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

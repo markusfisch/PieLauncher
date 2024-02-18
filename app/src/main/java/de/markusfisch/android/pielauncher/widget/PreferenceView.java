@@ -5,35 +5,40 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class PreferenceView extends TextView {
 	private final Ripple ripple = Ripple.newPressRipple();
 
+	private Preferences prefs;
+
 	public PreferenceView(Context context) {
 		super(context);
-		initTouchListener();
+		init(context);
 	}
 
 	public PreferenceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		initTouchListener();
+		init(context);
 	}
 
 	public PreferenceView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		initTouchListener();
+		init(context);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		if (ripple.draw(canvas)) {
+		if (ripple.draw(canvas, prefs)) {
 			invalidate();
 		}
 	}
 
-	private void initTouchListener() {
+	private void init(Context context) {
+		prefs = PieLauncherApp.getPrefs(context);
 		setOnTouchListener(ripple.getOnTouchListener());
 	}
 }

@@ -5,35 +5,40 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class ActionButton extends ImageView {
 	private final Ripple ripple = Ripple.newPressRipple();
 
+	private Preferences prefs;
+
 	public ActionButton(Context context) {
 		super(context);
-		initTouchListener();
+		init(context);
 	}
 
 	public ActionButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		initTouchListener();
+		init(context);
 	}
 
 	public ActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		initTouchListener();
+		init(context);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		if (ripple.draw(canvas)) {
+		if (ripple.draw(canvas, prefs)) {
 			invalidate();
 		}
 	}
 
-	private void initTouchListener() {
+	private void init(Context context) {
+		prefs = PieLauncherApp.getPrefs(context);
 		setOnTouchListener(ripple.getOnTouchListener());
 	}
 }

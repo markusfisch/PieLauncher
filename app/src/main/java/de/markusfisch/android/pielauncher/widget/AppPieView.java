@@ -68,7 +68,6 @@ public class AppPieView extends View {
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
-	private static final float ANIM_DURATION = 200f;
 
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
@@ -334,7 +333,7 @@ public class AppPieView extends View {
 				invalidate = drawEditor(canvas);
 				break;
 		}
-		if (ripple.draw(canvas) || invalidate) {
+		if (ripple.draw(canvas, prefs) || invalidate) {
 			invalidate();
 		}
 		if (PieLauncherApp.appMenu.isIndexing()) {
@@ -1043,12 +1042,17 @@ public class AppPieView extends View {
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
 		boolean invalidate = false;
 		if (highlightedFrom > 0) {
-			long now = SystemClock.uptimeMillis();
-			float f = Math.min(1f, (now - highlightedFrom) / ANIM_DURATION);
-			if (f < 1f) {
-				invalidate = true;
+			float ad = prefs.getAnimationDuration();
+			if (ad > 0) {
+				long now = SystemClock.uptimeMillis();
+				float f = Math.min(1f, (now - highlightedFrom) / ad);
+				if (f < 1f) {
+					invalidate = true;
+				}
+				magSize = Math.round(magSize * f);
+			} else {
+				magSize = 0;
 			}
-			magSize = Math.round(magSize * f);
 		}
 		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
@@ -1086,12 +1090,16 @@ public class AppPieView extends View {
 		}
 		boolean invalidate = false;
 		if (hasIcon) {
-			long now = SystemClock.uptimeMillis();
-			float f = Math.min(1f, (now - grabbedIconAt) / ANIM_DURATION);
-			if (f < 1f) {
-				invalidate = true;
+			float radius = actionSize;
+			float ad = prefs.getAnimationDuration();
+			if (ad > 0) {
+				long now = SystemClock.uptimeMillis();
+				float f = Math.min(1f, (now - grabbedIconAt) / ad);
+				if (f < 1f) {
+					invalidate = true;
+				}
+				radius *= f;
 			}
-			float radius = f * actionSize;
 			drawAction(canvas, iconRemove, iconStartRect, radius);
 			drawAction(canvas, PieLauncherApp.iconPack.hasPacks()
 					? iconEdit : iconHide, iconCenterRect, radius);
@@ -1151,16 +1159,21 @@ public class AppPieView extends View {
 	}
 
 	private boolean drawPieMenu(Canvas canvas) {
+		float ad = prefs.getAnimationDuration();
 		float f = 0;
-		long now = SystemClock.uptimeMillis();
-		if (fadeInFrom > 0) {
-			f = Math.min(1f, (now - fadeInFrom) / ANIM_DURATION);
-		} else {
-			long delta = now - fadeOutFrom;
-			if (delta < ANIM_DURATION) {
-				// Ensure f < 1f so invalidate() is invoked.
-				f = Math.min(.99999f, 1f - delta / ANIM_DURATION);
+		if (ad > 0) {
+			long now = SystemClock.uptimeMillis();
+			if (fadeInFrom > 0) {
+				f = Math.min(1f, (now - fadeInFrom) / ad);
+			} else {
+				long delta = now - fadeOutFrom;
+				if (delta < ad) {
+					// Ensure f < 1f so invalidate() is invoked.
+					f = Math.min(.99999f, 1f - delta / ad);
+				}
 			}
+		} else {
+			f = fadeInFrom > 0 ? 1f : 0f;
 		}
 		if (f <= 0) {
 			return false;
