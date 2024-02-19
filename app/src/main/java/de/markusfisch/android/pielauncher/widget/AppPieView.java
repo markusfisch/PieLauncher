@@ -1175,12 +1175,12 @@ public class AppPieView extends View {
 		} else {
 			f = fadeInFrom > 0 ? 1f : 0f;
 		}
-		if (f <= 0) {
-			return false;
-		}
 		if (prefs.blurBackground() && f < 1f) {
 			BackgroundBlur.setBlurRadius(window,
 					Math.round(f * BackgroundBlur.BLUR));
+		}
+		if (f <= 0) {
+			return false;
 		}
 		if (prefs.darkenBackground()) {
 			int max = (translucentBackgroundColor >> 24) & 0xff;
