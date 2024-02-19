@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.18.4
+* Add a button to remove all icon mappings
+* Follow system settings for animations
+* Update Ukrainian translation
+* Update Russian translation
+
 ## 1.18.3
 * Fix icon mappings
 * Update Chinese translation
