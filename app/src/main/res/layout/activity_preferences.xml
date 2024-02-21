@@ -85,7 +85,7 @@
 					style="@style/PreferenceWithSeparator"
 					android:id="@+id/icon_pack"
 					android:text="@string/icon_pack_default" />
-				<TextView
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/hidden_apps"
 					android:text="@string/show_hidden_apps" />
