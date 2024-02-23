@@ -178,6 +178,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getSearchStrictnessOptions,
 				() -> prefs.getSearchStrictness(),
 				(value) -> prefs.setSearchStrictness(value));
+		initPreference(R.id.show_app_names,
+				R.string.show_app_names,
+				PreferencesActivity::getShowAppNamesOptions,
+				() -> prefs.showAppNames(),
+				(value) -> prefs.setShowAppNames(value));
 		initPreference(R.id.icon_press,
 				R.string.icon_press,
 				PreferencesActivity::getIconPressOptions,
@@ -391,6 +396,13 @@ public class PreferencesActivity extends Activity {
 				R.string.search_strictness_contains);
 		map.put(Preferences.SEARCH_STRICTNESS_STARTS_WITH,
 				R.string.search_strictness_starts_with);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getShowAppNamesOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.show_app_names_yes);
+		map.put(Boolean.FALSE, R.string.show_app_names_no);
 		return map;
 	}
 

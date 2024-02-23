@@ -29,6 +29,7 @@ public class Preferences {
 	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
+	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
 	private static final String ICON_PACK = "icon_pack";
 
@@ -44,6 +45,7 @@ public class Preferences {
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
+	private boolean showAppNames = true;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 
@@ -71,6 +73,7 @@ public class Preferences {
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
+		showAppNames = preferences.getBoolean(SHOW_APP_NAMES, showAppNames);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 	}
@@ -162,6 +165,15 @@ public class Preferences {
 	public void setSearchStrictness(int searchStrictness) {
 		this.searchStrictness = searchStrictness;
 		put(SEARCH_STRICTNESS, searchStrictness).apply();
+	}
+
+	public boolean showAppNames() {
+		return showAppNames;
+	}
+
+	public void setShowAppNames(boolean showAppNames) {
+		this.showAppNames = showAppNames;
+		put(SHOW_APP_NAMES, showAppNames).apply();
 	}
 
 	public int getIconPress() {

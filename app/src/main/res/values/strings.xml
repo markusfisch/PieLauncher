@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Name resembles search term (Default)</string>
 	<string name="search_strictness_contains">Name contains search term</string>
 	<string name="search_strictness_starts_with">Name starts with search term</string>
+	<string name="show_app_names">Show app names</string>
+	<string name="show_app_names_yes">Yes (Default)</string>
+	<string name="show_app_names_no">No</string>
 	<string name="icon_press">Long press</string>
 	<string name="icon_press_default">Adds app to the pie menu (Default)</string>
 	<string name="icon_press_longer">Requires prolonged pressing</string>

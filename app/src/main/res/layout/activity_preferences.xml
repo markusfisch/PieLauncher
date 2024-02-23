@@ -75,6 +75,10 @@
 					android:id="@+id/search_strictness"
 					android:text="@string/search_strictness_hamming" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
+					android:id="@+id/show_app_names"
+					android:text="@string/show_app_names_yes" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/icon_press"
 					android:text="@string/icon_press_default" />

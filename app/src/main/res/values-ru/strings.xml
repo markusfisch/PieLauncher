@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Вхождение схоже с запросом (Стандартно)</string>
 	<string name="search_strictness_contains">Вхождение содержит запрос</string>
 	<string name="search_strictness_starts_with">Вхождение начинается с запроса</string>
+	<string name="show_app_names">Показать названия приложений</string>
+	<string name="show_app_names_yes">Да (Стандартно)</string>
+	<string name="show_app_names_no">Нет</string>
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>
 	<string name="icon_press_longer">Добавляет приложение в меню (С задержкой)</string>

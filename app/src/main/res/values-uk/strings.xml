@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Назва схожа на пошуковий термін (за замовчуванням)</string>
 	<string name="search_strictness_contains">Назва містить пошуковий запит</string>
 	<string name="search_strictness_starts_with">Назва починається з пошукового терміну</string>
+	<string name="show_app_names">Показати назви програм</string>
+	<string name="show_app_names_yes">Так (за замовчуванням)</string>
+	<string name="show_app_names_no">Ні</string>
 	<string name="icon_press">Тривале натискання</string>
 	<string name="icon_press_default">Додає додаток до меню (за замовчуванням)</string>
 	<string name="icon_press_longer">Вимагає тривалого натискання</string>

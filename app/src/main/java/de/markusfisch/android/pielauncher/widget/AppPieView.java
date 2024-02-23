@@ -1012,8 +1012,10 @@ public class AppPieView extends View {
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		int innerWidth = viewWidth - listPadding * 2;
 		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
-		int iconAndTextHeight = iconSize + iconTextPadding +
-				Math.round(textHeight);
+		boolean showAppNames = prefs.showAppNames();
+		int iconAndTextHeight = iconSize + (showAppNames
+				? iconTextPadding + Math.round(textHeight)
+				: 0);
 		int cellWidth = innerWidth / columns;
 		int cellHeight = iconAndTextHeight + iconTextPadding * 2;
 		int maxTextWidth = cellWidth - iconTextPadding;
@@ -1064,10 +1066,12 @@ public class AppPieView extends View {
 				drawRect.set(ix - mag, iy - mag,
 						ix + iconSize + mag, iy + iconSize + mag);
 				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintActive);
-				CharSequence label = TextUtils.ellipsize(appIcon.label,
-						paintText, maxTextWidth, TextUtils.TruncateAt.END);
-				canvas.drawText(label, 0, label.length(),
-						x + labelX, y + labelY, paintText);
+				if (showAppNames) {
+					CharSequence label = TextUtils.ellipsize(appIcon.label,
+							paintText, maxTextWidth, TextUtils.TruncateAt.END);
+					canvas.drawText(label, 0, label.length(),
+							x + labelX, y + labelY, paintText);
+				}
 			}
 			x += cellWidth;
 			if (x >= wrapX) {

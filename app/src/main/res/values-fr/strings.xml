@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Le nom ressemble au terme recherché (d\'usine)</string>
 	<string name="search_strictness_contains">Le nom contient le terme recherché</string>
 	<string name="search_strictness_starts_with">Le nom commence par le terme recherché</string>
+	<string name="show_app_names">Afficher les noms d\'app</string>
+	<string name="show_app_names_yes">Oui (d\'usine)</string>
+	<string name="show_app_names_no">Non</string>
 	<string name="icon_press">Appui long</string>
 	<string name="icon_press_default">Lancer l\'app dans le menu (d\'usine)</string>
 	<string name="icon_press_longer">Nécessite une pression prolongée</string>
