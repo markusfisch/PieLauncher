@@ -43,8 +43,9 @@
 	<string name="search_strictness_contains">Name enthält Suchbegriff</string>
 	<string name="search_strictness_starts_with">Name beginnt mit Suchbegriff</string>
 	<string name="show_app_names">Zeige App-Namen</string>
-	<string name="show_app_names_yes">Ja (Standard)</string>
-	<string name="show_app_names_no">Nein</string>
+	<string name="show_app_names_always">Immer (Standard)</string>
+	<string name="show_app_names_search">Beim Suchen</string>
+	<string name="show_app_names_never">Nie</string>
 	<string name="icon_press">Langes Drücken</string>
 	<string name="icon_press_default">Fügt App zum Menu hinzu (Standard)</string>
 	<string name="icon_press_longer">Erfordert längeres Drücken</string>

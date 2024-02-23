@@ -77,7 +77,7 @@
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
 					android:id="@+id/show_app_names"
-					android:text="@string/show_app_names_yes" />
+					android:text="@string/show_app_names_always" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/icon_press"

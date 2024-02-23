@@ -143,6 +143,7 @@ public class AppPieView extends View {
 	private boolean keepMode = false;
 	private boolean neverDropped = false;
 	private boolean blurState = false;
+	private boolean appListFiltered = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -271,8 +272,9 @@ public class AppPieView extends View {
 		if (newAppList != null) {
 			appList = newAppList;
 		}
+		appListFiltered = !TextUtils.isEmpty(query);
 		selectedApp = prefs.doubleSpaceLaunch()
-				? (TextUtils.isEmpty(query) ? -1 : 0)
+				? (appListFiltered ? 0 : -1)
 				: getSelectedAppFromTrailingSpace(query);
 		scrollList(0, false);
 		lastScrollY = 0;
@@ -1012,7 +1014,10 @@ public class AppPieView extends View {
 		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		int innerWidth = viewWidth - listPadding * 2;
 		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
-		boolean showAppNames = prefs.showAppNames();
+		boolean showAppNames =
+				prefs.showAppNames() == Preferences.SHOW_APP_NAMES_ALWAYS ||
+						(appListFiltered && prefs.showAppNames() ==
+								Preferences.SHOW_APP_NAMES_SEARCH);
 		int iconAndTextHeight = iconSize + (showAppNames
 				? iconTextPadding + Math.round(textHeight)
 				: 0);

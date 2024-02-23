@@ -399,10 +399,14 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getShowAppNamesOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.show_app_names_yes);
-		map.put(Boolean.FALSE, R.string.show_app_names_no);
+	private static Map<Integer, Integer> getShowAppNamesOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.SHOW_APP_NAMES_ALWAYS,
+				R.string.show_app_names_always);
+		map.put(Preferences.SHOW_APP_NAMES_SEARCH,
+				R.string.show_app_names_search);
+		map.put(Preferences.SHOW_APP_NAMES_NEVER,
+				R.string.show_app_names_never);
 		return map;
 	}
 

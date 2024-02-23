@@ -14,6 +14,9 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
+	public static final int SHOW_APP_NAMES_ALWAYS = 0;
+	public static final int SHOW_APP_NAMES_SEARCH = 1;
+	public static final int SHOW_APP_NAMES_NEVER = 2;
 	public static final int ICON_PRESS_DEFAULT = 0;
 	public static final int ICON_PRESS_LONGER = 1;
 	public static final int ICON_PRESS_MENU = 2;
@@ -45,7 +48,7 @@ public class Preferences {
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
-	private boolean showAppNames = true;
+	private int showAppNames = SHOW_APP_NAMES_ALWAYS;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 
@@ -73,7 +76,7 @@ public class Preferences {
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
-		showAppNames = preferences.getBoolean(SHOW_APP_NAMES, showAppNames);
+		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 	}
@@ -167,11 +170,11 @@ public class Preferences {
 		put(SEARCH_STRICTNESS, searchStrictness).apply();
 	}
 
-	public boolean showAppNames() {
+	public int showAppNames() {
 		return showAppNames;
 	}
 
-	public void setShowAppNames(boolean showAppNames) {
+	public void setShowAppNames(int showAppNames) {
 		this.showAppNames = showAppNames;
 		put(SHOW_APP_NAMES, showAppNames).apply();
 	}
