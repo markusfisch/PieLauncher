@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.18.5
+* Add a preference to show/hide app names
+
 ## 1.18.4
 * Add a button to remove all icon mappings
 * Follow system settings for animations

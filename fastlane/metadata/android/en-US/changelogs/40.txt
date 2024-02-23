@@ -1,0 +1,2 @@
+* Add a preference to show/hide app names
+
