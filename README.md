@@ -11,6 +11,15 @@ even looking at the screen.
 Apps you don't use regularly are quickly available with just one tap and
 by typing the first one or two letters of the app name.
 
+If you find this app useful and wish to support its continued development,
+you can [buy me a coffee](https://www.buymeacoffee.com/markusfisch) or
+send some Bitcoin decimals to `bc1q2guk2rpll587aymrfadkdtpq32448x5khk5j8z`.
+
+<a href="https://www.buymeacoffee.com/markusfisch" target="_blank"><img
+	src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+	alt="Buy Me A Coffee"
+	style="height: 60px !important;width: 217px !important;"/></a>
+
 ## Video
 
 [![Demo Video](http://img.youtube.com/vi/zg0h3s_yua8/0.jpg)](http://www.youtube.com/watch?v=zg0h3s_yua8)
