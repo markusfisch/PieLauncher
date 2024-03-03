@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">名称与搜索词相似 (默认)</string>
 	<string name="search_strictness_contains">名称包含搜索词</string>
 	<string name="search_strictness_starts_with">名称以搜索词开头</string>
+	<string name="search_parameter">搜索参数</string>
+	<string name="search_parameter_app_label">应用标签 (默认)</string>
+	<string name="search_parameter_package_name">包裹名字</string>
 	<string name="show_app_names">显示应用程序名称</string>
 	<string name="show_app_names_always">始终如一 (默认)</string>
 	<string name="show_app_names_search">搜索时</string>

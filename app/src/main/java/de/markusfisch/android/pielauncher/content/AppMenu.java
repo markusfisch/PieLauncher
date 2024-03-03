@@ -164,14 +164,22 @@ public class AppMenu extends CanvasPieMenu {
 		} else {
 			for (Map.Entry<LauncherItemKey, AppIcon> entry :
 					apps.entrySet()) {
+				String searchParameter;
 				AppIcon appIcon = entry.getValue();
-				String label = appIcon.label.toLowerCase(
-						Locale.getDefault());
-				if (label.startsWith(query)) {
+				int searchParameterPref = PieLauncherApp
+						.getPrefs(context).getSearchParameter();
+				if (searchParameterPref ==
+						Preferences.SEARCH_PARAMETER_PACKAGE_NAME) {
+					searchParameter = appIcon.componentName
+							.getPackageName().toLowerCase();
+				} else {
+					searchParameter = appIcon.label.toLowerCase();
+				}
+				if (searchParameter.startsWith(query)) {
 					list.add(appIcon);
-				} else if (label.contains(query)) {
+				} else if (searchParameter.contains(query)) {
 					contain.add(appIcon);
-				} else if (hammingDistance(label, query) < 2) {
+				} else if (hammingDistance(searchParameter, query) < 2) {
 					hamming.add(appIcon);
 				}
 			}

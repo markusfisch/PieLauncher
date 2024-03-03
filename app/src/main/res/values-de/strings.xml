@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Name ähnelt dem Suchbegriff (Standard)</string>
 	<string name="search_strictness_contains">Name enthält Suchbegriff</string>
 	<string name="search_strictness_starts_with">Name beginnt mit Suchbegriff</string>
+	<string name="search_parameter">Suche nach</string>
+	<string name="search_parameter_app_label">App-Label (Standard)</string>
+	<string name="search_parameter_package_name">Paketnamen</string>
 	<string name="show_app_names">Zeige App-Namen</string>
 	<string name="show_app_names_always">Immer (Standard)</string>
 	<string name="show_app_names_search">Beim Suchen</string>

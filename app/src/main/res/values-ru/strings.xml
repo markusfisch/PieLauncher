@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Вхождение схоже с запросом (Стандартно)</string>
 	<string name="search_strictness_contains">Вхождение содержит запрос</string>
 	<string name="search_strictness_starts_with">Вхождение начинается с запроса</string>
+	<string name="search_parameter">Поиск по</string>
+	<string name="search_parameter_app_label">Названию приложения (Стандартно)</string>
+	<string name="search_parameter_package_name">Названию пакета</string>
 	<string name="show_app_names">Показать названия приложений</string>
 	<string name="show_app_names_always">Всегда (Стандартно)</string>
 	<string name="show_app_names_search">При поиске</string>

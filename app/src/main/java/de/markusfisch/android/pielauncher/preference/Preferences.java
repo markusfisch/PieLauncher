@@ -14,6 +14,8 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
+	public static final int SEARCH_PARAMETER_APP_LABEL = 0;
+	public static final int SEARCH_PARAMETER_PACKAGE_NAME = 1;
 	public static final int SHOW_APP_NAMES_ALWAYS = 0;
 	public static final int SHOW_APP_NAMES_SEARCH = 1;
 	public static final int SHOW_APP_NAMES_NEVER = 2;
@@ -32,6 +34,7 @@ public class Preferences {
 	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
+	private static final String SEARCH_PARAMETER = "search_parameter";
 	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
 	private static final String ICON_PACK = "icon_pack";
@@ -48,6 +51,7 @@ public class Preferences {
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
+	private int searchParameter = SEARCH_PARAMETER_APP_LABEL;
 	private int showAppNames = SHOW_APP_NAMES_ALWAYS;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
@@ -76,6 +80,8 @@ public class Preferences {
 				autoLaunchMatching);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
+		searchParameter = preferences.getInt(SEARCH_PARAMETER,
+				searchParameter);
 		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
@@ -168,6 +174,15 @@ public class Preferences {
 	public void setSearchStrictness(int searchStrictness) {
 		this.searchStrictness = searchStrictness;
 		put(SEARCH_STRICTNESS, searchStrictness).apply();
+	}
+
+	public int getSearchParameter() {
+		return searchParameter;
+	}
+
+	public void setSearchParameter(int searchParameter) {
+		this.searchParameter = searchParameter;
+		put(SEARCH_PARAMETER, searchParameter).apply();
 	}
 
 	public int showAppNames() {
