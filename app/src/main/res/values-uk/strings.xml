@@ -42,6 +42,9 @@
 	<string name="search_strictness_hamming">Назва схожа на пошуковий термін (за замовчуванням)</string>
 	<string name="search_strictness_contains">Назва містить пошуковий запит</string>
 	<string name="search_strictness_starts_with">Назва починається з пошукового терміну</string>
+	<string name="search_parameter">Пошук за</string>
+	<string name="search_parameter_app_label">Міткою програми (за замовчуванням)</string>
+	<string name="search_parameter_package_name">Назвою пакета</string>
 	<string name="show_app_names">Показати назви програм</string>
 	<string name="show_app_names_always">Завжди (за замовчуванням)</string>
 	<string name="show_app_names_search">Під час пошуку</string>
