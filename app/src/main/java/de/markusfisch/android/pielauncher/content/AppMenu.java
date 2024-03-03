@@ -162,12 +162,12 @@ public class AppMenu extends CanvasPieMenu {
 		if (query.length() < 1) {
 			list.addAll(apps.values());
 		} else {
+			int searchParameterPref = PieLauncherApp
+					.getPrefs(context).getSearchParameter();
 			for (Map.Entry<LauncherItemKey, AppIcon> entry :
 					apps.entrySet()) {
 				String searchParameter;
 				AppIcon appIcon = entry.getValue();
-				int searchParameterPref = PieLauncherApp
-						.getPrefs(context).getSearchParameter();
 				if (searchParameterPref ==
 						Preferences.SEARCH_PARAMETER_PACKAGE_NAME) {
 					searchParameter = appIcon.componentName
