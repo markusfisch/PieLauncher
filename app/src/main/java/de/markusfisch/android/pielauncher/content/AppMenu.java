@@ -152,9 +152,10 @@ public class AppMenu extends CanvasPieMenu {
 		if (indexing) {
 			return null;
 		}
+		Locale defaultLocale = Locale.getDefault();
 		query = query == null
 				? ""
-				: query.trim().toLowerCase(Locale.getDefault());
+				: query.trim().toLowerCase(defaultLocale);
 
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();
@@ -171,9 +172,9 @@ public class AppMenu extends CanvasPieMenu {
 				if (searchParameterPref ==
 						Preferences.SEARCH_PARAMETER_PACKAGE_NAME) {
 					searchParameter = appIcon.componentName
-							.getPackageName().toLowerCase();
+							.getPackageName().toLowerCase(defaultLocale);
 				} else {
-					searchParameter = appIcon.label.toLowerCase();
+					searchParameter = appIcon.label.toLowerCase(defaultLocale);
 				}
 				if (searchParameter.startsWith(query)) {
 					list.add(appIcon);
