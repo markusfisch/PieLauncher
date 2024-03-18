@@ -1307,8 +1307,7 @@ public class AppPieView extends View {
 	}
 
 	private void scaleRadius(float factor) {
-		radius *= factor;
-		radius = clampRadius(radius);
+		radius = clampRadius(Math.round(radius * factor));
 		PieLauncherApp.appMenu.setRadius(radius);
 	}
 
