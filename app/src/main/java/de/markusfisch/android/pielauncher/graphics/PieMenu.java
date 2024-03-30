@@ -128,21 +128,13 @@ public class PieMenu {
 		// Calculate size of icons.
 		{
 			double sizeUnit = circumference / weight;
-
+			double maxSize = sizeUnit * maxWeight;
+			double f = Math.min(1f, maxIconSize / maxSize);
 			for (int i = numberOfIcons; i-- > 0; ) {
 				Icon ic = icons.get(i);
-				ic.size = ic.cellSize = sizeUnit * ic.weight;
-			}
-
-			// Scale icons within cell.
-			{
-				double maxSize = sizeUnit * maxWeight;
-				if (maxSize > maxIconSize) {
-					double f = maxIconSize / maxSize;
-					for (int i = numberOfIcons; i-- > 0; ) {
-						icons.get(i).size *= f;
-					}
-				}
+				ic.cellSize = sizeUnit * ic.weight;
+				// Scale icons within cell.
+				ic.size = ic.cellSize * f;
 			}
 		}
 
