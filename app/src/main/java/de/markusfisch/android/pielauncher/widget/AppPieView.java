@@ -247,7 +247,7 @@ public class AppPieView extends View {
 	}
 
 	public boolean isEmpty() {
-		return appList == null || appList.size() < 1;
+		return appList == null || appList.isEmpty();
 	}
 
 	public int getIconCount() {
