@@ -1,8 +1,6 @@
 <resources>
 	<string name="app_name">Pie Launcher</string>
 	<string name="tip_loading">Loading…</string>
-	<string name="tip_number_of_icons">4, 6 or 8 icons work best</string>
-	<string name="tip_pinch_zoom">Pinch &amp; spread to scale menu</string>
 	<string name="tip_drag_to_order">Drag to arrange, circle to change order</string>
 	<string name="tip_remove_icon">Remove icon from pie menu</string>
 	<string name="tip_edit_app">Change icon</string>

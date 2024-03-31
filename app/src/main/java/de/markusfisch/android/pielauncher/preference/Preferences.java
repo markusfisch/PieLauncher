@@ -26,6 +26,8 @@ public class Preferences {
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
+	private static final String TWIST = "twist";
+	private static final String ICON_SCALE = "icon_scale";
 	private static final String ORIENTATION = "orientation";
 	private static final String DARKEN_BACKGROUND = "darken_background";
 	private static final String BLUR_BACKGROUND = "blur_background";
@@ -43,6 +45,8 @@ public class Preferences {
 	private final SystemSettings systemSettings;
 
 	private boolean skipSetup = false;
+	private float twist = 0f;
+	private float iconScale = 1f;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean darkenBackground = false;
 	private boolean blurBackground = false;
@@ -102,6 +106,24 @@ public class Preferences {
 
 	public void setRadius(int radius) {
 		put(RADIUS, radius).apply();
+	}
+
+	public float getTwist() {
+		return preferences.getFloat(TWIST, twist);
+	}
+
+	public void setTwist(float twist) {
+		this.twist = twist;
+		put(TWIST, twist).apply();
+	}
+
+	public float getIconScale() {
+		return preferences.getFloat(ICON_SCALE, iconScale);
+	}
+
+	public void setIconScale(float iconScale) {
+		this.iconScale = iconScale;
+		put(ICON_SCALE, iconScale).apply();
 	}
 
 	public int getOrientation() {
@@ -222,6 +244,10 @@ public class Preferences {
 
 	private SharedPreferences.Editor put(String key, int value) {
 		return put(editor -> editor.putInt(key, value));
+	}
+
+	private SharedPreferences.Editor put(String key, float value) {
+		return put(editor -> editor.putFloat(key, value));
 	}
 
 	private SharedPreferences.Editor put(String key, String value) {

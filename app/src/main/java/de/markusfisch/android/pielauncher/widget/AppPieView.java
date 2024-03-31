@@ -20,7 +20,6 @@ import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -81,6 +80,9 @@ public class AppPieView extends View {
 	private final Rect iconStartRect = new Rect();
 	private final Rect iconCenterRect = new Rect();
 	private final Rect iconEndRect = new Rect();
+	private final Rect iconChangeTwistRect = new Rect();
+	private final Rect iconChangeIconScaleRect = new Rect();
+	private final Rect iconChangeRadiusRect = new Rect();
 	private final Bitmap iconAdd;
 	private final Bitmap iconRemove;
 	private final Bitmap iconEdit;
@@ -90,15 +92,12 @@ public class AppPieView extends View {
 	private final Bitmap iconPreferences;
 	private final Bitmap iconLaunchFirst;
 	private final String loadingTip;
-	private final String numberOfIconsTip;
 	private final String dragToOrderTip;
-	private final String pinchZoomTip;
 	private final String removeIconTip;
 	private final String editAppTip;
 	private final String hideAppTip;
 	private final String removeAppTip;
 	private final Preferences prefs;
-	private final ScaleGestureDetector scaleDetector;
 	private final long tapOrScrollTimeout;
 	private final long longPressTimeout;
 	private final int listPadding;
@@ -123,8 +122,12 @@ public class AppPieView extends View {
 	private int deadZoneTop;
 	private int deadZoneBottom;
 	private int minRadius;
+	private int medRadius;
 	private int maxRadius;
 	private int radius;
+	private float twist;
+	private float minIconScale;
+	private float iconScale;
 	private int maxScrollY;
 	private int lastScrollY;
 	private int lastInsertAt;
@@ -140,6 +143,9 @@ public class AppPieView extends View {
 	private long grabbedIconAt;
 	private long fadeInFrom;
 	private long fadeOutFrom;
+	private Bitmap iconChangeTwist;
+	private Bitmap iconChangeIconScale;
+	private Bitmap iconChangeRadius;
 	private boolean keepMode = false;
 	private boolean neverDropped = false;
 	private boolean blurState = false;
@@ -149,8 +155,6 @@ public class AppPieView extends View {
 		super(context, attr);
 
 		prefs = PieLauncherApp.getPrefs(context);
-		scaleDetector = new ScaleGestureDetector(context,
-				new ScaleListener());
 
 		Resources res = context.getResources();
 		DisplayMetrics dm = res.getDisplayMetrics();
@@ -165,9 +169,7 @@ public class AppPieView extends View {
 		spaceBetween = Math.round(4f * dp);
 
 		loadingTip = context.getString(R.string.tip_loading);
-		numberOfIconsTip = context.getString(R.string.tip_number_of_icons);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
-		pinchZoomTip = context.getString(R.string.tip_pinch_zoom);
 		removeIconTip = context.getString(R.string.tip_remove_icon);
 		editAppTip = context.getString(R.string.tip_edit_app);
 		hideAppTip = context.getString(R.string.hide_app);
@@ -195,6 +197,9 @@ public class AppPieView extends View {
 		iconLaunchFirst = getBitmapFromDrawable(res,
 				R.drawable.ic_launch_first);
 		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
+		updateChangeTwistIcon();
+		updateChangeIconScaleIcon();
+		updateChangeRadiusIcon();
 
 		ViewConfiguration configuration = ViewConfiguration.get(context);
 		float touchSlop = configuration.getScaledTouchSlop();
@@ -296,6 +301,8 @@ public class AppPieView extends View {
 			PieLauncherApp.appMenu.store(context);
 		}
 		prefs.setRadius(radius);
+		prefs.setTwist(twist);
+		prefs.setIconScale(iconScale);
 		backup.clear();
 		ungrabbedIcons.clear();
 		releaseIcon();
@@ -381,9 +388,6 @@ public class AppPieView extends View {
 			@SuppressLint("ClickableViewAccessibility")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if (mode == MODE_EDIT && grabbedIcon == null) {
-					scaleDetector.onTouchEvent(event);
-				}
 				touch.set(Math.round(event.getX()), Math.round(event.getY()));
 				switch (event.getActionMasked()) {
 					default:
@@ -417,7 +421,7 @@ public class AppPieView extends View {
 						addTouch(event);
 						switch (mode) {
 							case MODE_PIE:
-								setCenter(touch);
+								setCenter(touch.x, touch.y);
 								performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
 								break;
 							case MODE_LIST:
@@ -689,7 +693,11 @@ public class AppPieView extends View {
 
 		maxRadius = Math.round(viewMin * .5f);
 		minRadius = Math.round(maxRadius * .5f);
+		medRadius = minRadius + (maxRadius - minRadius) / 2;
 		radius = clampRadius(prefs.getRadius(maxRadius));
+		twist = prefs.getTwist();
+		minIconScale = (48f * dp) / maxIconSize;
+		iconScale = prefs.getIconScale();
 
 		int pieBottom = viewMax / 2 + maxRadius;
 		controlsPadding = (viewMax - pieBottom) / 2;
@@ -740,6 +748,27 @@ public class AppPieView extends View {
 				rect.offset(x, y);
 				y += step + rect.height();
 			}
+		}
+		// Calculate top button rectangles.
+		iconChangeTwistRect.set(iconStartRect);
+		iconChangeIconScaleRect.set(iconCenterRect);
+		iconChangeRadiusRect.set(iconEndRect);
+		if (portrait) {
+			int axis = viewHeight >> 1;
+			iconChangeTwistRect.top = mirror(iconStartRect.bottom, axis);
+			iconChangeTwistRect.bottom = mirror(iconStartRect.top, axis);
+			iconChangeIconScaleRect.top = mirror(iconCenterRect.bottom, axis);
+			iconChangeIconScaleRect.bottom = mirror(iconCenterRect.top, axis);
+			iconChangeRadiusRect.top = mirror(iconEndRect.bottom, axis);
+			iconChangeRadiusRect.bottom = mirror(iconEndRect.top, axis);
+		} else {
+			int axis = viewWidth >> 1;
+			iconChangeTwistRect.left = mirror(iconStartRect.right, axis);
+			iconChangeTwistRect.right = mirror(iconStartRect.left, axis);
+			iconChangeIconScaleRect.left = mirror(iconCenterRect.right, axis);
+			iconChangeIconScaleRect.right = mirror(iconCenterRect.left, axis);
+			iconChangeRadiusRect.left = mirror(iconEndRect.right, axis);
+			iconChangeRadiusRect.right = mirror(iconEndRect.left, axis);
 		}
 		// Calculate size of circular action buttons.
 		actionSize = Math.min(iconSize, max / 2 - spaceBetween);
@@ -881,7 +910,26 @@ public class AppPieView extends View {
 	}
 
 	private boolean performEditAction(Context context) {
-		if (contains(iconStartRect, touch)) {
+		if (grabbedIcon == null && contains(iconChangeTwistRect, touch)) {
+			twist = getTwistSegment(twist + AppMenu.HALF_PI) *
+					(float) AppMenu.HALF_PI;
+			updateChangeTwistIcon();
+			ripple.set(touch);
+			return true;
+		} else if (grabbedIcon == null &&
+				contains(iconChangeIconScaleRect, touch)) {
+			iconScale = iconScale < 1f ? 1f : minIconScale;
+			updateChangeIconScaleIcon();
+			ripple.set(touch);
+			return true;
+		} else if (grabbedIcon == null &&
+				contains(iconChangeRadiusRect, touch)) {
+			radius = getNextRadius(radius);
+			PieLauncherApp.appMenu.setRadius(radius);
+			updateChangeRadiusIcon();
+			ripple.set(touch);
+			return true;
+		} else if (contains(iconStartRect, touch)) {
 			if (grabbedIcon == null) {
 				((Activity) context).onBackPressed();
 			} else {
@@ -958,6 +1006,86 @@ public class AppPieView extends View {
 		return true;
 	}
 
+	private void updateChangeTwistIcon() {
+		iconChangeTwist = getBitmapFromDrawable(getResources(),
+				getDrawableForTwist(twist));
+	}
+
+	private static int getDrawableForTwist(float twist) {
+		switch (getTwistSegment(twist)) {
+			default:
+				return R.drawable.ic_twist_0;
+			case 1:
+				return R.drawable.ic_twist_90;
+			case 2:
+				return R.drawable.ic_twist_180;
+			case 3:
+				return R.drawable.ic_twist_270;
+		}
+	}
+
+	private static int getTwistSegment(double rad) {
+		rad = (rad + AppMenu.TAU) % AppMenu.TAU;
+		if (rad > 5.497 || rad < .785) {
+			return 0;
+		} else if (rad < 2.356) {
+			return 1;
+		} else if (rad < 3.926) {
+			return 2;
+		}
+		return 3;
+	}
+
+	private void updateChangeIconScaleIcon() {
+		iconChangeIconScale = getBitmapFromDrawable(getResources(),
+				getDrawableForIconScale(iconScale));
+	}
+
+	private static int getDrawableForIconScale(float scale) {
+		return scale == 1f
+				? R.drawable.ic_icon_scale_large
+				: R.drawable.ic_icon_scale_small;
+	}
+
+	private void updateChangeRadiusIcon() {
+		iconChangeRadius = getBitmapFromDrawable(getResources(),
+				getDrawableForRadius(radius));
+	}
+
+	private int getNextRadius(int r) {
+		switch (getRadiusSegment(r)) {
+			default:
+				return medRadius;
+			case 1:
+				return maxRadius;
+			case 2:
+				return minRadius;
+		}
+	}
+
+	private int getDrawableForRadius(int r) {
+		switch (getRadiusSegment(r)) {
+			default:
+				return R.drawable.ic_radius_small;
+			case 1:
+				return R.drawable.ic_radius_medium;
+			case 2:
+				return R.drawable.ic_radius_large;
+		}
+	}
+
+	private int getRadiusSegment(int r) {
+		int dMin = Math.abs(r - minRadius);
+		int dMed = Math.abs(r - medRadius);
+		int dMax = Math.abs(r - maxRadius);
+		if (dMin < dMed && dMin < dMax) {
+			return 0;
+		} else if (dMed < dMin && dMed < dMax) {
+			return 1;
+		}
+		return 2;
+	}
+
 	private void changeIcon(Context context, AppMenu.Icon icon) {
 		AppMenu.AppIcon appIcon = (AppMenu.AppIcon) icon;
 		PickIconActivity.start(context,
@@ -970,15 +1098,13 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void setCenter(Point point) {
-		setCenter(point.x, point.y);
-	}
-
 	private void setCenter(int x, int y) {
 		PieLauncherApp.appMenu.set(
 				clamp(x, radius, viewWidth - radius),
 				clamp(y, radius, viewHeight - radius),
-				radius);
+				radius,
+				twist,
+				iconScale);
 		lastSelectedIcon = -1;
 	}
 
@@ -1003,6 +1129,12 @@ public class AppPieView extends View {
 			setHighlightedAction(iconCenterRect);
 		} else if (contains(iconEndRect, touch)) {
 			setHighlightedAction(iconEndRect);
+		} else if (contains(iconChangeTwistRect, touch)) {
+			setHighlightedAction(iconChangeTwistRect);
+		} else if (contains(iconChangeIconScaleRect, touch)) {
+			setHighlightedAction(iconChangeIconScaleRect);
+		} else if (contains(iconChangeRadiusRect, touch)) {
+			setHighlightedAction(iconChangeRadiusRect);
 		} else {
 			resetHighlightedAction();
 		}
@@ -1114,6 +1246,9 @@ public class AppPieView extends View {
 					? iconEdit : iconHide, iconCenterRect, radius);
 			drawAction(canvas, iconDetails, iconEndRect, radius);
 		} else {
+			drawAction(canvas, iconChangeTwist, iconChangeTwistRect);
+			drawAction(canvas, iconChangeIconScale, iconChangeIconScaleRect);
+			drawAction(canvas, iconChangeRadius, iconChangeRadiusRect);
 			drawAction(canvas, iconAdd, iconStartRect);
 			drawAction(canvas, iconPreferences, iconCenterRect);
 			drawAction(canvas, iconDone, iconEndRect);
@@ -1135,7 +1270,7 @@ public class AppPieView extends View {
 		double step = AppMenu.TAU / (lastIndex + 1);
 		double angle = AppMenu.getPositiveAngle(Math.atan2(
 				touch.y - centerY,
-				touch.x - centerX) + step * .5);
+				touch.x - centerX) - twist + step * .5);
 		int insertAt = Math.min(lastIndex, (int) Math.floor(angle / step));
 		if (insertAt != lastInsertAt) {
 			// Avoid (visible) rotation of the menu when the first item
@@ -1244,12 +1379,7 @@ public class AppPieView extends View {
 			resetHighlightedAction();
 			return dragToOrderTip;
 		}
-		int iconsInMenu = PieLauncherApp.appMenu.icons.size();
-		if (iconsInMenu != 4 && iconsInMenu != 6 && iconsInMenu != 8) {
-			return numberOfIconsTip;
-		} else {
-			return pinchZoomTip;
-		}
+		return null;
 	}
 
 	private void resetHighlightedAction() {
@@ -1262,8 +1392,8 @@ public class AppPieView extends View {
 
 	private void drawTip(Canvas canvas, String tip) {
 		if (tip != null) {
-			canvas.drawText(tip, viewWidth >> 1, controlsPadding + textOffset,
-					paintText);
+			canvas.drawText(tip, viewWidth >> 1,
+					controlsPadding + textOffset, paintText);
 		}
 	}
 
@@ -1306,9 +1436,8 @@ public class AppPieView extends View {
 		return Math.max(min, Math.min(max, value));
 	}
 
-	private void scaleRadius(float factor) {
-		radius = clampRadius(Math.round(radius * factor));
-		PieLauncherApp.appMenu.setRadius(radius);
+	private static int mirror(int v, int axis) {
+		return axis - (v - axis);
 	}
 
 	private static int getSelectedAppFromTrailingSpace(String s) {
@@ -1326,18 +1455,6 @@ public class AppPieView extends View {
 		return i == -1
 				? l // Only spaces, so treat first space as show icon.
 				: l - i; // Return number of trailing spaces.
-	}
-
-	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		@Override
-		public boolean onScale(ScaleGestureDetector detector) {
-			if (!detector.isInProgress()) {
-				return false;
-			}
-			scaleRadius(detector.getScaleFactor());
-			invalidate();
-			return true;
-		}
 	}
 
 	private class FlingRunnable implements Runnable {

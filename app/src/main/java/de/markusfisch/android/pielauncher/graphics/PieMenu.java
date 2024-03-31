@@ -21,6 +21,7 @@ public class PieMenu {
 	private int centerY = -1;
 	private double radius = 0;
 	private double twist = 0;
+	private float iconScale = 0;
 
 	public static double getPositiveAngle(double a) {
 		return (a + TAU) % TAU;
@@ -38,15 +39,13 @@ public class PieMenu {
 		return selectedIcon;
 	}
 
-	public void set(int x, int y, double radius) {
-		set(x, y, radius, 0);
-	}
-
-	public void set(int x, int y, double radius, double twist) {
-		centerX = x;
-		centerY = y;
+	public void set(int centerX, int centerY, double radius, double twist,
+			float iconScale) {
+		this.centerX = centerX;
+		this.centerY = centerY;
 		this.radius = radius;
 		this.twist = twist;
+		this.iconScale = iconScale;
 	}
 
 	public void setRadius(double radius) {
@@ -129,7 +128,7 @@ public class PieMenu {
 		{
 			double sizeUnit = circumference / weight;
 			double maxSize = sizeUnit * maxWeight;
-			double f = Math.min(1f, maxIconSize / maxSize);
+			double f = Math.min(1f, maxIconSize / maxSize) * iconScale;
 			for (int i = numberOfIcons; i-- > 0; ) {
 				Icon ic = icons.get(i);
 				ic.cellSize = sizeUnit * ic.weight;
