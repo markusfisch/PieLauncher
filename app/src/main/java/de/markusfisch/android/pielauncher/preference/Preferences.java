@@ -70,6 +70,8 @@ public class Preferences {
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
+		twist = preferences.getFloat(TWIST, twist);
+		iconScale = preferences.getFloat(ICON_SCALE, iconScale);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
 				darkenBackground);
@@ -109,7 +111,7 @@ public class Preferences {
 	}
 
 	public float getTwist() {
-		return preferences.getFloat(TWIST, twist);
+		return twist;
 	}
 
 	public void setTwist(float twist) {
@@ -118,7 +120,7 @@ public class Preferences {
 	}
 
 	public float getIconScale() {
-		return preferences.getFloat(ICON_SCALE, iconScale);
+		return iconScale;
 	}
 
 	public void setIconScale(float iconScale) {
