@@ -381,6 +381,9 @@ public class AppPieView extends View {
 
 			private VelocityTracker velocityTracker;
 			private int primaryId;
+			private int spinId = -1;
+			private double spinAngleDown;
+			private double spinInitialTwist;
 			private int scrollOffset;
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
@@ -394,8 +397,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						if (mode == MODE_PIE) {
-							fadeOutPieMenu();
-							hidePieMenu();
+							startSpin(event);
 							invalidate();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
@@ -404,7 +406,9 @@ public class AppPieView extends View {
 						}
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
-						if (mode == MODE_LIST) {
+						if (mode == MODE_PIE) {
+							stopSpin(event);
+						} else if (mode == MODE_LIST) {
 							updateReferences(event);
 							initScroll(event);
 						}
@@ -437,7 +441,9 @@ public class AppPieView extends View {
 						invalidate();
 						break;
 					case MotionEvent.ACTION_MOVE:
-						if (mode == MODE_LIST) {
+						if (mode == MODE_PIE) {
+							spin(event);
+						} else if (mode == MODE_LIST) {
 							if (isScroll(event)) {
 								cancelLongPress();
 							}
@@ -446,7 +452,9 @@ public class AppPieView extends View {
 						invalidate();
 						break;
 					case MotionEvent.ACTION_UP:
-						if (mode == MODE_LIST) {
+						if (mode == MODE_PIE) {
+							cancelSpin();
+						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							keepScrolling(event);
 						}
@@ -454,6 +462,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_PIE) {
+							cancelSpin();
 							fadeOutPieMenu();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
@@ -470,7 +479,7 @@ public class AppPieView extends View {
 			private void addTouch(MotionEvent event) {
 				int index = event.getActionIndex();
 				primaryId = event.getPointerId(index);
-				addTouchReference(event, primaryId, index);
+				setTouchReference(event, primaryId, index);
 			}
 
 			private void updateReferences(MotionEvent event) {
@@ -481,11 +490,11 @@ public class AppPieView extends View {
 				// So the only option is to update all references.
 				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
 					int id = event.getPointerId(i);
-					addTouchReference(event, id, i);
+					setTouchReference(event, id, i);
 				}
 			}
 
-			private void addTouchReference(MotionEvent event, int id,
+			private void setTouchReference(MotionEvent event, int id,
 					int index) {
 				touchReferences.put(id, new TouchReference(
 						event.getX(index),
@@ -676,6 +685,59 @@ public class AppPieView extends View {
 					return true;
 				}
 				return false;
+			}
+
+			private void startSpin(MotionEvent event) {
+				if (isPieVisible() && spinId < 0) {
+					initSpin(event, event.getActionIndex());
+				}
+			}
+
+			private void spin(MotionEvent event) {
+				if (!isPieVisible()) {
+					return;
+				}
+				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
+					if (event.getPointerId(i) == spinId) {
+						PieLauncherApp.appMenu.setTwist(spinInitialTwist +
+								PieLauncherApp.appMenu.getAngleDifference(
+										angleOf(event.getX(i), event.getY(i)),
+										spinAngleDown));
+						return;
+					}
+				}
+			}
+
+			private void stopSpin(MotionEvent event) {
+				cancelSpin();
+				int indexUp = event.getActionIndex();
+				if (event.getPointerId(indexUp) == primaryId) {
+					primaryId = -1;
+					fadeOutPieMenu();
+					hidePieMenu();
+					return;
+				}
+				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
+					if (i == indexUp) {
+						continue;
+					}
+					int id = event.getPointerId(i);
+					if (id == primaryId) {
+						continue;
+					}
+					initSpin(event, i);
+					break;
+				}
+			}
+
+			private void cancelSpin() {
+				spinId = -1;
+			}
+
+			private void initSpin(MotionEvent event, int idx) {
+				spinId = event.getPointerId(idx);
+				spinAngleDown = angleOf(event.getX(idx), event.getY(idx));
+				spinInitialTwist = PieLauncherApp.appMenu.getTwist();
 			}
 		});
 	}
@@ -1337,7 +1399,9 @@ public class AppPieView extends View {
 			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 		}
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
-		PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+		if (fadeOutFrom == 0) {
+			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
+		}
 		PieLauncherApp.appMenu.draw(canvas);
 		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
@@ -1426,6 +1490,12 @@ public class AppPieView extends View {
 		float dx = ax - bx;
 		float dy = ay - by;
 		return dx * dx + dy * dy;
+	}
+
+	private static double angleOf(float x, float y) {
+		return PieLauncherApp.appMenu.getPositiveAngle(Math.atan2(
+				y - PieLauncherApp.appMenu.getCenterY(),
+				x - PieLauncherApp.appMenu.getCenterX()));
 	}
 
 	private int clampRadius(int r) {

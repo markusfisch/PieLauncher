@@ -39,6 +39,14 @@ public class PieMenu {
 		return selectedIcon;
 	}
 
+	public int getCenterX() {
+		return centerX;
+	}
+
+	public int getCenterY() {
+		return centerY;
+	}
+
 	public void set(int centerX, int centerY, double radius, double twist,
 			float iconScale) {
 		this.centerX = centerX;
@@ -50,6 +58,14 @@ public class PieMenu {
 
 	public void setRadius(double radius) {
 		this.radius = radius;
+	}
+
+	public double getTwist() {
+		return twist;
+	}
+
+	public void setTwist(double twist) {
+		this.twist = getPositiveAngle(twist);
 	}
 
 	public void calculate(float x, float y) {
