@@ -697,7 +697,22 @@ public class AppPieView extends View {
 				if (!isPieVisible()) {
 					return;
 				}
-				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
+				int count = event.getPointerCount();
+				// Hide pie once the primary pointer was lifted. Can only be
+				// done in ACTION_MOVE since ACTION_POINTER_UP doesn't give
+				// the correct index everywhere. See updateReferences().
+				if (count == 1 && event.getPointerId(0) != primaryId) {
+					cancelSpin();
+					primaryId = -1;
+					fadeOutPieMenu();
+					hidePieMenu();
+					return;
+				}
+				if (count < 2) {
+					cancelSpin();
+					return;
+				}
+				for (int i = 0; i < count; ++i) {
 					if (event.getPointerId(i) == spinId) {
 						PieLauncherApp.appMenu.setTwist(spinInitialTwist +
 								PieLauncherApp.appMenu.getAngleDifference(
@@ -711,12 +726,6 @@ public class AppPieView extends View {
 			private void stopSpin(MotionEvent event) {
 				cancelSpin();
 				int indexUp = event.getActionIndex();
-				if (event.getPointerId(indexUp) == primaryId) {
-					primaryId = -1;
-					fadeOutPieMenu();
-					hidePieMenu();
-					return;
-				}
 				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
 					if (i == indexUp) {
 						continue;
