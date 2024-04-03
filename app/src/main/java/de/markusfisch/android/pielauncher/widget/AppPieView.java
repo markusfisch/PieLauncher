@@ -904,6 +904,7 @@ public class AppPieView extends View {
 							break;
 						case 3:
 							returnToList();
+							fadeEdit.fadeOut();
 							changeIcon(context, icon);
 							break;
 					}
@@ -1052,12 +1053,12 @@ public class AppPieView extends View {
 				ripple.set(touch);
 				rollback();
 				if (neverDropped) {
+					fadeEdit.fadeOut();
 					returnToList();
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
 					changeIcon(context, grabbedIcon);
 				} else {
-					fadeEdit.fadeOut();
 					PickIconActivity.askToHide(context,
 							((AppMenu.AppIcon) grabbedIcon)
 									.componentName.getPackageName());
@@ -1192,7 +1193,6 @@ public class AppPieView extends View {
 	}
 
 	private void changeIcon(Context context, AppMenu.Icon icon) {
-		fadeEdit.fadeOut();
 		AppMenu.AppIcon appIcon = (AppMenu.AppIcon) icon;
 		PickIconActivity.start(context,
 				appIcon.componentName.getPackageName());
