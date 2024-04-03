@@ -103,7 +103,7 @@ public class IconPack {
 	private IconPack.Pack selectedPack;
 
 	public boolean hasPacks() {
-		return packs.size() > 0;
+		return !packs.isEmpty();
 	}
 
 	public void restoreMappingsIfEmpty(Context context) {

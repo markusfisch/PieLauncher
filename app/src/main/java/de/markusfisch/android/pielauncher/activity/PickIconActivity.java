@@ -234,7 +234,7 @@ public class PickIconActivity extends Activity {
 	private void initSwitchPack() {
 		View switchButton = findViewById(R.id.switch_pack);
 		HashMap<String, String> map = PieLauncherApp.iconPack.getIconPacks();
-		if (map.size() > 0) {
+		if (!map.isEmpty()) {
 			List<String> packageNames = new ArrayList<>(map.keySet());
 			List<String> names = new ArrayList<>(map.values());
 			switchButton.setOnClickListener((v) -> {

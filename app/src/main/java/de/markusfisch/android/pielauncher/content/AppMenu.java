@@ -160,7 +160,7 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppIcon> contain = new ArrayList<>();
 		ArrayList<AppIcon> hamming = new ArrayList<>();
-		if (query.length() < 1) {
+		if (query.isEmpty()) {
 			list.addAll(apps.values());
 		} else {
 			int searchParameterPref = PieLauncherApp

@@ -233,7 +233,7 @@ public class HomeActivity extends Activity {
 				case EditorInfo.IME_ACTION_NEXT:
 				case EditorInfo.IME_ACTION_SEARCH:
 				case EditorInfo.IME_NULL:
-					if (searchInput.getText().toString().length() > 0) {
+					if (!searchInput.getText().toString().isEmpty()) {
 						pieView.launchSelectedApp();
 					}
 					hideAllApps();
