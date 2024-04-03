@@ -252,17 +252,7 @@ public class AppPieView extends View {
 		if (mode == MODE_PIE) {
 			return;
 		}
-		switch (mode) {
-			case MODE_PIE:
-				fadePie.fadeOut();
-				break;
-			case MODE_EDIT:
-				fadeEdit.fadeOut();
-				break;
-			case MODE_LIST:
-				fadeList.fadeOut();
-				break;
-		}
+		fadeOutMode();
 		mode = MODE_PIE;
 		resetScrollWithoutAnimation();
 		setVerticalScrollBarEnabled(false);
@@ -329,9 +319,7 @@ public class AppPieView extends View {
 		backup.clear();
 		ungrabbedIcons.clear();
 		releaseIcon();
-		if (mode == MODE_EDIT) {
-			fadeEdit.fadeOut();
-		}
+		fadeOutMode();
 		mode = MODE_PIE;
 		keepMode = false;
 		invalidate();
@@ -495,7 +483,7 @@ public class AppPieView extends View {
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_PIE) {
 							cancelSpin();
-							fadePie.fadeOut();
+							fadeOutMode();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							recycleVelocityTracker();
@@ -734,7 +722,7 @@ public class AppPieView extends View {
 				if (count == 1 && event.getPointerId(0) != primaryId) {
 					cancelSpin();
 					primaryId = -1;
-					fadePie.fadeOut();
+					fadeOutMode();
 					return;
 				}
 				if (count < 2) {
@@ -903,6 +891,7 @@ public class AppPieView extends View {
 									.componentName.getPackageName());
 							break;
 						case 3:
+							fadeOutMode();
 							returnToList();
 							fadeEdit.fadeOut();
 							changeIcon(context, icon);
@@ -967,6 +956,7 @@ public class AppPieView extends View {
 
 	private boolean performAction(Context context, Point at, boolean wasTap) {
 		if (mode == MODE_PIE && fadePie.isVisible()) {
+			fadeOutMode();
 			boolean result = false;
 			if (wasTap) {
 				if (listListener != null) {
@@ -976,7 +966,6 @@ public class AppPieView extends View {
 				ripple.set(at);
 				result = true;
 			}
-			fadePie.fadeOut();
 			return result;
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
@@ -1053,7 +1042,7 @@ public class AppPieView extends View {
 				ripple.set(touch);
 				rollback();
 				if (neverDropped) {
-					fadeEdit.fadeOut();
+					fadeOutMode();
 					returnToList();
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
@@ -1071,7 +1060,7 @@ public class AppPieView extends View {
 			} else {
 				ripple.set(touch);
 				rollback();
-				fadeEdit.fadeOut();
+				fadeOutMode();
 				PieLauncherApp.appMenu.launchAppInfo(context,
 						(AppMenu.AppIcon) grabbedIcon);
 			}
@@ -1491,6 +1480,20 @@ public class AppPieView extends View {
 					radius, circlePaint);
 		}
 		canvas.drawBitmap(icon, null, rect, paintAction);
+	}
+
+	private void fadeOutMode() {
+		switch (mode) {
+			case MODE_PIE:
+				fadePie.fadeOut();
+				break;
+			case MODE_LIST:
+				fadeList.fadeOut();
+				break;
+			case MODE_EDIT:
+				fadeEdit.fadeOut();
+				break;
+		}
 	}
 
 	private boolean contains(Rect rect, Point point) {
