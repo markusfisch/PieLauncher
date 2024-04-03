@@ -38,6 +38,7 @@ import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
+import de.markusfisch.android.pielauncher.graphics.PieMenu;
 import de.markusfisch.android.pielauncher.graphics.Ripple;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
@@ -731,7 +732,7 @@ public class AppPieView extends View {
 				for (int i = 0; i < count; ++i) {
 					if (event.getPointerId(i) == spinId) {
 						PieLauncherApp.appMenu.setTwist(spinInitialTwist +
-								PieLauncherApp.appMenu.getAngleDifference(
+								PieMenu.getAngleDifference(
 										angleOf(event.getX(i), event.getY(i)),
 										spinAngleDown));
 						return;
