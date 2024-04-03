@@ -68,11 +68,15 @@ public class AppPieView extends View {
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
 
+	private final Fade fadePie = new Fade();
+	private final Fade fadeList = new Fade();
+	private final Fade fadeEdit = new Fade();
 	private final ArrayList<AppMenu.Icon> backup = new ArrayList<>();
 	private final ArrayList<AppMenu.Icon> ungrabbedIcons = new ArrayList<>();
-	private final Paint paintActive = new Paint(Paint.FILTER_BITMAP_FLAG);
+	private final Paint paintList = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint paintDropZone = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Paint paintPressed = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Paint paintAction = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
 	private final Ripple ripple = Ripple.newFadingRipple();
@@ -107,6 +111,9 @@ public class AppPieView extends View {
 	private final int spaceBetween;
 	private final int iconLaunchFirstHalf;
 	private final int translucentBackgroundColor;
+	private final int alphaDropZone;
+	private final int alphaPressed;
+	private final int alphaText;
 	private final float dp;
 	private final float textHeight;
 	private final float textOffset;
@@ -132,6 +139,7 @@ public class AppPieView extends View {
 	private int lastScrollY;
 	private int lastInsertAt;
 	private int lastSelectedIcon;
+	private int lastBlur;
 	private int selectedApp = -1;
 	private int mode = MODE_PIE;
 	private ListListener listListener;
@@ -141,14 +149,11 @@ public class AppPieView extends View {
 	private AppMenu.Icon highlightedIcon;
 	private long highlightedFrom;
 	private long grabbedIconAt;
-	private long fadeInFrom;
-	private long fadeOutFrom;
 	private Bitmap iconChangeTwist;
 	private Bitmap iconChangeIconScale;
 	private Bitmap iconChangeRadius;
 	private boolean keepMode = false;
 	private boolean neverDropped = false;
-	private boolean blurState = false;
 	private boolean appListFiltered = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
@@ -177,10 +182,13 @@ public class AppPieView extends View {
 
 		paintDropZone.setColor(res.getColor(R.color.bg_drop_zone));
 		paintDropZone.setStyle(Paint.Style.FILL);
+		alphaDropZone = paintDropZone.getAlpha();
 		paintPressed.setColor(res.getColor(R.color.bg_action_pressed));
 		paintPressed.setStyle(Paint.Style.FILL);
+		alphaPressed = paintPressed.getAlpha();
 
 		paintText.setColor(res.getColor(R.color.text_color));
+		alphaText = paintText.getAlpha();
 		paintText.setTextAlign(Paint.Align.CENTER);
 		paintText.setTextSize(14f * sp);
 		textHeight = paintText.descent() - paintText.ascent();
@@ -224,12 +232,14 @@ public class AppPieView extends View {
 	}
 
 	public void showList() {
+		if (mode == MODE_LIST) {
+			return;
+		}
 		mode = MODE_LIST;
 		cancelRipple();
 		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
-		hidePieMenu();
-		resetFadeOutPieMenu();
+		fadeList.fadeIn();
 		invalidate();
 	}
 
@@ -238,11 +248,13 @@ public class AppPieView extends View {
 			keepMode = false;
 			return;
 		}
+		if (mode == MODE_PIE) {
+			return;
+		}
 		mode = MODE_PIE;
 		resetScrollWithoutAnimation();
 		setVerticalScrollBarEnabled(false);
-		hidePieMenu();
-		resetFadeOutPieMenu();
+		fadeList.fadeOut();
 		invalidate();
 	}
 
@@ -308,6 +320,7 @@ public class AppPieView extends View {
 		releaseIcon();
 		mode = MODE_PIE;
 		keepMode = false;
+		fadeEdit.fadeOut();
 		invalidate();
 	}
 
@@ -322,26 +335,33 @@ public class AppPieView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		long now = SystemClock.uptimeMillis();
+		float ad = prefs.getAnimationDuration();
+		float fPie = fadePie.get(now, ad);
+		float fList = fadeList.get(now, ad);
+		float fEdit = fadeEdit.get(now, ad);
+		float fCombined = Math.max(fPie, Math.max(fList, fEdit));
 		if (prefs.blurBackground()) {
-			boolean blur = mode != MODE_PIE;
-			if (blur != blurState) {
-				BackgroundBlur.setBlur(window, blur);
-				blurState = blur;
+			int blur = Math.round(fCombined * BackgroundBlur.BLUR);
+			if (blur != lastBlur) {
+				BackgroundBlur.setBlurRadius(window, blur);
+				lastBlur = blur;
 			}
 		}
-		boolean invalidate;
-		switch (mode) {
-			default:
-			case MODE_PIE:
-				invalidate = drawPieMenu(canvas);
-				break;
-			case MODE_LIST:
-				invalidate = drawList(canvas);
-				break;
-			case MODE_EDIT:
-				invalidate = drawEditor(canvas);
-				break;
+		if (mode != MODE_PIE || prefs.darkenBackground()) {
+			int max = (translucentBackgroundColor >> 24) & 0xff;
+			int alpha = Math.round(fCombined * max);
+			if (alpha == 0) {
+				canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			} else {
+				canvas.drawColor(
+						(alpha << 24) | (translucentBackgroundColor & 0xffffff),
+						PorterDuff.Mode.SRC);
+			}
 		}
+		boolean invalidate = drawPieMenu(canvas, fPie);
+		invalidate |= drawList(canvas, fList);
+		invalidate |= drawEditor(canvas, fEdit);
 		if (ripple.draw(canvas, prefs) || invalidate) {
 			invalidate();
 		}
@@ -426,6 +446,7 @@ public class AppPieView extends View {
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch.x, touch.y);
+								fadePie.fadeIn(event.getEventTime());
 								performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
 								break;
 							case MODE_LIST:
@@ -436,8 +457,6 @@ public class AppPieView extends View {
 								editIconAt(touch);
 								break;
 						}
-						fadeInFrom = event.getEventTime();
-						resetFadeOutPieMenu();
 						invalidate();
 						break;
 					case MotionEvent.ACTION_MOVE:
@@ -463,13 +482,12 @@ public class AppPieView extends View {
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_PIE) {
 							cancelSpin();
-							fadeOutPieMenu();
+							fadePie.fadeOut();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							recycleVelocityTracker();
 						}
 						releaseIcon();
-						hidePieMenu();
 						invalidate();
 						break;
 				}
@@ -667,7 +685,6 @@ public class AppPieView extends View {
 					}
 					performActionRunnable = null;
 					resetHighlightedAction();
-					hidePieMenu();
 					invalidate();
 				};
 				// Wait a short time before performing the action
@@ -688,13 +705,13 @@ public class AppPieView extends View {
 			}
 
 			private void startSpin(MotionEvent event) {
-				if (isPieVisible() && spinId < 0) {
+				if (fadePie.isVisible() && spinId < 0) {
 					initSpin(event, event.getActionIndex());
 				}
 			}
 
 			private void spin(MotionEvent event) {
-				if (!isPieVisible()) {
+				if (!fadePie.isVisible()) {
 					return;
 				}
 				int count = event.getPointerCount();
@@ -704,8 +721,7 @@ public class AppPieView extends View {
 				if (count == 1 && event.getPointerId(0) != primaryId) {
 					cancelSpin();
 					primaryId = -1;
-					fadeOutPieMenu();
-					hidePieMenu();
+					fadePie.fadeOut();
 					return;
 				}
 				if (count < 2) {
@@ -904,6 +920,7 @@ public class AppPieView extends View {
 		grabbedIcon = icon;
 		grabbedIconAt = SystemClock.uptimeMillis();
 		lastInsertAt = -1;
+		fadeEdit.fadeIn();
 		mode = MODE_EDIT;
 	}
 
@@ -933,7 +950,7 @@ public class AppPieView extends View {
 	}
 
 	private boolean performAction(Context context, Point at, boolean wasTap) {
-		if (mode == MODE_PIE && isPieVisible()) {
+		if (mode == MODE_PIE && fadePie.isVisible()) {
 			boolean result = false;
 			if (wasTap) {
 				if (listListener != null) {
@@ -943,7 +960,7 @@ public class AppPieView extends View {
 				ripple.set(at);
 				result = true;
 			}
-			fadeOutPieMenu();
+			fadePie.fadeOut();
 			return result;
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
@@ -1158,6 +1175,7 @@ public class AppPieView extends View {
 	}
 
 	private void changeIcon(Context context, AppMenu.Icon icon) {
+		fadeEdit.fadeOut();
 		AppMenu.AppIcon appIcon = (AppMenu.AppIcon) icon;
 		PickIconActivity.start(context,
 				appIcon.componentName.getPackageName());
@@ -1211,10 +1229,14 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean drawList(Canvas canvas) {
+	private boolean drawList(Canvas canvas, float f) {
+		if (f <= 0) {
+			return false;
+		}
+		paintList.setAlpha(Math.round(f * 255f));
+		paintText.setAlpha(Math.round(f * alphaText));
 		// Manually draw an icon grid because GridView doesn't perform too
 		// well on low-end devices and doing it manually gives us more control.
-		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
 		int innerWidth = viewWidth - listPadding * 2;
 		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
 		boolean showAppNames =
@@ -1247,19 +1269,19 @@ public class AppPieView extends View {
 			canvas.drawBitmap(iconLaunchFirst,
 					ix + labelX - iconLaunchFirstHalf,
 					iy - listPadding,
-					paintActive);
+					paintList);
 		}
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
-		boolean invalidate = false;
+		boolean invalidate = f < 1f;
 		if (highlightedFrom > 0) {
 			float ad = prefs.getAnimationDuration();
 			if (ad > 0) {
 				long now = SystemClock.uptimeMillis();
-				float f = Math.min(1f, (now - highlightedFrom) / ad);
-				if (f < 1f) {
+				float t = Math.min(1f, (now - highlightedFrom) / ad);
+				if (t < 1f) {
 					invalidate = true;
 				}
-				magSize = Math.round(magSize * f);
+				magSize = Math.round(magSize * t);
 			} else {
 				magSize = 0;
 			}
@@ -1273,7 +1295,7 @@ public class AppPieView extends View {
 				int mag = appIcon == highlightedIcon ? magSize : 0;
 				drawRect.set(ix - mag, iy - mag,
 						ix + iconSize + mag, iy + iconSize + mag);
-				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintActive);
+				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintList);
 				if (showAppNames) {
 					CharSequence label = TextUtils.ellipsize(appIcon.label,
 							paintText, maxTextWidth, TextUtils.TruncateAt.END);
@@ -1292,25 +1314,33 @@ public class AppPieView extends View {
 		return invalidate;
 	}
 
-	private boolean drawEditor(Canvas canvas) {
-		canvas.drawColor(translucentBackgroundColor, PorterDuff.Mode.SRC);
+	private boolean drawEditor(Canvas canvas, float f) {
+		if (f <= 0) {
+			return false;
+		}
+		int alpha = Math.round(f * 255f);
+		CanvasPieMenu.paint.setAlpha(alpha);
+		paintDropZone.setAlpha(Math.round(f * alphaDropZone));
+		paintPressed.setAlpha(Math.round(f * alphaPressed));
+		paintAction.setAlpha(alpha);
+		paintText.setAlpha(Math.round(f * alphaText));
 		boolean hasIcon = grabbedIcon != null;
 		// Only draw tips in portrait orientation.
 		// There's probably not enough space in landscape.
 		if (canvas.getWidth() < canvas.getHeight()) {
 			drawTip(canvas, getTip(hasIcon));
 		}
-		boolean invalidate = false;
+		boolean invalidate = f < 1f;
 		if (hasIcon) {
 			float radius = actionSize;
 			float ad = prefs.getAnimationDuration();
 			if (ad > 0) {
 				long now = SystemClock.uptimeMillis();
-				float f = Math.min(1f, (now - grabbedIconAt) / ad);
-				if (f < 1f) {
+				float t = Math.min(1f, (now - grabbedIconAt) / ad);
+				if (t < 1f) {
 					invalidate = true;
 				}
-				radius *= f;
+				radius *= t;
 			}
 			drawAction(canvas, iconRemove, iconStartRect, radius);
 			drawAction(canvas, PieLauncherApp.iconPack.hasPacks()
@@ -1373,42 +1403,12 @@ public class AppPieView extends View {
 		grabbedIcon.y = touch.y;
 	}
 
-	private boolean drawPieMenu(Canvas canvas) {
-		float ad = prefs.getAnimationDuration();
-		float f = 0;
-		if (ad > 0) {
-			long now = SystemClock.uptimeMillis();
-			if (fadeInFrom > 0) {
-				f = Math.min(1f, (now - fadeInFrom) / ad);
-			} else {
-				long delta = now - fadeOutFrom;
-				if (delta < ad) {
-					// Ensure f < 1f so invalidate() is invoked.
-					f = Math.min(.99999f, 1f - delta / ad);
-				}
-			}
-		} else {
-			f = fadeInFrom > 0 ? 1f : 0f;
-		}
-		if (prefs.blurBackground() && f < 1f) {
-			BackgroundBlur.setBlurRadius(window,
-					Math.round(f * BackgroundBlur.BLUR));
-		}
+	private boolean drawPieMenu(Canvas canvas, float f) {
 		if (f <= 0) {
 			return false;
 		}
-		if (prefs.darkenBackground()) {
-			int max = (translucentBackgroundColor >> 24) & 0xff;
-			int alpha = Math.round(f * max);
-			canvas.drawColor(
-					(alpha << 24) |
-							(translucentBackgroundColor & 0xffffff),
-					PorterDuff.Mode.SRC);
-		} else {
-			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		}
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
-		if (fadeOutFrom == 0) {
+		if (fadePie.isVisible()) {
 			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 		}
 		PieLauncherApp.appMenu.draw(canvas);
@@ -1418,22 +1418,6 @@ public class AppPieView extends View {
 			performHapticFeedback(HAPTIC_FEEDBACK_CHOICE);
 		}
 		return f < 1f;
-	}
-
-	private void resetFadeOutPieMenu() {
-		fadeOutFrom = 0;
-	}
-
-	private void fadeOutPieMenu() {
-		fadeOutFrom = isPieVisible() ? SystemClock.uptimeMillis() : 0;
-	}
-
-	private void hidePieMenu() {
-		fadeInFrom = 0;
-	}
-
-	private boolean isPieVisible() {
-		return fadeInFrom > 0;
 	}
 
 	private String getTip(boolean hasIcon) {
@@ -1477,17 +1461,18 @@ public class AppPieView extends View {
 	private void drawAction(Canvas canvas, Bitmap icon, Rect rect,
 			float radius) {
 		boolean pressed = rect == highlightedAction;
-		Paint paint = null;
+		Paint circlePaint = null;
 		if (radius > 0) {
-			paint = pressed ? paintPressed : paintDropZone;
+			circlePaint = pressed ? paintPressed : paintDropZone;
 		} else if (pressed) {
 			radius = actionSize;
-			paint = paintPressed;
+			circlePaint = paintPressed;
 		}
-		if (paint != null) {
-			canvas.drawCircle(rect.centerX(), rect.centerY(), radius, paint);
+		if (circlePaint != null) {
+			canvas.drawCircle(rect.centerX(), rect.centerY(),
+					radius, circlePaint);
 		}
-		canvas.drawBitmap(icon, null, rect, paintActive);
+		canvas.drawBitmap(icon, null, rect, paintAction);
 	}
 
 	private boolean contains(Rect rect, Point point) {
@@ -1604,6 +1589,52 @@ public class AppPieView extends View {
 			this.x = Math.round(x);
 			this.scrollRef = this.y = Math.round(y);
 			this.time = time;
+		}
+	}
+
+	private static final class Fade {
+		private long fadeInFrom;
+		private long fadeOutFrom;
+
+		private void fadeIn() {
+			fadeIn(SystemClock.uptimeMillis());
+		}
+
+		private void fadeIn(long now) {
+			fadeInFrom = now;
+			fadeOutFrom = 0;
+		}
+
+		private void fadeOut() {
+			fadeOut(SystemClock.uptimeMillis());
+		}
+
+		private void fadeOut(long now) {
+			fadeInFrom = 0;
+			fadeOutFrom = now;
+		}
+
+		private boolean isVisible() {
+			return fadeInFrom > 0;
+		}
+
+		private float get(long now, float ad) {
+			float f = 0;
+			if (ad > 0) {
+				if (fadeInFrom > 0) {
+					f = Math.min(1f, (now - fadeInFrom) / ad);
+				} else {
+					long delta = now - fadeOutFrom;
+					if (delta < ad) {
+						// Ensure f < 1f so invalidate() is invoked
+						// one last time.
+						f = Math.min(.99999f, 1f - delta / ad);
+					}
+				}
+			} else {
+				f = fadeInFrom > 0 ? 1f : 0f;
+			}
+			return f;
 		}
 	}
 }
