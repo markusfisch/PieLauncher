@@ -1054,6 +1054,7 @@ public class AppPieView extends View {
 			} else {
 				ripple.set(touch);
 				rollback();
+				fadeEdit.fadeOut();
 				PieLauncherApp.appMenu.launchAppInfo(context,
 						(AppMenu.AppIcon) grabbedIcon);
 			}
