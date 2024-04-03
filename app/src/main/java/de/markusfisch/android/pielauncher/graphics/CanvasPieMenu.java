@@ -36,8 +36,8 @@ public class CanvasPieMenu extends PieMenu {
 			float rt = 1f - lastT;
 			float f = rt == 0 ? 1 : dt / rt;
 			smoothedSize += ds * f;
-			smoothedX += dx * f;
-			smoothedY += dy * f;
+			smoothedX += Math.round(dx * f);
+			smoothedY += Math.round(dy * f);
 			draw(canvas, smoothedSize, smoothedX, smoothedY);
 		}
 
