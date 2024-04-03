@@ -341,9 +341,9 @@ public class AppPieView extends View {
 		float fPie = fadePie.get(now, ad);
 		float fList = fadeList.get(now, ad);
 		float fEdit = fadeEdit.get(now, ad);
-		float fCombined = Math.max(fPie, Math.max(fList, fEdit));
+		float fMax = Math.max(fPie, Math.max(fList, fEdit));
 		if (prefs.blurBackground()) {
-			int blur = Math.round(fCombined * BackgroundBlur.BLUR);
+			int blur = Math.round(fMax * BackgroundBlur.BLUR);
 			if (blur != lastBlur) {
 				BackgroundBlur.setBlurRadius(window, blur);
 				lastBlur = blur;
@@ -351,7 +351,7 @@ public class AppPieView extends View {
 		}
 		if (mode != MODE_PIE || prefs.darkenBackground()) {
 			int max = (translucentBackgroundColor >> 24) & 0xff;
-			int alpha = Math.round(fCombined * max);
+			int alpha = Math.round(fMax * max);
 			if (alpha == 0) {
 				canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 			} else {
