@@ -268,9 +268,17 @@ public class HomeActivity extends Activity {
 		if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
 			prefsButton.setImageResource(R.drawable.ic_edit);
 			prefsButton.setOnClickListener(v -> showEditor());
+			prefsButton.setOnLongClickListener(v -> {
+				showPreferences();
+				return true;
+			});
 		} else {
 			prefsButton.setImageResource(R.drawable.ic_preferences);
 			prefsButton.setOnClickListener(v -> showPreferences());
+			prefsButton.setOnLongClickListener(v -> {
+				showEditor();
+				return true;
+			});
 		}
 	}
 
