@@ -3,7 +3,6 @@
 	<string name="tip_loading">Travailler…</string>
 	<string name="tip_drag_to_order">Entourer pour changer l\'ordre</string>
 	<string name="tip_remove_icon">Supprimer l\'icône de Pie</string>
-	<string name="tip_edit_app">Changer d\'icône</string>
 	<string name="tip_remove_app">Désinstaller l\'application</string>
 	<string name="preferences">Paramètres</string>
 	<string name="welcome">Bienvenue!</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">App cachées</font></big>\nListe des applications cachées</string>
 	<string name="skip">Sauter</string>
 	<string name="reset">Réinitialiser</string>
+	<string name="edit_app">Editer l\'app</string>
 	<string name="add_to_pie_menu">Ajouter au menu</string>
 	<string name="change_icon">Changer d\'icône</string>
 	<string name="hidden_apps">Applications cachées</string>

@@ -3,7 +3,6 @@
 	<string name="tip_loading">Loading…</string>
 	<string name="tip_drag_to_order">Drag to arrange, circle to change order</string>
 	<string name="tip_remove_icon">Remove icon from pie menu</string>
-	<string name="tip_edit_app">Change icon</string>
 	<string name="tip_remove_app">Uninstall app</string>
 	<string name="preferences">Settings</string>
 	<string name="welcome">Welcome!</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">Hidden apps</font></big>\nList of hidden apps</string>
 	<string name="skip">Skip</string>
 	<string name="reset">Reset</string>
+	<string name="edit_app">Edit app</string>
 	<string name="add_to_pie_menu">Add to pie menu</string>
 	<string name="change_icon">Change icon</string>
 	<string name="hidden_apps">Hidden apps</string>

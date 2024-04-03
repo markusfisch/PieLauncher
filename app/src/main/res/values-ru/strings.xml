@@ -3,7 +3,6 @@
 	<string name="tip_loading">Загрузка…</string>
 	<string name="tip_drag_to_order">Перетаскивайте для изменения порядка</string>
 	<string name="tip_remove_icon">Удалить иконку</string>
-	<string name="tip_edit_app">Заменить иконку</string>
 	<string name="tip_remove_app">Удалить приложение</string>
 	<string name="preferences">Настройки</string>
 	<string name="welcome">Добро пожаловать!</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">Скрытые приложения</font></big>\nСписок скрытых приложений</string>
 	<string name="skip">Далее</string>
 	<string name="reset">Сброс</string>
+	<string name="edit_app">Редактировать приложение</string>
 	<string name="add_to_pie_menu">Добавить в меню</string>
 	<string name="change_icon">Заменить иконку</string>
 	<string name="hidden_apps">Скрытые приложения</string>

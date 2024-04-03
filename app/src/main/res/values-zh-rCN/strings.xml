@@ -3,7 +3,6 @@
 	<string name="tip_loading">正在加载</string>
 	<string name="tip_drag_to_order">拖动排列，圈选更改顺序</string>
 	<string name="tip_remove_icon">从饼状菜单中移除图标</string>
-	<string name="tip_edit_app">更改图标</string>
 	<string name="tip_remove_app">卸载应用程序</string>
 	<string name="preferences">设置</string>
 	<string name="welcome">欢迎！</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">隐藏的应用程序</font></big>\n隐藏应用程序列表。</string>
 	<string name="skip">跳过</string>
 	<string name="reset">重置</string>
+	<string name="edit_app">编辑应用程序</string>
 	<string name="add_to_pie_menu">添加到菜单</string>
 	<string name="change_icon">更改图标</string>
 	<string name="hidden_apps">隐藏的应用程序</string>

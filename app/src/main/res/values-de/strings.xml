@@ -3,7 +3,6 @@
 	<string name="tip_loading">Lade…</string>
 	<string name="tip_drag_to_order">Umkreisen um Reihenfolge zu ändern</string>
 	<string name="tip_remove_icon">Icon aus Menu entfernen</string>
-	<string name="tip_edit_app">Icon ändern</string>
 	<string name="tip_remove_app">App deinstallieren</string>
 	<string name="preferences">Einstellungen</string>
 	<string name="welcome">Willkommen!</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">Versteckte Apps</font></big>\nListe der nicht sichtbaren Apps</string>
 	<string name="skip">Überspringen</string>
 	<string name="reset">Zurücksetzen</string>
+	<string name="edit_app">App ändern</string>
 	<string name="add_to_pie_menu">Zum Menu hinzufügen</string>
 	<string name="change_icon">Icon ändern</string>
 	<string name="hidden_apps">Versteckte Apps</string>

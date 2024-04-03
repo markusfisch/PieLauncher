@@ -171,7 +171,7 @@ public class AppPieView extends View {
 		loadingTip = context.getString(R.string.tip_loading);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
 		removeIconTip = context.getString(R.string.tip_remove_icon);
-		editAppTip = context.getString(R.string.tip_edit_app);
+		editAppTip = context.getString(R.string.change_icon);
 		hideAppTip = context.getString(R.string.hide_app);
 		removeAppTip = context.getString(R.string.tip_remove_app);
 
@@ -848,7 +848,7 @@ public class AppPieView extends View {
 		if (PieLauncherApp.iconPack.hasPacks()) {
 			list.add(context.getString(R.string.change_icon));
 		}
-		OptionsDialog.show(context, R.string.tip_edit_app,
+		OptionsDialog.show(context, R.string.edit_app,
 				list.toArray(new CharSequence[0]),
 				(view, which) -> {
 					switch (which) {

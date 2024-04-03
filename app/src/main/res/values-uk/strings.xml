@@ -3,7 +3,6 @@
 	<string name="tip_loading">Завантаження…</string>
 	<string name="tip_drag_to_order">Перетягніть, щоб упорядкувати</string>
 	<string name="tip_remove_icon">Видалити значок із кругового меню</string>
-	<string name="tip_edit_app">Змінити значок</string>
 	<string name="tip_remove_app">Видалити додаток</string>
 	<string name="preferences">Налаштування</string>
 	<string name="welcome">Ласкаво просимо!</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">Приховані програми</font></big>\nСписок прихованих програм</string>
 	<string name="skip">Пропустити</string>
 	<string name="reset">Скинути</string>
+	<string name="edit_app">Редагування програми</string>
 	<string name="add_to_pie_menu">Додати в меню</string>
 	<string name="change_icon">Змінити значок</string>
 	<string name="hidden_apps">Приховані програми</string>

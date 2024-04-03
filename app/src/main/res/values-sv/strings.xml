@@ -3,7 +3,6 @@
 	<string name="tip_loading">Laddar …</string>
 	<string name="tip_drag_to_order">Dra för att ordna, cirkla för att ändra ordning</string>
 	<string name="tip_remove_icon">Ta bort ikon från cirkelmenyn</string>
-	<string name="tip_edit_app">Ändra ikon</string>
 	<string name="tip_remove_app">Avinstallera app</string>
 	<string name="preferences">Inställningar</string>
 	<string name="welcome">Välkommen!</string>
@@ -58,6 +57,7 @@
 	<string name="show_hidden_apps"><big><font color="#ffffff">Dolda appar</font></big>\nLista med dolda appar</string>
 	<string name="skip">Hoppa över</string>
 	<string name="reset">Återställ</string>
+	<string name="edit_app">Redigera app</string>
 	<string name="add_to_pie_menu">Lägg till i cirkelmenyn</string>
 	<string name="change_icon">Ändra ikon</string>
 	<string name="hidden_apps">Dolda appar</string>
