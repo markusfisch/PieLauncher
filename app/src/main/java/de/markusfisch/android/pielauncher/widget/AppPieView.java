@@ -1042,6 +1042,7 @@ public class AppPieView extends View {
 				if (PieLauncherApp.iconPack.hasPacks()) {
 					changeIcon(context, grabbedIcon);
 				} else {
+					fadeEdit.fadeOut();
 					PickIconActivity.askToHide(context,
 							((AppMenu.AppIcon) grabbedIcon)
 									.componentName.getPackageName());
