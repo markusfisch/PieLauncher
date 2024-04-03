@@ -921,8 +921,10 @@ public class AppPieView extends View {
 		grabbedIcon = icon;
 		grabbedIconAt = SystemClock.uptimeMillis();
 		lastInsertAt = -1;
-		fadeEdit.fadeIn();
-		mode = MODE_EDIT;
+		if (mode != MODE_EDIT) {
+			fadeEdit.fadeIn();
+			mode = MODE_EDIT;
+		}
 	}
 
 	private void releaseIcon() {
