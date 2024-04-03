@@ -252,10 +252,20 @@ public class AppPieView extends View {
 		if (mode == MODE_PIE) {
 			return;
 		}
+		switch (mode) {
+			case MODE_PIE:
+				fadePie.fadeOut();
+				break;
+			case MODE_EDIT:
+				fadeEdit.fadeOut();
+				break;
+			case MODE_LIST:
+				fadeList.fadeOut();
+				break;
+		}
 		mode = MODE_PIE;
 		resetScrollWithoutAnimation();
 		setVerticalScrollBarEnabled(false);
-		fadeList.fadeOut();
 		invalidate();
 	}
 
@@ -319,9 +329,11 @@ public class AppPieView extends View {
 		backup.clear();
 		ungrabbedIcons.clear();
 		releaseIcon();
+		if (mode == MODE_EDIT) {
+			fadeEdit.fadeOut();
+		}
 		mode = MODE_PIE;
 		keepMode = false;
-		fadeEdit.fadeOut();
 		invalidate();
 	}
 
