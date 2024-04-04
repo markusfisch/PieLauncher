@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.19.0
+* Make pie menu orientation adjustable
+* Add a preference to search by package name
+* Make app listing slide in
+* Turn pie menu with a second finger
+* Add swedish translation
+
 ## 1.18.5
 * Add a preference to show/hide app names
 

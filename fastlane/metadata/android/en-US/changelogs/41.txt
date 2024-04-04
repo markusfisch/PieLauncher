@@ -1,0 +1,6 @@
+* Make pie menu orientation adjustable
+* Add a preference to search by package name
+* Make app listing slide in
+* Turn pie menu with a second finger
+* Add swedish translation
+
