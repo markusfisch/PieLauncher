@@ -170,27 +170,26 @@ public class AppMenu extends CanvasPieMenu {
 				String subject = getSubject(item, appIcon, defaultLocale);
 				boolean add = false;
 				switch (strategy) {
-					case Preferences.SEARCH_STRICTNESS_STARTS_WITH:
-						add = subject.startsWith(query);
-						break;
+					// HAMMING includes CONTAINS for historical reasons.
 					case Preferences.SEARCH_STRICTNESS_HAMMING:
-						if (hammingDistance(subject, query) < 2) {
-							hamming.add(appIcon);
-						}
-						// Fall through because HAMMING includes CONTAINS
-						// for historical reasons.
 					case Preferences.SEARCH_STRICTNESS_CONTAINS:
 						add = subject.contains(query);
+						break;
+					case Preferences.SEARCH_STRICTNESS_STARTS_WITH:
+						add = subject.startsWith(query);
 						break;
 				}
 				if (add) {
 					list.add(appIcon);
+				} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING &&
+						hammingDistance(subject, query) < 2) {
+					hamming.add(appIcon);
 				}
 			}
 		}
 
 		Collections.sort(list, appLabelComparator);
-		if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING) {
+		if (!hamming.isEmpty()) {
 			// Only append hamming matches as they're less likely
 			// as good as exact matches.
 			Collections.sort(hamming, appLabelComparator);
