@@ -155,7 +155,7 @@ public class AppPieView extends View {
 	private Bitmap iconChangeRadius;
 	private boolean keepMode = false;
 	private boolean neverDropped = false;
-	private boolean appListFiltered = false;
+	private boolean appListIsFiltered = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -290,9 +290,9 @@ public class AppPieView extends View {
 		if (newAppList != null) {
 			appList = newAppList;
 		}
-		appListFiltered = !TextUtils.isEmpty(query);
+		appListIsFiltered = !TextUtils.isEmpty(query);
 		selectedApp = prefs.doubleSpaceLaunch()
-				? (appListFiltered ? 0 : -1)
+				? (appListIsFiltered ? 0 : -1)
 				: getSelectedAppFromTrailingSpace(query);
 		scrollList(0, false);
 		lastScrollY = 0;
@@ -1247,7 +1247,7 @@ public class AppPieView extends View {
 		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
 		boolean showAppNames =
 				prefs.showAppNames() == Preferences.SHOW_APP_NAMES_ALWAYS ||
-						(appListFiltered && prefs.showAppNames() ==
+						(appListIsFiltered && prefs.showAppNames() ==
 								Preferences.SHOW_APP_NAMES_SEARCH);
 		int iconAndTextHeight = iconSize + (showAppNames
 				? iconTextPadding + Math.round(textHeight)
