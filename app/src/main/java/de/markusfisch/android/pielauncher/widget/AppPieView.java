@@ -1245,10 +1245,7 @@ public class AppPieView extends View {
 		// well on low-end devices and doing it manually gives us more control.
 		int innerWidth = viewWidth - listPadding * 2;
 		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
-		boolean showAppNames =
-				prefs.showAppNames() == Preferences.SHOW_APP_NAMES_ALWAYS ||
-						(appListIsFiltered && prefs.showAppNames() ==
-								Preferences.SHOW_APP_NAMES_SEARCH);
+		boolean showAppNames = showAppNames();
 		int iconAndTextHeight = iconSize + (showAppNames
 				? iconTextPadding + Math.round(textHeight)
 				: 0);
@@ -1319,6 +1316,17 @@ public class AppPieView extends View {
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
 		return invalidate;
+	}
+
+	private boolean showAppNames() {
+		switch (prefs.showAppNames()) {
+			default:
+				return false;
+			case Preferences.SHOW_APP_NAMES_ALWAYS:
+				return true;
+			case Preferences.SHOW_APP_NAMES_SEARCH:
+				return appListIsFiltered;
+		}
 	}
 
 	private boolean drawEditor(Canvas canvas, float f) {
