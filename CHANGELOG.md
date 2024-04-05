@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.19.1
+* Fix app search
+
 ## 1.19.0
 * Make pie menu orientation adjustable
 * Add a preference to search by package name
