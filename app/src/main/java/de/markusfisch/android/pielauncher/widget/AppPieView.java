@@ -1624,6 +1624,8 @@ public class AppPieView extends View {
 	private static final class Fade {
 		private long fadeInFrom;
 		private long fadeOutFrom;
+		private float maxIn = 1f;
+		private float minOut = 0f;
 
 		private void fadeIn() {
 			fadeIn(SystemClock.uptimeMillis());
@@ -1647,23 +1649,22 @@ public class AppPieView extends View {
 			return fadeInFrom > 0;
 		}
 
-		private float get(long now, float ad) {
-			float f = 0;
-			if (ad > 0) {
-				if (fadeInFrom > 0) {
-					f = Math.min(1f, (now - fadeInFrom) / ad);
-				} else {
-					long delta = now - fadeOutFrom;
-					if (delta < ad) {
-						// Ensure f < 1f so invalidate() is invoked
-						// one last time.
-						f = Math.min(.99999f, 1f - delta / ad);
-					}
-				}
-			} else {
-				f = fadeInFrom > 0 ? 1f : 0f;
+		private float get(long now, float duration) {
+			if (duration == 0) {
+				return fadeInFrom > 0 ? 1f : 0f;
 			}
-			return f;
+			if (fadeInFrom > 0) {
+				maxIn = Math.min(1f, minOut + (now - fadeInFrom) / duration);
+				return maxIn;
+			}
+			long delta = now - fadeOutFrom;
+			if (delta < duration) {
+				// Ensure f < 1f so invalidate() is invoked one last time.
+				minOut = Math.min(.99999f,
+						Math.max(0f, maxIn - delta / duration));
+				return minOut;
+			}
+			return 0;
 		}
 	}
 }
