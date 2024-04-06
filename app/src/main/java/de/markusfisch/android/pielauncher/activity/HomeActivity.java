@@ -50,6 +50,9 @@ public class HomeActivity extends Activity {
 		if (pieView.inListMode() && gestureDetector.onTouchEvent(ev)) {
 			return true;
 		}
+		if (ev.getActionMasked() == MotionEvent.ACTION_UP) {
+			pieView.resetDragDownList();
+		}
 		try {
 			return super.dispatchTouchEvent(ev);
 		} catch (IllegalStateException e) {
@@ -351,6 +354,16 @@ public class HomeActivity extends Activity {
 
 		private FlingListener(int minimumVelocity) {
 			this.minimumVelocity = minimumVelocity;
+		}
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,
+				float distanceX, float distanceY) {
+			if (!pieView.isAppListScrolled() &&
+					Math.abs(distanceY) > Math.abs(distanceX)) {
+				pieView.dragDownListBy(distanceY);
+			}
+			return false;
 		}
 
 		@Override

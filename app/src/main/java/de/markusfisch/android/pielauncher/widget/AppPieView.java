@@ -136,6 +136,7 @@ public class AppPieView extends View {
 	private float twist;
 	private float minIconScale;
 	private float iconScale;
+	private float dragOffset;
 	private int maxScrollY;
 	private int lastScrollY;
 	private int lastInsertAt;
@@ -240,6 +241,7 @@ public class AppPieView extends View {
 		cancelRipple();
 		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
+		dragOffset = 0f;
 		fadeList.fadeIn();
 		invalidate();
 	}
@@ -257,6 +259,21 @@ public class AppPieView extends View {
 		resetScrollWithoutAnimation();
 		setVerticalScrollBarEnabled(false);
 		invalidate();
+	}
+
+	public void dragDownListBy(float y) {
+		if (mode != MODE_LIST) {
+			return;
+		}
+		dragOffset -= y;
+		invalidate();
+	}
+
+	public void resetDragDownList() {
+		if (dragOffset != 0f) {
+			dragOffset = 0f;
+			invalidate();
+		}
 	}
 
 	public void showEditor() {
@@ -1239,8 +1256,10 @@ public class AppPieView extends View {
 		if (f <= 0) {
 			return false;
 		}
-		paintList.setAlpha(Math.round(f * 255f));
-		paintText.setAlpha(Math.round(f * alphaText));
+		float af = Math.min(f, 1f - Math.min(1f,
+				dragOffset / (viewHeight * .5f)));
+		paintList.setAlpha(Math.round(af * 255f));
+		paintText.setAlpha(Math.round(af * alphaText));
 		// Manually draw an icon grid because GridView doesn't perform too
 		// well on low-end devices and doing it manually gives us more control.
 		int innerWidth = viewWidth - listPadding * 2;
@@ -1263,7 +1282,8 @@ public class AppPieView extends View {
 		int viewBottom = scrollY + viewHeight;
 		int x = listPadding;
 		int y = listPadding + searchInputHeight +
-				Math.round((1f - f) * viewHeight * .5f);
+				Math.round((1f - f) * viewHeight * .5f) +
+				Math.round(dragOffset);
 		int wrapX = listPadding + cellWidth * columns;
 		int size = getIconCount();
 		if (selectedApp > -1 && size > 0) {
