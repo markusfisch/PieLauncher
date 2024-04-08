@@ -457,7 +457,7 @@ public class AppPieView extends View {
 						}
 						if (cancelPerformAction()) {
 							// Ignore additional ACTION_DOWN's when there
-							// was a pending action.
+							// is a pending action.
 							break;
 						}
 						addTouch(event);
@@ -575,6 +575,9 @@ public class AppPieView extends View {
 			}
 
 			private void scroll(MotionEvent event) {
+				if (dragOffset > 0) {
+					return;
+				}
 				int index = getPrimaryIndex(event);
 				TouchReference tr = getTouchReference(event, index);
 				if (tr == null || isTap(event, tapOrScrollTimeout)) {
