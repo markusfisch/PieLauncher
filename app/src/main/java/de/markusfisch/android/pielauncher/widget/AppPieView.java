@@ -1069,6 +1069,7 @@ public class AppPieView extends View {
 					returnToList();
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
+					keepMode = true;
 					changeIcon(context, grabbedIcon);
 				} else if (PieLauncherApp.appMenu.isDrawerIcon(
 						(AppMenu.AppIcon) grabbedIcon)) {
