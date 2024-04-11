@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
+import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -84,15 +85,24 @@ public class AppMenu extends CanvasPieMenu {
 
 	private UpdateListener updateListener;
 	private LauncherApps launcherApps;
+	private String drawerPackageName;
 	private boolean indexing = false;
 
-	public boolean launchSelectedApp(Context context) {
-		int selectedIcon = getSelectedIcon();
-		if (selectedIcon > -1 && selectedIcon < icons.size()) {
-			launchApp(context, ((AppIcon) icons.get(selectedIcon)));
-			return true;
-		}
-		return false;
+	public AppIcon getSelectedApp() {
+		int index = getSelectedIcon();
+		return index > -1 && index < icons.size()
+				? (AppIcon) icons.get(index)
+				: null;
+	}
+
+	public boolean isDrawerIcon(AppIcon icon) {
+		return icon != null &&
+				isDrawerPackageName(icon.componentName.getPackageName());
+	}
+
+	public boolean isDrawerPackageName(String packageName) {
+		return drawerPackageName != null &&
+				drawerPackageName.equals(packageName);
 	}
 
 	public void launchApp(Context context, AppIcon icon) {
@@ -250,7 +260,8 @@ public class AppMenu extends CanvasPieMenu {
 					userHandleRestriction,
 					hideApps,
 					newApps);
-			List<Icon> newIcons = createMenu(context, newApps);
+			List<Icon> newIcons = createMenu(context, newApps,
+					PieLauncherApp.getPrefs(context).useDrawerIcon());
 			handler.post(() -> {
 				apps.clear();
 				apps.putAll(newApps);
@@ -368,20 +379,49 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
-	private static void addApp(Map<LauncherItemKey, AppIcon> allApps,
+	private static AppIcon addApp(Map<LauncherItemKey, AppIcon> allApps,
 			ComponentName componentName, String label,
 			Drawable icon, UserHandle userHandle) {
-		allApps.put(new LauncherItemKey(componentName, userHandle),
-				new AppIcon(componentName, label, icon, userHandle));
+		AppIcon appIcon = new AppIcon(componentName, label, icon, userHandle);
+		allApps.put(new LauncherItemKey(componentName, userHandle), appIcon);
+		return appIcon;
 	}
 
-	private static List<Icon> createMenu(Context context,
-			Map<LauncherItemKey, AppIcon> allApps) {
-		List<Icon> menu = Menu.restore(context, allApps);
+	private List<Icon> createMenu(Context context,
+			Map<LauncherItemKey, AppIcon> allApps,
+			boolean useDrawerIcon) {
+		AppMenu.Icon drawerIcon = useDrawerIcon
+				? addDrawerIcon(context, allApps)
+				: null;
+		ArrayList<Icon> menu = Menu.restore(context, allApps);
 		if (menu.isEmpty()) {
 			createInitialMenu(menu, allApps, context.getPackageManager());
 		}
+		if (drawerIcon != null) {
+			if (!menu.contains(drawerIcon)) {
+				menu.add(0, drawerIcon);
+			}
+			removePackageFromApps(allApps, drawerPackageName, null);
+		} else {
+			drawerPackageName = null;
+		}
 		return menu;
+	}
+
+	private AppMenu.Icon addDrawerIcon(Context context,
+			Map<LauncherItemKey, AppIcon> allApps) {
+		String appPackageName = context.getPackageName();
+		drawerPackageName = appPackageName + ".drawer";
+		Drawable icon = PieLauncherApp.iconPack.getIcon(drawerPackageName);
+		if (icon == null) {
+			icon = Converter.getDrawable(
+					context.getResources(), R.drawable.ic_drawer);
+		}
+		return addApp(allApps,
+				new ComponentName(drawerPackageName, "Drawer"),
+				"Drawer",
+				icon,
+				null);
 	}
 
 	private static void createInitialMenu(List<Icon> menu,

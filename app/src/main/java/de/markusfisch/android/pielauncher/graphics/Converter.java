@@ -1,9 +1,11 @@
 package de.markusfisch.android.pielauncher.graphics;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 public class Converter {
 	// Limit the icon size, as some apps incorrectly use too large resources
@@ -34,5 +36,18 @@ public class Converter {
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
 		drawable.draw(canvas);
 		return bitmap;
+	}
+
+	public static Bitmap getBitmapFromDrawable(Resources res, int resId) {
+		return getBitmapFromDrawable(getDrawable(res, resId));
+	}
+
+	public static Drawable getDrawable(Resources res, int resId) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			return res.getDrawable(resId, null);
+		} else {
+			//noinspection deprecation
+			return res.getDrawable(resId);
+		}
 	}
 }

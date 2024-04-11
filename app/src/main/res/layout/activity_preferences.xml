@@ -60,6 +60,10 @@
 					android:text="@string/category_app_drawer" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/use_drawer_icon"
+					android:text="@string/use_drawer_icon_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/display_keyboard"
 					android:text="@string/display_keyboard_yes" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

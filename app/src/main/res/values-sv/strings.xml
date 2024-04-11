@@ -26,6 +26,9 @@
 	<string name="dead_zone_bottom">Längst ner</string>
 	<string name="dead_zone_both">Högst upp och längst ner (standard)</string>
 	<string name="category_app_drawer">Applåda</string>
+	<string name="use_drawer_icon">Öppnar genom</string>
+	<string name="use_drawer_icon_yes">Ikon i menyn</string>
+	<string name="use_drawer_icon_no">Tryck på startskärmen (standard)</string>
 	<string name="display_keyboard">Visa tangentbordet automatiskt</string>
 	<string name="display_keyboard_yes">Ja (standard)</string>
 	<string name="display_keyboard_no">Nej</string>

@@ -20,7 +20,7 @@ import de.markusfisch.android.pielauncher.graphics.PieMenu;
 public class Menu {
 	private static final String MENU_FILE = "menu";
 
-	public static List<PieMenu.Icon> restore(Context context,
+	public static ArrayList<PieMenu.Icon> restore(Context context,
 			Map<LauncherItemKey, AppMenu.AppIcon> allApps) {
 		ArrayList<PieMenu.Icon> icons = new ArrayList<>();
 		try {

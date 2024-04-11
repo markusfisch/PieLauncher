@@ -227,8 +227,12 @@ public class PickIconActivity extends Activity {
 
 	private void initHide(String packageName) {
 		View hideButton = findViewById(R.id.hide_app);
-		hideButton.setOnClickListener((v) -> askToHide(
-				this, packageName, this::finish));
+		if (PieLauncherApp.appMenu.isDrawerPackageName(packageName)) {
+			hideButton.setVisibility(View.INVISIBLE);
+		} else {
+			hideButton.setOnClickListener((v) -> askToHide(
+					this, packageName, this::finish));
+		}
 	}
 
 	private void initSwitchPack() {

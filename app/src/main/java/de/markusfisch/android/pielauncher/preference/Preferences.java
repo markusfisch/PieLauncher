@@ -32,6 +32,7 @@ public class Preferences {
 	private static final String DARKEN_BACKGROUND = "darken_background";
 	private static final String BLUR_BACKGROUND = "blur_background";
 	private static final String DEAD_ZONE = "dead_zone";
+	private static final String USE_DRAWER_ICON = "use_drawer_icon";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
@@ -51,6 +52,7 @@ public class Preferences {
 	private boolean darkenBackground = false;
 	private boolean blurBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
+	private boolean useDrawerIcon = false;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
@@ -78,6 +80,8 @@ public class Preferences {
 		blurBackground = preferences.getBoolean(BLUR_BACKGROUND,
 				blurBackground);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
+		useDrawerIcon = preferences.getBoolean(USE_DRAWER_ICON,
+				useDrawerIcon);
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
 		doubleSpaceLaunch = preferences.getBoolean(DOUBE_SPACE_LAUNCH,
@@ -162,6 +166,15 @@ public class Preferences {
 	public void setDeadZone(int deadZone) {
 		this.deadZone = deadZone;
 		put(DEAD_ZONE, deadZone).commit();
+	}
+
+	public boolean useDrawerIcon() {
+		return useDrawerIcon;
+	}
+
+	public void setUseDrawerIcon(boolean useDrawerIcon) {
+		this.useDrawerIcon = useDrawerIcon;
+		put(USE_DRAWER_ICON, useDrawerIcon).apply();
 	}
 
 	public boolean displayKeyboard() {

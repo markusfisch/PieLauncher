@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextPaint;
@@ -197,14 +196,17 @@ public class AppPieView extends View {
 		textOffset = (textHeight / 2) - paintText.descent();
 		translucentBackgroundColor = res.getColor(R.color.bg_ui);
 
-		iconAdd = getBitmapFromDrawable(res, R.drawable.ic_add);
-		iconEdit = getBitmapFromDrawable(res, R.drawable.ic_edit);
-		iconHide = getBitmapFromDrawable(res, R.drawable.ic_hide);
-		iconRemove = getBitmapFromDrawable(res, R.drawable.ic_remove);
-		iconDetails = getBitmapFromDrawable(res, R.drawable.ic_details);
-		iconDone = getBitmapFromDrawable(res, R.drawable.ic_done);
-		iconPreferences = getBitmapFromDrawable(res, R.drawable.ic_preferences);
-		iconLaunchFirst = getBitmapFromDrawable(res,
+		iconAdd = Converter.getBitmapFromDrawable(res, R.drawable.ic_add);
+		iconEdit = Converter.getBitmapFromDrawable(res, R.drawable.ic_edit);
+		iconHide = Converter.getBitmapFromDrawable(res, R.drawable.ic_hide);
+		iconRemove = Converter.getBitmapFromDrawable(res,
+				R.drawable.ic_remove);
+		iconDetails = Converter.getBitmapFromDrawable(res,
+				R.drawable.ic_details);
+		iconDone = Converter.getBitmapFromDrawable(res, R.drawable.ic_done);
+		iconPreferences = Converter.getBitmapFromDrawable(res,
+				R.drawable.ic_preferences);
+		iconLaunchFirst = Converter.getBitmapFromDrawable(res,
 				R.drawable.ic_launch_first);
 		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
 		updateChangeTwistIcon();
@@ -396,19 +398,6 @@ public class AppPieView extends View {
 	@Override
 	protected int computeVerticalScrollOffset() {
 		return getScrollY();
-	}
-
-	private static Bitmap getBitmapFromDrawable(Resources res, int resId) {
-		return Converter.getBitmapFromDrawable(getDrawable(res, resId));
-	}
-
-	private static Drawable getDrawable(Resources res, int resId) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			return res.getDrawable(resId, null);
-		} else {
-			//noinspection deprecation
-			return res.getDrawable(resId);
-		}
 	}
 
 	private void initTouchListener() {
@@ -977,16 +966,7 @@ public class AppPieView extends View {
 	private boolean performAction(Context context, Point at, boolean wasTap) {
 		if (mode == MODE_PIE && fadePie.isVisible()) {
 			fadeOutMode();
-			boolean result = false;
-			if (wasTap) {
-				if (listListener != null) {
-					listListener.onOpenList(false);
-				}
-			} else if (PieLauncherApp.appMenu.launchSelectedApp(context)) {
-				ripple.set(at);
-				result = true;
-			}
-			return result;
+			return performPieAction(context, at, wasTap);
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
@@ -996,6 +976,31 @@ public class AppPieView extends View {
 			return result;
 		}
 		return false;
+	}
+
+	private boolean performPieAction(Context context, Point at,
+			boolean wasTap) {
+		boolean result = false;
+		boolean openList = false;
+		AppMenu.AppIcon appIcon = PieLauncherApp.appMenu.getSelectedApp();
+		if (prefs.useDrawerIcon()) {
+			result = openList = PieLauncherApp.appMenu.isDrawerIcon(
+					appIcon);
+		} else if (wasTap) {
+			openList = true;
+		}
+		if (openList) {
+			if (listListener != null) {
+				listListener.onOpenList(false);
+			}
+		} else if (appIcon != null) {
+			PieLauncherApp.appMenu.launchApp(context, appIcon);
+			result = true;
+		}
+		if (result) {
+			ripple.set(at);
+		}
+		return result;
 	}
 
 	private boolean performListAction(Context context, Point at) {
@@ -1047,11 +1052,9 @@ public class AppPieView extends View {
 				((Activity) context).onBackPressed();
 			} else {
 				ripple.set(touch);
-				PieLauncherApp.appMenu.icons.remove(grabbedIcon);
-				// Undo any rotation if the menu has not otherwise changed.
-				if (sameOrder(backup, PieLauncherApp.appMenu.icons)) {
-					rollback();
-				}
+				removeIconFromPie(grabbedIcon,
+						PieLauncherApp.appMenu.isDrawerIcon(
+								(AppMenu.AppIcon) grabbedIcon));
 			}
 			return true;
 		} else if (contains(iconCenterRect, touch)) {
@@ -1067,6 +1070,9 @@ public class AppPieView extends View {
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
 					changeIcon(context, grabbedIcon);
+				} else if (PieLauncherApp.appMenu.isDrawerIcon(
+						(AppMenu.AppIcon) grabbedIcon)) {
+					removeIconFromPie(grabbedIcon, true);
 				} else {
 					PickIconActivity.askToHide(context,
 							((AppMenu.AppIcon) grabbedIcon)
@@ -1081,12 +1087,28 @@ public class AppPieView extends View {
 				ripple.set(touch);
 				rollback();
 				fadeOutMode();
-				PieLauncherApp.appMenu.launchAppInfo(context,
-						(AppMenu.AppIcon) grabbedIcon);
+				if (PieLauncherApp.appMenu.isDrawerIcon(
+						(AppMenu.AppIcon) grabbedIcon)) {
+					removeIconFromPie(grabbedIcon, true);
+				} else {
+					PieLauncherApp.appMenu.launchAppInfo(context,
+							(AppMenu.AppIcon) grabbedIcon);
+				}
 			}
 			return true;
 		}
 		return false;
+	}
+
+	private void removeIconFromPie(AppMenu.Icon icon, boolean isDrawerIcon) {
+		if (isDrawerIcon) {
+			prefs.setUseDrawerIcon(false);
+		}
+		PieLauncherApp.appMenu.icons.remove(icon);
+		// Undo any rotation if the menu has not otherwise changed.
+		if (sameOrder(backup, PieLauncherApp.appMenu.icons)) {
+			rollback();
+		}
 	}
 
 	private void rollback() {
@@ -1122,7 +1144,7 @@ public class AppPieView extends View {
 	}
 
 	private void updateChangeTwistIcon() {
-		iconChangeTwist = getBitmapFromDrawable(getResources(),
+		iconChangeTwist = Converter.getBitmapFromDrawable(getResources(),
 				getDrawableForTwist(twist));
 	}
 
@@ -1152,7 +1174,7 @@ public class AppPieView extends View {
 	}
 
 	private void updateChangeIconScaleIcon() {
-		iconChangeIconScale = getBitmapFromDrawable(getResources(),
+		iconChangeIconScale = Converter.getBitmapFromDrawable(getResources(),
 				getDrawableForIconScale(iconScale));
 	}
 
@@ -1163,7 +1185,7 @@ public class AppPieView extends View {
 	}
 
 	private void updateChangeRadiusIcon() {
-		iconChangeRadius = getBitmapFromDrawable(getResources(),
+		iconChangeRadius = Converter.getBitmapFromDrawable(getResources(),
 				getDrawableForRadius(radius));
 	}
 

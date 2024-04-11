@@ -158,6 +158,14 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getDeadZoneOptions,
 				() -> prefs.getDeadZone(),
 				(value) -> prefs.setDeadZone(value));
+		initPreference(R.id.use_drawer_icon,
+				R.string.use_drawer_icon,
+				PreferencesActivity::getUseDrawerIconOptions,
+				() -> prefs.useDrawerIcon(),
+				(value) -> {
+					prefs.setUseDrawerIcon(value);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
+				});
 		initPreference(R.id.display_keyboard,
 				R.string.display_keyboard,
 				PreferencesActivity::getDisplayKeyboardOptions,
@@ -369,6 +377,13 @@ public class PreferencesActivity extends Activity {
 		map.put(Preferences.DEAD_ZONE_TOP, R.string.dead_zone_top);
 		map.put(Preferences.DEAD_ZONE_BOTTOM, R.string.dead_zone_bottom);
 		map.put(Preferences.DEAD_ZONE_BOTH, R.string.dead_zone_both);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getUseDrawerIconOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.use_drawer_icon_yes);
+		map.put(Boolean.FALSE, R.string.use_drawer_icon_no);
 		return map;
 	}
 
