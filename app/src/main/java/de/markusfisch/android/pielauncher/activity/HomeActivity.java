@@ -47,6 +47,9 @@ public class HomeActivity extends Activity {
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
+		if (ev == null) {
+			return false;
+		}
 		if (pieView.inListMode() && gestureDetector.onTouchEvent(ev)) {
 			return true;
 		}
