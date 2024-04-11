@@ -43,7 +43,7 @@
 	<string name="search_strictness_contains">Name contains search term</string>
 	<string name="search_strictness_starts_with">Name starts with search term</string>
 	<string name="search_parameter">Search by</string>
-	<string name="search_parameter_app_label">App label (Default)</string>
+	<string name="search_parameter_app_label">App name (Default)</string>
 	<string name="search_parameter_package_name">Package name</string>
 	<string name="show_app_names">Show app names</string>
 	<string name="show_app_names_always">Always</string>

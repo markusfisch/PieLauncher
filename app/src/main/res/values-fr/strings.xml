@@ -43,7 +43,7 @@
 	<string name="search_strictness_contains">Le nom contient le terme recherché</string>
 	<string name="search_strictness_starts_with">Le nom commence par le terme recherché</string>
 	<string name="search_parameter">Rechercher par</string>
-	<string name="search_parameter_app_label">Libellé d\'application (d\'usine)</string>
+	<string name="search_parameter_app_label">Nom de l\'app (d\'usine)</string>
 	<string name="search_parameter_package_name">Nom de package</string>
 	<string name="show_app_names">Afficher les noms d\'app</string>
 	<string name="show_app_names_always">Toujours</string>
