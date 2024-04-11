@@ -46,8 +46,8 @@
 	<string name="search_parameter_app_label">Libellé d\'application (d\'usine)</string>
 	<string name="search_parameter_package_name">Nom de package</string>
 	<string name="show_app_names">Afficher les noms d\'app</string>
-	<string name="show_app_names_always">Toujours (d\'usine)</string>
-	<string name="show_app_names_search">Lors d\'une recherche</string>
+	<string name="show_app_names_always">Toujours</string>
+	<string name="show_app_names_search">Lors d\'une recherche (d\'usine)</string>
 	<string name="show_app_names_never">Jamais</string>
 	<string name="icon_press">Appui long</string>
 	<string name="icon_press_default">Lancer l\'app dans le menu (d\'usine)</string>

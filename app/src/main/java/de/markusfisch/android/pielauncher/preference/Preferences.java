@@ -58,7 +58,7 @@ public class Preferences {
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private int searchParameter = SEARCH_PARAMETER_APP_LABEL;
-	private int showAppNames = SHOW_APP_NAMES_ALWAYS;
+	private int showAppNames = SHOW_APP_NAMES_SEARCH;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 

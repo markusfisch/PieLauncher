@@ -46,8 +46,8 @@
 	<string name="search_parameter_app_label">Міткою програми (за замовчуванням)</string>
 	<string name="search_parameter_package_name">Назвою пакета</string>
 	<string name="show_app_names">Показати назви програм</string>
-	<string name="show_app_names_always">Завжди (за замовчуванням)</string>
-	<string name="show_app_names_search">Під час пошуку</string>
+	<string name="show_app_names_always">Завжди</string>
+	<string name="show_app_names_search">Під час пошуку (за замовчуванням)</string>
 	<string name="show_app_names_never">Ніколи</string>
 	<string name="icon_press">Тривале натискання</string>
 	<string name="icon_press_default">Додає додаток до меню (за замовчуванням)</string>

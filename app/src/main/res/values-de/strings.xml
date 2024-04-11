@@ -46,8 +46,8 @@
 	<string name="search_parameter_app_label">App-Label (Standard)</string>
 	<string name="search_parameter_package_name">Paketnamen</string>
 	<string name="show_app_names">Zeige App-Namen</string>
-	<string name="show_app_names_always">Immer (Standard)</string>
-	<string name="show_app_names_search">Beim Suchen</string>
+	<string name="show_app_names_always">Immer</string>
+	<string name="show_app_names_search">Beim Suchen (Standard)</string>
 	<string name="show_app_names_never">Nie</string>
 	<string name="icon_press">Langes Drücken</string>
 	<string name="icon_press_default">Fügt App zum Menu hinzu (Standard)</string>

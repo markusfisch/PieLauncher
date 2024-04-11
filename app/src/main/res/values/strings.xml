@@ -46,8 +46,8 @@
 	<string name="search_parameter_app_label">App label (Default)</string>
 	<string name="search_parameter_package_name">Package name</string>
 	<string name="show_app_names">Show app names</string>
-	<string name="show_app_names_always">Always (Default)</string>
-	<string name="show_app_names_search">When searching</string>
+	<string name="show_app_names_always">Always</string>
+	<string name="show_app_names_search">When searching (Default)</string>
 	<string name="show_app_names_never">Never</string>
 	<string name="icon_press">Long press</string>
 	<string name="icon_press_default">Adds app to the pie menu (Default)</string>

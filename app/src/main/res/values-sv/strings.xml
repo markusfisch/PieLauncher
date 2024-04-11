@@ -46,8 +46,8 @@
 	<string name="search_parameter_app_label">Appetikett (standard)</string>
 	<string name="search_parameter_package_name">Paketnamn</string>
 	<string name="show_app_names">Visa appnamn</string>
-	<string name="show_app_names_always">Alltid (standard)</string>
-	<string name="show_app_names_search">Vid sökning</string>
+	<string name="show_app_names_always">Alltid</string>
+	<string name="show_app_names_search">Vid sökning (standard)</string>
 	<string name="show_app_names_never">Aldrig</string>
 	<string name="icon_press">Långtryckning</string>
 	<string name="icon_press_default">Lägg till app i cirkelmenyn (standard)</string>

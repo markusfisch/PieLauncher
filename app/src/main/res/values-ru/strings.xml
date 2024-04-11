@@ -46,8 +46,8 @@
 	<string name="search_parameter_app_label">Названию приложения (Стандартно)</string>
 	<string name="search_parameter_package_name">Названию пакета</string>
 	<string name="show_app_names">Показать названия приложений</string>
-	<string name="show_app_names_always">Всегда (Стандартно)</string>
-	<string name="show_app_names_search">При поиске</string>
+	<string name="show_app_names_always">Всегда</string>
+	<string name="show_app_names_search">При поиске (Стандартно)</string>
 	<string name="show_app_names_never">Никогда</string>
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>
