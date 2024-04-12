@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.19.2
+* Add an option to open the app list with its own icon in the pie menu
+* Improve fade animations
+* Animate pulling down the app list to close it
+* By default, app names are only displayed when searching
+
 ## 1.19.1
 * Fix app search
 
