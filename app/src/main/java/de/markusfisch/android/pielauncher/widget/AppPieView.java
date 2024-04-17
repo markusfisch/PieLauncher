@@ -291,8 +291,8 @@ public class AppPieView extends View {
 		return appList == null ? 0 : appList.size();
 	}
 
-	public boolean isAppListScrolled() {
-		return mode == MODE_LIST && getScrollY() != 0;
+	public boolean appListNotScrolled() {
+		return mode != MODE_LIST || getScrollY() == 0;
 	}
 
 	public boolean inEditMode() {
