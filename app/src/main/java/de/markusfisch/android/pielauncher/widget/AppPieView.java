@@ -235,6 +235,10 @@ public class AppPieView extends View {
 		listListener = listener;
 	}
 
+	public void resetScroll() {
+		lastScrollY = 0;
+	}
+
 	public void showList() {
 		if (mode == MODE_LIST) {
 			return;

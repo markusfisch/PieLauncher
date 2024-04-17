@@ -377,6 +377,7 @@ public class HomeActivity extends Activity {
 					velocityY >= minimumVelocity &&
 					e1 != null && e2 != null &&
 					e2.getY() - e1.getY() > 0) {
+				pieView.resetScroll();
 				hideAllApps();
 				return true;
 			}
