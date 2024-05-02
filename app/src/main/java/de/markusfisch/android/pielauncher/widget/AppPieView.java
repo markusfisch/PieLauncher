@@ -1566,7 +1566,7 @@ public class AppPieView extends View {
 	}
 
 	private static double angleOf(float x, float y) {
-		return PieLauncherApp.appMenu.getPositiveAngle(Math.atan2(
+		return PieMenu.getPositiveAngle(Math.atan2(
 				y - PieLauncherApp.appMenu.getCenterY(),
 				x - PieLauncherApp.appMenu.getCenterX()));
 	}
