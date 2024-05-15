@@ -209,9 +209,6 @@ public class AppPieView extends View {
 		iconLaunchFirst = Converter.getBitmapFromDrawable(res,
 				R.drawable.ic_launch_first);
 		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
-		updateChangeTwistIcon();
-		updateChangeIconScaleIcon();
-		updateChangeRadiusIcon();
 
 		ViewConfiguration configuration = ViewConfiguration.get(context);
 		float touchSlop = configuration.getScaledTouchSlop();
@@ -799,6 +796,10 @@ public class AppPieView extends View {
 		twist = prefs.getTwist();
 		minIconScale = (48f * dp) / maxIconSize;
 		iconScale = prefs.getIconScale();
+
+		updateChangeTwistIcon();
+		updateChangeIconScaleIcon();
+		updateChangeRadiusIcon();
 
 		int pieBottom = viewMax / 2 + maxRadius;
 		controlsPadding = (viewMax - pieBottom) / 2;
