@@ -570,7 +570,8 @@ public class AppPieView extends View {
 				}
 				int index = getPrimaryIndex(event);
 				TouchReference tr = getTouchReference(event, index);
-				if (tr == null || isTap(event, tapOrScrollTimeout)) {
+				if (tr == null || isTap(tr, event.getEventTime(),
+						tapOrScrollTimeout)) {
 					return;
 				}
 				if (velocityTracker != null) {
@@ -664,8 +665,12 @@ public class AppPieView extends View {
 			private boolean isTap(MotionEvent event, long timeOut) {
 				TouchReference tr = getTouchReference(event,
 						getPrimaryIndex(event));
+				return isTap(tr, event.getEventTime(), timeOut);
+			}
+
+			private boolean isTap(TouchReference tr, long time, long timeOut) {
 				return tr != null &&
-						event.getEventTime() - tr.time <= timeOut &&
+						time - tr.time <= timeOut &&
 						distSq(tr.x, tr.y, touch.x, touch.y) <= touchSlopSq;
 			}
 
