@@ -24,7 +24,7 @@ public class PieMenu {
 	private float iconScale = 0;
 
 	public static double getPositiveAngle(double a) {
-		return (a + TAU) % TAU;
+		return (a + TAU + TAU) % TAU;
 	}
 
 	public static double getAngleDifference(double a, double b) {
