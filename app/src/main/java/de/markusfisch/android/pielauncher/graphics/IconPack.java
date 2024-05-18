@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Xml;
@@ -46,7 +47,11 @@ public class IconPack {
 			@SuppressLint("DiscouragedApi")
 			int id = resources.getIdentifier(drawableName, "drawable",
 					packageName);
-			return id > 0 ? resources.getDrawable(id) : null;
+			try {
+				return id > 0 ? resources.getDrawable(id) : null;
+			} catch (NotFoundException e) {
+				return null;
+			}
 		}
 
 		public ArrayList<String> getDrawableNames() {
