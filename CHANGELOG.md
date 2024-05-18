@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.19.3
+* Improve keyboard configuration
+* Improve dismissing app drawer
+* Update swedish translation
+* Fix dragging icons in pie editor
+
 ## 1.19.2
 * Add an option to open the app list with its own icon in the pie menu
 * Improve fade animations

@@ -1,0 +1,5 @@
+* Improve keyboard configuration
+* Improve dismissing app drawer
+* Update swedish translation
+* Fix dragging icons in pie editor
+
