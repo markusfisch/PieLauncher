@@ -34,7 +34,7 @@ public class Preferences {
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String USE_DRAWER_ICON = "use_drawer_icon";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
-	private static final String DOUBE_SPACE_LAUNCH = "space_action_double_launch";
+	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
 	private static final String SEARCH_PARAMETER = "search_parameter";
@@ -84,7 +84,7 @@ public class Preferences {
 				useDrawerIcon);
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
-		doubleSpaceLaunch = preferences.getBoolean(DOUBE_SPACE_LAUNCH,
+		doubleSpaceLaunch = preferences.getBoolean(DOUBLE_SPACE_LAUNCH,
 				doubleSpaceLaunch);
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
@@ -192,7 +192,7 @@ public class Preferences {
 
 	public void setDoubleSpaceLaunch(boolean doubleSpaceLaunch) {
 		this.doubleSpaceLaunch = doubleSpaceLaunch;
-		put(DOUBE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
+		put(DOUBLE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
 	}
 
 	public boolean autoLaunchMatching() {
