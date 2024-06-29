@@ -451,13 +451,20 @@ public class AppPieView extends View {
 							break;
 						}
 						addTouch(event);
+						long eventTime = event.getEventTime();
 						switch (mode) {
 							case MODE_PIE:
 								setCenter(touch.x, touch.y);
-								fadePie.fadeIn(event.getEventTime());
+								fadePie.fadeIn(eventTime);
 								performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
 								break;
 							case MODE_LIST:
+								// Ignore ACTION_DOWN during animation to
+								// prevent starting a long press from the
+								// wrong coordinates.
+								if (fadeList.isFadingIn(eventTime)) {
+									return false;
+								}
 								initScroll(event);
 								initLongPress(v.getContext());
 								break;
@@ -1679,6 +1686,7 @@ public class AppPieView extends View {
 
 	private static final class Fade {
 		private long fadeInFrom;
+		private long fadeInTo;
 		private long fadeOutFrom;
 		private float maxIn = 1f;
 		private float minOut = 0f;
@@ -1689,6 +1697,7 @@ public class AppPieView extends View {
 
 		private void fadeIn(long now) {
 			fadeInFrom = now;
+			fadeInTo = 0;
 			fadeOutFrom = 0;
 		}
 
@@ -1698,6 +1707,7 @@ public class AppPieView extends View {
 
 		private void fadeOut(long now) {
 			fadeInFrom = 0;
+			fadeInTo = 0;
 			fadeOutFrom = now;
 		}
 
@@ -1705,7 +1715,14 @@ public class AppPieView extends View {
 			return fadeInFrom > 0;
 		}
 
+		private boolean isFadingIn(long now) {
+			return now < fadeInTo;
+		}
+
 		private float get(long now, float duration) {
+			if (fadeInTo == 0) {
+				fadeInTo = fadeInFrom + Math.round(duration);
+			}
 			if (duration == 0) {
 				return fadeInFrom > 0 ? 1f : 0f;
 			}
