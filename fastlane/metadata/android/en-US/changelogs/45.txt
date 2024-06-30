@@ -1,0 +1,3 @@
+* Improve handling interactions during animations
+* Add Dutch translation
+

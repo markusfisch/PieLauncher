@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.19.4
+* Improve handling interactions during animations
+* Add Dutch translation
+
 ## 1.19.3
 * Improve keyboard configuration
 * Improve dismissing app drawer
