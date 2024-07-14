@@ -26,9 +26,10 @@
 	<string name="dead_zone_bottom">屏幕底部</string>
 	<string name="dead_zone_both">在屏幕顶部和底部 (默认)</string>
 	<string name="category_app_drawer">应用程序列表</string>
-	<string name="use_drawer_icon">通过</string>
-	<string name="use_drawer_icon_yes">菜单中的图标</string>
-	<string name="use_drawer_icon_no">点击主屏幕 (默认)</string>
+	<string name="open_list_with">通过</string>
+	<string name="open_list_with_tap">点击主屏幕 (默认)</string>
+	<string name="open_list_with_any_touch">每次触摸主屏幕</string>
+	<string name="open_list_with_icon">菜单中的图标</string>
 	<string name="display_keyboard">自动显示键盘</string>
 	<string name="display_keyboard_yes">是 (默认)</string>
 	<string name="display_keyboard_no">没有</string>

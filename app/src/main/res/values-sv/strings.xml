@@ -26,9 +26,10 @@
 	<string name="dead_zone_bottom">Längst ner</string>
 	<string name="dead_zone_both">Högst upp och längst ner (standard)</string>
 	<string name="category_app_drawer">Applåda</string>
-	<string name="use_drawer_icon">Öppnas med</string>
-	<string name="use_drawer_icon_yes">Ikon i cirkelmenyn</string>
-	<string name="use_drawer_icon_no">Tryck på startskärmen (standard)</string>
+	<string name="open_list_with">Öppnas med</string>
+	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>
+	<string name="open_list_with_any_touch">Vid varje tryckning på startskärmen</string>
+	<string name="open_list_with_icon">Ikon i cirkelmenyn</string>
 	<string name="display_keyboard">Visa tangentbordet automatiskt</string>
 	<string name="display_keyboard_yes">Ja (standard)</string>
 	<string name="display_keyboard_no">Nej</string>

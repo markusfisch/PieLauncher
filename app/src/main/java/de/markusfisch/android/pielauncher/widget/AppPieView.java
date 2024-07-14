@@ -1000,10 +1000,12 @@ public class AppPieView extends View {
 		boolean result = false;
 		boolean openList = false;
 		AppMenu.AppIcon appIcon = PieLauncherApp.appMenu.getSelectedApp();
-		if (prefs.useDrawerIcon()) {
+		int openWith = prefs.openListWith();
+		if (openWith == Preferences.OPEN_LIST_WITH_ICON) {
 			result = openList = PieLauncherApp.appMenu.isDrawerIcon(
 					appIcon);
-		} else if (wasTap) {
+		} else if (wasTap || (appIcon == null &&
+				openWith == Preferences.OPEN_LIST_WITH_ANY_TOUCH)) {
 			openList = true;
 		}
 		if (openList) {
@@ -1120,7 +1122,7 @@ public class AppPieView extends View {
 
 	private void removeIconFromPie(AppMenu.Icon icon, boolean isDrawerIcon) {
 		if (isDrawerIcon) {
-			prefs.setUseDrawerIcon(false);
+			prefs.setOpenListWith(Preferences.OPEN_LIST_WITH_TAP);
 		}
 		PieLauncherApp.appMenu.icons.remove(icon);
 		// Undo any rotation if the menu has not otherwise changed.

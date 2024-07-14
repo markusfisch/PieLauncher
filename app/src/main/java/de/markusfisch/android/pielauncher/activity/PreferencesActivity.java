@@ -158,12 +158,12 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getDeadZoneOptions,
 				() -> prefs.getDeadZone(),
 				(value) -> prefs.setDeadZone(value));
-		initPreference(R.id.use_drawer_icon,
-				R.string.use_drawer_icon,
-				PreferencesActivity::getUseDrawerIconOptions,
-				() -> prefs.useDrawerIcon(),
+		initPreference(R.id.open_list_with,
+				R.string.open_list_with,
+				PreferencesActivity::getOpenListWithOptions,
+				() -> prefs.openListWith(),
 				(value) -> {
-					prefs.setUseDrawerIcon(value);
+					prefs.setOpenListWith(value);
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 				});
 		initPreference(R.id.display_keyboard,
@@ -380,10 +380,14 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getUseDrawerIconOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.use_drawer_icon_yes);
-		map.put(Boolean.FALSE, R.string.use_drawer_icon_no);
+	private static Map<Integer, Integer> getOpenListWithOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.OPEN_LIST_WITH_TAP,
+				R.string.open_list_with_tap);
+		map.put(Preferences.OPEN_LIST_WITH_ANY_TOUCH,
+				R.string.open_list_with_any_touch);
+		map.put(Preferences.OPEN_LIST_WITH_ICON,
+				R.string.open_list_with_icon);
 		return map;
 	}
 

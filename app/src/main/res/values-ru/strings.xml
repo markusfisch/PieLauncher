@@ -26,9 +26,10 @@
 	<string name="dead_zone_bottom">Снизу</string>
 	<string name="dead_zone_both">Сверху и снизу (Стандартно)</string>
 	<string name="category_app_drawer">Список приложений</string>
-	<string name="use_drawer_icon">Открывается через</string>
-	<string name="use_drawer_icon_yes">Иконка в меню</string>
-	<string name="use_drawer_icon_no">Нажмите на главный экран (Стандартно)</string>
+	<string name="open_list_with">Открывается через</string>
+	<string name="open_list_with_tap">Нажмите на главный экран (Стандартно)</string>
+	<string name="open_list_with_any_touch">При каждом прикосновении к главному экрану</string>
+	<string name="open_list_with_icon">Иконка в меню</string>
 	<string name="display_keyboard">Автоматически показывать клавиатуру</string>
 	<string name="display_keyboard_yes">Да (Стандартно)</string>
 	<string name="display_keyboard_no">Нет</string>

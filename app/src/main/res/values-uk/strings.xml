@@ -26,9 +26,10 @@
 	<string name="dead_zone_bottom">Внизу</string>
 	<string name="dead_zone_both">Вгорі і внизу (за замовчуванням)</string>
 	<string name="category_app_drawer">Список додатків</string>
-	<string name="use_drawer_icon">Відкривається через</string>
-	<string name="use_drawer_icon_yes">Іконка в меню</string>
-	<string name="use_drawer_icon_no">Натисніть на головному екрані (за замовчуванням)</string>
+	<string name="open_list_with">Відкривається через</string>
+	<string name="open_list_with_tap">Натисніть на головному екрані (за замовчуванням)</string>
+	<string name="open_list_with_any_touch">При кожному дотику на головному екрані</string>
+	<string name="open_list_with_icon">Іконка в меню</string>
 	<string name="display_keyboard">Автоматично показувати клавіатуру</string>
 	<string name="display_keyboard_yes">Так (за замовчуванням)</string>
 	<string name="display_keyboard_no">Ні</string>

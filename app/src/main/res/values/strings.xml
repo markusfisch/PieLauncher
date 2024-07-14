@@ -26,9 +26,10 @@
 	<string name="dead_zone_bottom">At the bottom</string>
 	<string name="dead_zone_both">At the top and bottom (Default)</string>
 	<string name="category_app_drawer">App Drawer</string>
-	<string name="use_drawer_icon">Opens with</string>
-	<string name="use_drawer_icon_yes">Icon in pie menu</string>
-	<string name="use_drawer_icon_no">Tap on home screen (Default)</string>
+	<string name="open_list_with">Opens with</string>
+	<string name="open_list_with_tap">Tap on home screen (Default)</string>
+	<string name="open_list_with_any_touch">On every touch on the home screen</string>
+	<string name="open_list_with_icon">Icon in pie menu</string>
 	<string name="display_keyboard">Show keyboard automatically</string>
 	<string name="display_keyboard_yes">Yes (Default)</string>
 	<string name="display_keyboard_no">No</string>

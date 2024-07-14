@@ -261,7 +261,8 @@ public class AppMenu extends CanvasPieMenu {
 					hideApps,
 					newApps);
 			List<Icon> newIcons = createMenu(context, newApps,
-					PieLauncherApp.getPrefs(context).useDrawerIcon());
+					PieLauncherApp.getPrefs(context).openListWith() ==
+							Preferences.OPEN_LIST_WITH_ICON);
 			handler.post(() -> {
 				apps.clear();
 				apps.putAll(newApps);

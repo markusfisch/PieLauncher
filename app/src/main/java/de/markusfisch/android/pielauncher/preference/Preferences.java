@@ -11,6 +11,9 @@ public class Preferences {
 	public static final int DEAD_ZONE_TOP = 1;
 	public static final int DEAD_ZONE_BOTTOM = 2;
 	public static final int DEAD_ZONE_BOTH = 3;
+	public static final int OPEN_LIST_WITH_TAP = 0;
+	public static final int OPEN_LIST_WITH_ANY_TOUCH = 1;
+	public static final int OPEN_LIST_WITH_ICON = 2;
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
@@ -32,7 +35,7 @@ public class Preferences {
 	private static final String DARKEN_BACKGROUND = "darken_background";
 	private static final String BLUR_BACKGROUND = "blur_background";
 	private static final String DEAD_ZONE = "dead_zone";
-	private static final String USE_DRAWER_ICON = "use_drawer_icon";
+	private static final String OPEN_LIST_WITH = "open_list_with";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
@@ -52,7 +55,7 @@ public class Preferences {
 	private boolean darkenBackground = false;
 	private boolean blurBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
-	private boolean useDrawerIcon = false;
+	private int openListWith = OPEN_LIST_WITH_TAP;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
@@ -80,8 +83,7 @@ public class Preferences {
 		blurBackground = preferences.getBoolean(BLUR_BACKGROUND,
 				blurBackground);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
-		useDrawerIcon = preferences.getBoolean(USE_DRAWER_ICON,
-				useDrawerIcon);
+		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
 		doubleSpaceLaunch = preferences.getBoolean(DOUBLE_SPACE_LAUNCH,
@@ -168,13 +170,13 @@ public class Preferences {
 		put(DEAD_ZONE, deadZone).commit();
 	}
 
-	public boolean useDrawerIcon() {
-		return useDrawerIcon;
+	public int openListWith() {
+		return openListWith;
 	}
 
-	public void setUseDrawerIcon(boolean useDrawerIcon) {
-		this.useDrawerIcon = useDrawerIcon;
-		put(USE_DRAWER_ICON, useDrawerIcon).apply();
+	public void setOpenListWith(int openListWith) {
+		this.openListWith = openListWith;
+		put(OPEN_LIST_WITH, openListWith).apply();
 	}
 
 	public boolean displayKeyboard() {
@@ -251,6 +253,18 @@ public class Preferences {
 
 	public float getAnimationDuration() {
 		return 200f * systemSettings.getAnimatorDurationScale();
+	}
+
+	private int getOpenListWith() {
+		// Initialize from previous setting that existed before
+		// versionCode 45. Subject to be removed after a couple
+		// of versions.
+		String useDrawerIcon = "use_drawer_icon";
+		if (preferences.getBoolean(useDrawerIcon, false)) {
+			put(useDrawerIcon, false);
+			return OPEN_LIST_WITH_ICON;
+		}
+		return openListWith;
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

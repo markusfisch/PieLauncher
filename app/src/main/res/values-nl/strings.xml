@@ -26,9 +26,10 @@
 	<string name="dead_zone_bottom">Onderaan</string>
 	<string name="dead_zone_both">Boven- en onderaan (standaard)</string>
 	<string name="category_app_drawer">App-lade</string>
-	<string name="use_drawer_icon">Opent met</string>
-	<string name="use_drawer_icon_yes">Pictogram in Pie menu</string>
-	<string name="use_drawer_icon_no">Tik op het startscherm (standaard)</string>
+	<string name="open_list_with">Opent met</string>
+	<string name="open_list_with_tap">Tik op het startscherm (standaard)</string>
+	<string name="open_list_with_any_touch">Bij elke aanraking op het startscherm</string>
+	<string name="open_list_with_icon">Pictogram in Pie menu</string>
 	<string name="display_keyboard">Toetsenbord weergeven</string>
 	<string name="display_keyboard_yes">Ja (standaard)</string>
 	<string name="display_keyboard_no">Nee</string>
