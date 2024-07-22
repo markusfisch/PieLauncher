@@ -153,7 +153,6 @@ public class AppPieView extends View {
 	private Bitmap iconChangeTwist;
 	private Bitmap iconChangeIconScale;
 	private Bitmap iconChangeRadius;
-	private boolean keepMode = false;
 	private boolean neverDropped = false;
 	private boolean appListIsFiltered = false;
 
@@ -250,10 +249,6 @@ public class AppPieView extends View {
 	}
 
 	public void hideList() {
-		if (keepMode) {
-			keepMode = false;
-			return;
-		}
 		if (mode == MODE_PIE) {
 			return;
 		}
@@ -341,7 +336,6 @@ public class AppPieView extends View {
 		releaseIcon();
 		fadeOutMode();
 		mode = MODE_PIE;
-		keepMode = false;
 		invalidate();
 	}
 
@@ -917,9 +911,7 @@ public class AppPieView extends View {
 									.componentName.getPackageName());
 							break;
 						case 3:
-							fadeOutMode();
 							returnToList();
-							fadeEdit.fadeOut();
 							changeIcon(context, icon);
 							break;
 					}
@@ -933,6 +925,7 @@ public class AppPieView extends View {
 		if (listListener != null) {
 			listListener.onHideList();
 		}
+		fadeList.fadeOut();
 		neverDropped = true;
 		editIcon(appIcon);
 		resetScrollWithoutAnimation();
@@ -1078,7 +1071,6 @@ public class AppPieView extends View {
 			return true;
 		} else if (contains(iconCenterRect, touch)) {
 			if (grabbedIcon == null) {
-				keepMode = true;
 				PreferencesActivity.start(context);
 			} else {
 				ripple.set(touch);
@@ -1088,7 +1080,6 @@ public class AppPieView extends View {
 					returnToList();
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
-					keepMode = true;
 					changeIcon(context, grabbedIcon);
 				} else if (PieLauncherApp.appMenu.isDrawerIcon(
 						(AppMenu.AppIcon) grabbedIcon)) {
