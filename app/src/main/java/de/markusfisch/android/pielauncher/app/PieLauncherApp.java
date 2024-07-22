@@ -12,7 +12,7 @@ import android.os.UserHandle;
 import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.preference.Preferences;
-import de.markusfisch.android.pielauncher.receiver.LocaleEventReceiver;
+import de.markusfisch.android.pielauncher.receiver.ConfigurationChangedReceiver;
 import de.markusfisch.android.pielauncher.receiver.ManagedProfileEventReceiver;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
@@ -20,8 +20,8 @@ public class PieLauncherApp extends Application {
 	public static final AppMenu appMenu = new AppMenu();
 	public static final IconPack iconPack = new IconPack();
 
-	private static final LocaleEventReceiver localeEventReceiver =
-			new LocaleEventReceiver();
+	private static final ConfigurationChangedReceiver configurationChangedReceiver =
+			new ConfigurationChangedReceiver();
 	private static final ManagedProfileEventReceiver managedProfileEventReceiver =
 			new ManagedProfileEventReceiver();
 	private static final PackageEventReceiver packageEventReceiver =
@@ -44,7 +44,7 @@ public class PieLauncherApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		registerLocaleEventReceiver();
+		registerConfigurationChangedReceiver();
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			registerPackageEventReceiver();
 		} else {
@@ -55,10 +55,16 @@ public class PieLauncherApp extends Application {
 		// need to be there as long as this application is running.
 	}
 
-	private void registerLocaleEventReceiver() {
+	private void registerConfigurationChangedReceiver() {
+		configurationChangedReceiver.initialize(this);
 		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+		// Add ACTION_LOCALE_CHANGED even if ACTION_CONFIGURATION_CHANGED
+		// includes locale changes to avoid having to filter configuration
+		// changes. ACTION_CONFIGURATION_CHANGED is sent for many events
+		// and indexing apps should be kept to a minimum.
 		filter.addAction(Intent.ACTION_LOCALE_CHANGED);
-		registerReceiver(localeEventReceiver, filter);
+		registerReceiver(configurationChangedReceiver, filter);
 	}
 
 	private void registerPackageEventReceiver() {
