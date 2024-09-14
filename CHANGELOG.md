@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.20.0
+* Add an option to always open the app drawer when no app was lauched
+* Update icon colors from Material You color changes
+* Update Ukrainian translation
+* Fix display error after an icon has been changed
+
 ## 1.19.4
 * Improve handling interactions during animations
 * Add Dutch translation

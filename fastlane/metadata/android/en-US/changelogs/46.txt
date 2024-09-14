@@ -1,0 +1,5 @@
+* Add an option to always open the app drawer when no app was lauched
+* Update icon colors from Material You color changes
+* Update Ukrainian translation
+* Fix display error after an icon has been changed
+
