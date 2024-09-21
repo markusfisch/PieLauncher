@@ -27,8 +27,8 @@
 	<string name="dead_zone_both">Boven- en onderaan (standaard)</string>
 	<string name="category_app_drawer">App-lade</string>
 	<string name="open_list_with">Opent met</string>
-	<string name="open_list_with_tap">Tik op het startscherm (standaard)</string>
-	<string name="open_list_with_any_touch">Bij elke aanraking op het startscherm</string>
+	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>
+	<string name="open_list_with_any_touch">Elke aanraking op het startscherm</string>
 	<string name="open_list_with_icon">Pictogram in Pie menu</string>
 	<string name="display_keyboard">Toetsenbord weergeven</string>
 	<string name="display_keyboard_yes">Ja (standaard)</string>
@@ -51,7 +51,7 @@
 	<string name="show_app_names_search">Bij zoeken (standaard)</string>
 	<string name="show_app_names_never">Nooit</string>
 	<string name="icon_press">Lang drukken</string>
-	<string name="icon_press_default">Voegt app toe aan het pie menu (standaard)</string>
+	<string name="icon_press_default">Voegt app toe aan het Pie menu (standaard)</string>
 	<string name="icon_press_longer">Vereist lang drukken</string>
 	<string name="icon_press_menu">Dialoogmenu openen</string>
 	<string name="icon_lock_menu">Uitgeschakeld</string>
