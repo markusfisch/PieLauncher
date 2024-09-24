@@ -3,6 +3,7 @@ package de.markusfisch.android.pielauncher.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
@@ -126,6 +127,7 @@ public class HomeActivity extends Activity {
 			if (pieView.inEditMode()) {
 				pieView.endEditMode();
 			} else if (!isSearchVisible() &&
+					!isGestureNavigationEnabled() &&
 					// Only show all apps if the activity was recently paused
 					// (by pressing the home button) and _not_ if onPause()
 					// was triggered by pressing the overview button and
@@ -346,6 +348,11 @@ public class HomeActivity extends Activity {
 
 	private boolean isSearchVisible() {
 		return searchInput.getVisibility() == View.VISIBLE;
+	}
+
+	private boolean isGestureNavigationEnabled() {
+		return Settings.Secure.getInt(getContentResolver(),
+				"navigation_mode", 0) == 2;
 	}
 
 	private void updateAppList() {
