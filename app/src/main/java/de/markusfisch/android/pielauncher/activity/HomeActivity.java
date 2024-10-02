@@ -2,6 +2,7 @@ package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
@@ -122,6 +123,15 @@ public class HomeActivity extends Activity {
 		if (intent != null &&
 				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
 						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
+			// Deal with the gesture navigation/recent apps bug in Android 14:
+			// * make the home gesture twice
+			// * enter list of recent apps
+			// * now an empty, broken screen is in the list of recent apps
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+					isGestureNavigationEnabled()) {
+				finish();
+				return;
+			}
 			// If this activity is re-launched but _not_ brought to front,
 			// the home button was pressed while this activity was on screen.
 			if (pieView.inEditMode()) {
