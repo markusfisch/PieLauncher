@@ -1,0 +1,3 @@
+* Improve usability in gesture navigation mode
+* Update dutch translation
+
