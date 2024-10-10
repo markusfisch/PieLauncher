@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">Вгорі</string>
 	<string name="dead_zone_bottom">Внизу</string>
 	<string name="dead_zone_both">Вгорі і внизу (за замовчуванням)</string>
+	<string name="immersive_mode">Режим занурення</string>
+	<string name="immersive_mode_yes">Приховати систему та панель навігації</string>
+	<string name="immersive_mode_no">Показати систему та панель навігації (за замовчуванням)</string>
 	<string name="category_app_drawer">Список додатків</string>
 	<string name="open_list_with">Відкривається через</string>
 	<string name="open_list_with_tap">Натисніть на головному екрані (за замовчуванням)</string>

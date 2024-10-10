@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">At the top</string>
 	<string name="dead_zone_bottom">At the bottom</string>
 	<string name="dead_zone_both">At the top and bottom (Default)</string>
+	<string name="immersive_mode">Immersive mode</string>
+	<string name="immersive_mode_yes">Hide system and navigation bar</string>
+	<string name="immersive_mode_no">Show system and navigation bar (Default)</string>
 	<string name="category_app_drawer">App Drawer</string>
 	<string name="open_list_with">Opens with</string>
 	<string name="open_list_with_tap">Tap on home screen (Default)</string>

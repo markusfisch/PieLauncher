@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">Högst upp</string>
 	<string name="dead_zone_bottom">Längst ner</string>
 	<string name="dead_zone_both">Högst upp och längst ner (standard)</string>
+	<string name="immersive_mode">Immersivt läge</string>
+	<string name="immersive_mode_yes">Dölj system och navigeringsfält</string>
+	<string name="immersive_mode_no">Visningssystem och navigeringsfält (standard)</string>
 	<string name="category_app_drawer">Applåda</string>
 	<string name="open_list_with">Öppnas med</string>
 	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>

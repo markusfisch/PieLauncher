@@ -35,6 +35,7 @@ public class HomeActivity extends Activity {
 	private ImageView prefsButton;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
+	private boolean immersiveMode = false;
 	private long pausedAt = 0L;
 
 	@Override
@@ -98,7 +99,9 @@ public class HomeActivity extends Activity {
 						0,
 						right,
 						bottom));
-		SystemBars.setTransparentSystemBars(getWindow());
+
+		immersiveMode = prefs.isImmersiveMode();
+		SystemBars.setTransparentSystemBars(getWindow(), immersiveMode);
 	}
 
 	@Override
@@ -159,6 +162,7 @@ public class HomeActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		updatePrefsButton();
+		updateSystemBars();
 		if (showAllAppsOnResume) {
 			showAllApps();
 			showAllAppsOnResume = false;
@@ -297,6 +301,14 @@ public class HomeActivity extends Activity {
 				showEditor();
 				return true;
 			});
+		}
+	}
+
+	private void updateSystemBars() {
+		boolean newImmersiveMode = prefs.isImmersiveMode();
+		if (immersiveMode != newImmersiveMode) {
+			immersiveMode = newImmersiveMode;
+			SystemBars.setSystemUIVisibility(getWindow(), immersiveMode);
 		}
 	}
 

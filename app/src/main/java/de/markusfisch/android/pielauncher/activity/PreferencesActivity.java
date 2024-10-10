@@ -158,6 +158,15 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getDeadZoneOptions,
 				() -> prefs.getDeadZone(),
 				(value) -> prefs.setDeadZone(value));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			initPreference(R.id.immersive_mode,
+					R.string.immersive_mode,
+					PreferencesActivity::getImmersiveModeOptions,
+					() -> prefs.isImmersiveMode(),
+					(value) -> prefs.setImmersiveMode(value));
+		} else {
+			findViewById(R.id.immersive_mode).setVisibility(View.GONE);
+		}
 		initPreference(R.id.open_list_with,
 				R.string.open_list_with,
 				PreferencesActivity::getOpenListWithOptions,
@@ -377,6 +386,13 @@ public class PreferencesActivity extends Activity {
 		map.put(Preferences.DEAD_ZONE_TOP, R.string.dead_zone_top);
 		map.put(Preferences.DEAD_ZONE_BOTTOM, R.string.dead_zone_bottom);
 		map.put(Preferences.DEAD_ZONE_BOTH, R.string.dead_zone_both);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getImmersiveModeOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.immersive_mode_yes);
+		map.put(Boolean.FALSE, R.string.immersive_mode_no);
 		return map;
 	}
 

@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">在屏幕顶部</string>
 	<string name="dead_zone_bottom">屏幕底部</string>
 	<string name="dead_zone_both">在屏幕顶部和底部 (默认)</string>
+	<string name="immersive_mode">沉浸模式</string>
+	<string name="immersive_mode_yes">隐藏系统和导航栏</string>
+	<string name="immersive_mode_no">显示系统和导航栏 (默认)</string>
 	<string name="category_app_drawer">应用程序列表</string>
 	<string name="open_list_with">通过</string>
 	<string name="open_list_with_tap">点击主屏幕 (默认)</string>

@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">Nur Oben</string>
 	<string name="dead_zone_bottom">Nur Unten</string>
 	<string name="dead_zone_both">Oben und unten (Standard)</string>
+	<string name="immersive_mode">Immersiver Modus</string>
+	<string name="immersive_mode_yes">System und Navigationsleiste ausblenden</string>
+	<string name="immersive_mode_no">System und Navigationsleiste anzeigen (Standard)</string>
 	<string name="category_app_drawer">App Liste</string>
 	<string name="open_list_with">Öffnet durch</string>
 	<string name="open_list_with_tap">Tipp auf den Startbildschirm (Standard)</string>

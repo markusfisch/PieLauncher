@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">En haut de l\'écran</string>
 	<string name="dead_zone_bottom">En bas de l\'écran</string>
 	<string name="dead_zone_both">En haut et en bas de l\'écran (d\'usine)</string>
+	<string name="immersive_mode">Mode immersif</string>
+	<string name="immersive_mode_yes">Système de masquage et barre de navigation</string>
+	<string name="immersive_mode_no">Système d\'affichage et barre de navigation (d\'usine)</string>
 	<string name="category_app_drawer">Liste d\'apps</string>
 	<string name="open_list_with">Ouvert par</string>
 	<string name="open_list_with_tap">Tapez sur l\'écran d\'accueil (d\'usine)</string>

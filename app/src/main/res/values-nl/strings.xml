@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">Bovenaan</string>
 	<string name="dead_zone_bottom">Onderaan</string>
 	<string name="dead_zone_both">Boven- en onderaan (standaard)</string>
+	<string name="immersive_mode">Immersieve modus</string>
+	<string name="immersive_mode_yes">Verberg systeem en navigatiebalk</string>
+	<string name="immersive_mode_no">Systeem en navigatiebalk weergeven (standaard)</string>
 	<string name="category_app_drawer">App-lade</string>
 	<string name="open_list_with">Opent met</string>
 	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>

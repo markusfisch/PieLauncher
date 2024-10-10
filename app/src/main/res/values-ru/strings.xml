@@ -25,6 +25,9 @@
 	<string name="dead_zone_top">Сверху</string>
 	<string name="dead_zone_bottom">Снизу</string>
 	<string name="dead_zone_both">Сверху и снизу (Стандартно)</string>
+	<string name="immersive_mode">Режим погружения</string>
+	<string name="immersive_mode_yes">Система скрытия и панель навигации</string>
+	<string name="immersive_mode_no">Система показа и панель навигации (Стандартно)</string>
 	<string name="category_app_drawer">Список приложений</string>
 	<string name="open_list_with">Открывается через</string>
 	<string name="open_list_with_tap">Нажмите на главный экран (Стандартно)</string>
