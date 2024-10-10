@@ -31,7 +31,9 @@
 	<string name="category_app_drawer">Applåda</string>
 	<string name="open_list_with">Öppnas med</string>
 	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>
-	<string name="open_list_with_any_touch">Vid varje tryckning på startskärmen</string>
+	<string name="open_list_with_any_touch">Varje beröring oavsett hur länge</string>
+	<string name="open_list_with_long_press">Ett långt tryck</string>
+	<string name="open_list_with_double_tap">En dubbeltapp</string>
 	<string name="open_list_with_icon">Ikon i cirkelmenyn</string>
 	<string name="display_keyboard">Visa tangentbordet automatiskt</string>
 	<string name="display_keyboard_yes">Ja (standard)</string>

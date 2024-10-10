@@ -31,7 +31,9 @@
 	<string name="category_app_drawer">Список приложений</string>
 	<string name="open_list_with">Открывается через</string>
 	<string name="open_list_with_tap">Нажмите на главный экран (Стандартно)</string>
-	<string name="open_list_with_any_touch">При каждом прикосновении к главному экрану</string>
+	<string name="open_list_with_any_touch">Любое прикосновение, независимо от продолжительности</string>
+	<string name="open_list_with_long_press">Длительное нажатие</string>
+	<string name="open_list_with_double_tap">Двойное нажатие</string>
 	<string name="open_list_with_icon">Иконка в меню</string>
 	<string name="display_keyboard">Автоматически показывать клавиатуру</string>
 	<string name="display_keyboard_yes">Да (Стандартно)</string>

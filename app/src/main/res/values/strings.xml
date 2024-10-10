@@ -30,8 +30,10 @@
 	<string name="immersive_mode_no">Show system and navigation bar (Default)</string>
 	<string name="category_app_drawer">App Drawer</string>
 	<string name="open_list_with">Opens with</string>
-	<string name="open_list_with_tap">Tap on home screen (Default)</string>
-	<string name="open_list_with_any_touch">On every touch on the home screen</string>
+	<string name="open_list_with_tap">A tap on the home screen (Default)</string>
+	<string name="open_list_with_any_touch">Any touch no matter how long</string>
+	<string name="open_list_with_long_press">A long press</string>
+	<string name="open_list_with_double_tap">A double tap</string>
 	<string name="open_list_with_icon">Icon in pie menu</string>
 	<string name="display_keyboard">Show keyboard automatically</string>
 	<string name="display_keyboard_yes">Yes (Default)</string>

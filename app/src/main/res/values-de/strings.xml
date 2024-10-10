@@ -31,7 +31,9 @@
 	<string name="category_app_drawer">App Liste</string>
 	<string name="open_list_with">Öffnet durch</string>
 	<string name="open_list_with_tap">Tipp auf den Startbildschirm (Standard)</string>
-	<string name="open_list_with_any_touch">Bei jeder Berührung des Startbildschirms</string>
+	<string name="open_list_with_any_touch">Jede Berührung, egal wie lange</string>
+	<string name="open_list_with_long_press">Langes Drücken</string>
+	<string name="open_list_with_double_tap">Doppeltes Antippen</string>
 	<string name="open_list_with_icon">Icon in Pie-Menu</string>
 	<string name="display_keyboard">Tastatur automatisch öffnen</string>
 	<string name="display_keyboard_yes">Ja (Standard)</string>

@@ -104,6 +104,7 @@ public class AppPieView extends View {
 	private final Preferences prefs;
 	private final long tapOrScrollTimeout;
 	private final long longPressTimeout;
+	private final long doubleTapTimeout;
 	private final int listPadding;
 	private final int searchInputHeight;
 	private final int iconSize;
@@ -150,6 +151,7 @@ public class AppPieView extends View {
 	private AppMenu.Icon highlightedIcon;
 	private long highlightedFrom;
 	private long grabbedIconAt;
+	private long lastTapUpTime;
 	private Bitmap iconChangeTwist;
 	private Bitmap iconChangeIconScale;
 	private Bitmap iconChangeRadius;
@@ -216,6 +218,7 @@ public class AppPieView extends View {
 		longPressTimeout = ViewConfiguration.getLongPressTimeout() *
 				(prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
 						? 2L : 1L);
+		doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
 
 		if (PieLauncherApp.appMenu.isEmpty()) {
 			PieLauncherApp.appMenu.indexAppsAsync(context);
@@ -694,10 +697,17 @@ public class AppPieView extends View {
 				// Any duration shorter than the long press timeout is
 				// considered to be a press/tap.
 				final boolean wasTap = isTap(event, longPressTimeout);
+				final boolean wasLongPress = !wasTap &&
+						isTap(event, Long.MAX_VALUE);
+				long eventTime = event.getEventTime();
+				final boolean wasDoubleTap = wasTap &&
+						eventTime - lastTapUpTime < doubleTapTimeout;
+				lastTapUpTime = eventTime;
 				final Point at = new Point(touch.x, touch.y);
 				performActionRunnable = () -> {
 					v.performClick();
-					if (performAction(v.getContext(), at, wasTap)) {
+					if (performAction(v.getContext(), at,
+							wasTap, wasDoubleTap, wasLongPress)) {
 						v.performHapticFeedback(HAPTIC_FEEDBACK_CONFIRM);
 					}
 					performActionRunnable = null;
@@ -973,10 +983,12 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean performAction(Context context, Point at, boolean wasTap) {
+	private boolean performAction(Context context, Point at, boolean wasTap,
+			boolean wasDoubleTap, boolean wasLongPress) {
 		if (mode == MODE_PIE && fadePie.isVisible()) {
 			fadeOutMode();
-			return performPieAction(context, at, wasTap);
+			return performPieAction(context, at,
+					wasTap, wasDoubleTap, wasLongPress);
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
@@ -989,17 +1001,28 @@ public class AppPieView extends View {
 	}
 
 	private boolean performPieAction(Context context, Point at,
-			boolean wasTap) {
+			boolean wasTap, boolean wasDoubleTap, boolean wasLongPress) {
 		boolean result = false;
 		boolean openList = false;
 		AppMenu.AppIcon appIcon = PieLauncherApp.appMenu.getSelectedApp();
-		int openWith = prefs.openListWith();
-		if (openWith == Preferences.OPEN_LIST_WITH_ICON) {
-			result = openList = PieLauncherApp.appMenu.isDrawerIcon(
-					appIcon);
-		} else if (wasTap || (appIcon == null &&
-				openWith == Preferences.OPEN_LIST_WITH_ANY_TOUCH)) {
-			openList = true;
+		switch (prefs.openListWith()) {
+			default:
+			case Preferences.OPEN_LIST_WITH_TAP:
+				openList = wasTap;
+				break;
+			case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
+				openList = wasTap || appIcon == null;
+				break;
+			case Preferences.OPEN_LIST_WITH_ICON:
+				result = openList =
+						PieLauncherApp.appMenu.isDrawerIcon(appIcon);
+				break;
+			case Preferences.OPEN_LIST_WITH_LONG_PRESS:
+				openList = wasLongPress;
+				break;
+			case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
+				openList = wasDoubleTap;
+				break;
 		}
 		if (openList) {
 			if (listListener != null) {

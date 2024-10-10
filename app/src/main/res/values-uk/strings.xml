@@ -31,7 +31,9 @@
 	<string name="category_app_drawer">Список додатків</string>
 	<string name="open_list_with">Відкривається через</string>
 	<string name="open_list_with_tap">Натисніть на головному екрані (за замовчуванням)</string>
-	<string name="open_list_with_any_touch">При кожному дотику на головному екрані</string>
+	<string name="open_list_with_any_touch">Будь-який дотик, незалежно від тривалості</string>
+	<string name="open_list_with_long_press">Тривале натискання</string>
+	<string name="open_list_with_double_tap">Подвійне натискання</string>
 	<string name="open_list_with_icon">Іконка в меню</string>
 	<string name="display_keyboard">Автоматично показувати клавіатуру</string>
 	<string name="display_keyboard_yes">Так (за замовчуванням)</string>

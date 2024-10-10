@@ -14,6 +14,8 @@ public class Preferences {
 	public static final int OPEN_LIST_WITH_TAP = 0;
 	public static final int OPEN_LIST_WITH_ANY_TOUCH = 1;
 	public static final int OPEN_LIST_WITH_ICON = 2;
+	public static final int OPEN_LIST_WITH_LONG_PRESS = 3;
+	public static final int OPEN_LIST_WITH_DOUBLE_TAP = 4;
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;

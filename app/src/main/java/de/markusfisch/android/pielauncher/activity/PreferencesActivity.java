@@ -402,6 +402,10 @@ public class PreferencesActivity extends Activity {
 				R.string.open_list_with_tap);
 		map.put(Preferences.OPEN_LIST_WITH_ANY_TOUCH,
 				R.string.open_list_with_any_touch);
+		map.put(Preferences.OPEN_LIST_WITH_LONG_PRESS,
+				R.string.open_list_with_long_press);
+		map.put(Preferences.OPEN_LIST_WITH_DOUBLE_TAP,
+				R.string.open_list_with_double_tap);
 		map.put(Preferences.OPEN_LIST_WITH_ICON,
 				R.string.open_list_with_icon);
 		return map;

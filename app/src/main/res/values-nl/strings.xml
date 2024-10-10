@@ -31,7 +31,9 @@
 	<string name="category_app_drawer">App-lade</string>
 	<string name="open_list_with">Opent met</string>
 	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>
-	<string name="open_list_with_any_touch">Elke aanraking op het startscherm</string>
+	<string name="open_list_with_any_touch">Elke aanraking, hoe lang ook</string>
+	<string name="open_list_with_long_press">Lang drukken</string>
+	<string name="open_list_with_double_tap">Dubbele tik</string>
 	<string name="open_list_with_icon">Pictogram in Pie menu</string>
 	<string name="display_keyboard">Toetsenbord weergeven</string>
 	<string name="display_keyboard_yes">Ja (standaard)</string>

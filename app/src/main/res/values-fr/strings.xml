@@ -31,7 +31,9 @@
 	<string name="category_app_drawer">Liste d\'apps</string>
 	<string name="open_list_with">Ouvert par</string>
 	<string name="open_list_with_tap">Tapez sur l\'écran d\'accueil (d\'usine)</string>
-	<string name="open_list_with_any_touch">À chaque pression sur l\'écran d\'accueil</string>
+	<string name="open_list_with_any_touch">Tout contact, même de longue durée</string>
+	<string name="open_list_with_long_press">Un appui long</string>
+	<string name="open_list_with_double_tap">Une double tape</string>
 	<string name="open_list_with_icon">Icône dans le menu</string>
 	<string name="display_keyboard">Affichage automatique du clavier</string>
 	<string name="display_keyboard_yes">Oui (d\'usine)</string>
