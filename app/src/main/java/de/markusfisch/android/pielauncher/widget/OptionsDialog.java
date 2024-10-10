@@ -1,6 +1,5 @@
 package de.markusfisch.android.pielauncher.widget;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
@@ -9,7 +8,7 @@ public class OptionsDialog {
 			int titleId,
 			CharSequence[] items,
 			DialogInterface.OnClickListener onClickListener) {
-		new AlertDialog.Builder(context)
+		Dialog.newDialog(context)
 				.setTitle(titleId)
 				.setItems(items, onClickListener)
 				.show();

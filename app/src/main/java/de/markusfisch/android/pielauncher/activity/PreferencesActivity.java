@@ -220,6 +220,15 @@ public class PreferencesActivity extends Activity {
 				},
 				() -> PieLauncherApp.iconPack.updatePacks(
 						getPackageManager()));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			initPreference(R.id.use_light_dialogs,
+					R.string.use_light_dialogs,
+					PreferencesActivity::getUseLightDialogOptions,
+					() -> prefs.useLightDialogs(),
+					(value) -> prefs.setUseLightDialogs(value));
+		} else {
+			findViewById(R.id.use_light_dialogs).setVisibility(View.GONE);
+		}
 	}
 
 	private <T, G> void initPreference(
@@ -476,6 +485,13 @@ public class PreferencesActivity extends Activity {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put(null, getString(R.string.icon_pack_default));
 		map.putAll(PieLauncherApp.iconPack.getIconPacks());
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getUseLightDialogOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.use_light_dialogs_yes);
+		map.put(Boolean.FALSE, R.string.use_light_dialogs_no);
 		return map;
 	}
 

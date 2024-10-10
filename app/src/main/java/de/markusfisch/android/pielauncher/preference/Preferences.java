@@ -47,6 +47,7 @@ public class Preferences {
 	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
 	private static final String ICON_PACK = "icon_pack";
+	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -68,6 +69,7 @@ public class Preferences {
 	private int showAppNames = SHOW_APP_NAMES_SEARCH;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
+	private boolean useLightDialogs = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -103,6 +105,8 @@ public class Preferences {
 		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
+		useLightDialogs = preferences.getBoolean(USE_LIGHT_DIALOGS,
+				isEReader(context));
 	}
 
 	public boolean skipSetup() {
@@ -266,6 +270,15 @@ public class Preferences {
 		put(ICON_PACK, iconPack).apply();
 	}
 
+	public boolean useLightDialogs() {
+		return useLightDialogs;
+	}
+
+	public void setUseLightDialogs(boolean useLightDialogs) {
+		this.useLightDialogs = useLightDialogs;
+		put(USE_LIGHT_DIALOGS, useLightDialogs).apply();
+	}
+
 	public float getAnimationDuration() {
 		return 200f * systemSettings.getAnimatorDurationScale();
 	}
@@ -280,6 +293,11 @@ public class Preferences {
 			return OPEN_LIST_WITH_ICON;
 		}
 		return openListWith;
+	}
+
+	private boolean isEReader(Context context) {
+		return context.getPackageManager().hasSystemFeature(
+				"android.hardware.ereader.display");
 	}
 
 	private SharedPreferences.Editor put(String key, boolean value) {

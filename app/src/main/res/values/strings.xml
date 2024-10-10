@@ -64,6 +64,9 @@
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Default)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Hidden apps</font></big>\nList of hidden apps</string>
+	<string name="use_light_dialogs">Invert dialog colors</string>
+	<string name="use_light_dialogs_yes">Yes</string>
+	<string name="use_light_dialogs_no">No (Default)</string>
 	<string name="skip">Skip</string>
 	<string name="reset">Reset</string>
 	<string name="edit_app">Edit app</string>

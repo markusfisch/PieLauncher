@@ -7,4 +7,5 @@
 		<item name="android:windowShowWallpaper">true</item>
 		<item name="android:windowNoTitle">true</item>
 	</style>
+	<style name="LightDialog" parent="android:Theme.Material.Light.Dialog.Alert"/>
 </resources>

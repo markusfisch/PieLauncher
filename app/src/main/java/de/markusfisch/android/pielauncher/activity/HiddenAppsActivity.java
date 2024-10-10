@@ -1,7 +1,6 @@
 package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
@@ -30,6 +29,7 @@ import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.view.SystemBars;
+import de.markusfisch.android.pielauncher.widget.Dialog;
 
 public class HiddenAppsActivity extends Activity {
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -96,7 +96,7 @@ public class HiddenAppsActivity extends Activity {
 	}
 
 	private void askToShowApp(String packageName) {
-		new AlertDialog.Builder(this)
+		Dialog.newDialog(this)
 				.setTitle(R.string.unhide_app)
 				.setMessage(R.string.want_to_unhide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {

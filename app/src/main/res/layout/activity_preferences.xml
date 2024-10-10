@@ -102,9 +102,13 @@
 					android:id="@+id/icon_pack"
 					android:text="@string/icon_pack_default" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/hidden_apps"
 					android:text="@string/show_hidden_apps" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/use_light_dialogs"
+					android:text="@string/use_light_dialogs_no" />
 			</LinearLayout>
 			<Button
 				style="@style/Button"

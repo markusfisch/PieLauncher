@@ -64,6 +64,9 @@
 	<string name="icon_pack">Ikonpaket</string>
 	<string name="icon_pack_default">System (standard)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Dolda appar</font></big>\nLista med dolda appar</string>
+	<string name="use_light_dialogs">Invertera dialogrutans färger</string>
+	<string name="use_light_dialogs_yes">Ja</string>
+	<string name="use_light_dialogs_no">Nej (standard)</string>
 	<string name="skip">Hoppa över</string>
 	<string name="reset">Återställ</string>
 	<string name="edit_app">Redigera app</string>

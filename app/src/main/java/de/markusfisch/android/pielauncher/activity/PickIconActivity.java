@@ -29,6 +29,7 @@ import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
+import de.markusfisch.android.pielauncher.widget.Dialog;
 import de.markusfisch.android.pielauncher.widget.OptionsDialog;
 
 public class PickIconActivity extends Activity {
@@ -61,7 +62,7 @@ public class PickIconActivity extends Activity {
 
 	public static void askToHide(Context context, String packageName,
 			OnHideListener hideListener) {
-		new AlertDialog.Builder(context)
+		Dialog.newDialog(context)
 				.setTitle(R.string.hide_app)
 				.setMessage(R.string.want_to_hide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
