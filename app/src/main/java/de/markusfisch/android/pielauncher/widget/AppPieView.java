@@ -1318,7 +1318,7 @@ public class AppPieView extends View {
 		int viewBottom = scrollY + viewHeight;
 		int x = listPadding;
 		int y = listPadding + searchInputHeight +
-				Math.round((1f - f) * viewHeight * .5f) +
+				Math.round((1f - f) * viewHeight * .25f) +
 				Math.round(dragOffset);
 		int wrapX = listPadding + cellWidth * columns;
 		int size = getIconCount();
