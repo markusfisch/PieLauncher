@@ -26,14 +26,14 @@
 	<string name="dead_zone_bottom">Внизу</string>
 	<string name="dead_zone_both">Вгорі і внизу (за замовчуванням)</string>
 	<string name="immersive_mode">Режим занурення</string>
-	<string name="immersive_mode_yes">Приховати систему та панель навігації</string>
-	<string name="immersive_mode_no">Показати систему та панель навігації (за замовчуванням)</string>
+	<string name="immersive_mode_yes">Приховати системну та навігаційну панель</string>
+	<string name="immersive_mode_no">Показати системну та навігаційну панель (за замовчуванням)</string>
 	<string name="category_app_drawer">Список додатків</string>
 	<string name="open_list_with">Відкривається через</string>
 	<string name="open_list_with_tap">Натисніть на головному екрані (за замовчуванням)</string>
 	<string name="open_list_with_any_touch">Будь-який дотик, незалежно від тривалості</string>
 	<string name="open_list_with_long_press">Тривале натискання</string>
-	<string name="open_list_with_double_tap">Подвійне натискання</string>
+	<string name="open_list_with_double_tap">Подвійний дотик</string>
 	<string name="open_list_with_icon">Іконка в меню</string>
 	<string name="display_keyboard">Автоматично показувати клавіатуру</string>
 	<string name="display_keyboard_yes">Так (за замовчуванням)</string>
