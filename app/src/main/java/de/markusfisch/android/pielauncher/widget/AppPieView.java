@@ -1040,15 +1040,24 @@ public class AppPieView extends View {
 
 	private boolean performListAction(Context context, Point at) {
 		AppMenu.AppIcon appIcon = getListIconAt(at.x, at.y);
-		if (appIcon != null) {
-			PieLauncherApp.appMenu.launchApp(context, appIcon);
-			if (listListener != null) {
-				listListener.onHideList();
+		if (appIcon == null) {
+			switch (prefs.openListWith()) {
+				case Preferences.OPEN_LIST_WITH_TAP:
+				case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
+				case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
+					if (listListener != null) {
+						listListener.onHideList();
+					}
+					break;
 			}
-			ripple.set(at);
-			return true;
+			return false;
 		}
-		return false;
+		PieLauncherApp.appMenu.launchApp(context, appIcon);
+		if (listListener != null) {
+			listListener.onHideList();
+		}
+		ripple.set(at);
+		return true;
 	}
 
 	private AppMenu.AppIcon getListIconAt(int x, int y) {
