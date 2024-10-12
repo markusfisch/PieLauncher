@@ -1743,17 +1743,26 @@ public class AppPieView extends View {
 				return fadeInFrom > 0 ? 1f : 0f;
 			}
 			if (fadeInFrom > 0) {
-				maxIn = Math.min(1f, minOut + (now - fadeInFrom) / duration);
+				float x = (now - fadeInFrom) / duration;
+				maxIn = Math.min(1f, minOut + easeSlowerIn(x));
 				return maxIn;
 			}
 			long delta = now - fadeOutFrom;
 			if (delta < duration) {
+				minOut = maxIn - easeSlowerOut(delta / duration);
 				// Ensure f < 1f so invalidate() is invoked one last time.
-				minOut = Math.min(.99999f,
-						Math.max(0f, maxIn - delta / duration));
+				minOut = Math.min(.99999f, Math.max(0f, minOut));
 				return minOut;
 			}
 			return 0;
 		}
+	}
+
+	private static float easeSlowerIn(float x) {
+		return x * x;
+	}
+
+	private static float easeSlowerOut(float x) {
+		return 1f - (1f - x) * (1f - x);
 	}
 }
