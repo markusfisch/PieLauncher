@@ -1,0 +1,7 @@
+* Add long press/double tap options to open app list
+* Add an option to enable immersive mode
+* Add an option to invert dialog colors
+* Improve animations
+* Make empty taps close the app drawer
+* Update Ukrainian translation
+

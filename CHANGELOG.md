@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.21.0
+* Add long press/double tap options to open app list
+* Add an option to enable immersive mode
+* Add an option to invert dialog colors
+* Improve animations
+* Make empty taps close the app drawer
+* Update Ukrainian translation
+
 ## 1.20.1
 * Improve usability in gesture navigation mode
 * Update dutch translation
