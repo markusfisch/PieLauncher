@@ -48,6 +48,7 @@ public class Preferences {
 	private static final String ICON_PRESS = "icon_press";
 	private static final String ICON_PACK = "icon_pack";
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
+	private static final String FORCE_RELAUNCH = "force_relaunch";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -70,6 +71,7 @@ public class Preferences {
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 	private boolean useLightDialogs = false;
+	private boolean forceRelaunch = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -107,6 +109,7 @@ public class Preferences {
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 		useLightDialogs = preferences.getBoolean(USE_LIGHT_DIALOGS,
 				isEReader(context));
+		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
 	}
 
 	public boolean skipSetup() {
@@ -277,6 +280,15 @@ public class Preferences {
 	public void setUseLightDialogs(boolean useLightDialogs) {
 		this.useLightDialogs = useLightDialogs;
 		put(USE_LIGHT_DIALOGS, useLightDialogs).apply();
+	}
+
+	public boolean forceRelaunch() {
+		return forceRelaunch;
+	}
+
+	public void setForceRelaunch(boolean forceRelaunch) {
+		this.forceRelaunch = forceRelaunch;
+		put(FORCE_RELAUNCH, forceRelaunch).apply();
 	}
 
 	public float getAnimationDuration() {

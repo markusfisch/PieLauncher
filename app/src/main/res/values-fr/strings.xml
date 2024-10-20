@@ -67,6 +67,9 @@
 	<string name="use_light_dialogs">Inverser les couleurs du dialogue</string>
 	<string name="use_light_dialogs_yes">Oui</string>
 	<string name="use_light_dialogs_no">Non (d\'usine)</string>
+	<string name="force_relaunch">Ne pas réutiliser l\'écran d\'accueil</string>
+	<string name="force_relaunch_yes">Oui</string>
+	<string name="force_relaunch_no">Non (d\'usine)</string>
 	<string name="skip">Sauter</string>
 	<string name="reset">Réinitialiser</string>
 	<string name="edit_app">Editer l\'app</string>

@@ -153,6 +153,14 @@ public class HomeActivity extends Activity {
 	}
 
 	@Override
+	public void onRestart() {
+		super.onRestart();
+		if (prefs.forceRelaunch()) {
+			finish();
+		}
+	}
+
+	@Override
 	protected void onStart() {
 		super.onStart();
 		setRequestedOrientation(prefs.getOrientation());

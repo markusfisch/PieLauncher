@@ -67,6 +67,9 @@
 	<string name="use_light_dialogs">反转对话框颜色</string>
 	<string name="use_light_dialogs_yes">是</string>
 	<string name="use_light_dialogs_no">没有 (默认)</string>
+	<string name="force_relaunch">不要重复使用主屏幕</string>
+	<string name="force_relaunch_yes">是</string>
+	<string name="force_relaunch_no">没有 (默认)</string>
 	<string name="skip">跳过</string>
 	<string name="reset">重置</string>
 	<string name="edit_app">编辑应用程序</string>

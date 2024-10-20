@@ -106,9 +106,13 @@
 					android:id="@+id/hidden_apps"
 					android:text="@string/show_hidden_apps" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/use_light_dialogs"
 					android:text="@string/use_light_dialogs_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/force_relaunch"
+					android:text="@string/force_relaunch_no" />
 			</LinearLayout>
 			<Button
 				style="@style/Button"

@@ -229,6 +229,11 @@ public class PreferencesActivity extends Activity {
 		} else {
 			findViewById(R.id.use_light_dialogs).setVisibility(View.GONE);
 		}
+		initPreference(R.id.force_relaunch,
+				R.string.force_relaunch,
+				PreferencesActivity::getForceRelaunchOptions,
+				() -> prefs.forceRelaunch(),
+				(value) -> prefs.setForceRelaunch(value));
 	}
 
 	private <T, G> void initPreference(
@@ -492,6 +497,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.use_light_dialogs_yes);
 		map.put(Boolean.FALSE, R.string.use_light_dialogs_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getForceRelaunchOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.force_relaunch_yes);
+		map.put(Boolean.FALSE, R.string.force_relaunch_no);
 		return map;
 	}
 
