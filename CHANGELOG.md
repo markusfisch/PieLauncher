@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.21.1
+* Add an option to prevent home screen reuse
+* Fix immersive mode on devices with a notch
+
 ## 1.21.0
 * Add long press/double tap options to open app list
 * Add an option to enable immersive mode
