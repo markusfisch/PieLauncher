@@ -17,7 +17,8 @@ public class SystemBars {
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public static void setTransparentSystemBars(Window window, boolean immersive) {
+	public static void setTransparentSystemBars(Window window,
+			boolean immersive) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
@@ -33,7 +34,8 @@ public class SystemBars {
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public static void setSystemUIVisibility(Window window, boolean immersive) {
+	public static void setSystemUIVisibility(Window window,
+			boolean immersive) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
@@ -46,6 +48,12 @@ public class SystemBars {
 						View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
 						View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
 						View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+		if (immersive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			WindowManager.LayoutParams params = window.getAttributes();
+			params.layoutInDisplayCutoutMode =
+					WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+			window.setAttributes(params);
+		}
 	}
 
 	public static void setNavigationBarColor(Window window, int color) {
