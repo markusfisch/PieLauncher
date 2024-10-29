@@ -26,11 +26,11 @@
 	<string name="dead_zone_bottom">Снизу</string>
 	<string name="dead_zone_both">Сверху и снизу (Стандартно)</string>
 	<string name="immersive_mode">Режим погружения</string>
-	<string name="immersive_mode_yes">Система скрытия и панель навигации</string>
-	<string name="immersive_mode_no">Система показа и панель навигации (Стандартно)</string>
+	<string name="immersive_mode_yes">Скрывать системную и навигационную панели</string>
+	<string name="immersive_mode_no">Показывать системную и навигационную панели</string>
 	<string name="category_app_drawer">Список приложений</string>
-	<string name="open_list_with">Открывается через</string>
-	<string name="open_list_with_tap">Нажмите на главный экран (Стандартно)</string>
+	<string name="open_list_with">Открываться через</string>
+	<string name="open_list_with_tap">Нажатие на главный экран (Стандартно)</string>
 	<string name="open_list_with_any_touch">Любое прикосновение, независимо от продолжительности</string>
 	<string name="open_list_with_long_press">Длительное нажатие</string>
 	<string name="open_list_with_double_tap">Двойное нажатие</string>
@@ -49,7 +49,7 @@
 	<string name="search_strictness_contains">Вхождение содержит запрос</string>
 	<string name="search_strictness_starts_with">Вхождение начинается с запроса</string>
 	<string name="search_parameter">Поиск по</string>
-	<string name="search_parameter_app_label">Название приложения (Стандартно)</string>
+	<string name="search_parameter_app_label">Названию приложения (Стандартно)</string>
 	<string name="search_parameter_package_name">Названию пакета</string>
 	<string name="show_app_names">Показать названия приложений</string>
 	<string name="show_app_names_always">Всегда</string>
@@ -64,10 +64,10 @@
 	<string name="icon_pack">Набор иконок</string>
 	<string name="icon_pack_default">Системные (Стандартно)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Скрытые приложения</font></big>\nСписок скрытых приложений</string>
-	<string name="use_light_dialogs">Инвертировать цвета диалогового окна</string>
+	<string name="use_light_dialogs">Инвертировать цвета диалоговых окон</string>
 	<string name="use_light_dialogs_yes">Да</string>
 	<string name="use_light_dialogs_no">Нет (Стандартно)</string>
-	<string name="force_relaunch">Не используйте домашний экран повторно</string>
+	<string name="force_relaunch">Не использовать домашний экран повторно</string>
 	<string name="force_relaunch_yes">Да</string>
 	<string name="force_relaunch_no">Нет (Стандартно)</string>
 	<string name="skip">Далее</string>
