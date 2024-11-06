@@ -1,9 +1,9 @@
 <resources>
 	<string name="app_name">Pie Launcher</string>
 	<string name="tip_loading">Laden…</string>
-	<string name="tip_drag_to_order">Sleep om te rangschikken, cirkel om volgorde te wijzigen</string>
-	<string name="tip_remove_icon">Pictogram van Pie menu verwijderen</string>
-	<string name="tip_remove_app">App van apparaat verwijderen</string>
+	<string name="tip_drag_to_order">Slepen om te rangschikken, cirkelen om volgorde te wijzigen</string>
+	<string name="tip_remove_icon">Pictogram verwijderen van Pie menu</string>
+	<string name="tip_remove_app">App verwijderen van apparaat</string>
 	<string name="preferences">Instellingen</string>
 	<string name="welcome">Welkom!</string>
 	<string name="check_these_settings">Controleer alsjeblieft de volgende instellingen:</string>
@@ -13,7 +13,7 @@
 	<string name="orientation">Oriëntatie</string>
 	<string name="orientation_portrait">Staand (standaard)</string>
 	<string name="orientation_landscape">Liggend</string>
-	<string name="orientation_user">Auto</string>
+	<string name="orientation_user">Automatisch</string>
 	<string name="darken_background">Donkere achtergrond</string>
 	<string name="darken_background_yes">Ja</string>
 	<string name="darken_background_no">Nee (standaard)</string>
@@ -26,10 +26,10 @@
 	<string name="dead_zone_bottom">Onderaan</string>
 	<string name="dead_zone_both">Boven- en onderaan (standaard)</string>
 	<string name="immersive_mode">Immersieve modus</string>
-	<string name="immersive_mode_yes">Verberg systeem en navigatiebalk</string>
-	<string name="immersive_mode_no">Systeem en navigatiebalk weergeven (standaard)</string>
+	<string name="immersive_mode_yes">Systeem- en navigatiebalk verbergen</string>
+	<string name="immersive_mode_no">Systeem- en navigatiebalk weergeven (standaard)</string>
 	<string name="category_app_drawer">App-lade</string>
-	<string name="open_list_with">Opent met</string>
+	<string name="open_list_with">Openen met</string>
 	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>
 	<string name="open_list_with_any_touch">Elke aanraking, hoe lang ook</string>
 	<string name="open_list_with_long_press">Lang drukken</string>
@@ -38,7 +38,7 @@
 	<string name="display_keyboard">Toetsenbord weergeven</string>
 	<string name="display_keyboard_yes">Ja (standaard)</string>
 	<string name="display_keyboard_no">Nee</string>
-	<string name="space_action">Spatie aan zoekterm toevoegen</string>
+	<string name="space_action">Spatie na zoekterm</string>
 	<string name="space_action_move_selection">Selectie verplaatsen (standaard)</string>
 	<string name="space_action_double_launch">Twee keer drukken om app te starten</string>
 	<string name="auto_launch_matching">Perfecte overeenkomst automatisch starten</string>
@@ -67,7 +67,7 @@
 	<string name="use_light_dialogs">Dialoogkleuren omkeren</string>
 	<string name="use_light_dialogs_yes">Ja</string>
 	<string name="use_light_dialogs_no">Nee (standaard)</string>
-	<string name="force_relaunch">Beginscherm niet opnieuw gebruiken</string>
+	<string name="force_relaunch">Startscherm niet opnieuw gebruiken</string>
 	<string name="force_relaunch_yes">Ja</string>
 	<string name="force_relaunch_no">Nee (standaard)</string>
 	<string name="skip">Overslaan</string>
