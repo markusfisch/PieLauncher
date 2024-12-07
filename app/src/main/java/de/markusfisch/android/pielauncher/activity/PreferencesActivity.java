@@ -200,6 +200,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getSearchParameterOptions,
 				() -> prefs.getSearchParameter(),
 				(value) -> prefs.setSearchParameter(value));
+		initPreference(R.id.alphabet_filtering,
+				R.string.alphabet_filtering,
+				PreferencesActivity::getAlphabetFilteringOptions,
+				() -> prefs.isAlphabetFiltering(),
+				(value) -> prefs.setAlphabetFiltering(value));
 		initPreference(R.id.show_app_names,
 				R.string.show_app_names,
 				PreferencesActivity::getShowAppNamesOptions,
@@ -504,6 +509,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.force_relaunch_yes);
 		map.put(Boolean.FALSE, R.string.force_relaunch_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getAlphabetFilteringOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.alphabet_filtering_yes);
+		map.put(Boolean.FALSE, R.string.alphabet_filtering_no);
 		return map;
 	}
 

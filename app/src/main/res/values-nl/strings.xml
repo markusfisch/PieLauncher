@@ -85,4 +85,7 @@
 	<string name="want_to_restore_icon">Pictogram-toewijzing verwijderen?</string>
 	<string name="all">Alle</string>
 	<string name="app_icon">App-pictogram</string>
+	<string name="alphabet_filtering">Alfabetische filtering</string>
+	<string name="alphabet_filtering_yes">Ja (Alleen voor talen met Latijnse tekens)</string>
+	<string name="alphabet_filtering_no">Nee</string>
 </resources>

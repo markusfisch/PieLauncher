@@ -202,7 +202,6 @@ public class HomeActivity extends Activity {
 			public void onOpenList(boolean resume) {
 				showAllAppsOnResume = resume;
 				showAllApps();
-				showAlphabetSidebar();
 			}
 
 			@Override
@@ -411,6 +410,7 @@ public class HomeActivity extends Activity {
 
 		searchInput.setVisibility(View.VISIBLE);
 		prefsButton.setVisibility(View.VISIBLE);
+		alphabetSidebar.setVisibility(prefs.isAlphabetFiltering() ? View.VISIBLE : View.GONE);
 		if (prefs.displayKeyboard()) {
 			kb.showFor(searchInput);
 		}

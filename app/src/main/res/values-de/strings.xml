@@ -85,4 +85,9 @@
 	<string name="want_to_restore_icon">Symbolzuordnung entfernen?</string>
 	<string name="all">Alle</string>
 	<string name="app_icon">App Icon</string>
+	<string name="alphabet_filtering">Alphabetische Filterung</string>
+	<string name="alphabet_filtering_yes">Ja (Nur für Sprachen mit lateinischen Buchstaben)</string>
+	<string name="alphabet_filtering_no">Nein</string>
 </resources>
+
+

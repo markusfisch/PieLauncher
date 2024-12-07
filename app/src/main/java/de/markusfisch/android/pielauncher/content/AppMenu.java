@@ -184,7 +184,7 @@ public class AppMenu extends CanvasPieMenu {
 						if (subject.length() > 0 && !Character.isLetter(subject.charAt(0))) {
 							list.add(appIcon);
 						}
-					} else if (subject.length() > 0 && (aliases.contains(String.valueOf(subject.charAt(0)).toUpperCase()) || subject.charAt(0) == query.charAt(0))) {
+					} else if (subject.length() > 0 && (aliases.stream().anyMatch(alias -> subject.toUpperCase().startsWith(alias.toUpperCase())) || subject.startsWith(query))) {
 						list.add(appIcon);
 					}
 				} else {
