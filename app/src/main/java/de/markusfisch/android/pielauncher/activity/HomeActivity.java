@@ -1,5 +1,8 @@
 package de.markusfisch.android.pielauncher.activity;
 
+import java.util.Set;
+import java.util.HashSet;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -14,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -23,6 +27,7 @@ import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
+import de.markusfisch.android.pielauncher.widget.AlphabetSidebar;
 import de.markusfisch.android.pielauncher.widget.AppPieView;
 
 public class HomeActivity extends Activity {
@@ -33,10 +38,13 @@ public class HomeActivity extends Activity {
 	private AppPieView pieView;
 	private EditText searchInput;
 	private ImageView prefsButton;
+	private AlphabetSidebar alphabetSidebar;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
 	private boolean immersiveMode = false;
 	private long pausedAt = 0L;
+	private String savedSearchText = "";
+	private boolean isAlphabetFiltering = false;
 
 	@Override
 	public void onBackPressed() {
@@ -87,9 +95,11 @@ public class HomeActivity extends Activity {
 		pieView = findViewById(R.id.pie);
 		searchInput = findViewById(R.id.search);
 		prefsButton = findViewById(R.id.preferences);
+		alphabetSidebar = findViewById(R.id.alphabet_sidebar);
 
 		initPieView();
 		initSearchInput();
+		initAlphabetSidebar();
 
 		SystemBars.listenForWindowInsets(pieView,
 				(left, top, right, bottom) -> pieView.setPadding(
@@ -192,6 +202,7 @@ public class HomeActivity extends Activity {
 			public void onOpenList(boolean resume) {
 				showAllAppsOnResume = resume;
 				showAllApps();
+				showAlphabetSidebar();
 			}
 
 			@Override
@@ -272,6 +283,53 @@ public class HomeActivity extends Activity {
 					return false;
 			}
 		});
+
+		// Clear alphabet filtering on any search input interaction
+		View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+			if (hasFocus && isAlphabetFiltering) {
+				clearAlphabetFiltering();
+			}
+		};
+		searchInput.setOnFocusChangeListener(focusListener);
+		searchInput.setOnClickListener(v -> {
+			if (isAlphabetFiltering) {
+				clearAlphabetFiltering();
+			}
+		});
+	}
+
+	private void clearAlphabetFiltering() {
+		isAlphabetFiltering = false;
+		PieLauncherApp.appMenu.setAlphabetFiltering(false);
+		if (alphabetSidebar != null) {
+			alphabetSidebar.clearSelection();
+		}
+		updateAppList();
+	}
+
+	private void initAlphabetSidebar() {
+		alphabetSidebar.setOnLetterSelectedListener(new AlphabetSidebar.OnLetterSelectedListener() {
+			@Override
+			public void onLetterSelected(String letter, Set<String> aliases) {
+				if (!isAlphabetFiltering) {
+					isAlphabetFiltering = true;
+					PieLauncherApp.appMenu.setAlphabetFiltering(true);
+				}
+				// Hide keyboard if visible
+				InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+				if (imm != null) {
+					imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+				}
+				pieView.filterAppList(letter, true, aliases);
+			}
+
+			@Override
+			public void onLetterDeselected() {
+				isAlphabetFiltering = false;
+				PieLauncherApp.appMenu.setAlphabetFiltering(false);
+				pieView.filterAppList("", false, new HashSet<>());
+			}
+		});
 	}
 
 	private boolean endsWithDoubleSpace(Editable e) {
@@ -338,6 +396,14 @@ public class HomeActivity extends Activity {
 		}
 	}
 
+	private void showAlphabetSidebar() {
+		alphabetSidebar.setVisibility(View.VISIBLE);
+	}
+
+	private void hideAlphabetSidebar() {
+		alphabetSidebar.setVisibility(View.GONE);
+	}
+
 	private void showAllApps() {
 		if (isSearchVisible()) {
 			return;
@@ -369,6 +435,7 @@ public class HomeActivity extends Activity {
 			searchInput.setVisibility(View.GONE);
 			kb.hideFrom(searchInput);
 			hidePrefsButton();
+			hideAlphabetSidebar();
 		}
 		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
@@ -386,7 +453,7 @@ public class HomeActivity extends Activity {
 	}
 
 	private void updateAppList() {
-		pieView.filterAppList(searchInput.getText().toString());
+		pieView.filterAppList(searchInput.getText().toString(), isAlphabetFiltering, new HashSet<>());
 	}
 
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {
