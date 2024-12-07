@@ -184,6 +184,12 @@ public class AppMenu extends CanvasPieMenu {
 						if (subject.length() > 0 && !Character.isLetter(subject.charAt(0))) {
 							list.add(appIcon);
 						}
+					} else if (query.equals("⚑")) {
+						// For "🌐", match anything that isn't a Latin char or number
+						// This includes characters with diacritics like umlauts and accents
+						if (subject.length() > 0 && !subject.matches("[\\p{IsLatin}\\p{Nd}].*")) {
+							list.add(appIcon);
+						}
 					} else if (subject.length() > 0 && (aliases.stream().anyMatch(alias -> subject.toUpperCase().startsWith(alias.toUpperCase())) || subject.startsWith(query))) {
 						list.add(appIcon);
 					}
