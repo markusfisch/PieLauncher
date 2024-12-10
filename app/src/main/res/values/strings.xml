@@ -85,4 +85,7 @@
 	<string name="want_to_restore_icon">Remove icon mapping?</string>
 	<string name="all">All</string>
 	<string name="app_icon">App icon</string>
+	<string name="alphabet_filtering">Alphabet Filtering</string>
+	<string name="alphabet_filtering_yes">Yes (Only Latin Character Locales)</string>
+	<string name="alphabet_filtering_no">No</string>
 </resources>

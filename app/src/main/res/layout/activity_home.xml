@@ -1,11 +1,23 @@
 <merge
 	xmlns:tools="http://schemas.android.com/tools"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 	<de.markusfisch.android.pielauncher.widget.AppPieView
 		android:id="@+id/pie"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:scrollbars="vertical"/>
+	<de.markusfisch.android.pielauncher.widget.AlphabetSidebar
+		android:id="@+id/alphabet_sidebar"
+		android:layout_width="48dp"
+		android:layout_height="match_parent"
+		android:layout_gravity="end"
+		android:layout_marginTop="112dp"
+		android:layout_marginBottom="16dp"
+		android:visibility="gone"
+		style="@style/AlphabetSidebar"
+		app:highlightColor="@color/text_color"
+		app:highlightRadius="16dp"/>
 	<EditText
 		tools:ignore="LabelFor"
 		android:id="@+id/search"

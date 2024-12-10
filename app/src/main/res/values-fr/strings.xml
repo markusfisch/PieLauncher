@@ -85,4 +85,7 @@
 	<string name="want_to_restore_icon">Supprimer l\'association d\'icônes ?</string>
 	<string name="all">Tous les</string>
 	<string name="app_icon">Icône de l\'app</string>
+	<string name="alphabet_filtering">Filtrage alphabétique</string>
+	<string name="alphabet_filtering_yes">Oui (Uniquement pour les langues à caractères latins)</string>
+	<string name="alphabet_filtering_no">Non</string>
 </resources>

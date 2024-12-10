@@ -49,6 +49,7 @@ public class Preferences {
 	private static final String ICON_PACK = "icon_pack";
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
 	private static final String FORCE_RELAUNCH = "force_relaunch";
+	private static final String ALPHABET_FILTERING = "alphabet_filtering";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -72,6 +73,7 @@ public class Preferences {
 	private String iconPack;
 	private boolean useLightDialogs = false;
 	private boolean forceRelaunch = false;
+	private boolean alphabetFiltering = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -110,6 +112,7 @@ public class Preferences {
 		useLightDialogs = preferences.getBoolean(USE_LIGHT_DIALOGS,
 				isEReader(context));
 		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
+		alphabetFiltering = preferences.getBoolean(ALPHABET_FILTERING, alphabetFiltering);
 	}
 
 	public boolean skipSetup() {
@@ -289,6 +292,15 @@ public class Preferences {
 	public void setForceRelaunch(boolean forceRelaunch) {
 		this.forceRelaunch = forceRelaunch;
 		put(FORCE_RELAUNCH, forceRelaunch).apply();
+	}
+
+	public boolean isAlphabetFiltering() {
+		return alphabetFiltering;
+	}
+
+	public void setAlphabetFiltering(boolean alphabetFiltering) {
+		this.alphabetFiltering = alphabetFiltering;
+		put(ALPHABET_FILTERING, alphabetFiltering).apply();
 	}
 
 	public float getAnimationDuration() {
