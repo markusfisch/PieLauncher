@@ -121,7 +121,9 @@ public class AlphabetSidebar extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        letterHeight = h / (float) alphabet.length;
+        float bottomPadding = 24f * dp;
+        float availableHeight = h - bottomPadding;
+        letterHeight = availableHeight / (float) alphabet.length;
         float centerX = w - textSize/2;
 
         // Initialize positions

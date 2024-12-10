@@ -20,6 +20,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.window.OnBackInvokedDispatcher;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
@@ -415,6 +416,21 @@ public class HomeActivity extends Activity {
 			kb.showFor(searchInput);
 		}
 
+		// Disable system back gesture when app drawer is open and the user has enabled the alphabet filtering
+		// This is to prevent the user from accidentally closing the app drawer
+		if (prefs.isAlphabetFiltering() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			getWindow().setSystemGestureExclusionRects(
+				java.util.Collections.singletonList(
+					new android.graphics.Rect(
+						getWindow().getDecorView().getWidth() - 100,
+						0,
+						getWindow().getDecorView().getWidth(),
+						getWindow().getDecorView().getHeight()
+					)
+				)
+			);
+		}
+
 		// Clear search input.
 		Editable editable = searchInput.getText();
 		boolean searchWasEmpty = editable.toString().isEmpty();
@@ -422,7 +438,6 @@ public class HomeActivity extends Activity {
 		editable.clear();
 		updateAfterTextChange = true;
 
-		// Remove filter and reset last scroll position.
 		if (!searchWasEmpty || pieView.isEmpty()) {
 			updateAppList();
 		}
@@ -436,6 +451,13 @@ public class HomeActivity extends Activity {
 			kb.hideFrom(searchInput);
 			hidePrefsButton();
 			hideAlphabetSidebar();
+
+			// Re-enable system back gesture
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				getWindow().setSystemGestureExclusionRects(
+					java.util.Collections.emptyList()
+				);
+			}
 		}
 		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
