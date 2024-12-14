@@ -56,9 +56,13 @@
 					android:id="@+id/dead_zone"
 					android:text="@string/dead_zone_both" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/immersive_mode"
 					android:text="@string/immersive_mode_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/disable_haptic_feedback"
+					android:text="@string/disable_haptic_feedback_no" />
 				<TextView
 					style="@style/CategoryHeader"
 					android:text="@string/category_app_drawer" />

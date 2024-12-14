@@ -453,7 +453,8 @@ public class AppPieView extends View {
 							case MODE_PIE:
 								setCenter(touch.x, touch.y);
 								fadePie.fadeIn(eventTime);
-								performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
+								performHapticFeedbackIfAllowed(
+										HAPTIC_FEEDBACK_DOWN);
 								break;
 							case MODE_LIST:
 								// Ignore ACTION_DOWN during animation to
@@ -623,7 +624,8 @@ public class AppPieView extends View {
 				}
 				initLongPressFeedback(appIcon);
 				longPressRunnable = () -> {
-					performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+					performHapticFeedbackIfAllowed(
+							HapticFeedbackConstants.LONG_PRESS);
 					if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
 						showIconOptions(context, appIcon);
 					} else {
@@ -708,7 +710,8 @@ public class AppPieView extends View {
 					v.performClick();
 					if (performAction(v.getContext(), at,
 							wasTap, wasDoubleTap, wasLongPress)) {
-						v.performHapticFeedback(HAPTIC_FEEDBACK_CONFIRM);
+						performHapticFeedbackIfAllowed(
+								HAPTIC_FEEDBACK_CONFIRM);
 					}
 					performActionRunnable = null;
 					resetHighlightedAction();
@@ -1295,7 +1298,7 @@ public class AppPieView extends View {
 			float sizeSq = Math.round(icon.size * icon.size);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
 				editIcon(icon);
-				performHapticFeedback(HAPTIC_FEEDBACK_DOWN);
+				performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
 				return;
 			}
 		}
@@ -1518,7 +1521,7 @@ public class AppPieView extends View {
 		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
 			lastSelectedIcon = selectedIcon;
-			performHapticFeedback(HAPTIC_FEEDBACK_CHOICE);
+			performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CHOICE);
 		}
 		return f < 1f;
 	}
@@ -1589,6 +1592,12 @@ public class AppPieView extends View {
 			case MODE_EDIT:
 				fadeEdit.fadeOut();
 				break;
+		}
+	}
+
+	private void performHapticFeedbackIfAllowed(int feedback) {
+		if (!prefs.disableHapticFeedback()) {
+			performHapticFeedback(feedback);
 		}
 	}
 

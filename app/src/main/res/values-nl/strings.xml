@@ -28,6 +28,9 @@
 	<string name="immersive_mode">Immersieve modus</string>
 	<string name="immersive_mode_yes">Systeem- en navigatiebalk verbergen</string>
 	<string name="immersive_mode_no">Systeem- en navigatiebalk weergeven (standaard)</string>
+	<string name="disable_haptic_feedback">Haptische feedback</string>
+	<string name="disable_haptic_feedback_yes">Uitschakelen</string>
+	<string name="disable_haptic_feedback_no">Systeeminstellingen volgen (standaard)</string>
 	<string name="category_app_drawer">App-lade</string>
 	<string name="open_list_with">Openen met</string>
 	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>

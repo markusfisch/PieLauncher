@@ -38,6 +38,7 @@ public class Preferences {
 	private static final String BLUR_BACKGROUND = "blur_background";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String IMMERSIVE_MODE = "immersive_mode";
+	private static final String DISABLE_HAPTIC_FEEDBACK = "disable_haptic_feedback";
 	private static final String OPEN_LIST_WITH = "open_list_with";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
@@ -61,6 +62,7 @@ public class Preferences {
 	private boolean blurBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
 	private boolean immersiveMode = false;
+	private boolean disableHapticFeedback = false;
 	private int openListWith = OPEN_LIST_WITH_TAP;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
@@ -93,6 +95,8 @@ public class Preferences {
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		immersiveMode = preferences.getBoolean(IMMERSIVE_MODE,
 				immersiveMode);
+		disableHapticFeedback = preferences.getBoolean(DISABLE_HAPTIC_FEEDBACK,
+				disableHapticFeedback);
 		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
@@ -190,6 +194,15 @@ public class Preferences {
 	public void setImmersiveMode(boolean immersiveMode) {
 		this.immersiveMode = immersiveMode;
 		put(IMMERSIVE_MODE, immersiveMode).commit();
+	}
+
+	public boolean disableHapticFeedback() {
+		return disableHapticFeedback;
+	}
+
+	public void setDisableHapticFeedback(boolean disableHapticFeedback) {
+		this.disableHapticFeedback = disableHapticFeedback;
+		put(DISABLE_HAPTIC_FEEDBACK, disableHapticFeedback).commit();
 	}
 
 	public int openListWith() {

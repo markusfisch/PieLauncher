@@ -28,6 +28,9 @@
 	<string name="immersive_mode">Immersivt läge</string>
 	<string name="immersive_mode_yes">Dölj system och navigeringsfält</string>
 	<string name="immersive_mode_no">Visningssystem och navigeringsfält (standard)</string>
+	<string name="disable_haptic_feedback">Haptisk feedback</string>
+	<string name="disable_haptic_feedback_yes">Avaktivera</string>
+	<string name="disable_haptic_feedback_no">Följ systeminställningarna (standard)</string>
 	<string name="category_app_drawer">Applåda</string>
 	<string name="open_list_with">Öppnas med</string>
 	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>

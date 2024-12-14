@@ -28,6 +28,9 @@
 	<string name="immersive_mode">Режим погружения</string>
 	<string name="immersive_mode_yes">Скрывать системную и навигационную панели</string>
 	<string name="immersive_mode_no">Показывать системную и навигационную панели</string>
+	<string name="disable_haptic_feedback">Тактильная обратная связь</string>
+	<string name="disable_haptic_feedback_yes">Отключить</string>
+	<string name="disable_haptic_feedback_no">Следуйте системным настройкам (Стандартно)</string>
 	<string name="category_app_drawer">Список приложений</string>
 	<string name="open_list_with">Открываться через</string>
 	<string name="open_list_with_tap">Нажатие на главный экран (Стандартно)</string>

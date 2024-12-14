@@ -28,6 +28,9 @@
 	<string name="immersive_mode">Immersive mode</string>
 	<string name="immersive_mode_yes">Hide system and navigation bar</string>
 	<string name="immersive_mode_no">Show system and navigation bar (Default)</string>
+	<string name="disable_haptic_feedback">Haptic feedback</string>
+	<string name="disable_haptic_feedback_yes">Disable</string>
+	<string name="disable_haptic_feedback_no">Follow system settings (Default)</string>
 	<string name="category_app_drawer">App Drawer</string>
 	<string name="open_list_with">Opens with</string>
 	<string name="open_list_with_tap">A tap on the home screen (Default)</string>

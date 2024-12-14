@@ -167,6 +167,11 @@ public class PreferencesActivity extends Activity {
 		} else {
 			findViewById(R.id.immersive_mode).setVisibility(View.GONE);
 		}
+		initPreference(R.id.disable_haptic_feedback,
+				R.string.disable_haptic_feedback,
+				PreferencesActivity::getDisableHapticFeedbackOptions,
+				() -> prefs.disableHapticFeedback(),
+				(value) -> prefs.setDisableHapticFeedback(value));
 		initPreference(R.id.open_list_with,
 				R.string.open_list_with,
 				PreferencesActivity::getOpenListWithOptions,
@@ -407,6 +412,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.immersive_mode_yes);
 		map.put(Boolean.FALSE, R.string.immersive_mode_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getDisableHapticFeedbackOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.disable_haptic_feedback_yes);
+		map.put(Boolean.FALSE, R.string.disable_haptic_feedback_no);
 		return map;
 	}
 

@@ -28,6 +28,9 @@
 	<string name="immersive_mode">沉浸模式</string>
 	<string name="immersive_mode_yes">隐藏系统和导航栏</string>
 	<string name="immersive_mode_no">显示系统和导航栏 (默认)</string>
+	<string name="disable_haptic_feedback">触觉反馈</string>
+	<string name="disable_haptic_feedback_yes">禁用</string>
+	<string name="disable_haptic_feedback_no">遵循系统设置 (默认)</string>
 	<string name="category_app_drawer">应用程序列表</string>
 	<string name="open_list_with">通过</string>
 	<string name="open_list_with_tap">点击主屏幕 (默认)</string>
