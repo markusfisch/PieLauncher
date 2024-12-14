@@ -26,8 +26,10 @@
 	<string name="dead_zone_bottom">Längst ner</string>
 	<string name="dead_zone_both">Högst upp och längst ner (standard)</string>
 	<string name="immersive_mode">Immersivt läge</string>
-	<string name="immersive_mode_yes">Dölj system och navigeringsfält</string>
-	<string name="immersive_mode_no">Visningssystem och navigeringsfält (standard)</string>
+	<string name="immersive_mode_full">Dölj status- och navigeringsfält</string>
+	<string name="immersive_mode_status_bar">Dölj statusfältet</string>
+	<string name="immersive_mode_navigation_bar">Dölj navigeringsfältet</string>
+	<string name="immersive_mode_disabled">Visa status- och navigeringsfält (standard)</string>
 	<string name="disable_haptic_feedback">Haptisk feedback</string>
 	<string name="disable_haptic_feedback_yes">Avaktivera</string>
 	<string name="disable_haptic_feedback_no">Följ systeminställningarna (standard)</string>

@@ -7,18 +7,19 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import de.markusfisch.android.pielauncher.preference.Preferences;
+
 public class SystemBars {
 	public interface OnInsetListener {
 		void onApplyInsets(int left, int top, int right, int bottom);
 	}
 
 	public static void setTransparentSystemBars(Window window) {
-		setTransparentSystemBars(window, false);
+		setTransparentSystemBars(window, Preferences.IMMERSIVE_MODE_DISABLED);
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public static void setTransparentSystemBars(Window window,
-			boolean immersive) {
+	public static void setTransparentSystemBars(Window window, int immersive) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
@@ -34,21 +35,33 @@ public class SystemBars {
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public static void setSystemUIVisibility(Window window,
-			boolean immersive) {
+	public static void setSystemUIVisibility(Window window, int immersive) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
 		}
-		int immersiveFlags = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-				View.SYSTEM_UI_FLAG_FULLSCREEN;
-		window.getDecorView().setSystemUiVisibility(
-				(immersive ? immersiveFlags : 0) |
-						View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-						View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-						View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-		if (immersive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+
+		int uiFlags = 0;
+		boolean hideStatusBar =
+				(immersive & Preferences.IMMERSIVE_MODE_STATUS_BAR) > 0;
+		boolean hideNavigationBar =
+				(immersive & Preferences.IMMERSIVE_MODE_NAVIGATION_BAR) > 0;
+		boolean hideAnyBar = hideStatusBar || hideNavigationBar;
+		if (hideStatusBar) {
+			uiFlags |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+		}
+		if (hideNavigationBar) {
+			uiFlags |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+		}
+		if (hideAnyBar) {
+			uiFlags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+		}
+		window.getDecorView().setSystemUiVisibility(uiFlags |
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+		if (hideAnyBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			WindowManager.LayoutParams params = window.getAttributes();
 			params.layoutInDisplayCutoutMode =
 					WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;

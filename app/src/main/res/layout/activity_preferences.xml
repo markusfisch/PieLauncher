@@ -58,7 +58,7 @@
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
 					android:id="@+id/immersive_mode"
-					android:text="@string/immersive_mode_no" />
+					android:text="@string/immersive_mode_disabled" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/disable_haptic_feedback"

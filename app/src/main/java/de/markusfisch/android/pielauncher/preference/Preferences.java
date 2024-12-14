@@ -28,6 +28,10 @@ public class Preferences {
 	public static final int ICON_PRESS_LONGER = 1;
 	public static final int ICON_PRESS_MENU = 2;
 	public static final int ICON_LOCK_MENU = 3;
+	public static final int IMMERSIVE_MODE_DISABLED = 0;
+	public static final int IMMERSIVE_MODE_STATUS_BAR = 1;
+	public static final int IMMERSIVE_MODE_NAVIGATION_BAR = 2;
+	public static final int IMMERSIVE_MODE_FULL = 3;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -37,7 +41,7 @@ public class Preferences {
 	private static final String DARKEN_BACKGROUND = "darken_background";
 	private static final String BLUR_BACKGROUND = "blur_background";
 	private static final String DEAD_ZONE = "dead_zone";
-	private static final String IMMERSIVE_MODE = "immersive_mode";
+	private static final String IMMERSIVE_MODE = "immersive_mode_option";
 	private static final String DISABLE_HAPTIC_FEEDBACK = "disable_haptic_feedback";
 	private static final String OPEN_LIST_WITH = "open_list_with";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
@@ -61,7 +65,7 @@ public class Preferences {
 	private boolean darkenBackground = false;
 	private boolean blurBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
-	private boolean immersiveMode = false;
+	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean disableHapticFeedback = false;
 	private int openListWith = OPEN_LIST_WITH_TAP;
 	private boolean displayKeyboard = true;
@@ -84,6 +88,14 @@ public class Preferences {
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
+		// Migrate old immersive mode setting.
+		String oldImmersiveModeName = "immersive_mode";
+		if (preferences.getBoolean(oldImmersiveModeName, false)) {
+			put(oldImmersiveModeName, false).apply();
+			immersiveMode = IMMERSIVE_MODE_FULL;
+			setImmersiveMode(immersiveMode);
+		}
+
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		twist = preferences.getFloat(TWIST, twist);
 		iconScale = preferences.getFloat(ICON_SCALE, iconScale);
@@ -93,8 +105,7 @@ public class Preferences {
 		blurBackground = preferences.getBoolean(BLUR_BACKGROUND,
 				blurBackground);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
-		immersiveMode = preferences.getBoolean(IMMERSIVE_MODE,
-				immersiveMode);
+		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
 		disableHapticFeedback = preferences.getBoolean(DISABLE_HAPTIC_FEEDBACK,
 				disableHapticFeedback);
 		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
@@ -187,11 +198,11 @@ public class Preferences {
 		put(DEAD_ZONE, deadZone).commit();
 	}
 
-	public boolean isImmersiveMode() {
+	public int getImmersiveMode() {
 		return immersiveMode;
 	}
 
-	public void setImmersiveMode(boolean immersiveMode) {
+	public void setImmersiveMode(int immersiveMode) {
 		this.immersiveMode = immersiveMode;
 		put(IMMERSIVE_MODE, immersiveMode).commit();
 	}

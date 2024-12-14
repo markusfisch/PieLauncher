@@ -26,8 +26,10 @@
 	<string name="dead_zone_bottom">Внизу</string>
 	<string name="dead_zone_both">Вгорі і внизу (за замовчуванням)</string>
 	<string name="immersive_mode">Режим занурення</string>
-	<string name="immersive_mode_yes">Приховати системну та навігаційну панель</string>
-	<string name="immersive_mode_no">Показати системну та навігаційну панель (за замовчуванням)</string>
+	<string name="immersive_mode_full">Приховати статус і панель навігації</string>
+	<string name="immersive_mode_status_bar">Приховати рядок стану</string>
+	<string name="immersive_mode_navigation_bar">Приховати панель навігації</string>
+	<string name="immersive_mode_disabled">Показати статус і панель навігації (за замовчуванням)</string>
 	<string name="disable_haptic_feedback">Тактильний зворотний зв\'язок</string>
 	<string name="disable_haptic_feedback_yes">Вимкнути</string>
 	<string name="disable_haptic_feedback_no">Дотримуйтесь налаштувань системи (за замовчуванням)</string>

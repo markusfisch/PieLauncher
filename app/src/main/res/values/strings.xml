@@ -26,8 +26,10 @@
 	<string name="dead_zone_bottom">At the bottom</string>
 	<string name="dead_zone_both">At the top and bottom (Default)</string>
 	<string name="immersive_mode">Immersive mode</string>
-	<string name="immersive_mode_yes">Hide system and navigation bar</string>
-	<string name="immersive_mode_no">Show system and navigation bar (Default)</string>
+	<string name="immersive_mode_full">Hide status and navigation bar</string>
+	<string name="immersive_mode_status_bar">Hide system bar only</string>
+	<string name="immersive_mode_navigation_bar">Hide navigation bar only</string>
+	<string name="immersive_mode_disabled">Show status and navigation bar (Default)</string>
 	<string name="disable_haptic_feedback">Haptic feedback</string>
 	<string name="disable_haptic_feedback_yes">Disable</string>
 	<string name="disable_haptic_feedback_no">Follow system settings (Default)</string>

@@ -162,7 +162,7 @@ public class PreferencesActivity extends Activity {
 			initPreference(R.id.immersive_mode,
 					R.string.immersive_mode,
 					PreferencesActivity::getImmersiveModeOptions,
-					() -> prefs.isImmersiveMode(),
+					() -> prefs.getImmersiveMode(),
 					(value) -> prefs.setImmersiveMode(value));
 		} else {
 			findViewById(R.id.immersive_mode).setVisibility(View.GONE);
@@ -408,10 +408,16 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getImmersiveModeOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.immersive_mode_yes);
-		map.put(Boolean.FALSE, R.string.immersive_mode_no);
+	private static Map<Integer, Integer> getImmersiveModeOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.IMMERSIVE_MODE_DISABLED,
+				R.string.immersive_mode_disabled);
+		map.put(Preferences.IMMERSIVE_MODE_STATUS_BAR,
+				R.string.immersive_mode_status_bar);
+		map.put(Preferences.IMMERSIVE_MODE_NAVIGATION_BAR,
+				R.string.immersive_mode_navigation_bar);
+		map.put(Preferences.IMMERSIVE_MODE_FULL,
+				R.string.immersive_mode_full);
 		return map;
 	}
 

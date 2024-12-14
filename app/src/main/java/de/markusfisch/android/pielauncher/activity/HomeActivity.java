@@ -35,7 +35,7 @@ public class HomeActivity extends Activity {
 	private ImageView prefsButton;
 	private boolean updateAfterTextChange = true;
 	private boolean showAllAppsOnResume = false;
-	private boolean immersiveMode = false;
+	private int immersiveMode = Preferences.IMMERSIVE_MODE_DISABLED;
 	private long pausedAt = 0L;
 
 	@Override
@@ -100,7 +100,7 @@ public class HomeActivity extends Activity {
 						right,
 						bottom));
 
-		immersiveMode = prefs.isImmersiveMode();
+		immersiveMode = prefs.getImmersiveMode();
 		SystemBars.setTransparentSystemBars(getWindow(), immersiveMode);
 	}
 
@@ -313,7 +313,7 @@ public class HomeActivity extends Activity {
 	}
 
 	private void updateSystemBars() {
-		boolean newImmersiveMode = prefs.isImmersiveMode();
+		int newImmersiveMode = prefs.getImmersiveMode();
 		if (immersiveMode != newImmersiveMode) {
 			immersiveMode = newImmersiveMode;
 			SystemBars.setSystemUIVisibility(getWindow(), immersiveMode);
