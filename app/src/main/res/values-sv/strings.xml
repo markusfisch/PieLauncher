@@ -30,9 +30,6 @@
 	<string name="immersive_mode_status_bar">Dölj statusfältet</string>
 	<string name="immersive_mode_navigation_bar">Dölj navigeringsfältet</string>
 	<string name="immersive_mode_disabled">Visa status- och navigeringsfält (standard)</string>
-	<string name="disable_haptic_feedback">Haptisk feedback</string>
-	<string name="disable_haptic_feedback_yes">Avaktivera</string>
-	<string name="disable_haptic_feedback_no">Följ systeminställningarna (standard)</string>
 	<string name="category_app_drawer">Applåda</string>
 	<string name="open_list_with">Öppnas med</string>
 	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>
@@ -69,6 +66,9 @@
 	<string name="icon_pack">Ikonpaket</string>
 	<string name="icon_pack_default">System (standard)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Dolda appar</font></big>\nLista med dolda appar</string>
+	<string name="disable_haptic_feedback">Haptisk feedback</string>
+	<string name="disable_haptic_feedback_yes">Avaktivera</string>
+	<string name="disable_haptic_feedback_no">Följ systeminställningarna (standard)</string>
 	<string name="use_light_dialogs">Invertera dialogrutans färger</string>
 	<string name="use_light_dialogs_yes">Ja</string>
 	<string name="use_light_dialogs_no">Nej (standard)</string>

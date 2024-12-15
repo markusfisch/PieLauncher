@@ -30,9 +30,6 @@
 	<string name="immersive_mode_status_bar">Скрыть строку состояния</string>
 	<string name="immersive_mode_navigation_bar">Скрыть панель навигации</string>
 	<string name="immersive_mode_disabled">Показывать системную и навигационную панели (Стандартно)</string>
-	<string name="disable_haptic_feedback">Тактильная обратная связь</string>
-	<string name="disable_haptic_feedback_yes">Отключить</string>
-	<string name="disable_haptic_feedback_no">Следуйте системным настройкам (Стандартно)</string>
 	<string name="category_app_drawer">Список приложений</string>
 	<string name="open_list_with">Открываться через</string>
 	<string name="open_list_with_tap">Нажатие на главный экран (Стандартно)</string>
@@ -69,6 +66,9 @@
 	<string name="icon_pack">Набор иконок</string>
 	<string name="icon_pack_default">Системные (Стандартно)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Скрытые приложения</font></big>\nСписок скрытых приложений</string>
+	<string name="disable_haptic_feedback">Тактильная обратная связь</string>
+	<string name="disable_haptic_feedback_yes">Отключить</string>
+	<string name="disable_haptic_feedback_no">Следуйте системным настройкам (Стандартно)</string>
 	<string name="use_light_dialogs">Инвертировать цвета диалоговых окон</string>
 	<string name="use_light_dialogs_yes">Да</string>
 	<string name="use_light_dialogs_no">Нет (Стандартно)</string>

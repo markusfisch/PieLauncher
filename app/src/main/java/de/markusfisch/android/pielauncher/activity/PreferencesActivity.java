@@ -167,11 +167,6 @@ public class PreferencesActivity extends Activity {
 		} else {
 			findViewById(R.id.immersive_mode).setVisibility(View.GONE);
 		}
-		initPreference(R.id.disable_haptic_feedback,
-				R.string.disable_haptic_feedback,
-				PreferencesActivity::getDisableHapticFeedbackOptions,
-				() -> prefs.disableHapticFeedback(),
-				(value) -> prefs.setDisableHapticFeedback(value));
 		initPreference(R.id.open_list_with,
 				R.string.open_list_with,
 				PreferencesActivity::getOpenListWithOptions,
@@ -225,6 +220,11 @@ public class PreferencesActivity extends Activity {
 				},
 				() -> PieLauncherApp.iconPack.updatePacks(
 						getPackageManager()));
+		initPreference(R.id.disable_haptic_feedback,
+				R.string.disable_haptic_feedback,
+				PreferencesActivity::getDisableHapticFeedbackOptions,
+				() -> prefs.disableHapticFeedback(),
+				(value) -> prefs.setDisableHapticFeedback(value));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			initPreference(R.id.use_light_dialogs,
 					R.string.use_light_dialogs,
@@ -421,13 +421,6 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getDisableHapticFeedbackOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.disable_haptic_feedback_yes);
-		map.put(Boolean.FALSE, R.string.disable_haptic_feedback_no);
-		return map;
-	}
-
 	private static Map<Integer, Integer> getOpenListWithOptions() {
 		Map<Integer, Integer> map = new LinkedHashMap<>();
 		map.put(Preferences.OPEN_LIST_WITH_TAP,
@@ -508,6 +501,13 @@ public class PreferencesActivity extends Activity {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put(null, getString(R.string.icon_pack_default));
 		map.putAll(PieLauncherApp.iconPack.getIconPacks());
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getDisableHapticFeedbackOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.disable_haptic_feedback_yes);
+		map.put(Boolean.FALSE, R.string.disable_haptic_feedback_no);
 		return map;
 	}
 

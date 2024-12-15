@@ -30,9 +30,6 @@
 	<string name="immersive_mode_status_bar">隐藏状态栏</string>
 	<string name="immersive_mode_navigation_bar">隐藏导航栏</string>
 	<string name="immersive_mode_disabled">显示状态栏和导航栏 (默认)</string>
-	<string name="disable_haptic_feedback">触觉反馈</string>
-	<string name="disable_haptic_feedback_yes">禁用</string>
-	<string name="disable_haptic_feedback_no">遵循系统设置 (默认)</string>
 	<string name="category_app_drawer">应用程序列表</string>
 	<string name="open_list_with">通过</string>
 	<string name="open_list_with_tap">点击主屏幕 (默认)</string>
@@ -69,6 +66,9 @@
 	<string name="icon_pack">图标包</string>
 	<string name="icon_pack_default">系统（默认）</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">隐藏的应用程序</font></big>\n隐藏应用程序列表。</string>
+	<string name="disable_haptic_feedback">触觉反馈</string>
+	<string name="disable_haptic_feedback_yes">禁用</string>
+	<string name="disable_haptic_feedback_no">遵循系统设置 (默认)</string>
 	<string name="use_light_dialogs">反转对话框颜色</string>
 	<string name="use_light_dialogs_yes">是</string>
 	<string name="use_light_dialogs_no">没有 (默认)</string>

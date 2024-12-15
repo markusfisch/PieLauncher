@@ -30,9 +30,6 @@
 	<string name="immersive_mode_status_bar">Masquer la barre système</string>
 	<string name="immersive_mode_navigation_bar">Masquer la barre de navigation</string>
 	<string name="immersive_mode_disabled">Afficher la barre d\'état et de navigation (d\'usine)</string>
-	<string name="disable_haptic_feedback">Rétroaction haptique</string>
-	<string name="disable_haptic_feedback_yes">Désactiver</string>
-	<string name="disable_haptic_feedback_no">Suivre les paramètres du système (d\'usine)</string>
 	<string name="category_app_drawer">Liste d\'apps</string>
 	<string name="open_list_with">Ouvert par</string>
 	<string name="open_list_with_tap">Tapez sur l\'écran d\'accueil (d\'usine)</string>
@@ -69,6 +66,9 @@
 	<string name="icon_pack">Pack d\'icônes</string>
 	<string name="icon_pack_default">Système (d\'usine)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">App cachées</font></big>\nListe des applications cachées</string>
+	<string name="disable_haptic_feedback">Rétroaction haptique</string>
+	<string name="disable_haptic_feedback_yes">Désactiver</string>
+	<string name="disable_haptic_feedback_no">Suivre les paramètres du système (d\'usine)</string>
 	<string name="use_light_dialogs">Inverser les couleurs du dialogue</string>
 	<string name="use_light_dialogs_yes">Oui</string>
 	<string name="use_light_dialogs_no">Non (d\'usine)</string>
