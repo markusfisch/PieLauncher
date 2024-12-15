@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.22.0
+* Add options to hide status and/or navigation bar
+* Add an option to disable haptic feedback
+* Update Dutch translation
+* Update Russian translation
+
 ## 1.21.1
 * Add an option to prevent home screen reuse
 * Fix immersive mode on devices with a notch

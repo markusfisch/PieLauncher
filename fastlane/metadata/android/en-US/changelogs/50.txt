@@ -1,0 +1,5 @@
+* Add options to hide status and/or navigation bar
+* Add an option to disable haptic feedback
+* Update Dutch translation
+* Update Russian translation
+
