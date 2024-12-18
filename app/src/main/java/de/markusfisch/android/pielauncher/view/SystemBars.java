@@ -1,10 +1,12 @@
 package de.markusfisch.android.pielauncher.view;
 
 import android.annotation.TargetApi;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import de.markusfisch.android.pielauncher.preference.Preferences;
@@ -83,14 +85,28 @@ public class SystemBars {
 			return;
 		}
 		view.setOnApplyWindowInsetsListener((v, insets) -> {
-			if (insets.hasSystemWindowInsets()) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				Insets systemBarsInsets = insets.getInsets(
+						WindowInsets.Type.systemBars());
 				listener.onApplyInsets(
-						insets.getSystemWindowInsetLeft(),
-						insets.getSystemWindowInsetTop(),
-						insets.getSystemWindowInsetRight(),
-						insets.getSystemWindowInsetBottom());
+						systemBarsInsets.left,
+						systemBarsInsets.top,
+						systemBarsInsets.right,
+						systemBarsInsets.bottom);
+				return insets;
+			} else {
+				//noinspection deprecation
+				if (insets.hasSystemWindowInsets()) {
+					//noinspection deprecation
+					listener.onApplyInsets(
+							insets.getSystemWindowInsetLeft(),
+							insets.getSystemWindowInsetTop(),
+							insets.getSystemWindowInsetRight(),
+							insets.getSystemWindowInsetBottom());
+				}
+				//noinspection deprecation
+				return insets.consumeSystemWindowInsets();
 			}
-			return insets.consumeSystemWindowInsets();
 		});
 	}
 
