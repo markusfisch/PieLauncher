@@ -50,16 +50,14 @@ public class AppPieView extends View {
 		void onScrollList(int y, boolean isScrolling);
 	}
 
-	private static final int HAPTIC_FEEDBACK_CONFIRM =
+	private static final int HAPTIC_FEEDBACK_DOWN =
 			Build.VERSION.SDK_INT < Build.VERSION_CODES.M
 					? HapticFeedbackConstants.KEYBOARD_TAP
-					: Build.VERSION.SDK_INT < Build.VERSION_CODES.R
-					? HapticFeedbackConstants.CONTEXT_CLICK
+					: HapticFeedbackConstants.CONTEXT_CLICK;
+	private static final int HAPTIC_FEEDBACK_CONFIRM =
+			Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+					? HAPTIC_FEEDBACK_DOWN
 					: HapticFeedbackConstants.CONFIRM;
-	private static final int HAPTIC_FEEDBACK_DOWN =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-					? HapticFeedbackConstants.KEYBOARD_TAP
-					: HapticFeedbackConstants.CLOCK_TICK;
 	private static final int HAPTIC_FEEDBACK_CHOICE =
 			Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 					? HAPTIC_FEEDBACK_DOWN
