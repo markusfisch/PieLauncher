@@ -62,8 +62,9 @@ public class IconPack {
 
 		public void loadComponentAndDrawableNames(
 				LinkedHashMap<String, String> map) {
+			InputStream is = null;
 			try {
-				InputStream is = resources.getAssets().open("appfilter.xml");
+				is = resources.getAssets().open("appfilter.xml");
 				XmlPullParser parser = Xml.newPullParser();
 				parser.setInput(new InputStreamReader(is));
 				for (int eventType = parser.getEventType();
@@ -83,6 +84,14 @@ public class IconPack {
 				}
 			} catch (XmlPullParserException | IOException e) {
 				// Ignore.
+			} finally {
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						// Ignore.
+					}
+				}
 			}
 		}
 	}
