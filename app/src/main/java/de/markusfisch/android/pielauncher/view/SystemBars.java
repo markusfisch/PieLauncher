@@ -32,8 +32,11 @@ public class SystemBars {
 		window.setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		setSystemUIVisibility(window, immersive);
-		window.setStatusBarColor(0);
-		window.setNavigationBarColor(0);
+		// System bars can no longer be colored from VANILLA_ICE_CREAM on.
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+			window.setStatusBarColor(0);
+			window.setNavigationBarColor(0);
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -73,7 +76,10 @@ public class SystemBars {
 
 	public static void setNavigationBarColor(Window window, int color) {
 		if (window == null ||
-				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+				// setNavigationBarColor() was added in LOLLIPOP.
+				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ||
+				// setNavigationBarColor() has no effect over UPSIDE_DOWN_CAKE.
+				Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
 			return;
 		}
 		window.setNavigationBarColor(color);
