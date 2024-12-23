@@ -85,6 +85,7 @@
 	<string name="show_app_info">App-info weergeven</string>
 	<string name="no_hidden_apps">Geen verborgen apps</string>
 	<string name="unhide_app">App weergeven</string>
+	<string name="start_app">Start</string>
 	<string name="want_to_unhide_app">Wil je deze app weer weergeven?</string>
 	<string name="want_to_hide_app">Wil je deze app verbergen?</string>
 	<string name="want_to_restore_icon">Pictogram-toewijzing verwijderen?</string>

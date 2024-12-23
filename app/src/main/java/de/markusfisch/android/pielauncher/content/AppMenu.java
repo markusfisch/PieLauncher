@@ -88,6 +88,15 @@ public class AppMenu extends CanvasPieMenu {
 	private String drawerPackageName;
 	private boolean indexing = false;
 
+	public static void launchPackage(Context context, String packageName) {
+		PackageManager pm = context.getPackageManager();
+		Intent intent;
+		if (pm != null && (intent = pm.getLaunchIntentForPackage(
+				packageName)) != null) {
+			context.startActivity(intent);
+		}
+	}
+
 	public AppIcon getSelectedApp() {
 		int index = getSelectedIcon();
 		return index > -1 && index < icons.size()
@@ -123,12 +132,7 @@ public class AppMenu extends CanvasPieMenu {
 				// of exceptions this app can do nothing about.
 			}
 		} else {
-			PackageManager pm = context.getPackageManager();
-			Intent intent;
-			if (pm != null && (intent = pm.getLaunchIntentForPackage(
-					icon.componentName.getPackageName())) != null) {
-				context.startActivity(intent);
-			}
+			launchPackage(context, icon.componentName.getPackageName());
 		}
 	}
 

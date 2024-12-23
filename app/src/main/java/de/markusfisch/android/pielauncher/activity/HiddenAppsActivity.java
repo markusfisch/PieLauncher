@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.HiddenAppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.view.SystemBars;
@@ -107,6 +108,8 @@ public class HiddenAppsActivity extends Activity {
 				})
 				.setNegativeButton(android.R.string.cancel, (d, w) -> {
 				})
+				.setNeutralButton(R.string.start_app, (d, w) ->
+						AppMenu.launchPackage(this, packageName))
 				.show();
 	}
 

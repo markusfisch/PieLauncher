@@ -85,6 +85,7 @@
 	<string name="show_app_info">Afficher les infos de l\'app</string>
 	<string name="no_hidden_apps">Pas encore d\'applications cachées</string>
 	<string name="unhide_app">Désactiver l\'app</string>
+	<string name="start_app">Démarrer</string>
 	<string name="want_to_unhide_app">Voulez-vous montrer cette application à nouveau ?</string>
 	<string name="want_to_hide_app">Vous voulez cacher cette app ?</string>
 	<string name="want_to_restore_icon">Supprimer l\'association d\'icônes ?</string>
