@@ -1,6 +1,5 @@
 <merge
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools">
+	xmlns:android="http://schemas.android.com/apk/res/android">
 	<ListView
 		android:id="@+id/apps"
 		android:background="@color/bg_ui"
