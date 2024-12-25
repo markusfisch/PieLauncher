@@ -416,8 +416,6 @@ public class AppPieView extends View {
 			public boolean onTouch(View v, MotionEvent event) {
 				touch.set(Math.round(event.getX()), Math.round(event.getY()));
 				switch (event.getActionMasked()) {
-					default:
-						break;
 					case MotionEvent.ACTION_POINTER_DOWN:
 						if (mode == MODE_PIE) {
 							startSpin(event);
@@ -501,6 +499,8 @@ public class AppPieView extends View {
 						releaseIcon();
 						invalidate();
 						break;
+					default:
+						break;
 				}
 				return true;
 			}
@@ -540,14 +540,14 @@ public class AppPieView extends View {
 
 			private boolean inDeadZone() {
 				switch (prefs.getDeadZone()) {
-					default:
-						return false;
 					case Preferences.DEAD_ZONE_TOP:
 						return inTopDeadZone();
 					case Preferences.DEAD_ZONE_BOTTOM:
 						return inBottomDeadZone();
 					case Preferences.DEAD_ZONE_BOTH:
 						return inTopDeadZone() || inBottomDeadZone();
+					default:
+						return false;
 				}
 			}
 
@@ -1007,10 +1007,6 @@ public class AppPieView extends View {
 		boolean openList = false;
 		AppMenu.AppIcon appIcon = PieLauncherApp.appMenu.getSelectedApp();
 		switch (prefs.openListWith()) {
-			default:
-			case Preferences.OPEN_LIST_WITH_TAP:
-				openList = wasTap;
-				break;
 			case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
 				openList = wasTap || appIcon == null;
 				break;
@@ -1023,6 +1019,10 @@ public class AppPieView extends View {
 				break;
 			case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
 				openList = wasDoubleTap;
+				break;
+			case Preferences.OPEN_LIST_WITH_TAP:
+			default:
+				openList = wasTap;
 				break;
 		}
 		if (openList) {
@@ -1194,14 +1194,14 @@ public class AppPieView extends View {
 
 	private static int getDrawableForTwist(float twist) {
 		switch (getTwistSegment(twist)) {
-			default:
-				return R.drawable.ic_twist_0;
 			case 1:
 				return R.drawable.ic_twist_90;
 			case 2:
 				return R.drawable.ic_twist_180;
 			case 3:
 				return R.drawable.ic_twist_270;
+			default:
+				return R.drawable.ic_twist_0;
 		}
 	}
 
@@ -1235,23 +1235,23 @@ public class AppPieView extends View {
 
 	private int getNextRadius(int r) {
 		switch (getRadiusSegment(r)) {
-			default:
-				return medRadius;
 			case 1:
 				return maxRadius;
 			case 2:
 				return minRadius;
+			default:
+				return medRadius;
 		}
 	}
 
 	private int getDrawableForRadius(int r) {
 		switch (getRadiusSegment(r)) {
-			default:
-				return R.drawable.ic_radius_small;
 			case 1:
 				return R.drawable.ic_radius_medium;
 			case 2:
 				return R.drawable.ic_radius_large;
+			default:
+				return R.drawable.ic_radius_small;
 		}
 	}
 
@@ -1409,12 +1409,12 @@ public class AppPieView extends View {
 
 	private boolean showAppNames() {
 		switch (prefs.showAppNames()) {
-			default:
-				return false;
 			case Preferences.SHOW_APP_NAMES_ALWAYS:
 				return true;
 			case Preferences.SHOW_APP_NAMES_SEARCH:
 				return appListIsFiltered;
+			default:
+				return false;
 		}
 	}
 
