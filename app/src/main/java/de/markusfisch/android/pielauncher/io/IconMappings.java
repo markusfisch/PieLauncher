@@ -18,11 +18,12 @@ public class IconMappings {
 	private static final String MAPPINGS_FILE = "mappings";
 
 	public static void restore(Context context,
+			String packageName,
 			HashMap<String, IconPack.PackAndDrawable> mappings) {
 		mappings.clear();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					context.openFileInput(MAPPINGS_FILE)));
+					context.openFileInput(getMappingsFile(packageName))));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(SEPARATOR);
@@ -41,10 +42,11 @@ public class IconMappings {
 	}
 
 	public static void store(Context context,
+			String packageName,
 			HashMap<String, IconPack.PackAndDrawable> mappings) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					context.openFileOutput(MAPPINGS_FILE,
+					context.openFileOutput(getMappingsFile(packageName),
 							Context.MODE_PRIVATE)));
 			for (Map.Entry<String, IconPack.PackAndDrawable> mapping :
 					mappings.entrySet()) {
@@ -60,5 +62,15 @@ public class IconMappings {
 		} catch (IOException e) {
 			// Ignore, can't do nothing about this.
 		}
+	}
+
+	private static String getMappingsFile(String packageName) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(MAPPINGS_FILE);
+		if (packageName != null && !packageName.isEmpty()) {
+			sb.append("-");
+			sb.append(packageName);
+		}
+		return sb.toString();
 	}
 }

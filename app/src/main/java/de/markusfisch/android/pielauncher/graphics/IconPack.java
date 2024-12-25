@@ -120,14 +120,12 @@ public class IconPack {
 		return !packs.isEmpty();
 	}
 
-	public void restoreMappingsIfEmpty(Context context) {
-		if (mappings.isEmpty()) {
-			IconMappings.restore(context, mappings);
-		}
+	public void restoreMappings(Context context) {
+		IconMappings.restore(context, getSelectedIconPackageName(), mappings);
 	}
 
 	public void storeMappings(Context context) {
-		IconMappings.store(context, mappings);
+		IconMappings.store(context, getSelectedIconPackageName(), mappings);
 	}
 
 	public boolean hasMapping(String packageName) {

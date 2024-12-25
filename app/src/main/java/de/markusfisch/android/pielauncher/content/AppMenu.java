@@ -288,9 +288,9 @@ public class AppMenu extends CanvasPieMenu {
 			HashSet<String> hideApps,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		PackageManager pm = context.getPackageManager();
-		PieLauncherApp.iconPack.restoreMappingsIfEmpty(context);
 		PieLauncherApp.iconPack.selectPack(pm,
 				PieLauncherApp.getPrefs(context).getIconPack());
+		PieLauncherApp.iconPack.restoreMappings(context);
 		hideApps.add(context.getPackageName());
 		if (HAS_LAUNCHER_APP) {
 			indexProfilesApps(
