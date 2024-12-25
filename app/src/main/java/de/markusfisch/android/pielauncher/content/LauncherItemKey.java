@@ -66,6 +66,7 @@ public class LauncherItemKey {
 
 	private static boolean equals(Object a, Object b) {
 		// Objects.equals() would require minSDK 19.
+		//noinspection EqualsReplaceableByObjectsCall
 		return a == b || (a != null && a.equals(b));
 	}
 
