@@ -69,6 +69,10 @@ public class PieMenu {
 	}
 
 	public void calculate(float x, float y) {
+		calculate(x, y, 1f);
+	}
+
+	public void calculate(float x, float y, float t) {
 		selectedIcon = -1;
 
 		int numberOfIcons = icons.size();
@@ -79,7 +83,8 @@ public class PieMenu {
 		// Calculate positions and sizes.
 		int closestIcon = 0;
 		boolean cursorNearCenter = false;
-		double circumference = Math.PI * (radius * 2f);
+		double rad = radius + (1f - t) * radius * .25f;
+		double circumference = Math.PI * rad * 2f;
 		double pixelsPerRadian = TAU / circumference;
 		double centeredY = y - centerY;
 		double centeredX = x - centerX;
@@ -87,14 +92,14 @@ public class PieMenu {
 		double cellSize = TAU / numberOfIcons;
 		double closestAngle = 0;
 		double weight = 0;
-		double maxIconSize = .8f * radius;
+		double maxIconSize = .8f * rad;
 		double maxWeight;
 
 		// Calculate weight of each icon.
 		{
 			double cursorRadius = Math.sqrt(
 					centeredY * centeredY + centeredX * centeredX);
-			double infieldRadius = radius / 2f;
+			double infieldRadius = rad / 2f;
 			double factor = cursorRadius / infieldRadius;
 
 			if (cursorRadius < infieldRadius) {
@@ -164,9 +169,9 @@ public class PieMenu {
 			{
 				Icon ic = icons.get(closestIcon);
 				ic.x = centerX + (int) Math.round(
-						radius * Math.cos(angle));
+						rad * Math.cos(angle));
 				ic.y = centerY + (int) Math.round(
-						radius * Math.sin(angle));
+						rad * Math.sin(angle));
 			}
 
 			// Calculate positions of all other icons.
@@ -199,9 +204,9 @@ public class PieMenu {
 									.5f * lic.cellSize) * pixelsPerRadian);
 
 					lic.x = centerX + (int) Math.round(
-							radius * Math.cos(leftAngle));
+							rad * Math.cos(leftAngle));
 					lic.y = centerY + (int) Math.round(
-							radius * Math.sin(leftAngle));
+							rad * Math.sin(leftAngle));
 
 					// Break here when number of icons is even.
 					if (left == right) {
@@ -215,9 +220,9 @@ public class PieMenu {
 									.5f * ric.cellSize) * pixelsPerRadian);
 
 					ric.x = centerX + (int) Math.round(
-							radius * Math.cos(rightAngle));
+							rad * Math.cos(rightAngle));
 					ric.y = centerY + (int) Math.round(
-							radius * Math.sin(rightAngle));
+							rad * Math.sin(rightAngle));
 
 					previousRight = right;
 					previousLeft = left;

@@ -1512,9 +1512,7 @@ public class AppPieView extends View {
 			return false;
 		}
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
-		if (fadePie.isVisible()) {
-			PieLauncherApp.appMenu.calculate(touch.x, touch.y);
-		}
+		PieLauncherApp.appMenu.calculate(touch.x, touch.y, f);
 		PieLauncherApp.appMenu.draw(canvas);
 		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
