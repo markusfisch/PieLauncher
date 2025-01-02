@@ -54,7 +54,7 @@
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
 					android:id="@+id/dead_zone"
-					android:text="@string/dead_zone_both" />
+					android:text="@string/dead_zone_top_bottom" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
 					android:id="@+id/immersive_mode"

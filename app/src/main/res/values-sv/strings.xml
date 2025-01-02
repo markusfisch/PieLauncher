@@ -24,7 +24,8 @@
 	<string name="dead_zone_none">Ingen begränsning</string>
 	<string name="dead_zone_top">Högst upp</string>
 	<string name="dead_zone_bottom">Längst ner</string>
-	<string name="dead_zone_both">Högst upp och längst ner (standard)</string>
+	<string name="dead_zone_top_bottom">Högst upp och längst ner (standard)</string>
+	<string name="dead_zone_all">Runt alla skärmkanter</string>
 	<string name="immersive_mode">Immersivt läge</string>
 	<string name="immersive_mode_full">Dölj status- och navigeringsfält</string>
 	<string name="immersive_mode_status_bar">Dölj statusfältet</string>

@@ -24,7 +24,8 @@
 	<string name="dead_zone_none">No restriction</string>
 	<string name="dead_zone_top">At the top</string>
 	<string name="dead_zone_bottom">At the bottom</string>
-	<string name="dead_zone_both">At the top and bottom (Default)</string>
+	<string name="dead_zone_top_bottom">At the top and bottom (Default)</string>
+	<string name="dead_zone_all">Around all edges</string>
 	<string name="immersive_mode">Immersive mode</string>
 	<string name="immersive_mode_full">Hide status and navigation bar</string>
 	<string name="immersive_mode_status_bar">Hide system bar only</string>

@@ -24,7 +24,8 @@
 	<string name="dead_zone_none">Aucune restriction</string>
 	<string name="dead_zone_top">En haut de l\'écran</string>
 	<string name="dead_zone_bottom">En bas de l\'écran</string>
-	<string name="dead_zone_both">En haut et en bas de l\'écran (d\'usine)</string>
+	<string name="dead_zone_top_bottom">En haut et en bas de l\'écran (d\'usine)</string>
+	<string name="dead_zone_all">Sur tous les bords de l\'écran</string>
 	<string name="immersive_mode">Mode immersif</string>
 	<string name="immersive_mode_full">Masquer la barre d\'état et de navigation</string>
 	<string name="immersive_mode_status_bar">Masquer la barre système</string>

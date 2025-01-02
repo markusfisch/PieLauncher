@@ -24,7 +24,8 @@
 	<string name="dead_zone_none">Geen beperking</string>
 	<string name="dead_zone_top">Bovenaan</string>
 	<string name="dead_zone_bottom">Onderaan</string>
-	<string name="dead_zone_both">Boven- en onderaan (standaard)</string>
+	<string name="dead_zone_top_bottom">Boven- en onderaan (standaard)</string>
+	<string name="dead_zone_all">Rond alle schermranden</string>
 	<string name="immersive_mode">Immersieve modus</string>
 	<string name="immersive_mode_full">Status- en navigatiebalk verbergen</string>
 	<string name="immersive_mode_status_bar">Statusbalk verbergen</string>

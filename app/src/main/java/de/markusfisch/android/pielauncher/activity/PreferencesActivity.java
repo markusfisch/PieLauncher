@@ -409,7 +409,9 @@ public class PreferencesActivity extends Activity {
 		map.put(Preferences.DEAD_ZONE_NONE, R.string.dead_zone_none);
 		map.put(Preferences.DEAD_ZONE_TOP, R.string.dead_zone_top);
 		map.put(Preferences.DEAD_ZONE_BOTTOM, R.string.dead_zone_bottom);
-		map.put(Preferences.DEAD_ZONE_BOTH, R.string.dead_zone_both);
+		map.put(Preferences.DEAD_ZONE_TOP_BOTTOM,
+				R.string.dead_zone_top_bottom);
+		map.put(Preferences.DEAD_ZONE_ALL, R.string.dead_zone_all);
 		return map;
 	}
 

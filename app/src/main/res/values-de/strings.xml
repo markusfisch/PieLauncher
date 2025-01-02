@@ -24,7 +24,8 @@
 	<string name="dead_zone_none">Keine Einschränkung</string>
 	<string name="dead_zone_top">Nur Oben</string>
 	<string name="dead_zone_bottom">Nur Unten</string>
-	<string name="dead_zone_both">Oben und unten (Standard)</string>
+	<string name="dead_zone_top_bottom">Oben und unten (Standard)</string>
+	<string name="dead_zone_all">Um alle Bildschirmkanten</string>
 	<string name="immersive_mode">Immersiver Modus</string>
 	<string name="immersive_mode_full">Status- und Navigationsleiste ausblenden</string>
 	<string name="immersive_mode_status_bar">Statusleiste ausblenden</string>

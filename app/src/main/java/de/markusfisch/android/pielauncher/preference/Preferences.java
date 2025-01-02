@@ -10,7 +10,8 @@ public class Preferences {
 	public static final int DEAD_ZONE_NONE = 0;
 	public static final int DEAD_ZONE_TOP = 1;
 	public static final int DEAD_ZONE_BOTTOM = 2;
-	public static final int DEAD_ZONE_BOTH = 3;
+	public static final int DEAD_ZONE_TOP_BOTTOM = 3;
+	public static final int DEAD_ZONE_ALL = 4;
 	public static final int OPEN_LIST_WITH_TAP = 0;
 	public static final int OPEN_LIST_WITH_ANY_TOUCH = 1;
 	public static final int OPEN_LIST_WITH_ICON = 2;
@@ -65,7 +66,7 @@ public class Preferences {
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean darkenBackground = false;
 	private boolean blurBackground = false;
-	private int deadZone = DEAD_ZONE_BOTH;
+	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;
 	private boolean disableHapticFeedback = false;

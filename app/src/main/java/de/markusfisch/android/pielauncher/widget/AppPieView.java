@@ -127,6 +127,8 @@ public class AppPieView extends View {
 	private int actionSizeSq;
 	private int deadZoneTop;
 	private int deadZoneBottom;
+	private int deadZoneLeft;
+	private int deadZoneRight;
 	private int minRadius;
 	private int medRadius;
 	private int maxRadius;
@@ -544,8 +546,11 @@ public class AppPieView extends View {
 						return inTopDeadZone();
 					case Preferences.DEAD_ZONE_BOTTOM:
 						return inBottomDeadZone();
-					case Preferences.DEAD_ZONE_BOTH:
+					case Preferences.DEAD_ZONE_TOP_BOTTOM:
 						return inTopDeadZone() || inBottomDeadZone();
+					case Preferences.DEAD_ZONE_ALL:
+						return inTopDeadZone() || inBottomDeadZone() ||
+								inLeftOrRightDeadZone();
 					default:
 						return false;
 				}
@@ -557,6 +562,10 @@ public class AppPieView extends View {
 
 			private boolean inBottomDeadZone() {
 				return touch.y > deadZoneBottom;
+			}
+
+			private boolean inLeftOrRightDeadZone() {
+				return touch.x < deadZoneLeft || touch.x > deadZoneRight;
 			}
 
 			private void initScroll(MotionEvent event) {
@@ -823,6 +832,8 @@ public class AppPieView extends View {
 
 		deadZoneTop = Math.min(height / 10, Math.round(64f * dp));
 		deadZoneBottom = height - deadZoneTop;
+		deadZoneLeft = Math.min(width / 10, Math.round(48f * dp));
+		deadZoneRight = width - deadZoneLeft;
 
 		layoutEditorControls(height > width);
 	}
