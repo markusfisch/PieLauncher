@@ -167,6 +167,11 @@ public class PreferencesActivity extends Activity {
 		} else {
 			findViewById(R.id.immersive_mode).setVisibility(View.GONE);
 		}
+		initPreference(R.id.animate_in_out,
+				R.string.animate_in_out,
+				PreferencesActivity::getAnimateInOutOptions,
+				() -> prefs.animateInOut(),
+				(value) -> prefs.setAnimateInOut(value));
 		initPreference(R.id.open_list_with,
 				R.string.open_list_with,
 				PreferencesActivity::getOpenListWithOptions,
@@ -418,6 +423,13 @@ public class PreferencesActivity extends Activity {
 				R.string.immersive_mode_navigation_bar);
 		map.put(Preferences.IMMERSIVE_MODE_FULL,
 				R.string.immersive_mode_full);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getAnimateInOutOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.animate_in_out_yes);
+		map.put(Boolean.FALSE, R.string.animate_in_out_no);
 		return map;
 	}
 

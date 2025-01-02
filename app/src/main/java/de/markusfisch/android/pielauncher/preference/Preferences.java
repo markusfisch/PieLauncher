@@ -42,6 +42,7 @@ public class Preferences {
 	private static final String BLUR_BACKGROUND = "blur_background";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String IMMERSIVE_MODE = "immersive_mode_option";
+	private static final String ANIMATE_IN_OUT = "animate_in_out";
 	private static final String OPEN_LIST_WITH = "open_list_with";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
@@ -66,6 +67,7 @@ public class Preferences {
 	private boolean blurBackground = false;
 	private int deadZone = DEAD_ZONE_BOTH;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
+	private boolean animateInOut = true;
 	private boolean disableHapticFeedback = false;
 	private int openListWith = OPEN_LIST_WITH_TAP;
 	private boolean displayKeyboard = true;
@@ -106,6 +108,7 @@ public class Preferences {
 				blurBackground);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
+		animateInOut = preferences.getBoolean(ANIMATE_IN_OUT, animateInOut);
 		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
@@ -205,6 +208,15 @@ public class Preferences {
 	public void setImmersiveMode(int immersiveMode) {
 		this.immersiveMode = immersiveMode;
 		put(IMMERSIVE_MODE, immersiveMode).commit();
+	}
+
+	public boolean animateInOut() {
+		return animateInOut;
+	}
+
+	public void setAnimateInOut(boolean animateInOut) {
+		this.animateInOut = animateInOut;
+		put(ANIMATE_IN_OUT, animateInOut).apply();
 	}
 
 	public int openListWith() {

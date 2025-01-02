@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Statusbalk verbergen</string>
 	<string name="immersive_mode_navigation_bar">Verberg navigatiebalk</string>
 	<string name="immersive_mode_disabled">Status- en navigatiebalk weergeven (standaard)</string>
+	<string name="animate_in_out">Animeer verschijnen/verdwijnen</string>
+	<string name="animate_in_out_yes">Ja (standaard)</string>
+	<string name="animate_in_out_no">Nee</string>
 	<string name="category_app_drawer">App-lade</string>
 	<string name="open_list_with">Openen met</string>
 	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>

@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Masquer la barre système</string>
 	<string name="immersive_mode_navigation_bar">Masquer la barre de navigation</string>
 	<string name="immersive_mode_disabled">Afficher la barre d\'état et de navigation (d\'usine)</string>
+	<string name="animate_in_out">Animer l\'apparition/disparition</string>
+	<string name="animate_in_out_yes">Oui (d\'usine)</string>
+	<string name="animate_in_out_no">Non</string>
 	<string name="category_app_drawer">Liste d\'apps</string>
 	<string name="open_list_with">Ouvert par</string>
 	<string name="open_list_with_tap">Tapez sur l\'écran d\'accueil (d\'usine)</string>

@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Приховати рядок стану</string>
 	<string name="immersive_mode_navigation_bar">Приховати панель навігації</string>
 	<string name="immersive_mode_disabled">Показати статус і панель навігації (за замовчуванням)</string>
+	<string name="animate_in_out">Анімаційна поява/зникнення</string>
+	<string name="animate_in_out_yes">Так (за замовчуванням)</string>
+	<string name="animate_in_out_no">Ні</string>
 	<string name="category_app_drawer">Список додатків</string>
 	<string name="open_list_with">Відкривається через</string>
 	<string name="open_list_with_tap">Натисніть на головному екрані (за замовчуванням)</string>

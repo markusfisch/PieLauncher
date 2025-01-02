@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">隐藏状态栏</string>
 	<string name="immersive_mode_navigation_bar">隐藏导航栏</string>
 	<string name="immersive_mode_disabled">显示状态栏和导航栏 (默认)</string>
+	<string name="animate_in_out">动画外观/消失</string>
+	<string name="animate_in_out_yes">是 (默认)</string>
+	<string name="animate_in_out_no">没有</string>
 	<string name="category_app_drawer">应用程序列表</string>
 	<string name="open_list_with">通过</string>
 	<string name="open_list_with_tap">点击主屏幕 (默认)</string>

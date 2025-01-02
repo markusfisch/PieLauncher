@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Dölj statusfältet</string>
 	<string name="immersive_mode_navigation_bar">Dölj navigeringsfältet</string>
 	<string name="immersive_mode_disabled">Visa status- och navigeringsfält (standard)</string>
+	<string name="animate_in_out">Animera utseende/försvinnande</string>
+	<string name="animate_in_out_yes">Ja (standard)</string>
+	<string name="animate_in_out_no">Nej</string>
 	<string name="category_app_drawer">Applåda</string>
 	<string name="open_list_with">Öppnas med</string>
 	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>

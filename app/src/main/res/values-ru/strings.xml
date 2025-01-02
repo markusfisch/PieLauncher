@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Скрыть строку состояния</string>
 	<string name="immersive_mode_navigation_bar">Скрыть панель навигации</string>
 	<string name="immersive_mode_disabled">Показывать системную и навигационную панели (Стандартно)</string>
+	<string name="animate_in_out">Анимировать появление/исчезновение</string>
+	<string name="animate_in_out_yes">Да (Стандартно)</string>
+	<string name="animate_in_out_no">Нет</string>
 	<string name="category_app_drawer">Список приложений</string>
 	<string name="open_list_with">Открываться через</string>
 	<string name="open_list_with_tap">Нажатие на главный экран (Стандартно)</string>

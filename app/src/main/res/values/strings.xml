@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Hide system bar only</string>
 	<string name="immersive_mode_navigation_bar">Hide navigation bar only</string>
 	<string name="immersive_mode_disabled">Show status and navigation bar (Default)</string>
+	<string name="animate_in_out">Animate appearance/disappearance</string>
+	<string name="animate_in_out_yes">Yes (Default)</string>
+	<string name="animate_in_out_no">No</string>
 	<string name="disable_haptic_feedback">Haptic feedback</string>
 	<string name="disable_haptic_feedback_yes">Disable</string>
 	<string name="disable_haptic_feedback_no">Follow system settings (Default)</string>

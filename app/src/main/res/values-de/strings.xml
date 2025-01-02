@@ -30,6 +30,9 @@
 	<string name="immersive_mode_status_bar">Statusleiste ausblenden</string>
 	<string name="immersive_mode_navigation_bar">Navigationsleiste ausblenden</string>
 	<string name="immersive_mode_disabled">Status- und Navigationsleiste anzeigen (Standard)</string>
+	<string name="animate_in_out">Erscheinen/Verschwinden animieren</string>
+	<string name="animate_in_out_yes">Ja (Standard)</string>
+	<string name="animate_in_out_no">Nein</string>
 	<string name="category_app_drawer">App Liste</string>
 	<string name="open_list_with">Öffnet durch</string>
 	<string name="open_list_with_tap">Tipp auf den Startbildschirm (Standard)</string>
