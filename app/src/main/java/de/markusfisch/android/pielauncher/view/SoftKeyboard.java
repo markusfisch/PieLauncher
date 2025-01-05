@@ -15,10 +15,18 @@ public class SoftKeyboard {
 
 	public void showFor(EditText editText) {
 		editText.requestFocus();
-		imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+		try {
+			imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+		} catch (Exception e) {
+			// Catch DeadSystemException, which is only thrown at API > 24.
+		}
 	}
 
 	public void hideFrom(View view) {
-		imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		try {
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		} catch (Exception e) {
+			// Catch DeadSystemException, which is only thrown at API > 24.
+		}
 	}
 }
