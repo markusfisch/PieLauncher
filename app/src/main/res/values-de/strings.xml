@@ -70,9 +70,10 @@
 	<string name="icon_pack">Icon Pack</string>
 	<string name="icon_pack_default">System (Standard)</string>
 	<string name="show_hidden_apps"><big><font color="#ffffff">Versteckte Apps</font></big>\nListe der nicht sichtbaren Apps</string>
-	<string name="disable_haptic_feedback">Haptische Rückmeldung</string>
-	<string name="disable_haptic_feedback_yes">Deaktivieren</string>
-	<string name="disable_haptic_feedback_no">Systemeinstellungen folgen (Standard)</string>
+	<string name="haptic_feedback">Haptische Rückmeldung</string>
+	<string name="haptic_feedback_follow_system">Systemeinstellungen folgen (Standard)</string>
+	<string name="haptic_feedback_disable_launch">Nur Startrückmeldung deaktivieren</string>
+	<string name="haptic_feedback_disable_all">Deaktivieren</string>
 	<string name="use_light_dialogs">Dialogfarben umkehren</string>
 	<string name="use_light_dialogs_yes">Ja</string>
 	<string name="use_light_dialogs_no">Nein (Standard)</string>

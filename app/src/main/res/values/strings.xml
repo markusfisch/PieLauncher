@@ -34,9 +34,10 @@
 	<string name="animate_in_out">Animate appearance/disappearance</string>
 	<string name="animate_in_out_yes">Yes (Default)</string>
 	<string name="animate_in_out_no">No</string>
-	<string name="disable_haptic_feedback">Haptic feedback</string>
-	<string name="disable_haptic_feedback_yes">Disable</string>
-	<string name="disable_haptic_feedback_no">Follow system settings (Default)</string>
+	<string name="haptic_feedback">Haptic feedback</string>
+	<string name="haptic_feedback_follow_system">Follow system settings (Default)</string>
+	<string name="haptic_feedback_disable_launch">Disable launch feedback only</string>
+	<string name="haptic_feedback_disable_all">Disable</string>
 	<string name="category_app_drawer">App Drawer</string>
 	<string name="open_list_with">Opens with</string>
 	<string name="open_list_with_tap">A tap on the home screen (Default)</string>

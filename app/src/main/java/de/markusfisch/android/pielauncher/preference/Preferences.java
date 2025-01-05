@@ -33,6 +33,9 @@ public class Preferences {
 	public static final int IMMERSIVE_MODE_STATUS_BAR = 1;
 	public static final int IMMERSIVE_MODE_NAVIGATION_BAR = 2;
 	public static final int IMMERSIVE_MODE_FULL = 3;
+	public static final int HAPTIC_FEEDBACK_FOLLOW_SYSTEM = 0;
+	public static final int HAPTIC_FEEDBACK_DISABLE_LAUNCH = 1;
+	public static final int HAPTIC_FEEDBACK_DISABLE_ALL = 2;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -53,7 +56,7 @@ public class Preferences {
 	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
 	private static final String ICON_PACK = "icon_pack";
-	private static final String DISABLE_HAPTIC_FEEDBACK = "disable_haptic_feedback";
+	private static final String HAPTIC_FEEDBACK = "haptic_feedback";
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
 	private static final String FORCE_RELAUNCH = "force_relaunch";
 
@@ -69,7 +72,7 @@ public class Preferences {
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;
-	private boolean disableHapticFeedback = false;
+	private int hapticFeedback = HAPTIC_FEEDBACK_FOLLOW_SYSTEM;
 	private int openListWith = OPEN_LIST_WITH_TAP;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
@@ -124,8 +127,7 @@ public class Preferences {
 		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
-		disableHapticFeedback = preferences.getBoolean(DISABLE_HAPTIC_FEEDBACK,
-				disableHapticFeedback);
+		hapticFeedback = preferences.getInt(HAPTIC_FEEDBACK, hapticFeedback);
 		useLightDialogs = preferences.getBoolean(USE_LIGHT_DIALOGS,
 				isEReader(context));
 		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
@@ -301,13 +303,13 @@ public class Preferences {
 		put(ICON_PACK, iconPack).apply();
 	}
 
-	public boolean disableHapticFeedback() {
-		return disableHapticFeedback;
+	public int hapticFeedback() {
+		return hapticFeedback;
 	}
 
-	public void setDisableHapticFeedback(boolean disableHapticFeedback) {
-		this.disableHapticFeedback = disableHapticFeedback;
-		put(DISABLE_HAPTIC_FEEDBACK, disableHapticFeedback).commit();
+	public void setHapticFeedback(int hapticFeedback) {
+		this.hapticFeedback = hapticFeedback;
+		put(HAPTIC_FEEDBACK, hapticFeedback).commit();
 	}
 
 	public boolean useLightDialogs() {

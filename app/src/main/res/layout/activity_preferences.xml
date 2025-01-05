@@ -111,8 +111,8 @@
 					android:text="@string/show_hidden_apps" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
-					android:id="@+id/disable_haptic_feedback"
-					android:text="@string/disable_haptic_feedback_no" />
+					android:id="@+id/haptic_feedback"
+					android:text="@string/haptic_feedback_follow_system" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
 					android:id="@+id/use_light_dialogs"

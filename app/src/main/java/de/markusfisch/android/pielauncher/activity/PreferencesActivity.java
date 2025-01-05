@@ -225,11 +225,11 @@ public class PreferencesActivity extends Activity {
 				},
 				() -> PieLauncherApp.iconPack.updatePacks(
 						getPackageManager()));
-		initPreference(R.id.disable_haptic_feedback,
-				R.string.disable_haptic_feedback,
-				PreferencesActivity::getDisableHapticFeedbackOptions,
-				() -> prefs.disableHapticFeedback(),
-				(value) -> prefs.setDisableHapticFeedback(value));
+		initPreference(R.id.haptic_feedback,
+				R.string.haptic_feedback,
+				PreferencesActivity::getHapticFeedbackOptions,
+				() -> prefs.hapticFeedback(),
+				(value) -> prefs.setHapticFeedback(value));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			initPreference(R.id.use_light_dialogs,
 					R.string.use_light_dialogs,
@@ -518,10 +518,14 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getDisableHapticFeedbackOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.disable_haptic_feedback_yes);
-		map.put(Boolean.FALSE, R.string.disable_haptic_feedback_no);
+	private static Map<Integer, Integer> getHapticFeedbackOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.HAPTIC_FEEDBACK_FOLLOW_SYSTEM,
+				R.string.haptic_feedback_follow_system);
+		map.put(Preferences.HAPTIC_FEEDBACK_DISABLE_LAUNCH,
+				R.string.haptic_feedback_disable_launch);
+		map.put(Preferences.HAPTIC_FEEDBACK_DISABLE_ALL,
+				R.string.haptic_feedback_disable_all);
 		return map;
 	}
 

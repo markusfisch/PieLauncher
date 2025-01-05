@@ -1604,8 +1604,16 @@ public class AppPieView extends View {
 	}
 
 	private void performHapticFeedbackIfAllowed(int feedback) {
-		if (!prefs.disableHapticFeedback()) {
-			performHapticFeedback(feedback);
+		switch (prefs.hapticFeedback()) {
+			case Preferences.HAPTIC_FEEDBACK_DISABLE_ALL:
+				return;
+			case Preferences.HAPTIC_FEEDBACK_DISABLE_LAUNCH:
+				if (feedback == HAPTIC_FEEDBACK_CONFIRM) {
+					return;
+				}
+				// Fall through.
+			default:
+				performHapticFeedback(feedback);
 		}
 	}
 
