@@ -437,9 +437,6 @@ public class AppPieView extends View {
 						}
 						break;
 					case MotionEvent.ACTION_DOWN:
-						if (inDeadZone()) {
-							return false;
-						}
 						if (cancelPerformAction()) {
 							// Ignore additional ACTION_DOWN's when there
 							// is a pending action.
@@ -449,6 +446,9 @@ public class AppPieView extends View {
 						long eventTime = event.getEventTime();
 						switch (mode) {
 							case MODE_PIE:
+								if (inDeadZone()) {
+									return false;
+								}
 								setCenter(touch.x, touch.y);
 								fadePie.fadeIn(eventTime);
 								performHapticFeedbackIfAllowed(
