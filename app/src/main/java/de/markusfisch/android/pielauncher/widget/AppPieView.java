@@ -1524,7 +1524,7 @@ public class AppPieView extends View {
 		}
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		PieLauncherApp.appMenu.calculate(touch.x, touch.y,
-				prefs.animateInOut() ? f : 1f);
+				prefs.animateInOut() ? easeSlowerOut(f) : 1f);
 		PieLauncherApp.appMenu.draw(canvas);
 		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
