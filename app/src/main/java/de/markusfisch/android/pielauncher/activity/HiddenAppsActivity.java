@@ -76,7 +76,7 @@ public class HiddenAppsActivity extends Activity {
 					View child = view.getChildAt(firstVisibleItem);
 					y = child.getTop() - view.getPaddingTop();
 				}
-				toolbar.setBackgroundColor(toolbarBackground.getColor(y));
+				toolbar.setBackgroundColor(toolbarBackground.getColorForY(y));
 			}
 		});
 		SystemBars.addPaddingFromWindowInsets(toolbar, listView);

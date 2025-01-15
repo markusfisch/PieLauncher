@@ -100,7 +100,7 @@ public class PreferencesActivity extends Activity {
 		Window window = getWindow();
 		ScrollWithListenerView scrollView = findViewById(R.id.content);
 		scrollView.setOnScrollPositionListener((int y, boolean scrollable) -> {
-			toolbar.setBackgroundColor(toolbarBackground.getColor(y));
+			toolbar.setBackgroundColor(toolbarBackground.getColorForY(y));
 			SystemBars.setNavigationBarColor(window,
 					scrollable ? toolbarBackground.backgroundColor : 0);
 		});

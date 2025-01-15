@@ -139,7 +139,7 @@ public class PickIconActivity extends Activity {
 						kb.hideFrom(searchInput);
 					}
 				}
-				toolbar.setBackgroundColor(toolbarBackground.getColor(y));
+				toolbar.setBackgroundColor(toolbarBackground.getColorForY(y));
 			}
 		});
 		SystemBars.addPaddingFromWindowInsets(toolbar, gridView);

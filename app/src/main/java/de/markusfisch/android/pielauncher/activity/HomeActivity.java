@@ -205,7 +205,8 @@ public class HomeActivity extends Activity {
 					kb.hideFrom(searchInput);
 					hidePrefsButton();
 				}
-				searchInput.setBackgroundColor(toolbarBackground.getColor(y));
+				searchInput.setBackgroundColor(
+						toolbarBackground.getColorForY(y));
 			}
 		});
 		PieLauncherApp.appMenu.setUpdateListener(() -> {

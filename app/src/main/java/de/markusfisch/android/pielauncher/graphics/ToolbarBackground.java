@@ -14,7 +14,7 @@ public class ToolbarBackground {
 		threshold = res.getDisplayMetrics().density * 48f;
 	}
 
-	public int getColor(int y) {
+	public int getColorForY(int y) {
 		y = Math.abs(y);
 		return y > 0
 				? fadeColor(backgroundColor, y / threshold)
