@@ -1375,7 +1375,8 @@ public class AppPieView extends View {
 					iy - listPadding,
 					paintList);
 		}
-		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .1f);
+
+		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .3f);
 		boolean invalidate = f < 1f;
 		if (highlightedFrom > 0) {
 			float ad = prefs.getAnimationDuration();
