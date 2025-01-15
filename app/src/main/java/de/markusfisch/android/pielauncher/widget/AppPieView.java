@@ -27,7 +27,9 @@ import android.widget.OverScroller;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.activity.PickIconActivity;
@@ -157,6 +159,7 @@ public class AppPieView extends View {
 	private Bitmap iconChangeRadius;
 	private boolean neverDropped = false;
 	private boolean appListIsFiltered = false;
+	private boolean isAlphabetSidebarActive = false;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -263,7 +266,7 @@ public class AppPieView extends View {
 	}
 
 	public void dragDownListBy(float y) {
-		if (mode != MODE_LIST) {
+		if (mode != MODE_LIST || isAlphabetSidebarActive) {
 			return;
 		}
 		dragOffset -= y;
@@ -302,9 +305,9 @@ public class AppPieView extends View {
 		return mode == MODE_LIST;
 	}
 
-	public void filterAppList(String query) {
+	public void filterAppList(String query, boolean isAlphabetFilter, Set<String> aliases) {
 		List<AppMenu.AppIcon> newAppList =
-				PieLauncherApp.appMenu.filterAppsBy(getContext(), query);
+			PieLauncherApp.appMenu.filterAppsBy(getContext(), query, isAlphabetFilter, aliases);
 		if (newAppList != null) {
 			appList = newAppList;
 		}
@@ -577,7 +580,7 @@ public class AppPieView extends View {
 			}
 
 			private void scroll(MotionEvent event) {
-				if (dragOffset > 0) {
+				if (dragOffset > 0 || isAlphabetSidebarActive) {
 					return;
 				}
 				int index = getPrimaryIndex(event);
@@ -1342,7 +1345,8 @@ public class AppPieView extends View {
 		paintText.setAlpha(Math.round(af * alphaText));
 		// Manually draw an icon grid because GridView doesn't perform too
 		// well on low-end devices and doing it manually gives us more control.
-		int innerWidth = viewWidth - listPadding * 2;
+		int rightPadding = prefs.isAlphabetFiltering() ? Math.round(35f * dp) : 0;
+		int innerWidth = viewWidth - listPadding * 2 - rightPadding;
 		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
 		boolean showAppNames = showAppNames();
 		int iconAndTextHeight = iconSize + (showAppNames
@@ -1366,7 +1370,8 @@ public class AppPieView extends View {
 				Math.round(dragOffset);
 		int wrapX = listPadding + cellWidth * columns;
 		int size = getIconCount();
-		if (selectedApp > -1 && size > 0) {
+		// Only show the "enter key" indicator when not in alphabet filter mode
+		if (selectedApp > -1 && size > 0 && !PieLauncherApp.appMenu.isAlphabetFiltering()) {
 			int offset = Math.min(selectedApp, size - 1);
 			int ix = x + offset % columns * cellWidth;
 			int iy = y + offset / columns * cellHeight;
@@ -1798,5 +1803,16 @@ public class AppPieView extends View {
 
 	private static float easeSlowerOut(float x) {
 		return 1f - (1f - x) * (1f - x);
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		View alphabetSidebar = getRootView().findViewById(R.id.alphabet_sidebar);
+		if (alphabetSidebar instanceof AlphabetSidebar) {
+			((AlphabetSidebar) alphabetSidebar).setOnInteractionListener(
+				isInteracting -> isAlphabetSidebarActive = isInteracting
+			);
+		}
 	}
 }

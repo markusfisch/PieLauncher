@@ -96,4 +96,7 @@
 	<string name="want_to_restore_icon">Видалити призначення іконок?</string>
 	<string name="all">Усе</string>
 	<string name="app_icon">Іконка програми</string>
+	<string name="alphabet_filtering">Алфавітна фільтрація</string>
+	<string name="alphabet_filtering_yes">Так (Тільки для мов з латинськими символами)</string>
+	<string name="alphabet_filtering_no">Ні</string>
 </resources>

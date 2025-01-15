@@ -92,6 +92,10 @@
 					android:text="@string/search_parameter_app_label" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/alphabet_filtering"
+					android:text="@string/alphabet_filtering_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/show_app_names"
 					android:text="@string/show_app_names_always" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

@@ -96,4 +96,7 @@
 	<string name="want_to_restore_icon">删除图标分配？</string>
 	<string name="all">全部</string>
 	<string name="app_icon">应用程序图标</string>
+	<string name="alphabet_filtering">字母过滤</string>
+	<string name="alphabet_filtering_yes">是（仅限拉丁字符语言）</string>
+	<string name="alphabet_filtering_no">否</string>
 </resources>

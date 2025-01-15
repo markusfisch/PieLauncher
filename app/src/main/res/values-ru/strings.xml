@@ -96,4 +96,7 @@
 	<string name="want_to_restore_icon">Восстановить оригинальную иконку?</string>
 	<string name="all">Все</string>
 	<string name="app_icon">Иконка приложения</string>
+	<string name="alphabet_filtering">Алфавитная фильтрация</string>
+	<string name="alphabet_filtering_yes">Да (Только для языков с латинскими символами)</string>
+	<string name="alphabet_filtering_no">Нет</string>
 </resources>

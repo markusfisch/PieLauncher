@@ -87,6 +87,7 @@ public class AppMenu extends CanvasPieMenu {
 	private LauncherApps launcherApps;
 	private String drawerPackageName;
 	private boolean indexing = false;
+	private boolean isAlphabetFiltering = false;
 
 	public static void launchPackage(Context context, String packageName) {
 		PackageManager pm = context.getPackageManager();
@@ -162,7 +163,7 @@ public class AppMenu extends CanvasPieMenu {
 		hiddenApps.store(context);
 	}
 
-	public List<AppIcon> filterAppsBy(Context context, String query) {
+	public List<AppIcon> filterAppsBy(Context context, String query, boolean isAlphabetFilter, Set<String> aliases) {
 		if (indexing) {
 			return null;
 		}
@@ -171,44 +172,56 @@ public class AppMenu extends CanvasPieMenu {
 				? ""
 				: query.trim().toLowerCase(defaultLocale);
 
-		Preferences prefs = PieLauncherApp.getPrefs(context);
-		int strategy = prefs.getSearchStrictness();
 		ArrayList<AppIcon> list = new ArrayList<>();
-		ArrayList<AppIcon> hamming = new ArrayList<>();
 		if (query.isEmpty()) {
 			list.addAll(apps.values());
 		} else {
-			int item = prefs.getSearchParameter();
+			int item = PieLauncherApp.getPrefs(context).getSearchParameter();
 			for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = entry.getValue();
 				String subject = getSubject(item, appIcon, defaultLocale);
-				boolean add = false;
-				switch (strategy) {
-					// HAMMING includes CONTAINS for historical reasons.
-					case Preferences.SEARCH_STRICTNESS_HAMMING:
-					case Preferences.SEARCH_STRICTNESS_CONTAINS:
-						add = subject.contains(query);
-						break;
-					case Preferences.SEARCH_STRICTNESS_STARTS_WITH:
-						add = subject.startsWith(query);
-						break;
-				}
-				if (add) {
-					list.add(appIcon);
-				} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING &&
-						hammingDistance(subject, query) < 2) {
-					hamming.add(appIcon);
+
+				if (isAlphabetFilter) {
+					// For alphabet bar: match only the first letter (and aliases)
+					if (query.equals("#")) {
+						// For "#", match anything that doesn't start with a letter
+						if (subject.length() > 0 && !Character.isLetter(subject.charAt(0))) {
+							list.add(appIcon);
+						}
+					} else if (query.equals("⚑")) {
+						// For "🌐", match anything that isn't a Latin char or number
+						// This includes characters with diacritics like umlauts and accents
+						if (subject.length() > 0 && !subject.matches("[\\p{IsLatin}\\p{Nd}].*")) {
+							list.add(appIcon);
+						}
+					} else if (subject.length() > 0 && (aliases.stream().anyMatch(alias -> subject.toUpperCase().startsWith(alias.toUpperCase())) || subject.startsWith(query))) {
+						list.add(appIcon);
+					}
+				} else {
+					// For normal search: use the existing search strategy
+					Preferences prefs = PieLauncherApp.getPrefs(context);
+					int strategy = prefs.getSearchStrictness();
+					boolean add = false;
+					switch (strategy) {
+						case Preferences.SEARCH_STRICTNESS_HAMMING:
+						case Preferences.SEARCH_STRICTNESS_CONTAINS:
+							add = subject.contains(query);
+							break;
+						case Preferences.SEARCH_STRICTNESS_STARTS_WITH:
+							add = subject.startsWith(query);
+							break;
+					}
+					if (add) {
+						list.add(appIcon);
+					} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING &&
+							hammingDistance(subject, query) < 2) {
+						list.add(appIcon);
+					}
 				}
 			}
 		}
 
 		Collections.sort(list, appLabelComparator);
-		if (!hamming.isEmpty()) {
-			// Only append hamming matches as they're less likely
-			// as good as exact matches.
-			Collections.sort(hamming, appLabelComparator);
-			list.addAll(hamming);
-		}
 		return list;
 	}
 
@@ -577,5 +590,13 @@ public class AppMenu extends CanvasPieMenu {
 			}
 		}
 		return count;
+	}
+
+	public void setAlphabetFiltering(boolean filtering) {
+		isAlphabetFiltering = filtering;
+	}
+
+	public boolean isAlphabetFiltering() {
+		return isAlphabetFiltering;
 	}
 }

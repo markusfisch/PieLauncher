@@ -96,4 +96,7 @@
 	<string name="want_to_restore_icon">Ta bort ikonmappning?</string>
 	<string name="all">Alla</string>
 	<string name="app_icon">Appikon</string>
+	<string name="alphabet_filtering">Alfabetisk filtrering</string>
+	<string name="alphabet_filtering_yes">Ja (Endast för språk med latinska tecken)</string>
+	<string name="alphabet_filtering_no">Nej</string>
 </resources>
