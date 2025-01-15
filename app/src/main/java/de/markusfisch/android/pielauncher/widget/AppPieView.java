@@ -48,6 +48,8 @@ public class AppPieView extends View {
 		void onHideList();
 
 		void onScrollList(int y, boolean isScrolling);
+
+		void onDragDown(float alpha);
 	}
 
 	private static final int HAPTIC_FEEDBACK_DOWN =
@@ -129,6 +131,7 @@ public class AppPieView extends View {
 	private int deadZoneBottom;
 	private int deadZoneLeft;
 	private int deadZoneRight;
+	private int listFadeHeight;
 	private int minRadius;
 	private int medRadius;
 	private int maxRadius;
@@ -136,7 +139,8 @@ public class AppPieView extends View {
 	private float twist;
 	private float minIconScale;
 	private float iconScale;
-	private float dragOffset;
+	private float dragDistance;
+	private float dragProgress;
 	private int maxScrollY;
 	private int lastScrollY;
 	private int lastInsertAt;
@@ -246,7 +250,7 @@ public class AppPieView extends View {
 		cancelRipple();
 		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
-		dragOffset = 0f;
+		resetDragDownList();
 		fadeList.fadeIn();
 		invalidate();
 	}
@@ -255,6 +259,7 @@ public class AppPieView extends View {
 		if (mode == MODE_PIE) {
 			return;
 		}
+		fadeList.maxIn = dragProgress;
 		fadeOutMode();
 		mode = MODE_PIE;
 		resetScrollWithoutAnimation();
@@ -266,15 +271,9 @@ public class AppPieView extends View {
 		if (mode != MODE_LIST) {
 			return;
 		}
-		dragOffset -= y;
+		dragDistance -= y;
+		dragProgress = clamp(1f - (dragDistance / listFadeHeight), 0f, 1f);
 		invalidate();
-	}
-
-	public void resetDragDownList() {
-		if (dragOffset != 0f) {
-			dragOffset = 0f;
-			invalidate();
-		}
 	}
 
 	public void showEditor() {
@@ -356,7 +355,7 @@ public class AppPieView extends View {
 		long now = SystemClock.uptimeMillis();
 		float ad = prefs.getAnimationDuration();
 		float fPie = fadePie.get(now, ad);
-		float fList = fadeList.get(now, ad);
+		float fList = Math.min(fadeList.get(now, ad), dragProgress);
 		float fEdit = fadeEdit.get(now, ad);
 		float fMax = Math.max(fPie, Math.max(fList, fEdit));
 		if (prefs.blurBackground()) {
@@ -486,6 +485,7 @@ public class AppPieView extends View {
 							cancelSpin();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
+							cancelDragDownList();
 							keepScrolling(event);
 						}
 						postPerformAction(v, event);
@@ -496,6 +496,7 @@ public class AppPieView extends View {
 							fadeOutMode();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
+							cancelDragDownList();
 							recycleVelocityTracker();
 						}
 						releaseIcon();
@@ -577,7 +578,10 @@ public class AppPieView extends View {
 			}
 
 			private void scroll(MotionEvent event) {
-				if (dragOffset > 0) {
+				if (isDraggingDownList()) {
+					if (listListener != null) {
+						listListener.onDragDown(dragProgress);
+					}
 					return;
 				}
 				int index = getPrimaryIndex(event);
@@ -804,6 +808,25 @@ public class AppPieView extends View {
 		});
 	}
 
+	private void cancelDragDownList() {
+		if (isDraggingDownList()) {
+			resetDragDownList();
+			invalidate();
+			if (listListener != null) {
+				listListener.onDragDown(dragProgress);
+			}
+		}
+	}
+
+	private boolean isDraggingDownList() {
+		return dragProgress < 1f;
+	}
+
+	private void resetDragDownList() {
+		dragDistance = 0f;
+		dragProgress = 1f;
+	}
+
 	private void layoutView(int width, int height) {
 		int viewMin = Math.min(width, height);
 		int viewMax = Math.max(width, height);
@@ -834,6 +857,8 @@ public class AppPieView extends View {
 		deadZoneBottom = height - deadZoneTop;
 		deadZoneLeft = Math.min(width / 10, Math.round(48f * dp));
 		deadZoneRight = width - deadZoneLeft;
+
+		listFadeHeight = Math.round(viewHeight * .5f);
 
 		layoutEditorControls(height > width);
 	}
@@ -1336,10 +1361,9 @@ public class AppPieView extends View {
 		if (f <= 0) {
 			return false;
 		}
-		float af = Math.min(f, 1f - Math.min(1f,
-				dragOffset / (viewHeight * .5f)));
-		paintList.setAlpha(Math.round(af * 255f));
-		paintText.setAlpha(Math.round(af * alphaText));
+		paintList.setAlpha(Math.round(f * 255f));
+		paintText.setAlpha(Math.round(f * alphaText));
+
 		// Manually draw an icon grid because GridView doesn't perform too
 		// well on low-end devices and doing it manually gives us more control.
 		int innerWidth = viewWidth - listPadding * 2;
@@ -1362,10 +1386,10 @@ public class AppPieView extends View {
 		int viewBottom = scrollY + viewHeight;
 		int x = listPadding;
 		int y = listPadding + searchInputHeight +
-				Math.round((1f - f) * viewHeight * .25f) +
-				Math.round(dragOffset);
+				Math.round((1f - f) * listFadeHeight);
 		int wrapX = listPadding + cellWidth * columns;
 		int size = getIconCount();
+
 		if (selectedApp > -1 && size > 0) {
 			int offset = Math.min(selectedApp, size - 1);
 			int ix = x + offset % columns * cellWidth;
@@ -1391,6 +1415,7 @@ public class AppPieView extends View {
 				magSize = 0;
 			}
 		}
+
 		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
 				AppMenu.AppIcon appIcon = appList.get(i);
@@ -1414,6 +1439,7 @@ public class AppPieView extends View {
 				y += cellHeight;
 			}
 		}
+
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
 		return invalidate;
@@ -1643,6 +1669,10 @@ public class AppPieView extends View {
 		return Math.max(min, Math.min(max, value));
 	}
 
+	private static float clamp(float value, float min, float max) {
+		return Math.max(min, Math.min(max, value));
+	}
+
 	private static int mirror(int v, int axis) {
 		return axis - (v - axis);
 	}
@@ -1785,8 +1815,8 @@ public class AppPieView extends View {
 			long delta = now - fadeOutFrom;
 			if (delta < duration) {
 				minOut = maxIn - easeSlowerOut(delta / duration);
-				// Ensure f < 1f so invalidate() is invoked one last time.
-				minOut = Math.min(.99999f, Math.max(0f, minOut));
+				// Ensure < 1f so invalidate() is invoked one last time.
+				minOut = Math.min(.999f, Math.max(0f, minOut));
 				return minOut;
 			}
 			return 0;

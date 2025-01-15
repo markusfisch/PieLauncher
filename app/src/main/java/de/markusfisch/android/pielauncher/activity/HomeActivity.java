@@ -56,9 +56,6 @@ public class HomeActivity extends Activity {
 		if (pieView.inListMode() && gestureDetector.onTouchEvent(ev)) {
 			return true;
 		}
-		if (ev.getActionMasked() == MotionEvent.ACTION_UP) {
-			pieView.resetDragDownList();
-		}
 		try {
 			return super.dispatchTouchEvent(ev);
 		} catch (IllegalStateException e) {
@@ -202,11 +199,17 @@ public class HomeActivity extends Activity {
 			@Override
 			public void onScrollList(int y, boolean isScrolling) {
 				if (isScrolling && y != 0) {
-					kb.hideFrom(searchInput);
-					hidePrefsButton();
+					hideKeyboadAndPrefsButton();
 				}
 				searchInput.setBackgroundColor(
 						toolbarBackground.getColorForY(y));
+			}
+
+			@Override
+			public void onDragDown(float alpha) {
+				hideKeyboadAndPrefsButton();
+				searchInput.setBackgroundColor(0);
+				setAlpha(searchInput, alpha);
 			}
 		});
 		PieLauncherApp.appMenu.setUpdateListener(() -> {
@@ -346,6 +349,7 @@ public class HomeActivity extends Activity {
 
 		searchInput.setVisibility(View.VISIBLE);
 		prefsButton.setVisibility(View.VISIBLE);
+		setAlpha(searchInput, 1f);
 		if (prefs.displayKeyboard()) {
 			kb.showFor(searchInput);
 		}
@@ -365,16 +369,26 @@ public class HomeActivity extends Activity {
 		pieView.showList();
 	}
 
+	private void setAlpha(View view, float alpha) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			view.setAlpha(alpha);
+		}
+	}
+
 	private void hideAllApps() {
 		if (isSearchVisible()) {
 			searchInput.setVisibility(View.GONE);
-			kb.hideFrom(searchInput);
-			hidePrefsButton();
+			hideKeyboadAndPrefsButton();
 		}
 		// Ensure the pie menu is initially hidden because on some devices
 		// there's not always a matching ACTION_UP/_CANCEL event for every
 		// ACTION_DOWN event.
 		pieView.hideList();
+	}
+
+	private void hideKeyboadAndPrefsButton() {
+		kb.hideFrom(searchInput);
+		hidePrefsButton();
 	}
 
 	private boolean isSearchVisible() {
