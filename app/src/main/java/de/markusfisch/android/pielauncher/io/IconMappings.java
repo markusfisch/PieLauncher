@@ -5,6 +5,7 @@ import android.content.Context;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -22,8 +23,18 @@ public class IconMappings {
 			HashMap<String, IconPack.PackAndDrawable> mappings) {
 		mappings.clear();
 		try {
+			boolean migrated = false;
+
+			// Migrate previous mappings without package name.
+			String mappingsFile = getMappingsFile(packageName);
+			if (!fileExists(context, mappingsFile) &&
+					fileExists(context, MAPPINGS_FILE)) {
+				migrated = true;
+				mappingsFile = MAPPINGS_FILE;
+			}
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					context.openFileInput(getMappingsFile(packageName))));
+					context.openFileInput(mappingsFile)));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(SEPARATOR);
@@ -34,6 +45,10 @@ public class IconMappings {
 						parts[1], parts[2]));
 			}
 			reader.close();
+
+			if (migrated) {
+				store(context, packageName, mappings);
+			}
 		} catch (FileNotFoundException e) {
 			// Return an empty array.
 		} catch (IOException e) {
@@ -72,5 +87,10 @@ public class IconMappings {
 			sb.append(packageName);
 		}
 		return sb.toString();
+	}
+
+	private static boolean fileExists(Context context, String fileName) {
+		File file = context.getFileStreamPath(fileName);
+		return file != null && file.exists();
 	}
 }
