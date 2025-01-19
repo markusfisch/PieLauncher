@@ -1,6 +1,5 @@
 package de.markusfisch.android.pielauncher.view;
 
-import android.annotation.TargetApi;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
@@ -20,7 +19,6 @@ public class SystemBars {
 		setTransparentSystemBars(window, Preferences.IMMERSIVE_MODE_DISABLED);
 	}
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static void setTransparentSystemBars(Window window, int immersive) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -39,7 +37,6 @@ public class SystemBars {
 		}
 	}
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static void setSystemUIVisibility(Window window, int immersive) {
 		if (window == null ||
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
