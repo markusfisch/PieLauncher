@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.23.0
+* Improve dragging down app drawer
+* Add pie appearance/disapearance animation
+* Add an option to ignore side touches
+* Add an option to disable haptic feedback for launch
+* Save icon mappings for each selected icon pack
+* Support multi-window mode
+* Improve haptic feedback
+* Allow starting hidden apps
+* Make restarting home screen the default setting
+
 ## 1.22.0
 * Add options to hide status and/or navigation bar
 * Add an option to disable haptic feedback
