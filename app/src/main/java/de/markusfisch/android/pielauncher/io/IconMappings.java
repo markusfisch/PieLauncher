@@ -1,17 +1,19 @@
 package de.markusfisch.android.pielauncher.io;
 
+import android.content.ComponentName;
 import android.content.Context;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 
 public class IconMappings {
@@ -20,7 +22,7 @@ public class IconMappings {
 
 	public static void restore(Context context,
 			String packageName,
-			HashMap<String, IconPack.PackAndDrawable> mappings) {
+			HashMap<ComponentName, IconPack.PackAndDrawable> mappings) {
 		mappings.clear();
 		try {
 			boolean migrated = false;
@@ -41,8 +43,18 @@ public class IconMappings {
 				if (parts.length < 3) {
 					continue;
 				}
-				mappings.put(parts[0], new IconPack.PackAndDrawable(
-						parts[1], parts[2]));
+				String componentPart = parts[0];
+				ComponentName componentName =
+						ComponentName.unflattenFromString(componentPart);
+				if (componentName == null) {
+					migrated = true;
+					componentName = AppMenu.getLaunchComponentForPackageName(
+							context, componentPart);
+				}
+				if (componentName != null) {
+					mappings.put(componentName, new IconPack.PackAndDrawable(
+							parts[1], parts[2]));
+				}
 			}
 			reader.close();
 
@@ -58,14 +70,14 @@ public class IconMappings {
 
 	public static void store(Context context,
 			String packageName,
-			HashMap<String, IconPack.PackAndDrawable> mappings) {
+			HashMap<ComponentName, IconPack.PackAndDrawable> mappings) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 					context.openFileOutput(getMappingsFile(packageName),
 							Context.MODE_PRIVATE)));
-			for (Map.Entry<String, IconPack.PackAndDrawable> mapping :
+			for (Map.Entry<ComponentName, IconPack.PackAndDrawable> mapping :
 					mappings.entrySet()) {
-				writer.write(mapping.getKey());
+				writer.write(mapping.getKey().flattenToString());
 				writer.write(SEPARATOR);
 				IconPack.PackAndDrawable pad = mapping.getValue();
 				writer.write(pad.packageName);

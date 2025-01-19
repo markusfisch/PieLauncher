@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
+import de.markusfisch.android.pielauncher.activity.HomeActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -88,11 +89,15 @@ public class AppMenu extends CanvasPieMenu {
 	private String drawerPackageName;
 	private boolean indexing = false;
 
+	public static ComponentName getLaunchComponentForPackageName(
+			Context context, String packageName) {
+		Intent intent = getLaunchIntent(context, packageName);
+		return intent != null ? intent.getComponent() : null;
+	}
+
 	public static void launchPackage(Context context, String packageName) {
-		PackageManager pm = context.getPackageManager();
-		Intent intent;
-		if (pm != null && (intent = pm.getLaunchIntentForPackage(
-				packageName)) != null) {
+		Intent intent = getLaunchIntent(context, packageName);
+		if (intent != null) {
 			context.startActivity(intent);
 		}
 	}
@@ -248,7 +253,8 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		indexing = true;
 		hiddenApps.restore(context);
-		HashSet<String> hideApps = new HashSet<>(hiddenApps.packageNames);
+		HashSet<ComponentName> hideApps = new HashSet<>(
+				hiddenApps.componentNames);
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 		if (packageNameRestriction != null) {
 			// Copy apps since we're indexing just one app.
@@ -285,13 +291,13 @@ public class AppMenu extends CanvasPieMenu {
 			Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
-			HashSet<String> hideApps,
+			HashSet<ComponentName> hideApps,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		PackageManager pm = context.getPackageManager();
 		PieLauncherApp.iconPack.selectPack(pm,
 				PieLauncherApp.getPrefs(context).getIconPack());
 		PieLauncherApp.iconPack.restoreMappings(context);
-		hideApps.add(context.getPackageName());
+		hideApps.add(new ComponentName(context, HomeActivity.class));
 		if (HAS_LAUNCHER_APP) {
 			indexProfilesApps(
 					(LauncherApps) context.getSystemService(
@@ -309,7 +315,7 @@ public class AppMenu extends CanvasPieMenu {
 			PackageManager pm,
 			Map<LauncherItemKey, AppIcon> allApps,
 			String packageNameRestriction,
-			Set<String> hideApps) {
+			Set<ComponentName> hideApps) {
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		if (packageNameRestriction != null) {
@@ -317,16 +323,16 @@ public class AppMenu extends CanvasPieMenu {
 		}
 		List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
 		for (ResolveInfo info : activities) {
-			String packageName = info.activityInfo.applicationInfo.packageName;
-			if (hideApps.contains(packageName)) {
+			ComponentName componentName = getComponentName(info.activityInfo);
+			if (hideApps.contains(componentName)) {
 				continue;
 			}
-			Drawable icon = PieLauncherApp.iconPack.getIcon(packageName);
+			Drawable icon = PieLauncherApp.iconPack.getIcon(componentName);
 			if (icon == null) {
 				icon = info.loadIcon(pm);
 			}
 			addApp(allApps,
-					getComponentName(info.activityInfo),
+					componentName,
 					info.loadLabel(pm).toString(),
 					icon,
 					null);
@@ -340,7 +346,7 @@ public class AppMenu extends CanvasPieMenu {
 			Map<LauncherItemKey, AppIcon> allApps,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
-			Set<String> hideApps) {
+			Set<ComponentName> hideApps) {
 		List<UserHandle> profiles =
 				packageNameRestriction != null && userHandleRestriction != null
 						? Collections.singletonList(userHandleRestriction)
@@ -350,18 +356,17 @@ public class AppMenu extends CanvasPieMenu {
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
 					la.getActivityList(packageNameRestriction, profile)) {
-				String packageName = info.getApplicationInfo().packageName;
-				if (hideApps.contains(packageName)) {
-					// Always skip this package.
+				ComponentName componentName = info.getComponentName();
+				if (hideApps.contains(componentName)) {
 					continue;
 				}
-				Drawable icon = PieLauncherApp.iconPack.getIcon(packageName);
+				Drawable icon = PieLauncherApp.iconPack.getIcon(componentName);
 				if (icon == null &&
 						(icon = getBadgedIcon(info)) == null) {
 					continue;
 				}
 				addApp(allApps,
-						info.getComponentName(),
+						componentName,
 						info.getLabel().toString(),
 						icon,
 						profile);
@@ -417,13 +422,15 @@ public class AppMenu extends CanvasPieMenu {
 			Map<LauncherItemKey, AppIcon> allApps) {
 		String appPackageName = context.getPackageName();
 		drawerPackageName = appPackageName + ".drawer";
-		Drawable icon = PieLauncherApp.iconPack.getIcon(drawerPackageName);
+		ComponentName componentName = new ComponentName(
+				drawerPackageName, "Drawer");
+		Drawable icon = PieLauncherApp.iconPack.getIcon(componentName);
 		if (icon == null) {
 			icon = Converter.getDrawable(
 					context.getResources(), R.drawable.ic_drawer);
 		}
 		return addApp(allApps,
-				new ComponentName(drawerPackageName, "Drawer"),
+				componentName,
 				"Drawer",
 				icon,
 				null);
@@ -558,6 +565,12 @@ public class AppMenu extends CanvasPieMenu {
 					Context.LAUNCHER_APPS_SERVICE);
 		}
 		return launcherApps;
+	}
+
+	private static Intent getLaunchIntent(Context context,
+			String packageName) {
+		PackageManager pm = context.getPackageManager();
+		return pm != null ? pm.getLaunchIntentForPackage(packageName) : null;
 	}
 
 	private static String getSubject(int item, AppIcon appIcon,

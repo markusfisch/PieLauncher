@@ -110,7 +110,7 @@ public class IconPack {
 	public final LinkedHashMap<String, String> componentToDrawableNames =
 			new LinkedHashMap<>();
 
-	private final HashMap<String, PackAndDrawable> mappings =
+	private final HashMap<ComponentName, PackAndDrawable> mappings =
 			new HashMap<>();
 
 	private PackageManager packageManager;
@@ -128,18 +128,18 @@ public class IconPack {
 		IconMappings.store(context, getSelectedIconPackageName(), mappings);
 	}
 
-	public boolean hasMapping(String packageName) {
-		return mappings.containsKey(packageName);
+	public boolean hasMapping(ComponentName componentName) {
+		return mappings.containsKey(componentName);
 	}
 
-	public void addMapping(String iconPackageName, String packageName,
-			String drawableName) {
-		mappings.put(packageName,
+	public void addMapping(String iconPackageName,
+			ComponentName componentName, String drawableName) {
+		mappings.put(componentName,
 				new PackAndDrawable(iconPackageName, drawableName));
 	}
 
-	public void removeMapping(String packageName) {
-		mappings.remove(packageName);
+	public void removeMapping(ComponentName componentName) {
+		mappings.remove(componentName);
 	}
 
 	public void clearMappings() {
@@ -202,9 +202,9 @@ public class IconPack {
 		packageManager = pm;
 	}
 
-	public Drawable getIcon(String packageName) {
+	public Drawable getIcon(ComponentName componentName) {
 		String drawableName = null;
-		PackAndDrawable pad = mappings.get(packageName);
+		PackAndDrawable pad = mappings.get(componentName);
 		if (pad != null) {
 			if (selectedPack != null &&
 					pad.packageName.equals(selectedPack.packageName)) {
@@ -220,12 +220,9 @@ public class IconPack {
 			return null;
 		}
 		if (drawableName == null) {
-			Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+			Intent intent = packageManager.getLaunchIntentForPackage(
+					componentName.getPackageName());
 			if (intent == null) {
-				return null;
-			}
-			ComponentName componentName = intent.getComponent();
-			if (componentName == null) {
 				return null;
 			}
 			drawableName = componentToDrawableNames.get(

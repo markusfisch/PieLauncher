@@ -954,8 +954,8 @@ public class AppPieView extends View {
 									(AppMenu.AppIcon) icon);
 							break;
 						case 2:
-							PickIconActivity.askToHide(context, ((AppMenu.AppIcon) icon)
-									.componentName.getPackageName());
+							PickIconActivity.askToHide(context,
+									((AppMenu.AppIcon) icon).componentName);
 							break;
 						case 3:
 							returnToList();
@@ -1155,8 +1155,7 @@ public class AppPieView extends View {
 					removeIconFromPie(grabbedIcon, true);
 				} else {
 					PickIconActivity.askToHide(context,
-							((AppMenu.AppIcon) grabbedIcon)
-									.componentName.getPackageName());
+							((AppMenu.AppIcon) grabbedIcon).componentName);
 				}
 			}
 			return true;
@@ -1305,8 +1304,7 @@ public class AppPieView extends View {
 
 	private void changeIcon(Context context, AppMenu.Icon icon) {
 		AppMenu.AppIcon appIcon = (AppMenu.AppIcon) icon;
-		PickIconActivity.start(context,
-				appIcon.componentName.getPackageName());
+		PickIconActivity.start(context, appIcon.componentName);
 	}
 
 	private void returnToList() {

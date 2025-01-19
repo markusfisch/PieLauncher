@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.adapter;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -15,12 +16,12 @@ import de.markusfisch.android.pielauncher.R;
 
 public class HiddenAppsAdapter extends ArrayAdapter<HiddenAppsAdapter.HiddenApp> {
 	public static class HiddenApp {
-		public final String packageName;
+		public final ComponentName componentName;
 		public final String name;
 		public final Drawable icon;
 
-		public HiddenApp(String packageName, String name, Drawable icon) {
-			this.packageName = packageName;
+		public HiddenApp(ComponentName componentName, String name, Drawable icon) {
+			this.componentName = componentName;
 			this.name = name;
 			this.icon = icon;
 		}

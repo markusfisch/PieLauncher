@@ -2,8 +2,10 @@ package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,7 +39,7 @@ public class PickIconActivity extends Activity {
 		void onHide();
 	}
 
-	private static final String PACKAGE_NAME = "package_name";
+	private static final String COMPONENT_NAME = "package_name";
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -50,24 +52,24 @@ public class PickIconActivity extends Activity {
 	private ArrayList<String> drawableNames;
 	private PickIconAdapter iconAdapter;
 
-	public static void start(Context context, String packageName) {
+	public static void start(Context context, ComponentName componentName) {
 		Intent intent = new Intent(context, PickIconActivity.class);
-		intent.putExtra(PACKAGE_NAME, packageName);
+		intent.putExtra(COMPONENT_NAME, componentName);
 		context.startActivity(intent);
 	}
 
-	public static void askToHide(Context context, String packageName) {
-		askToHide(context, packageName, null);
+	public static void askToHide(Context context, ComponentName componentName) {
+		askToHide(context, componentName, null);
 	}
 
-	public static void askToHide(Context context, String packageName,
+	public static void askToHide(Context context, ComponentName componentName,
 			OnHideListener hideListener) {
 		Dialog.newDialog(context)
 				.setTitle(R.string.hide_app)
 				.setMessage(R.string.want_to_hide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
 					PieLauncherApp.appMenu.hiddenApps.addAndStore(context,
-							packageName);
+							componentName);
 					PieLauncherApp.appMenu.updateIconsAsync(context);
 					if (hideListener != null) {
 						hideListener.onHide();
@@ -83,9 +85,9 @@ public class PickIconActivity extends Activity {
 		super.onCreate(state);
 
 		Intent intent = getIntent();
-		String packageName;
-		if (intent == null || (packageName = intent.getStringExtra(
-				PACKAGE_NAME)) == null) {
+		ComponentName componentName;
+		if (intent == null || (componentName =
+				getComponentNameFromIntent(intent)) == null) {
 			finish();
 			return;
 		}
@@ -113,10 +115,10 @@ public class PickIconActivity extends Activity {
 			return;
 		}
 
-		initGridView(packageName);
+		initGridView(componentName);
 		initSearch();
-		initHide(packageName);
-		initReset(packageName);
+		initHide(componentName);
+		initReset(componentName);
 		initSwitchPack();
 
 		Window window = getWindow();
@@ -148,12 +150,12 @@ public class PickIconActivity extends Activity {
 				toolbarBackground.backgroundColor);
 	}
 
-	private void initGridView(String packageName) {
+	private void initGridView(ComponentName componentName) {
 		gridView = findViewById(R.id.icons);
 		gridView.setOnItemClickListener((parent, view, position, id) -> {
 			PieLauncherApp.iconPack.addMapping(
 					iconPackPackageName,
-					packageName,
+					componentName,
 					iconAdapter.getItem(position));
 			PieLauncherApp.iconPack.storeMappings(this);
 			PieLauncherApp.appMenu.updateIconsAsync(this);
@@ -194,23 +196,23 @@ public class PickIconActivity extends Activity {
 		searchInput.post(searchInput::requestFocus);
 	}
 
-	private void initReset(String packageName) {
+	private void initReset(ComponentName componentName) {
 		View resetButton = findViewById(R.id.reset);
-		if (PieLauncherApp.iconPack.hasMapping(packageName)) {
+		if (PieLauncherApp.iconPack.hasMapping(componentName)) {
 			resetButton.setOnClickListener((v) -> {
-				askToRestore(packageName);
+				askToRestore(componentName);
 			});
 		} else {
 			resetButton.setVisibility(View.INVISIBLE);
 		}
 	}
 
-	private void askToRestore(String packageName) {
+	private void askToRestore(ComponentName componentName) {
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.change_icon)
 				.setMessage(R.string.want_to_restore_icon)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
-					PieLauncherApp.iconPack.removeMapping(packageName);
+					PieLauncherApp.iconPack.removeMapping(componentName);
 					PieLauncherApp.iconPack.storeMappings(this);
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 					finish();
@@ -226,13 +228,14 @@ public class PickIconActivity extends Activity {
 				.show();
 	}
 
-	private void initHide(String packageName) {
+	private void initHide(ComponentName componentName) {
 		View hideButton = findViewById(R.id.hide_app);
-		if (PieLauncherApp.appMenu.isDrawerPackageName(packageName)) {
+		if (PieLauncherApp.appMenu.isDrawerPackageName(
+				componentName.getPackageName())) {
 			hideButton.setVisibility(View.INVISIBLE);
 		} else {
 			hideButton.setOnClickListener((v) -> askToHide(
-					this, packageName, this::finish));
+					this, componentName, this::finish));
 		}
 	}
 
@@ -278,5 +281,14 @@ public class PickIconActivity extends Activity {
 				searchInput.getText().clear();
 			});
 		});
+	}
+
+	private static ComponentName getComponentNameFromIntent(Intent intent) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+			return intent.getParcelableExtra(COMPONENT_NAME);
+		} else {
+			return intent.getParcelableExtra(COMPONENT_NAME,
+					ComponentName.class);
+		}
 	}
 }

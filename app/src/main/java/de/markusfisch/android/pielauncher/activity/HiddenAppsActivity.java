@@ -1,6 +1,7 @@
 package de.markusfisch.android.pielauncher.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherActivityInfo;
@@ -90,26 +91,27 @@ public class HiddenAppsActivity extends Activity {
 		listView.setOnItemClickListener((parent, view, position, id) -> {
 			HiddenAppsAdapter.HiddenApp hiddenApp = adapter.getItem(position);
 			if (hiddenApp != null) {
-				askToShowApp(hiddenApp.packageName);
+				askToShowApp(hiddenApp.componentName);
 			}
 		});
 		loadHiddenApps();
 	}
 
-	private void askToShowApp(String packageName) {
+	private void askToShowApp(ComponentName componentName) {
 		Dialog.newDialog(this)
 				.setTitle(R.string.unhide_app)
 				.setMessage(R.string.want_to_unhide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
 					PieLauncherApp.appMenu.hiddenApps.removeAndStore(this,
-							packageName);
+							componentName.getPackageName());
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 					loadHiddenApps();
 				})
 				.setNegativeButton(android.R.string.cancel, (d, w) -> {
 				})
 				.setNeutralButton(R.string.start_app, (d, w) ->
-						AppMenu.launchPackage(this, packageName))
+						AppMenu.launchPackage(this,
+								componentName.getPackageName()))
 				.show();
 	}
 
@@ -118,13 +120,13 @@ public class HiddenAppsActivity extends Activity {
 		Executors.newSingleThreadExecutor().execute(() -> {
 			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps =
 					new ArrayList<>();
-			for (String packageName :
-					PieLauncherApp.appMenu.hiddenApps.packageNames) {
+			for (ComponentName componentName :
+					PieLauncherApp.appMenu.hiddenApps.componentNames) {
 				Pair<String, Drawable> nameAndIcon = getAppNameAndIcon(
-						this, packageName);
+						this, componentName.getPackageName());
 				if (nameAndIcon != null) {
 					hiddenApps.add(new HiddenAppsAdapter.HiddenApp(
-							packageName,
+							componentName,
 							nameAndIcon.first,
 							nameAndIcon.second));
 				}
@@ -137,7 +139,8 @@ public class HiddenAppsActivity extends Activity {
 		});
 	}
 
-	private static Pair<String, Drawable> getAppNameAndIcon(Context context, String packageName) {
+	private static Pair<String, Drawable> getAppNameAndIcon(Context context,
+			String packageName) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			LauncherApps la = (LauncherApps) context.getSystemService(
 					Context.LAUNCHER_APPS_SERVICE);
