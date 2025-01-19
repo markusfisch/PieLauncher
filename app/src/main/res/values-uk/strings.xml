@@ -78,8 +78,8 @@
 	<string name="use_light_dialogs_yes">Так</string>
 	<string name="use_light_dialogs_no">Ні (за замовчуванням)</string>
 	<string name="force_relaunch">Не використовуйте домашній екран повторно</string>
-	<string name="force_relaunch_yes">Так</string>
-	<string name="force_relaunch_no">Ні (за замовчуванням)</string>
+	<string name="force_relaunch_yes">Так (за замовчуванням)</string>
+	<string name="force_relaunch_no">Ні</string>
 	<string name="skip">Пропустити</string>
 	<string name="reset">Скинути</string>
 	<string name="edit_app">Редагування програми</string>
