@@ -65,6 +65,9 @@
 	<string name="show_app_names_always">Always</string>
 	<string name="show_app_names_search">When searching (Default)</string>
 	<string name="show_app_names_never">Never</string>
+	<string name="exclude_pie">Hide home icons from app drawer</string>
+	<string name="exclude_pie_yes">Yes</string>
+	<string name="exclude_pie_no">No (Default)</string>
 	<string name="icon_press">Long press</string>
 	<string name="icon_press_default">Adds app to the pie menu (Default)</string>
 	<string name="icon_press_longer">Requires prolonged pressing</string>

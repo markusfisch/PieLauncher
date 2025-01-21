@@ -61,6 +61,9 @@
 	<string name="show_app_names_always">Altijd</string>
 	<string name="show_app_names_search">Bij zoeken (standaard)</string>
 	<string name="show_app_names_never">Nooit</string>
+	<string name="exclude_pie">Pictogrammen op het beginscherm verbergen</string>
+	<string name="exclude_pie_yes">Ja</string>
+	<string name="exclude_pie_no">Nee (standaard)</string>
 	<string name="icon_press">Lang drukken</string>
 	<string name="icon_press_default">Voegt app toe aan het Pie menu (standaard)</string>
 	<string name="icon_press_longer">Vereist lang drukken</string>

@@ -61,6 +61,9 @@
 	<string name="show_app_names_always">始终如一</string>
 	<string name="show_app_names_search">搜索时 (默认)</string>
 	<string name="show_app_names_never">从不</string>
+	<string name="exclude_pie">隐藏主屏幕上的图标</string>
+	<string name="exclude_pie_yes">是</string>
+	<string name="exclude_pie_no">没有 (默认)</string>
 	<string name="icon_press">长按</string>
 	<string name="icon_press_default">在菜单中添加应用程序 (默认)</string>
 	<string name="icon_press_longer">需要长时间按压</string>

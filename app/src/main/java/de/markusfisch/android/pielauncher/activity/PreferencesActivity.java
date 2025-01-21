@@ -210,6 +210,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getShowAppNamesOptions,
 				() -> prefs.showAppNames(),
 				(value) -> prefs.setShowAppNames(value));
+		initPreference(R.id.exclude_pie,
+				R.string.exclude_pie,
+				PreferencesActivity::getExcludePieOptions,
+				() -> prefs.excludePie(),
+				(value) -> prefs.setExcludePie(value));
 		initPreference(R.id.icon_press,
 				R.string.icon_press,
 				PreferencesActivity::getIconPressOptions,
@@ -499,6 +504,13 @@ public class PreferencesActivity extends Activity {
 				R.string.show_app_names_search);
 		map.put(Preferences.SHOW_APP_NAMES_NEVER,
 				R.string.show_app_names_never);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getExcludePieOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.exclude_pie_yes);
+		map.put(Boolean.FALSE, R.string.exclude_pie_no);
 		return map;
 	}
 

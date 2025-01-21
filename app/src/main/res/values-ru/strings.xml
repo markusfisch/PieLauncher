@@ -61,6 +61,9 @@
 	<string name="show_app_names_always">Всегда</string>
 	<string name="show_app_names_search">При поиске (Стандартно)</string>
 	<string name="show_app_names_never">Никогда</string>
+	<string name="exclude_pie">Скрыть значки на главном экране</string>
+	<string name="exclude_pie_yes">Да</string>
+	<string name="exclude_pie_no">Нет (Стандартно)</string>
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>
 	<string name="icon_press_longer">Добавляет приложение в меню (С задержкой)</string>

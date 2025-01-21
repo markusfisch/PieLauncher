@@ -55,6 +55,7 @@ public class Preferences {
 	private static final String SEARCH_PARAMETER = "search_parameter";
 	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
+	private static final String EXCLUDE_PIE = "exclude_pie";
 	private static final String ICON_PACK = "icon_pack";
 	private static final String HAPTIC_FEEDBACK = "haptic_feedback";
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
@@ -80,6 +81,7 @@ public class Preferences {
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private int searchParameter = SEARCH_PARAMETER_APP_LABEL;
 	private int showAppNames = SHOW_APP_NAMES_SEARCH;
+	private boolean excludePie = false;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 	private boolean useLightDialogs = false;
@@ -125,6 +127,7 @@ public class Preferences {
 		searchParameter = preferences.getInt(SEARCH_PARAMETER,
 				searchParameter);
 		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
+		excludePie = preferences.getBoolean(EXCLUDE_PIE, excludePie);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 		hapticFeedback = preferences.getInt(HAPTIC_FEEDBACK, hapticFeedback);
@@ -283,6 +286,15 @@ public class Preferences {
 	public void setShowAppNames(int showAppNames) {
 		this.showAppNames = showAppNames;
 		put(SHOW_APP_NAMES, showAppNames).apply();
+	}
+
+	public boolean excludePie() {
+		return excludePie;
+	}
+
+	public void setExcludePie(boolean excludePie) {
+		this.excludePie = excludePie;
+		put(EXCLUDE_PIE, excludePie).apply();
 	}
 
 	public int getIconPress() {

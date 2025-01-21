@@ -182,6 +182,9 @@ public class AppMenu extends CanvasPieMenu {
 		ArrayList<AppIcon> hamming = new ArrayList<>();
 		if (query.isEmpty()) {
 			list.addAll(apps.values());
+			if (prefs.excludePie()) {
+				list.removeAll(new HashSet<>(icons));
+			}
 		} else {
 			int item = prefs.getSearchParameter();
 			for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {

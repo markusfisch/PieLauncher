@@ -61,6 +61,9 @@
 	<string name="show_app_names_always">Immer</string>
 	<string name="show_app_names_search">Beim Suchen (Standard)</string>
 	<string name="show_app_names_never">Nie</string>
+	<string name="exclude_pie">Symbole des Startbildschirms ausblenden</string>
+	<string name="exclude_pie_yes">Ja</string>
+	<string name="exclude_pie_no">Nein (Standard)</string>
 	<string name="icon_press">Langes Drücken</string>
 	<string name="icon_press_default">Fügt App zum Menu hinzu (Standard)</string>
 	<string name="icon_press_longer">Erfordert längeres Drücken</string>

@@ -95,6 +95,10 @@
 					android:id="@+id/show_app_names"
 					android:text="@string/show_app_names_always" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
+					android:id="@+id/exclude_pie"
+					android:text="@string/exclude_pie_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/icon_press"
 					android:text="@string/icon_press_default" />

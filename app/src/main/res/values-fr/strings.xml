@@ -61,6 +61,9 @@
 	<string name="show_app_names_always">Toujours</string>
 	<string name="show_app_names_search">Lors d\'une recherche (d\'usine)</string>
 	<string name="show_app_names_never">Jamais</string>
+	<string name="exclude_pie">Masquer les icônes de l\'écran d\'accueil</string>
+	<string name="exclude_pie_yes">Oui</string>
+	<string name="exclude_pie_no">Non (d\'usine)</string>
 	<string name="icon_press">Appui long</string>
 	<string name="icon_press_default">Lancer l\'app dans le menu (d\'usine)</string>
 	<string name="icon_press_longer">Nécessite une pression prolongée</string>

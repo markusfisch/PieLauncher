@@ -61,6 +61,9 @@
 	<string name="show_app_names_always">Завжди</string>
 	<string name="show_app_names_search">Під час пошуку (за замовчуванням)</string>
 	<string name="show_app_names_never">Ніколи</string>
+	<string name="exclude_pie">Приховати іконки на головному екрані</string>
+	<string name="exclude_pie_yes">Так</string>
+	<string name="exclude_pie_no">Ні (за замовчуванням)</string>
 	<string name="icon_press">Тривале натискання</string>
 	<string name="icon_press_default">Додає додаток до меню (за замовчуванням)</string>
 	<string name="icon_press_longer">Вимагає тривалого натискання</string>
