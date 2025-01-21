@@ -285,6 +285,7 @@ public class PickIconActivity extends Activity {
 
 	private static ComponentName getComponentNameFromIntent(Intent intent) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+			//noinspection deprecation
 			return intent.getParcelableExtra(COMPONENT_NAME);
 		} else {
 			return intent.getParcelableExtra(COMPONENT_NAME,
