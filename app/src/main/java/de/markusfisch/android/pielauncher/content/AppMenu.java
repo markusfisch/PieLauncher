@@ -149,13 +149,16 @@ public class AppMenu extends CanvasPieMenu {
 					icon.rect,
 					null);
 		} else {
-			Intent intent = new Intent(
-					Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-			intent.addCategory(Intent.CATEGORY_DEFAULT);
-			intent.setData(Uri.parse("package:" +
-					icon.componentName.getPackageName()));
-			context.startActivity(intent);
+			launchAppInfo(context, icon.componentName.getPackageName());
 		}
+	}
+
+	public void launchAppInfo(Context context, String packageName) {
+		Intent intent = new Intent(
+				Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
+		intent.setData(Uri.parse("package:" + packageName));
+		context.startActivity(intent);
 	}
 
 	public void setUpdateListener(UpdateListener listener) {

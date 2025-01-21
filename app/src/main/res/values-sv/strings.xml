@@ -93,8 +93,7 @@
 	<string name="show_app_info">Visa appinfo</string>
 	<string name="no_hidden_apps">Inga dolda appar</string>
 	<string name="unhide_app">Visa app</string>
-	<string name="start_app">Start</string>
-	<string name="want_to_unhide_app">Vill du visa denna app igen?</string>
+	<string name="start_app">Starta app</string>
 	<string name="want_to_hide_app">Vill du dölja denna app?</string>
 	<string name="want_to_restore_icon">Ta bort ikonmappning?</string>
 	<string name="all">Alla</string>

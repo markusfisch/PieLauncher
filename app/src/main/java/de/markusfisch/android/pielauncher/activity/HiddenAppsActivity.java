@@ -31,7 +31,7 @@ import de.markusfisch.android.pielauncher.content.AppMenu;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.view.SystemBars;
-import de.markusfisch.android.pielauncher.widget.Dialog;
+import de.markusfisch.android.pielauncher.widget.OptionsDialog;
 
 public class HiddenAppsActivity extends Activity {
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -91,28 +91,37 @@ public class HiddenAppsActivity extends Activity {
 		listView.setOnItemClickListener((parent, view, position, id) -> {
 			HiddenAppsAdapter.HiddenApp hiddenApp = adapter.getItem(position);
 			if (hiddenApp != null) {
-				askToShowApp(hiddenApp.componentName);
+				showHiddenAppOptions(hiddenApp.componentName);
 			}
 		});
 		loadHiddenApps();
 	}
 
-	private void askToShowApp(ComponentName componentName) {
-		Dialog.newDialog(this)
-				.setTitle(R.string.unhide_app)
-				.setMessage(R.string.want_to_unhide_app)
-				.setPositiveButton(android.R.string.ok, (d, w) -> {
-					PieLauncherApp.appMenu.hiddenApps.removeAndStore(this,
-							componentName.getPackageName());
-					PieLauncherApp.appMenu.updateIconsAsync(this);
-					loadHiddenApps();
-				})
-				.setNegativeButton(android.R.string.cancel, (d, w) -> {
-				})
-				.setNeutralButton(R.string.start_app, (d, w) ->
-						AppMenu.launchPackage(this,
-								componentName.getPackageName()))
-				.show();
+	private void showHiddenAppOptions(ComponentName componentName) {
+		ArrayList<String> list = new ArrayList<>();
+		list.add(getString(R.string.unhide_app));
+		list.add(getString(R.string.start_app));
+		list.add(getString(R.string.show_app_info));
+		OptionsDialog.show(this, R.string.edit_app,
+				list.toArray(new CharSequence[0]),
+				(view, which) -> {
+					switch (which) {
+						case 0:
+							PieLauncherApp.appMenu.hiddenApps.removeAndStore(
+									this, componentName.getPackageName());
+							PieLauncherApp.appMenu.updateIconsAsync(this);
+							loadHiddenApps();
+							break;
+						case 1:
+							AppMenu.launchPackage(this,
+									componentName.getPackageName());
+							break;
+						case 2:
+							PieLauncherApp.appMenu.launchAppInfo(this,
+									componentName.getPackageName());
+							break;
+					}
+				});
 	}
 
 	private void loadHiddenApps() {
