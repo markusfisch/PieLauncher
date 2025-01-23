@@ -316,7 +316,7 @@ public class AppPieView extends View {
 		invalidate();
 	}
 
-	public void launchSelectedApp() {
+	public void launchSelectedAppFromList() {
 		if (selectedApp < 0 || isEmpty()) {
 			return;
 		}

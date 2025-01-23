@@ -249,13 +249,13 @@ public class HomeActivity extends Activity {
 				}
 				// Replace ". " before updateAppList().
 				if (endsWithDoubleSpace(e)) {
-					pieView.launchSelectedApp();
+					pieView.launchSelectedAppFromList();
 				}
 				updateAppList();
 				// Check icon count after the list was updated.
 				if (prefs.autoLaunchMatching() &&
 						pieView.getIconCount() == 1) {
-					pieView.launchSelectedApp();
+					pieView.launchSelectedAppFromList();
 				}
 			}
 		});
@@ -268,7 +268,7 @@ public class HomeActivity extends Activity {
 				case EditorInfo.IME_ACTION_SEARCH:
 				case EditorInfo.IME_NULL:
 					if (!searchInput.getText().toString().isEmpty()) {
-						pieView.launchSelectedApp();
+						pieView.launchSelectedAppFromList();
 					}
 					hideAllApps();
 					return true;
