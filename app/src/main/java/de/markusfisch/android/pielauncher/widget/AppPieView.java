@@ -320,9 +320,8 @@ public class AppPieView extends View {
 		if (selectedApp < 0 || isEmpty()) {
 			return;
 		}
-		AppMenu.AppIcon appIcon = appList.get(
-				clamp(selectedApp, 0, getIconCount() - 1));
-		PieLauncherApp.appMenu.launchApp(getContext(), appIcon);
+		PieLauncherApp.appMenu.launchApp(getContext(), appList.get(
+				clamp(selectedApp, 0, getIconCount() - 1)));
 	}
 
 	public void endEditMode() {
