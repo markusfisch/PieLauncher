@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.23.2
+* Update app drawer after excluding/including pie icons
+* Update Dutch translation
+
 ## 1.23.1
 * Add a menu to start or uninstall hidden apps
 * Add an option to exclude pie icons from app drawer

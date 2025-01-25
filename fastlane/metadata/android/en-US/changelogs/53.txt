@@ -1,0 +1,3 @@
+* Update app drawer after excluding/including pie icons
+* Update Dutch translation
+
