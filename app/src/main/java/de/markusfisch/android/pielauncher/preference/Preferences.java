@@ -85,7 +85,7 @@ public class Preferences {
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 	private boolean useLightDialogs = false;
-	private boolean forceRelaunch = true;
+	private boolean forceRelaunch = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
