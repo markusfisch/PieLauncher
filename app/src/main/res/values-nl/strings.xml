@@ -6,7 +6,7 @@
 	<string name="tip_remove_app">App verwijderen van apparaat</string>
 	<string name="preferences">Instellingen</string>
 	<string name="welcome">Welkom!</string>
-	<string name="check_these_settings">Controleer alsjeblieft de volgende instellingen:</string>
+	<string name="check_these_settings">Controleer de volgende instellingen:</string>
 	<string name="disable_battery_optimization"><big><font color="#ffffff">Batterijoptimalisatie uitschakelen</font></big>\nBespaart energie en laat deze launcher sneller werken</string>
 	<string name="make_default_launcher"><big><font color="#ffffff">Instellen als standaardlauncher</font></big>\nVoorkomt het opstarten van je vorige launcher</string>
 	<string name="category_home">Thuis</string>
@@ -29,9 +29,9 @@
 	<string name="immersive_mode">Immersieve modus</string>
 	<string name="immersive_mode_full">Status- en navigatiebalk verbergen</string>
 	<string name="immersive_mode_status_bar">Statusbalk verbergen</string>
-	<string name="immersive_mode_navigation_bar">Verberg navigatiebalk</string>
+	<string name="immersive_mode_navigation_bar">Navigatiebalk verbergen</string>
 	<string name="immersive_mode_disabled">Status- en navigatiebalk weergeven (standaard)</string>
-	<string name="animate_in_out">Animeer verschijnen/verdwijnen</string>
+	<string name="animate_in_out">Verschijnen/verdwijnen animeren</string>
 	<string name="animate_in_out_yes">Ja (standaard)</string>
 	<string name="animate_in_out_no">Nee</string>
 	<string name="category_app_drawer">App-lade</string>
@@ -93,7 +93,7 @@
 	<string name="show_app_info">App-info weergeven</string>
 	<string name="no_hidden_apps">Geen verborgen apps</string>
 	<string name="unhide_app">App weergeven</string>
-	<string name="start_app">Start app</string>
+	<string name="start_app">App starten</string>
 	<string name="want_to_hide_app">Wil je deze app verbergen?</string>
 	<string name="want_to_restore_icon">Pictogram-toewijzing verwijderen?</string>
 	<string name="all">Alle</string>
