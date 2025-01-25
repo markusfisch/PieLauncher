@@ -214,7 +214,10 @@ public class PreferencesActivity extends Activity {
 				R.string.exclude_pie,
 				PreferencesActivity::getExcludePieOptions,
 				() -> prefs.excludePie(),
-				(value) -> prefs.setExcludePie(value));
+				(value) -> {
+					prefs.setExcludePie(value);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
+				});
 		initPreference(R.id.icon_press,
 				R.string.icon_press,
 				PreferencesActivity::getIconPressOptions,
