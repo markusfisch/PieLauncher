@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.23.1
+* Add a menu to start or uninstall hidden apps
+* Add an option to exclude pie icons from app drawer
+* Revert restarting home screen by default
+* Optimize vector drawables
+
 ## 1.23.0
 * Improve dragging down app drawer
 * Add pie appearance/disapearance animation

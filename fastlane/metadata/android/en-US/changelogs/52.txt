@@ -1,0 +1,5 @@
+* Add a menu to start or uninstall hidden apps
+* Add an option to exclude pie icons from app drawer
+* Revert restarting home screen by default
+* Optimize vector drawables
+
