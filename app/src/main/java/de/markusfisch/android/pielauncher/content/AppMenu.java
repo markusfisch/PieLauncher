@@ -186,6 +186,7 @@ public class AppMenu extends CanvasPieMenu {
 		if (query.isEmpty()) {
 			list.addAll(apps.values());
 			if (prefs.excludePie()) {
+				//noinspection SuspiciousMethodCalls
 				list.removeAll(new HashSet<>(icons));
 			}
 		} else {
