@@ -22,7 +22,8 @@ public class PackageEventReceiver extends BroadcastReceiver {
 		if (Intent.ACTION_PACKAGE_ADDED.equals(action) ||
 				// Sent when a component of a package changed.
 				Intent.ACTION_PACKAGE_CHANGED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context, packageName, null);
+			PieLauncherApp.appMenu.postIndexApps(context, packageName,
+					null);
 		} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
 				// Skip ACTION_PACKAGE_REMOVED when replacing because it
 				// will be immediately followed by ACTION_PACKAGE_ADDED.

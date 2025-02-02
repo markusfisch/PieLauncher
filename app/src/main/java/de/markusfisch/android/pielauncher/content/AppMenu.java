@@ -84,6 +84,7 @@ public class AppMenu extends CanvasPieMenu {
 				: result;
 	};
 
+	private Runnable indexRunnable;
 	private UpdateListener updateListener;
 	private LauncherApps launcherApps;
 	private String drawerPackageName;
@@ -234,31 +235,60 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
-	public void updateIconsAsync(Context context) {
-		if (!indexAppsAsync(context)) {
-			handler.postDelayed(() -> updateIconsAsync(context), 1000L);
-		}
-	}
-
 	public boolean isEmpty() {
 		return apps.isEmpty();
 	}
 
 	public boolean isIndexing() {
-		return apps.isEmpty() && indexing;
+		return apps.isEmpty() && isLocked();
 	}
 
-	public boolean indexAppsAsync(Context context) {
-		return indexAppsAsync(context, null, null);
+	public boolean isLocked() {
+		return indexing;
 	}
 
-	public boolean indexAppsAsync(Context context,
+	public void lock() {
+		indexing = true;
+	}
+
+	public void unlock() {
+		indexing = false;
+		if (indexRunnable != null) {
+			handler.removeCallbacks(indexRunnable);
+			handler.post(indexRunnable);
+		}
+	}
+
+	public void postIndexApps(Context context) {
+		postIndexApps(context, null, null);
+	}
+
+	public void postIndexApps(Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction) {
-		if (indexing) {
+		if (indexRunnable != null) {
+			// Ignore subsequent requests.
+			return;
+		}
+		indexRunnable = () -> {
+			if (indexAppsAsync(context, packageNameRestriction,
+					userHandleRestriction)) {
+				handler.removeCallbacks(indexRunnable);
+				indexRunnable = null;
+			}
+		};
+		// Wait a little to collapse several quasi-simultaneous requests.
+		// `unlock()` triggers a new run should this one be unsuccessful.
+		handler.postDelayed(indexRunnable, 300L);
+	}
+
+	private boolean indexAppsAsync(Context context,
+			String packageNameRestriction,
+			UserHandle userHandleRestriction) {
+		if (isLocked()) {
 			return false;
 		}
-		indexing = true;
+		lock();
 		hiddenApps.restore(context);
 		HashSet<ComponentName> hideApps = new HashSet<>(
 				hiddenApps.componentNames);
@@ -285,7 +315,7 @@ public class AppMenu extends CanvasPieMenu {
 				apps.putAll(newApps);
 				icons.clear();
 				icons.addAll(newIcons);
-				indexing = false;
+				unlock();
 				if (updateListener != null) {
 					updateListener.onUpdate();
 				}

@@ -18,7 +18,7 @@ public class ManagedProfileEventReceiver extends BroadcastReceiver {
 		String action = intent.getAction();
 		if (Intent.ACTION_MANAGED_PROFILE_ADDED.equals(action) ||
 				Intent.ACTION_MANAGED_PROFILE_REMOVED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context);
+			PieLauncherApp.appMenu.postIndexApps(context);
 		}
 		// Ignore:
 		// - ACTION_MANAGED_PROFILE_AVAILABLE
