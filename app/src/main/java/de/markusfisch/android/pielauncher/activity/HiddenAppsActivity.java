@@ -85,6 +85,12 @@ public class HiddenAppsActivity extends Activity {
 		SystemBars.setNavigationBarColor(window, toolbarBackground.backgroundColor);
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		loadHiddenApps(); // Because the list may have changed.
+	}
+
 	private void initListView() {
 		listView = findViewById(R.id.apps);
 		listView.setEmptyView(findViewById(R.id.no_hidden_apps));
@@ -94,7 +100,6 @@ public class HiddenAppsActivity extends Activity {
 				showHiddenAppOptions(hiddenApp.componentName);
 			}
 		});
-		loadHiddenApps();
 	}
 
 	private void showHiddenAppOptions(ComponentName componentName) {
