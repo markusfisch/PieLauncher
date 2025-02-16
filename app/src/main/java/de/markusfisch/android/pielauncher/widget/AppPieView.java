@@ -1360,8 +1360,6 @@ public class AppPieView extends View {
 		if (f <= 0) {
 			return false;
 		}
-		paintList.setAlpha(Math.round(f * 255f));
-		paintText.setAlpha(Math.round(f * alphaText));
 
 		// Manually draw an icon grid because GridView doesn't perform too
 		// well on low-end devices and doing it manually gives us more control.
@@ -1373,22 +1371,27 @@ public class AppPieView extends View {
 				: 0);
 		int cellWidth = innerWidth / columns;
 		int cellHeight = iconAndTextHeight + iconTextPadding * 2;
+		int wrapX = listPadding + cellWidth * columns;
+		int size = getIconCount();
+
+		// Calculate boundaries and offsets.
 		int maxTextWidth = cellWidth - iconTextPadding;
 		int hpad = (cellWidth - iconSize) / 2;
 		int vpad = (cellHeight - iconAndTextHeight) / 2;
 		int labelX = cellWidth >> 1;
 		int labelY = cellHeight - vpad - Math.round(textOffset);
 		int scrollY = getScrollY();
-		int bottomPadding = getPaddingBottom();
-		int viewHeightMinusPadding = viewHeight - bottomPadding;
 		int viewTop = scrollY - cellHeight;
 		int viewBottom = scrollY + viewHeight;
 		int x = listPadding;
-		int y = listPadding + searchInputHeight +
-				Math.round((1f - f) * listFadeHeight);
-		int wrapX = listPadding + cellWidth * columns;
-		int size = getIconCount();
+		int y = searchInputHeight + listPadding;
 
+		// Slide in/out animation.
+		y += Math.round((1f - f) * listFadeHeight);
+		paintList.setAlpha(Math.round(f * 255f));
+		paintText.setAlpha(Math.round(f * alphaText));
+
+		// Draw launch marker.
 		if (selectedApp > -1 && size > 0) {
 			int offset = Math.min(selectedApp, size - 1);
 			int ix = x + offset % columns * cellWidth;
@@ -1399,6 +1402,7 @@ public class AppPieView extends View {
 					paintList);
 		}
 
+		// Calculate magnification of touched icon.
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .3f);
 		boolean invalidate = f < 1f;
 		if (highlightedFrom > 0) {
@@ -1415,6 +1419,7 @@ public class AppPieView extends View {
 			}
 		}
 
+		// Draw icons.
 		for (int i = 0; i < size; ++i) {
 			if (y > viewTop && y < viewBottom) {
 				AppMenu.AppIcon appIcon = appList.get(i);
@@ -1440,6 +1445,7 @@ public class AppPieView extends View {
 		}
 
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
+		int viewHeightMinusPadding = viewHeight - getPaddingBottom();
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
 		return invalidate;
 	}
