@@ -871,6 +871,7 @@ public class AppPieView extends View {
 		int totalHeight = 0;
 		int largestWidth = 0;
 		int largestHeight = 0;
+
 		// Initialize rects and calculate totals.
 		for (int i = 0; i < length; ++i) {
 			Bitmap icon = icons[i];
@@ -882,6 +883,7 @@ public class AppPieView extends View {
 			totalWidth += w;
 			totalHeight += h;
 		}
+
 		// Evenly distribute rects in parent.
 		int spaces = length + 1;
 		int max;
@@ -904,6 +906,7 @@ public class AppPieView extends View {
 				y += step + rect.height();
 			}
 		}
+
 		// Calculate top button rectangles.
 		iconChangeTwistRect.set(iconStartRect);
 		iconChangeIconScaleRect.set(iconCenterRect);
@@ -925,6 +928,7 @@ public class AppPieView extends View {
 			iconChangeRadiusRect.left = mirror(iconEndRect.right, axis);
 			iconChangeRadiusRect.right = mirror(iconEndRect.left, axis);
 		}
+
 		// Calculate size of circular action buttons.
 		actionSize = Math.min(iconSize, max / 2 - spaceBetween);
 		actionSizeSq = actionSize * actionSize;
@@ -1465,18 +1469,22 @@ public class AppPieView extends View {
 		if (f <= 0) {
 			return false;
 		}
+
 		int alpha = Math.round(f * 255f);
 		CanvasPieMenu.paint.setAlpha(alpha);
 		paintDropZone.setAlpha(Math.round(f * alphaDropZone));
 		paintPressed.setAlpha(Math.round(f * alphaPressed));
 		paintAction.setAlpha(alpha);
 		paintText.setAlpha(Math.round(f * alphaText));
+
 		boolean hasIcon = grabbedIcon != null;
+
 		// Only draw tips in portrait orientation.
 		// There's probably not enough space in landscape.
 		if (canvas.getWidth() < canvas.getHeight()) {
 			drawTip(canvas, getTip(hasIcon));
 		}
+
 		boolean invalidate = f < 1f;
 		if (hasIcon) {
 			float radius = actionSize;
@@ -1501,14 +1509,17 @@ public class AppPieView extends View {
 			drawAction(canvas, iconPreferences, iconCenterRect);
 			drawAction(canvas, iconDone, iconEndRect);
 		}
+
 		int centerX = viewWidth >> 1;
 		int centerY = viewHeight >> 1;
 		setCenter(centerX, centerY);
+
 		if (hasIcon) {
 			drawEditablePie(centerX, centerY);
 		} else {
 			PieLauncherApp.appMenu.calculate(centerX, centerY);
 		}
+
 		// Invoke drawSmoothed() first to make sure it's always run.
 		return PieLauncherApp.appMenu.drawSmoothed(canvas) || invalidate;
 	}
@@ -1533,10 +1544,12 @@ public class AppPieView extends View {
 			} else if (lastInsertAt == lastIndex && insertAt == 0) {
 				Collections.rotate(ungrabbedIcons, -1);
 			}
+
 			PieLauncherApp.appMenu.icons.clear();
 			PieLauncherApp.appMenu.icons.addAll(ungrabbedIcons);
 			PieLauncherApp.appMenu.icons.add(insertAt, grabbedIcon);
 			PieLauncherApp.appMenu.updateSmoothing();
+
 			if (lastInsertAt < 0) {
 				PieLauncherApp.appMenu.calculate(centerX, centerY);
 				grabbedIcon.x = touch.x;
@@ -1545,6 +1558,7 @@ public class AppPieView extends View {
 			}
 			lastInsertAt = insertAt;
 		}
+
 		PieLauncherApp.appMenu.calculate(touch.x, touch.y);
 		grabbedIcon.x = touch.x;
 		grabbedIcon.y = touch.y;
@@ -1554,15 +1568,18 @@ public class AppPieView extends View {
 		if (f <= 0) {
 			return false;
 		}
+
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		PieLauncherApp.appMenu.calculate(touch.x, touch.y,
 				prefs.animateInOut() ? easeSlowerOut(f) : 1f);
 		PieLauncherApp.appMenu.draw(canvas);
+
 		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
 			lastSelectedIcon = selectedIcon;
 			performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CHOICE);
 		}
+
 		return f < 1f;
 	}
 
