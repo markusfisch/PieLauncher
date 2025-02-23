@@ -358,8 +358,9 @@ public class AppPieView extends View {
 		float fList = Math.min(fadeList.get(now, ad), dragProgress);
 		float fEdit = fadeEdit.get(now, ad);
 		float fMax = Math.max(fPie, Math.max(fList, fEdit));
-		if (prefs.blurBackground()) {
-			int blur = Math.round(fMax * BackgroundBlur.BLUR);
+		int bbr = prefs.getBackgroundBlurRadius();
+		if (bbr > 0) {
+			int blur = Math.round(fMax * bbr);
 			if (blur != lastBlur) {
 				BackgroundBlur.setBlurRadius(window, blur);
 				lastBlur = blur;

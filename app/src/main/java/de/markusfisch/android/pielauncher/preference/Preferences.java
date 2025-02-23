@@ -43,7 +43,7 @@ public class Preferences {
 	private static final String ICON_SCALE = "icon_scale";
 	private static final String ORIENTATION = "orientation";
 	private static final String DARKEN_BACKGROUND = "darken_background";
-	private static final String BLUR_BACKGROUND = "blur_background";
+	private static final String BLUR_BACKGROUND_RADIUS = "background_blur_radius";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String IMMERSIVE_MODE = "immersive_mode_option";
 	private static final String ANIMATE_IN_OUT = "animate_in_out";
@@ -69,7 +69,7 @@ public class Preferences {
 	private float iconScale = 1f;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private boolean darkenBackground = false;
-	private boolean blurBackground = false;
+	private int backgroundBlurRadius = 0;
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;
@@ -96,13 +96,7 @@ public class Preferences {
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
-		// Migrate old immersive mode setting.
-		String oldImmersiveModeName = "immersive_mode";
-		if (preferences.getBoolean(oldImmersiveModeName, false)) {
-			put(oldImmersiveModeName, false).apply();
-			immersiveMode = IMMERSIVE_MODE_FULL;
-			setImmersiveMode(immersiveMode);
-		}
+		migrateSettings();
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		twist = preferences.getFloat(TWIST, twist);
@@ -110,8 +104,8 @@ public class Preferences {
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
 				darkenBackground);
-		blurBackground = preferences.getBoolean(BLUR_BACKGROUND,
-				blurBackground);
+		backgroundBlurRadius = preferences.getInt(BLUR_BACKGROUND_RADIUS,
+				backgroundBlurRadius);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
 		animateInOut = preferences.getBoolean(ANIMATE_IN_OUT, animateInOut);
@@ -189,13 +183,13 @@ public class Preferences {
 		put(DARKEN_BACKGROUND, darkenBackground).apply();
 	}
 
-	public boolean blurBackground() {
-		return blurBackground;
+	public int getBackgroundBlurRadius() {
+		return backgroundBlurRadius;
 	}
 
-	public void setBlurBackground(boolean blurBackground) {
-		this.blurBackground = blurBackground;
-		put(BLUR_BACKGROUND, blurBackground).apply();
+	public void setBackgroundBlurRadius(int backgroundBlurRadius) {
+		this.backgroundBlurRadius = backgroundBlurRadius;
+		put(BLUR_BACKGROUND_RADIUS, backgroundBlurRadius).apply();
 	}
 
 	public int getDeadZone() {
@@ -344,6 +338,24 @@ public class Preferences {
 
 	public float getAnimationDuration() {
 		return 200f * systemSettings.getAnimatorDurationScale();
+	}
+
+	private void migrateSettings() {
+		// Migrate old immersive mode setting.
+		String oldImmersiveModeName = "immersive_mode";
+		if (preferences.getBoolean(oldImmersiveModeName, false)) {
+			put(oldImmersiveModeName, false).apply();
+			immersiveMode = IMMERSIVE_MODE_FULL;
+			setImmersiveMode(immersiveMode);
+		}
+
+		// Migrate old blur background setting.
+		String oldBlurBackground = "blur_background";
+		if (preferences.getBoolean(oldBlurBackground, false)) {
+			put(oldBlurBackground, false).apply();
+			backgroundBlurRadius = 20;
+			setBackgroundBlurRadius(backgroundBlurRadius);
+		}
 	}
 
 	private int getOpenListWith() {

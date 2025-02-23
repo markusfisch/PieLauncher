@@ -61,7 +61,8 @@ public class PreferencesActivity extends Activity {
 		setContentView(R.layout.activity_preferences);
 
 		prefs = PieLauncherApp.getPrefs(this);
-		BackgroundBlur.blurIfTrue(getWindow(), prefs.blurBackground());
+		BackgroundBlur.blurIfTrue(getWindow(),
+				prefs.getBackgroundBlurRadius());
 		toolbarBackground = new ToolbarBackground(getResources());
 
 		TextView toolbar = findViewById(R.id.toolbar);
@@ -144,11 +145,11 @@ public class PreferencesActivity extends Activity {
 		if (BackgroundBlur.canBlur(getWindow())) {
 			initPreference(R.id.blur_background,
 					R.string.blur_background,
-					PreferencesActivity::getBlurBackgroundOptions,
-					() -> prefs.blurBackground(),
+					PreferencesActivity::getBackgroundBlurRadiusOptions,
+					() -> prefs.getBackgroundBlurRadius(),
 					(value) -> {
-						prefs.setBlurBackground(value);
-						BackgroundBlur.setBlur(getWindow(), value);
+						prefs.setBackgroundBlurRadius(value);
+						BackgroundBlur.setBlurRadius(getWindow(), value);
 					});
 		} else {
 			findViewById(R.id.blur_background).setVisibility(View.GONE);
@@ -405,10 +406,11 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getBlurBackgroundOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.blur_background_yes);
-		map.put(Boolean.FALSE, R.string.blur_background_no);
+	private static Map<Integer, Integer> getBackgroundBlurRadiusOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(20, R.string.background_blur_radius_medium);
+		map.put(80, R.string.background_blur_radius_heavy);
+		map.put(0, R.string.background_blur_radius_none);
 		return map;
 	}
 

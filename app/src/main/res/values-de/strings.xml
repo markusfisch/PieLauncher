@@ -18,8 +18,9 @@
 	<string name="darken_background_yes">Ja</string>
 	<string name="darken_background_no">Nein (Standard)</string>
 	<string name="blur_background">Hintergrund verwischen</string>
-	<string name="blur_background_yes">Ja</string>
-	<string name="blur_background_no">Nein (Standard)</string>
+	<string name="background_blur_radius_medium">Etwas</string>
+	<string name="background_blur_radius_heavy">Stark</string>
+	<string name="background_blur_radius_none">Nein (Standard)</string>
 	<string name="dead_zone">Berührungen ignorieren</string>
 	<string name="dead_zone_none">Keine Einschränkung</string>
 	<string name="dead_zone_top">Nur Oben</string>

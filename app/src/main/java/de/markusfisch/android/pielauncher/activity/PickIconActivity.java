@@ -95,7 +95,7 @@ public class PickIconActivity extends Activity {
 		setContentView(R.layout.activity_pick_icon);
 
 		BackgroundBlur.blurIfTrue(getWindow(),
-				PieLauncherApp.getPrefs(this).blurBackground());
+				PieLauncherApp.getPrefs(this).getBackgroundBlurRadius());
 		kb = new SoftKeyboard(this);
 		toolbarBackground = new ToolbarBackground(getResources());
 		View toolbar = findViewById(R.id.toolbar);

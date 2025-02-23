@@ -18,8 +18,9 @@
 	<string name="darken_background_yes">Да</string>
 	<string name="darken_background_no">Нет (Стандартно)</string>
 	<string name="blur_background">Размывать фон</string>
-	<string name="blur_background_yes">Да</string>
-	<string name="blur_background_no">Нет (Стандартно)</string>
+	<string name="background_blur_radius_medium">Средство</string>
+	<string name="background_blur_radius_heavy">Сильно</string>
+	<string name="background_blur_radius_none">Нет (Стандартно)</string>
 	<string name="dead_zone">Игнорировать касания</string>
 	<string name="dead_zone_none">Никакие</string>
 	<string name="dead_zone_top">Сверху</string>

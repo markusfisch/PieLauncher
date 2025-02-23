@@ -18,8 +18,9 @@
 	<string name="darken_background_yes">Ja</string>
 	<string name="darken_background_no">Nee (standaard)</string>
 	<string name="blur_background">Vage achtergrond</string>
-	<string name="blur_background_yes">Ja</string>
-	<string name="blur_background_no">Nee (standaard)</string>
+	<string name="background_blur_radius_medium">Medium</string>
+	<string name="background_blur_radius_heavy">Sterk</string>
+	<string name="background_blur_radius_none">Nee (standaard)</string>
 	<string name="dead_zone">Aanraking onderdrukken</string>
 	<string name="dead_zone_none">Geen beperking</string>
 	<string name="dead_zone_top">Bovenaan</string>
