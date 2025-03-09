@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.23.3
+* Add an option for a heavy blur
+* Improve indexing apps
+* Fix updating hidden apps
+
 ## 1.23.2
 * Update app drawer after excluding/including pie icons
 * Update Dutch translation
