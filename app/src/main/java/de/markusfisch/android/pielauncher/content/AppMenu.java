@@ -166,6 +166,12 @@ public class AppMenu extends CanvasPieMenu {
 		updateListener = listener;
 	}
 
+	public void propagateUpdate() {
+		if (updateListener != null) {
+			updateListener.onUpdate();
+		}
+	}
+
 	public void store(Context context) {
 		Menu.store(context, icons);
 		hiddenApps.store(context);
@@ -230,9 +236,7 @@ public class AppMenu extends CanvasPieMenu {
 		removePackageFromApps(apps, packageName, userHandle);
 		removePackageFromPieMenu(packageName, userHandle);
 		hiddenApps.removeAndStore(context, packageName);
-		if (updateListener != null) {
-			updateListener.onUpdate();
-		}
+		propagateUpdate();
 	}
 
 	public boolean isEmpty() {
@@ -316,9 +320,7 @@ public class AppMenu extends CanvasPieMenu {
 				icons.clear();
 				icons.addAll(newIcons);
 				unlock();
-				if (updateListener != null) {
-					updateListener.onUpdate();
-				}
+				propagateUpdate();
 			});
 		});
 		return true;

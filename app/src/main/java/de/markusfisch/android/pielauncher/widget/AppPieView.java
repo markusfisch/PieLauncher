@@ -339,6 +339,9 @@ public class AppPieView extends View {
 		fadeOutMode();
 		mode = MODE_PIE;
 		invalidate();
+		if (prefs.excludePie()) {
+			PieLauncherApp.appMenu.propagateUpdate();
+		}
 	}
 
 	@Override
