@@ -114,7 +114,7 @@ public class HiddenAppsActivity extends Activity {
 						case 0:
 							PieLauncherApp.appMenu.hiddenApps.removeAndStore(
 									this, componentName.getPackageName());
-							PieLauncherApp.appMenu.postIndexApps(this);
+							PieLauncherApp.appMenu.updateIconsAsync(this);
 							loadHiddenApps();
 							break;
 						case 1:

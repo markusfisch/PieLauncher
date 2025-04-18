@@ -94,15 +94,13 @@ public class PieLauncherApp extends Application {
 			@Override
 			public void onPackageAdded(String packageName,
 					UserHandle user) {
-				appMenu.postIndexApps(PieLauncherApp.this,
-						packageName, user);
+				appMenu.indexAppsAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
 			public void onPackageChanged(String packageName,
 					UserHandle user) {
-				appMenu.postIndexApps(PieLauncherApp.this,
-						packageName, user);
+				appMenu.indexAppsAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
