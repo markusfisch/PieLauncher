@@ -179,7 +179,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.openListWith(),
 				(value) -> {
 					prefs.setOpenListWith(value);
-					PieLauncherApp.appMenu.postIndexApps(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
 				});
 		initPreference(R.id.display_keyboard,
 				R.string.display_keyboard,
@@ -217,7 +217,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.excludePie(),
 				(value) -> {
 					prefs.setExcludePie(value);
-					PieLauncherApp.appMenu.postIndexApps(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
 				});
 		initPreference(R.id.icon_press,
 				R.string.icon_press,
@@ -230,7 +230,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.getIconPack(),
 				(value) -> {
 					prefs.setIconPack(value);
-					PieLauncherApp.appMenu.postIndexApps(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
 				},
 				() -> PieLauncherApp.iconPack.updatePacks(
 						getPackageManager()));

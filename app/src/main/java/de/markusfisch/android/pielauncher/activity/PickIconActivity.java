@@ -70,7 +70,7 @@ public class PickIconActivity extends Activity {
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
 					PieLauncherApp.appMenu.hiddenApps.addAndStore(context,
 							componentName);
-					PieLauncherApp.appMenu.postIndexApps(context);
+					PieLauncherApp.appMenu.updateIconsAsync(context);
 					if (hideListener != null) {
 						hideListener.onHide();
 					}
@@ -158,7 +158,7 @@ public class PickIconActivity extends Activity {
 					componentName,
 					iconAdapter.getItem(position));
 			PieLauncherApp.iconPack.storeMappings(this);
-			PieLauncherApp.appMenu.postIndexApps(this);
+			PieLauncherApp.appMenu.updateIconsAsync(this);
 			finish();
 		});
 		loadPack(iconPackPackageName);
@@ -214,13 +214,13 @@ public class PickIconActivity extends Activity {
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
 					PieLauncherApp.iconPack.removeMapping(componentName);
 					PieLauncherApp.iconPack.storeMappings(this);
-					PieLauncherApp.appMenu.postIndexApps(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
 					finish();
 				})
 				.setNeutralButton(R.string.all, (d, w) -> {
 					PieLauncherApp.iconPack.clearMappings();
 					PieLauncherApp.iconPack.storeMappings(this);
-					PieLauncherApp.appMenu.postIndexApps(this);
+					PieLauncherApp.appMenu.updateIconsAsync(this);
 					finish();
 				})
 				.setNegativeButton(android.R.string.cancel, (d, w) -> {

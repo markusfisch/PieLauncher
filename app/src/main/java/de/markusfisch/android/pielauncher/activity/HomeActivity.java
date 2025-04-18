@@ -180,9 +180,6 @@ public class HomeActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		pausedAt = System.currentTimeMillis();
-		if (pieView.inEditMode()) {
-			pieView.endEditMode();
-		}
 	}
 
 	private void initPieView() {

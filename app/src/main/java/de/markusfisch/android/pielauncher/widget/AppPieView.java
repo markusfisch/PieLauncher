@@ -225,7 +225,7 @@ public class AppPieView extends View {
 		doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
 
 		if (PieLauncherApp.appMenu.isEmpty()) {
-			PieLauncherApp.appMenu.postIndexApps(context);
+			PieLauncherApp.appMenu.indexAppsAsync(context);
 		}
 		initTouchListener();
 	}
@@ -329,7 +329,6 @@ public class AppPieView extends View {
 		if (context != null) {
 			PieLauncherApp.appMenu.store(context);
 		}
-		PieLauncherApp.appMenu.unlock();
 		prefs.setRadius(radius);
 		prefs.setTwist(twist);
 		prefs.setIconScale(iconScale);
@@ -998,7 +997,6 @@ public class AppPieView extends View {
 		grabbedIconAt = SystemClock.uptimeMillis();
 		lastInsertAt = -1;
 		if (mode != MODE_EDIT) {
-			PieLauncherApp.appMenu.lock();
 			fadeEdit.fadeIn();
 			mode = MODE_EDIT;
 		}
