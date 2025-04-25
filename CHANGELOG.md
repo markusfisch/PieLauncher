@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.23.4
+* Fix updating apps
+
 ## 1.23.3
 * Add an option for a heavy blur
 * Improve indexing apps

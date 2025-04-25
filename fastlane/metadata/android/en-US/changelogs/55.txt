@@ -1,0 +1,4 @@
+* Add an option for a heavy blur
+* Improve indexing apps
+* Fix updating hidden apps
+
