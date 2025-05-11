@@ -181,6 +181,11 @@ public class PreferencesActivity extends Activity {
 					prefs.setOpenListWith(value);
 					PieLauncherApp.appMenu.updateIconsAsync(this);
 				});
+		initPreference(R.id.list_animation_appearance,
+				R.string.list_animation_appearance,
+				PreferencesActivity::getListAnimationAppearanceOptions,
+				() -> prefs.listAnimationAppearance(),
+				(value) -> prefs.setListAnimationAppearance(value));
 		initPreference(R.id.display_keyboard,
 				R.string.display_keyboard,
 				PreferencesActivity::getDisplayKeyboardOptions,
@@ -457,6 +462,15 @@ public class PreferencesActivity extends Activity {
 				R.string.open_list_with_double_tap);
 		map.put(Preferences.OPEN_LIST_WITH_ICON,
 				R.string.open_list_with_icon);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getListAnimationAppearanceOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.LIST_APPEARANCE_ANIMATION_SLIDE,
+				R.string.list_animation_appearance_slide);
+		map.put(Preferences.LIST_APPEARANCE_ANIMATION_FADE,
+				R.string.list_animation_appearance_fade);
 		return map;
 	}
 

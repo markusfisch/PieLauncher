@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">Langes Drücken</string>
 	<string name="open_list_with_double_tap">Doppeltes Antippen</string>
 	<string name="open_list_with_icon">Icon in Pie-Menu</string>
+	<string name="list_animation_appearance">Animation beim Erscheinen</string>
+	<string name="list_animation_appearance_slide">Hereingleiten (Standard)</string>
+	<string name="list_animation_appearance_fade">Einblenden</string>
 	<string name="display_keyboard">Tastatur automatisch öffnen</string>
 	<string name="display_keyboard_yes">Ja (Standard)</string>
 	<string name="display_keyboard_no">Nein</string>

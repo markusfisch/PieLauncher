@@ -1393,7 +1393,11 @@ public class AppPieView extends View {
 		int y = searchInputHeight + listPadding;
 
 		// Slide in/out animation.
-		y += Math.round((1f - f) * listFadeHeight);
+		if (prefs.listAnimationAppearance() ==
+				Preferences.LIST_APPEARANCE_ANIMATION_SLIDE ||
+				isDraggingDownList()) {
+			y += Math.round((1f - f) * listFadeHeight);
+		}
 		paintList.setAlpha(Math.round(f * 255f));
 		paintText.setAlpha(Math.round(f * alphaText));
 

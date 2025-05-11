@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">Ett långt tryck</string>
 	<string name="open_list_with_double_tap">En dubbeltapp</string>
 	<string name="open_list_with_icon">Ikon i cirkelmenyn</string>
+	<string name="list_animation_appearance">Animation vid visning</string>
+	<string name="list_animation_appearance_slide">Glid in (standard)</string>
+	<string name="list_animation_appearance_fade">Tona in</string>
 	<string name="display_keyboard">Visa tangentbordet automatiskt</string>
 	<string name="display_keyboard_yes">Ja (standard)</string>
 	<string name="display_keyboard_no">Nej</string>

@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">Lang drukken</string>
 	<string name="open_list_with_double_tap">Dubbele tik</string>
 	<string name="open_list_with_icon">Pictogram in Pie menu</string>
+	<string name="list_animation_appearance">Animatie bij verschijnen</string>
+	<string name="list_animation_appearance_slide">Binnen schuiven (standaard)</string>
+	<string name="list_animation_appearance_fade">Vervagen</string>
 	<string name="display_keyboard">Toetsenbord weergeven</string>
 	<string name="display_keyboard_yes">Ja (standaard)</string>
 	<string name="display_keyboard_no">Nee</string>

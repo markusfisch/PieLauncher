@@ -46,6 +46,9 @@
 	<string name="open_list_with_long_press">A long press</string>
 	<string name="open_list_with_double_tap">A double tap</string>
 	<string name="open_list_with_icon">Icon in pie menu</string>
+	<string name="list_animation_appearance">Animation on appearance</string>
+	<string name="list_animation_appearance_slide">Slide in (Standard)</string>
+	<string name="list_animation_appearance_fade">Fade in</string>
 	<string name="display_keyboard">Show keyboard automatically</string>
 	<string name="display_keyboard_yes">Yes (Default)</string>
 	<string name="display_keyboard_no">No</string>

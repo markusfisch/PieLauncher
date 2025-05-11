@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">长按</string>
 	<string name="open_list_with_double_tap">双击</string>
 	<string name="open_list_with_icon">菜单中的图标</string>
+	<string name="list_animation_appearance">出现时的动画</string>
+	<string name="list_animation_appearance_slide">滑入（默认）</string>
+	<string name="list_animation_appearance_fade">淡入</string>
 	<string name="display_keyboard">自动显示键盘</string>
 	<string name="display_keyboard_yes">是 (默认)</string>
 	<string name="display_keyboard_no">没有</string>

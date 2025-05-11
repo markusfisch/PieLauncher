@@ -46,6 +46,9 @@
 	<string name="open_list_with_long_press">Um toque longo</string>
 	<string name="open_list_with_double_tap">Um toque duplo</string>
 	<string name="open_list_with_icon">Ícone no menu Pie</string>
+	<string name="list_animation_appearance">Animação ao aparecer</string>
+	<string name="list_animation_appearance_slide">Deslizar para dentro (Padrão)</string>
+	<string name="list_animation_appearance_fade">Desvanecer</string>
 	<string name="display_keyboard">Mostrar teclado automaticamente</string>
 	<string name="display_keyboard_yes">Sim (Padrão)</string>
 	<string name="display_keyboard_no">Não</string>

@@ -3,8 +3,11 @@ package de.markusfisch.android.pielauncher.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class Preferences {
 	public static final int DEAD_ZONE_NONE = 0;
@@ -17,6 +20,8 @@ public class Preferences {
 	public static final int OPEN_LIST_WITH_ICON = 2;
 	public static final int OPEN_LIST_WITH_LONG_PRESS = 3;
 	public static final int OPEN_LIST_WITH_DOUBLE_TAP = 4;
+	public static final int LIST_APPEARANCE_ANIMATION_SLIDE = 0;
+	public static final int LIST_APPEARANCE_ANIMATION_FADE = 1;
 	public static final int SEARCH_STRICTNESS_HAMMING = 1;
 	public static final int SEARCH_STRICTNESS_CONTAINS = 2;
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
@@ -48,6 +53,7 @@ public class Preferences {
 	private static final String IMMERSIVE_MODE = "immersive_mode_option";
 	private static final String ANIMATE_IN_OUT = "animate_in_out";
 	private static final String OPEN_LIST_WITH = "open_list_with";
+	private static final String LIST_ANIMATION_APPEARANCE = "list_animation_appearance";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
@@ -75,6 +81,7 @@ public class Preferences {
 	private boolean animateInOut = true;
 	private int hapticFeedback = HAPTIC_FEEDBACK_FOLLOW_SYSTEM;
 	private int openListWith = OPEN_LIST_WITH_TAP;
+	private int listAnimationAppearance = LIST_APPEARANCE_ANIMATION_SLIDE;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
@@ -110,6 +117,10 @@ public class Preferences {
 		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
 		animateInOut = preferences.getBoolean(ANIMATE_IN_OUT, animateInOut);
 		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
+		listAnimationAppearance = preferences.getInt(LIST_ANIMATION_APPEARANCE,
+				isHighRefreshRate(context)
+						? LIST_APPEARANCE_ANIMATION_SLIDE
+						: LIST_APPEARANCE_ANIMATION_FADE);
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
 				displayKeyboard);
 		doubleSpaceLaunch = preferences.getBoolean(DOUBLE_SPACE_LAUNCH,
@@ -226,6 +237,15 @@ public class Preferences {
 	public void setOpenListWith(int openListWith) {
 		this.openListWith = openListWith;
 		put(OPEN_LIST_WITH, openListWith).apply();
+	}
+
+	public int listAnimationAppearance() {
+		return listAnimationAppearance;
+	}
+
+	public void setListAnimationAppearance(int listAnimationAppearance) {
+		this.listAnimationAppearance = listAnimationAppearance;
+		put(LIST_ANIMATION_APPEARANCE, listAnimationAppearance).apply();
 	}
 
 	public boolean displayKeyboard() {
@@ -399,5 +419,22 @@ public class Preferences {
 
 	private interface PutListener {
 		void put(SharedPreferences.Editor editor);
+	}
+
+	private static boolean isHighRefreshRate(Context context) {
+		float refreshRate;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			Display display = context.getDisplay();
+			if (display.getMode() != null) {
+				refreshRate = display.getMode().getRefreshRate();
+			} else {
+				refreshRate = 60f;
+			}
+		} else {
+			Display display = ((WindowManager) context.getSystemService(
+					Context.WINDOW_SERVICE)).getDefaultDisplay();
+			refreshRate = display.getRefreshRate();
+		}
+		return refreshRate > 61f; // Because of rounding.
 	}
 }

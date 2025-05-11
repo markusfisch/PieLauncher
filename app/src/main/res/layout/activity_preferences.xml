@@ -72,6 +72,10 @@
 					android:text="@string/open_list_with_tap" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/list_animation_appearance"
+					android:text="@string/list_animation_appearance_slide" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/display_keyboard"
 					android:text="@string/display_keyboard_yes" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

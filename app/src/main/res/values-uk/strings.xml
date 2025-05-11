@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">Тривале натискання</string>
 	<string name="open_list_with_double_tap">Подвійний дотик</string>
 	<string name="open_list_with_icon">Іконка в меню</string>
+	<string name="list_animation_appearance">Анімація під час появи</string>
+	<string name="list_animation_appearance_slide">Зсув (за замовчуванням)</string>
+	<string name="list_animation_appearance_fade">Згасаюче з’явлення</string>
 	<string name="display_keyboard">Автоматично показувати клавіатуру</string>
 	<string name="display_keyboard_yes">Так (за замовчуванням)</string>
 	<string name="display_keyboard_no">Ні</string>

@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">Длительное нажатие</string>
 	<string name="open_list_with_double_tap">Двойное нажатие</string>
 	<string name="open_list_with_icon">Иконка в меню</string>
+	<string name="list_animation_appearance">Анимация при появлении</string>
+	<string name="list_animation_appearance_slide">Сдвиг (Стандартно)</string>
+	<string name="list_animation_appearance_fade">Появление с затуханием</string>
 	<string name="display_keyboard">Автоматически показывать клавиатуру</string>
 	<string name="display_keyboard_yes">Да (Стандартно)</string>
 	<string name="display_keyboard_no">Нет</string>

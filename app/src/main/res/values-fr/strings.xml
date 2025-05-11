@@ -42,6 +42,9 @@
 	<string name="open_list_with_long_press">Un appui long</string>
 	<string name="open_list_with_double_tap">Une double tape</string>
 	<string name="open_list_with_icon">Icône dans le menu</string>
+	<string name="list_animation_appearance">Animation à l\’apparition</string>
+	<string name="list_animation_appearance_slide">Glisser (d\'usine)</string>
+	<string name="list_animation_appearance_fade">Fondu enchaîné</string>
 	<string name="display_keyboard">Affichage automatique du clavier</string>
 	<string name="display_keyboard_yes">Oui (d\'usine)</string>
 	<string name="display_keyboard_no">Non</string>
