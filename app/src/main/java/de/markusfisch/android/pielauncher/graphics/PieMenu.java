@@ -184,7 +184,7 @@ public class PieMenu {
 				int previousLeft = closestIcon;
 
 				for (; ; ) {
-					if ((--left) < 0) {
+					if (--left < 0) {
 						left = numberOfIcons - 1;
 					}
 
@@ -193,7 +193,7 @@ public class PieMenu {
 						break;
 					}
 
-					if ((++right) >= numberOfIcons) {
+					if (++right >= numberOfIcons) {
 						right = 0;
 					}
 
