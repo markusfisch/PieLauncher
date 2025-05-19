@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.23.5
+* Add an option to fade or slide app list in
+
 ## 1.23.4
 * Fix updating apps
 
