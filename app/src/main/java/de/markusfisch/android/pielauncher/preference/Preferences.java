@@ -422,13 +422,16 @@ public class Preferences {
 	}
 
 	private static boolean isHighRefreshRate(Context context) {
-		float refreshRate;
+		float refreshRate = 60f;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			Display display = context.getDisplay();
-			if (display.getMode() != null) {
-				refreshRate = display.getMode().getRefreshRate();
-			} else {
-				refreshRate = 60f;
+			try {
+				Display display = context.getDisplay();
+				if (display.getMode() != null) {
+					refreshRate = display.getMode().getRefreshRate();
+				}
+			} catch (UnsupportedOperationException e) {
+				// Fall through. Thrown when the context isn't associated
+				// with a display.
 			}
 		} else {
 			Display display = ((WindowManager) context.getSystemService(
