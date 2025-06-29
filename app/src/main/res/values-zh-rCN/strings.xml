@@ -102,4 +102,6 @@
 	<string name="want_to_restore_icon">删除图标分配？</string>
 	<string name="all">全部</string>
 	<string name="app_icon">应用程序图标</string>
+	<string name="user_profile_locked">用户个人资料已锁定</string>
+	<string name="activity_not_enabled">活动未启用</string>
 </resources>

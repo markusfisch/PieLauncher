@@ -102,4 +102,6 @@
 	<string name="want_to_restore_icon">Восстановить оригинальную иконку?</string>
 	<string name="all">Все</string>
 	<string name="app_icon">Иконка приложения</string>
+	<string name="user_profile_locked">Профиль пользователя заблокирован</string>
+	<string name="activity_not_enabled">Деятельность не включена</string>
 </resources>

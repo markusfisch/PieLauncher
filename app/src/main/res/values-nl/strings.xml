@@ -102,4 +102,6 @@
 	<string name="want_to_restore_icon">Pictogram-toewijzing verwijderen?</string>
 	<string name="all">Alle</string>
 	<string name="app_icon">App-pictogram</string>
+	<string name="user_profile_locked">Gebruikersprofiel vergrendeld</string>
+	<string name="activity_not_enabled">Activiteit niet ingeschakeld</string>
 </resources>

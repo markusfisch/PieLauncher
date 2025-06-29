@@ -102,4 +102,6 @@
 	<string name="want_to_restore_icon">Supprimer l\'association d\'icônes ?</string>
 	<string name="all">Tous les</string>
 	<string name="app_icon">Icône de l\'app</string>
+	<string name="user_profile_locked">Profil utilisateur verrouillé</string>
+	<string name="activity_not_enabled">Activité non activée</string>
 </resources>

@@ -102,4 +102,6 @@
 	<string name="want_to_restore_icon">Remover o mapeamento de ícones?</string>
 	<string name="all">Todos</string>
 	<string name="app_icon">Ícone do aplicativo</string>
+	<string name="user_profile_locked">Perfil do usuário bloqueado</string>
+	<string name="activity_not_enabled">Atividade não ativada</string>
 </resources>

@@ -102,4 +102,6 @@
 	<string name="want_to_restore_icon">Remove icon mapping?</string>
 	<string name="all">All</string>
 	<string name="app_icon">App icon</string>
+	<string name="user_profile_locked">User profile locked</string>
+	<string name="activity_not_enabled">Activity not enabled\n</string>
 </resources>

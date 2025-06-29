@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.content;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.os.UserManager;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,9 +48,12 @@ import de.markusfisch.android.pielauncher.preference.Preferences;
 public class AppMenu extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
 		public final Rect hitRect = new Rect();
-		public final ComponentName componentName;
 		public final String label;
 		public final UserHandle userHandle;
+
+		// Can't be final because apps can change their components
+		// after indexing (e.g. when switching icons).
+		public ComponentName componentName;
 
 		AppIcon(ComponentName componentName, String label, Drawable icon,
 				UserHandle userHandle) {
@@ -86,6 +91,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	private UpdateListener updateListener;
 	private LauncherApps launcherApps;
+	private UserManager userManager;
 	private String drawerPackageName;
 	private boolean indexing = false;
 
@@ -121,21 +127,7 @@ public class AppMenu extends CanvasPieMenu {
 
 	public void launchApp(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
-			try {
-				LauncherApps lm = getLauncherApps(context);
-				if (lm.isActivityEnabled(icon.componentName,
-						icon.userHandle)) {
-					lm.startMainActivity(
-							icon.componentName,
-							icon.userHandle,
-							icon.rect,
-							null);
-				}
-			} catch (Exception e) {
-				// According to vitals, `startMainActivity()`
-				// and `isActivityEnabled()` can throw all kinds
-				// of exceptions this app can do nothing about.
-			}
+			launchAppWithLauncherApp(context, icon);
 		} else {
 			launchPackage(context, icon.componentName.getPackageName());
 		}
@@ -576,10 +568,82 @@ public class AppMenu extends CanvasPieMenu {
 		return launcherApps;
 	}
 
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private UserManager getUserManager(Context context) {
+		if (userManager == null) {
+			userManager = (UserManager) context.getSystemService(
+					Context.USER_SERVICE);
+		}
+		return userManager;
+	}
+
 	private static Intent getLaunchIntent(Context context,
 			String packageName) {
 		PackageManager pm = context.getPackageManager();
 		return pm != null ? pm.getLaunchIntentForPackage(packageName) : null;
+	}
+
+	@TargetApi(Build.VERSION_CODES.N)
+	private void launchAppWithLauncherApp(Context context, AppIcon icon) {
+		LauncherApps launcherApps = getLauncherApps(context);
+		UserManager userManager = getUserManager(context);
+		if (icon.componentName == null || icon.userHandle == null) {
+			return;
+		}
+		try {
+			if (!userManager.isUserUnlocked(icon.userHandle)) {
+				toast(context, R.string.user_profile_locked);
+				return;
+			}
+			if (!launcherApps.isActivityEnabled(
+					icon.componentName,
+					icon.userHandle)) {
+				ComponentName componentName = findEnabledActivity(
+						icon.componentName.getPackageName(),
+						icon.userHandle);
+				if (componentName == null) {
+					toast(context, R.string.activity_not_enabled);
+					return;
+				}
+				icon.componentName = componentName;
+			}
+			launcherApps.startMainActivity(
+					icon.componentName,
+					icon.userHandle,
+					icon.rect,
+					null);
+		} catch (Exception e) {
+			toast(context, e.getMessage());
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.N)
+	private ComponentName findEnabledActivity(
+			String packageName,
+			UserHandle userHandle) {
+		List<LauncherActivityInfo> activities =
+				launcherApps.getActivityList(packageName, userHandle);
+		for (LauncherActivityInfo info : activities) {
+			if (info.getComponentName() != null &&
+					launcherApps.isActivityEnabled(
+							info.getComponentName(),
+							userHandle)) {
+				return info.getComponentName();
+			}
+		}
+		return null;
+	}
+
+	private <T> void toast(Context context, T message) {
+		String m;
+		if (message instanceof Integer) {
+			m = context.getString((Integer) message);
+		} else if (message instanceof String) {
+			m = (String) message;
+		} else {
+			return;
+		}
+		Toast.makeText(context, m, Toast.LENGTH_SHORT).show();
 	}
 
 	private static String getSubject(int item, AppIcon appIcon,
