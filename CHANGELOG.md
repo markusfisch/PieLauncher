@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.23.6
+* Update French translation
+* Fix icon mapping for packs using flattened strings
+* Fix launching apps with changing components
+* Fix checking for high refresh rate displays
+
 ## 1.23.5
 * Add an option to fade or slide app list in
 

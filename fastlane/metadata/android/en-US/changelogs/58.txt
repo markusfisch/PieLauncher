@@ -1,0 +1,5 @@
+* Update French translation
+* Fix icon mapping for packs using flattened strings
+* Fix launching apps with changing components
+* Fix checking for high refresh rate displays
+
