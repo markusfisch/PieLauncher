@@ -325,13 +325,7 @@ public class AppPieView extends View {
 	}
 
 	public void endEditMode() {
-		Context context = getContext();
-		if (context != null) {
-			PieLauncherApp.appMenu.store(context);
-		}
-		prefs.setRadius(radius);
-		prefs.setTwist(twist);
-		prefs.setIconScale(iconScale);
+		storeMenu();
 		backup.clear();
 		ungrabbedIcons.clear();
 		releaseIcon();
@@ -1156,6 +1150,7 @@ public class AppPieView extends View {
 					returnToList();
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
+					storeMenu();
 					changeIcon(context, grabbedIcon);
 				} else if (PieLauncherApp.appMenu.isDrawerIcon(
 						(AppMenu.AppIcon) grabbedIcon)) {
@@ -1177,6 +1172,10 @@ public class AppPieView extends View {
 						(AppMenu.AppIcon) grabbedIcon)) {
 					removeIconFromPie(grabbedIcon, true);
 				} else {
+					// Persist changes before launching app info because
+					// that can be used to uninstall an app which would
+					// trigger indexing what would reset any changes.
+					storeMenu();
 					PieLauncherApp.appMenu.launchAppInfo(context,
 							(AppMenu.AppIcon) grabbedIcon);
 				}
@@ -1642,6 +1641,16 @@ public class AppPieView extends View {
 					radius, circlePaint);
 		}
 		canvas.drawBitmap(icon, null, rect, paintAction);
+	}
+
+	private void storeMenu() {
+		Context context = getContext();
+		if (context != null) {
+			PieLauncherApp.appMenu.store(context);
+		}
+		prefs.setRadius(radius);
+		prefs.setTwist(twist);
+		prefs.setIconScale(iconScale);
 	}
 
 	private void fadeOutMode() {
