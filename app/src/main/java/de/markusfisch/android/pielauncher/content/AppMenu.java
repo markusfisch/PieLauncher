@@ -606,12 +606,12 @@ public class AppMenu extends CanvasPieMenu {
 				ComponentName componentName = findEnabledActivity(
 						icon.componentName.getPackageName(),
 						icon.userHandle);
-                if (componentName != null) {
-                    icon.componentName = componentName;
-                }
+				if (componentName != null) {
+					icon.componentName = componentName;
+				}
 				// If no enabled activity is found, try to launch anyway
 				// with the disabled activity, just in case it works
-            }
+			}
 			launcherApps.startMainActivity(
 					icon.componentName,
 					icon.userHandle,
