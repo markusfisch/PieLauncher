@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.content;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
@@ -70,11 +71,13 @@ public class LauncherItemKey {
 		return a == b || (a != null && a.equals(b));
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static UserHandle getUserHandle(UserHandle userHandle) {
 		return userHandle == null ? Process.myUserHandle() : userHandle;
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static LauncherItemKey unflattenFromStringWithUserHandle(
 			Context context,
@@ -102,6 +105,7 @@ public class LauncherItemKey {
 		return new LauncherItemKey(componentName, userHandle);
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static String flattenToStringWithUserHandle(
 			Context context,
@@ -117,6 +121,7 @@ public class LauncherItemKey {
 		return sb.toString();
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static UserManager getUserManager(Context context) {
 		return (UserManager) context.getSystemService(Context.USER_SERVICE);

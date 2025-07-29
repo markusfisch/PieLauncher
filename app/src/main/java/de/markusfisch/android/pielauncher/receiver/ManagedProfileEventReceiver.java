@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.receiver;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.os.Build;
 
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 
+@SuppressLint("UseRequiresApi")
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ManagedProfileEventReceiver extends BroadcastReceiver {
 	@Override

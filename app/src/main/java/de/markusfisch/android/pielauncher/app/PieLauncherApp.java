@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.app;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.Context;
@@ -78,6 +79,7 @@ public class PieLauncherApp extends Application {
 		registerReceiver(packageEventReceiver, filter);
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private void registerManagedEventReceiver() {
 		IntentFilter filter = new IntentFilter();
@@ -86,6 +88,7 @@ public class PieLauncherApp extends Application {
 		registerReceiver(managedProfileEventReceiver, filter);
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private void registerLauncherAppsCallback() {
 		LauncherApps launcherApps = (LauncherApps) getSystemService(

@@ -340,6 +340,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static void indexProfilesApps(
 			LauncherApps la,
@@ -375,6 +376,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static Drawable getBadgedIcon(LauncherActivityInfo info) {
 		// According to Vitals, `getBadgedIcon()` can throw a NPE
@@ -559,6 +561,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private LauncherApps getLauncherApps(Context context) {
 		if (launcherApps == null) {
@@ -568,6 +571,7 @@ public class AppMenu extends CanvasPieMenu {
 		return launcherApps;
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private UserManager getUserManager(Context context) {
 		if (userManager == null) {
@@ -583,6 +587,7 @@ public class AppMenu extends CanvasPieMenu {
 		return pm != null ? pm.getLaunchIntentForPackage(packageName) : null;
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.N)
 	private void launchAppWithLauncherApp(Context context, AppIcon icon) {
 		LauncherApps launcherApps = getLauncherApps(context);
@@ -617,6 +622,7 @@ public class AppMenu extends CanvasPieMenu {
 		}
 	}
 
+	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.N)
 	private ComponentName findEnabledActivity(
 			String packageName,

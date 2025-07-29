@@ -16,7 +16,7 @@ public class BatteryOptimization {
 	// be available (and thus in memory). Killing this process in Doze mode
 	// and reloading it when the user unlocks their device actually consumes
 	// more battery.
-	@SuppressLint("BatteryLife")
+	@SuppressLint("BatteryLife,UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.M)
 	public static void requestDisable(Context context) {
 		Intent intent = new Intent();
