@@ -74,10 +74,22 @@ public class IconPack {
 							"item".equals(parser.getName())) {
 						String component = parser.getAttributeValue(
 								null, "component");
+						if (component == null) {
+							component = parser.getAttributeValue(
+									null, "activity");
+						}
+						if (component == null || component.isEmpty()) {
+							continue;
+						}
 						String drawable = parser.getAttributeValue(
 								null, "drawable");
-						if (component != null && !component.isEmpty() &&
-								drawable != null && !drawable.isEmpty()) {
+						if (drawable == null || drawable.isEmpty()) {
+							continue;
+						}
+						ComponentName cn = parseComponent(component);
+						if (cn != null) {
+							map.put(cn.flattenToShortString(), drawable);
+						} else {
 							map.put(component, drawable);
 						}
 					}
@@ -226,9 +238,19 @@ public class IconPack {
 				return null;
 			}
 			drawableName = componentToDrawableNames.get(
-					componentName.toString());
+					componentName.flattenToShortString());
 		}
 		return selectedPack.getDrawable(drawableName);
+	}
+
+	private static ComponentName parseComponent(String s) {
+		if (s == null) {
+			return null;
+		}
+		if (s.startsWith("ComponentInfo{") && s.endsWith("}")) {
+			s = s.substring(14, s.length() - 1);
+		}
+		return ComponentName.unflattenFromString(s);
 	}
 
 	private static List<ResolveInfo> queryIntentActivities(
