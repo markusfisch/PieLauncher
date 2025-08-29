@@ -99,10 +99,7 @@ The back gesture works immediately and without any delay.
 
 This is an issue of your keyboard app that may do too much work.
 Unfortunately, GBoard is not the best choice for all devices.
-
-I recommend using a lighter alternative like
-[OpenBoard](https://f-droid.org/de/packages/org.dslul.openboard.inputmethod.latin/)
-which is fast even on low-end devices.
+Please check for a lighter alternative keyboard.
 
 ### Home returns to the default launcher
 
