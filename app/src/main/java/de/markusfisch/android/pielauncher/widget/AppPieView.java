@@ -1333,7 +1333,8 @@ public class AppPieView extends View {
 		int size = PieLauncherApp.appMenu.icons.size();
 		for (int i = 0; i < size; ++i) {
 			AppMenu.Icon icon = PieLauncherApp.appMenu.icons.get(i);
-			float sizeSq = Math.round(icon.size * icon.size);
+			double rad = icon.size * .5;
+			float sizeSq = Math.round(rad * rad);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
 				editIcon(icon);
 				performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
