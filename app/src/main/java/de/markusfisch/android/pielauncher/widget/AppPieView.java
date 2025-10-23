@@ -350,7 +350,9 @@ public class AppPieView extends View {
 	protected void onDraw(Canvas canvas) {
 		long now = SystemClock.uptimeMillis();
 		float ad = prefs.getAnimationDuration();
-		float fPie = fadePie.get(now, ad);
+		float fPie = fadePie.get(now,
+				// Prolong fade out to improve touch feedback.
+				fadePie.isFadingOut(now) ? ad * 3f : ad);
 		float fList = Math.min(fadeList.get(now, ad), dragProgress);
 		float fEdit = fadeEdit.get(now, ad);
 		float fMax = easeSlowerIn(Math.max(fPie, Math.max(fList, fEdit)));
@@ -1836,6 +1838,10 @@ public class AppPieView extends View {
 
 		private boolean isFadingIn(long now) {
 			return now < fadeInTo;
+		}
+
+		private boolean isFadingOut(long now) {
+			return fadeOutFrom > 0 && fadeOutFrom <= now;
 		}
 
 		private float get(long now, float duration) {
