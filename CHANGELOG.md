@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.23.7
+* Improve pie animations
+* Improve pie editor
+
 ## 1.23.6
 * Update French translation
 * Fix icon mapping for packs using flattened strings
