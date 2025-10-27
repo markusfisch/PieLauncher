@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextPaint;
@@ -115,10 +117,12 @@ public class AppPieView extends View {
 	private final int alphaDropZone;
 	private final int alphaPressed;
 	private final int alphaText;
+	private final float maxBlurRadius;
 	private final float dp;
 	private final float textHeight;
 	private final float textOffset;
 	private final float touchSlopSq;
+	private int currentBlur;
 
 	private Window window;
 	private Runnable rippleRunnable;
@@ -178,6 +182,7 @@ public class AppPieView extends View {
 		iconSize = Math.round(48f * dp);
 		iconTextPadding = Math.round(12f * dp);
 		spaceBetween = Math.round(4f * dp);
+		maxBlurRadius = iconSize * .35f;
 
 		loadingTip = context.getString(R.string.tip_loading);
 		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
@@ -223,7 +228,6 @@ public class AppPieView extends View {
 				(prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
 						? 2L : 1L);
 		doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
-
 		if (PieLauncherApp.appMenu.isEmpty()) {
 			PieLauncherApp.appMenu.indexAppsAsync(context);
 		}
@@ -351,9 +355,10 @@ public class AppPieView extends View {
 	protected void onDraw(Canvas canvas) {
 		long now = SystemClock.uptimeMillis();
 		float ad = prefs.getAnimationDuration();
+		boolean pieFadingOut = fadePie.isFadingOut(now);
 		float fPie = fadePie.get(now,
 				// Prolong fade out to improve touch feedback.
-				fadePie.isFadingOut(now) ? ad * 3f : ad);
+				pieFadingOut ? ad * 3f : ad);
 		float fList = Math.min(fadeList.get(now, ad), dragProgress);
 		float fEdit = fadeEdit.get(now, ad);
 		float fMax = easeSlowerIn(Math.max(fPie, Math.max(fList, fEdit)));
@@ -375,6 +380,12 @@ public class AppPieView extends View {
 						(alpha << 24) | (translucentBackgroundColor & 0xffffff),
 						PorterDuff.Mode.SRC);
 			}
+		}
+		if ((pieFadingOut || fadePie.isFadingIn(now)) &&
+				Math.max(fList, fEdit) == 0f) {
+			applyBlur(1f - clamp(fPie, 0f, 1f));
+		} else {
+			clearBlur();
 		}
 		boolean invalidate = drawPieMenu(canvas, fPie);
 		invalidate |= drawList(canvas, fList);
@@ -1733,6 +1744,31 @@ public class AppPieView extends View {
 		return i == -1
 				? l // Only spaces, so treat first space as show icon.
 				: l - i; // Return number of trailing spaces.
+	}
+
+	private void applyBlur(float f) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+				!isHardwareAccelerated()) {
+			return;
+		}
+		if (f <= 0f) {
+			clearBlur();
+			return;
+		}
+		int radius = Math.max(1, Math.round(f * maxBlurRadius));
+		if (currentBlur == radius) {
+			return;
+		}
+		setRenderEffect(RenderEffect.createBlurEffect(
+				radius, radius, Shader.TileMode.CLAMP));
+		currentBlur = radius;
+	}
+
+	private void clearBlur() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			setRenderEffect(null);
+		}
+		currentBlur = 0;
 	}
 
 	private class FlingRunnable implements Runnable {
