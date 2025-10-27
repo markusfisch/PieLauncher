@@ -388,13 +388,14 @@ public class AppPieView extends View {
 			clearBlur();
 		}
 		boolean invalidate = drawPieMenu(canvas, fPie);
-		invalidate |= drawList(canvas, fList);
-		invalidate |= drawEditor(canvas, fEdit);
-		if (ripple.draw(canvas, prefs) || invalidate) {
-			invalidate();
-		}
+		invalidate |= ripple.draw(canvas, prefs);
 		if (PieLauncherApp.appMenu.isIndexing()) {
 			drawTip(canvas, loadingTip);
+		}
+		invalidate |= drawList(canvas, fList);
+		invalidate |= drawEditor(canvas, fEdit);
+		if (invalidate) {
+			invalidate();
 		}
 	}
 
