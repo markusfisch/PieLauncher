@@ -15,8 +15,9 @@
 	<string name="orientation_landscape">Liggande</string>
 	<string name="orientation_user">Auto</string>
 	<string name="darken_background">Gör bakgrunden mörkare</string>
-	<string name="darken_background_yes">Ja</string>
-	<string name="darken_background_no">Nej (standard)</string>
+	<string name="darken_background_yes">Kraftig</string>
+	<string name="darken_background_light">Lätt</string>
+	<string name="darken_background_no">Ingen (standard)</string>
 	<string name="blur_background">Gör bakgrunden oskarp</string>
 	<string name="background_blur_radius_medium">Medium</string>
 	<string name="background_blur_radius_heavy">Stark</string>

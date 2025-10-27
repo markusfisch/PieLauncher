@@ -34,6 +34,9 @@ public class Preferences {
 	public static final int ICON_PRESS_LONGER = 1;
 	public static final int ICON_PRESS_MENU = 2;
 	public static final int ICON_LOCK_MENU = 3;
+	public static final int DARKEN_BACKGROUND_NONE = 0;
+	public static final int DARKEN_BACKGROUND_LIGHT = 1;
+	public static final int DARKEN_BACKGROUND_HEAVY = 2;
 	public static final int IMMERSIVE_MODE_DISABLED = 0;
 	public static final int IMMERSIVE_MODE_STATUS_BAR = 1;
 	public static final int IMMERSIVE_MODE_NAVIGATION_BAR = 2;
@@ -47,7 +50,7 @@ public class Preferences {
 	private static final String TWIST = "twist";
 	private static final String ICON_SCALE = "icon_scale";
 	private static final String ORIENTATION = "orientation";
-	private static final String DARKEN_BACKGROUND = "darken_background";
+	private static final String DARKEN_BACKGROUND = "darken_background_level";
 	private static final String BLUR_BACKGROUND_RADIUS = "background_blur_radius";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String IMMERSIVE_MODE = "immersive_mode_option";
@@ -74,7 +77,7 @@ public class Preferences {
 	private float twist = 0f;
 	private float iconScale = 1f;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-	private boolean darkenBackground = false;
+	private int darkenBackground = DARKEN_BACKGROUND_NONE;
 	private int backgroundBlurRadius = 0;
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
@@ -109,7 +112,7 @@ public class Preferences {
 		twist = preferences.getFloat(TWIST, twist);
 		iconScale = preferences.getFloat(ICON_SCALE, iconScale);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
-		darkenBackground = preferences.getBoolean(DARKEN_BACKGROUND,
+		darkenBackground = preferences.getInt(DARKEN_BACKGROUND,
 				darkenBackground);
 		backgroundBlurRadius = preferences.getInt(BLUR_BACKGROUND_RADIUS,
 				backgroundBlurRadius);
@@ -185,11 +188,11 @@ public class Preferences {
 		put(ORIENTATION, orientation).commit();
 	}
 
-	public boolean darkenBackground() {
+	public int darkenBackground() {
 		return darkenBackground;
 	}
 
-	public void setDarkenBackground(boolean darkenBackground) {
+	public void setDarkenBackground(int darkenBackground) {
 		this.darkenBackground = darkenBackground;
 		put(DARKEN_BACKGROUND, darkenBackground).apply();
 	}
@@ -375,6 +378,13 @@ public class Preferences {
 			put(oldBlurBackground, false).apply();
 			backgroundBlurRadius = 20;
 			setBackgroundBlurRadius(backgroundBlurRadius);
+		}
+
+		// Migrate old darken background setting.
+		String oldDarkenBackground = "darken_background";
+		if (preferences.getBoolean(oldDarkenBackground, false)) {
+			put(oldDarkenBackground, false).apply();
+			setDarkenBackground(DARKEN_BACKGROUND_HEAVY);
 		}
 	}
 

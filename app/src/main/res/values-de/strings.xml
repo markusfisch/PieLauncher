@@ -15,8 +15,9 @@
 	<string name="orientation_landscape">Querformat</string>
 	<string name="orientation_user">Automatisch</string>
 	<string name="darken_background">Hintergrund abdunkeln</string>
-	<string name="darken_background_yes">Ja</string>
-	<string name="darken_background_no">Nein (Standard)</string>
+	<string name="darken_background_yes">Stark</string>
+	<string name="darken_background_light">Leicht</string>
+	<string name="darken_background_no">Keine (Standard)</string>
 	<string name="blur_background">Hintergrund verwischen</string>
 	<string name="background_blur_radius_medium">Etwas</string>
 	<string name="background_blur_radius_heavy">Stark</string>

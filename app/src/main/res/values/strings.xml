@@ -15,8 +15,9 @@
 	<string name="orientation_landscape">Landscape</string>
 	<string name="orientation_user">Auto</string>
 	<string name="darken_background">Darken background</string>
-	<string name="darken_background_yes">Yes</string>
-	<string name="darken_background_no">No (Default)</string>
+	<string name="darken_background_yes">Heavy</string>
+	<string name="darken_background_light">Light</string>
+	<string name="darken_background_no">None (Default)</string>
 	<string name="blur_background">Blur background</string>
 	<string name="background_blur_radius_medium">Medium</string>
 	<string name="background_blur_radius_heavy">Heavy</string>

@@ -15,8 +15,9 @@
 	<string name="orientation_landscape">Пейзаж</string>
 	<string name="orientation_user">Авто</string>
 	<string name="darken_background">Затемнити фон</string>
-	<string name="darken_background_yes">Так</string>
-	<string name="darken_background_no">Ні (за замовчуванням)</string>
+	<string name="darken_background_yes">Сильне</string>
+	<string name="darken_background_light">Легке</string>
+	<string name="darken_background_no">Немає (за замовчуванням)</string>
 	<string name="blur_background">Розмити фон</string>
 	<string name="background_blur_radius_medium">Середня</string>
 	<string name="background_blur_radius_heavy">Сильно</string>

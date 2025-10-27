@@ -370,8 +370,14 @@ public class AppPieView extends View {
 				lastBlur = blur;
 			}
 		}
-		if (mode != MODE_PIE || prefs.darkenBackground()) {
+		int darkenBackground = prefs.darkenBackground();
+		if (mode != MODE_PIE ||
+				darkenBackground != Preferences.DARKEN_BACKGROUND_NONE) {
 			int max = (translucentBackgroundColor >> 24) & 0xff;
+			if (mode == MODE_PIE &&
+					darkenBackground == Preferences.DARKEN_BACKGROUND_LIGHT) {
+				max /= 2;
+			}
 			int alpha = Math.round(fMax * max);
 			if (alpha == 0) {
 				canvas.drawColor(0, PorterDuff.Mode.CLEAR);

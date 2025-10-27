@@ -15,8 +15,9 @@
 	<string name="orientation_landscape">竖屏</string>
 	<string name="orientation_user">自动</string>
 	<string name="darken_background">使背景变暗</string>
-	<string name="darken_background_yes">是</string>
-	<string name="darken_background_no">没有 (默认)</string>
+	<string name="darken_background_yes">强烈</string>
+	<string name="darken_background_light">轻微</string>
+	<string name="darken_background_no">无（默认）</string>
 	<string name="blur_background">模糊背景</string>
 	<string name="background_blur_radius_medium">介质</string>
 	<string name="background_blur_radius_heavy">强</string>

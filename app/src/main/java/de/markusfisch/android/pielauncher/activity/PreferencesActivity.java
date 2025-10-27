@@ -404,10 +404,14 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getDarkenBackgroundOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.darken_background_yes);
-		map.put(Boolean.FALSE, R.string.darken_background_no);
+	private static Map<Integer, Integer> getDarkenBackgroundOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.DARKEN_BACKGROUND_NONE,
+				R.string.darken_background_no);
+		map.put(Preferences.DARKEN_BACKGROUND_LIGHT,
+				R.string.darken_background_light);
+		map.put(Preferences.DARKEN_BACKGROUND_HEAVY,
+				R.string.darken_background_yes);
 		return map;
 	}
 

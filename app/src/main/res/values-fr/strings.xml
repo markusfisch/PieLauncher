@@ -15,8 +15,9 @@
 	<string name="orientation_landscape">Paysage</string>
 	<string name="orientation_user">Automatique</string>
 	<string name="darken_background">Assombrir le fond</string>
-	<string name="darken_background_yes">Oui</string>
-	<string name="darken_background_no">Non (par défaut)</string>
+	<string name="darken_background_yes">Fort</string>
+	<string name="darken_background_light">Léger</string>
+	<string name="darken_background_no">Aucun (par défaut)</string>
 	<string name="blur_background">Flouter le fond</string>
 	<string name="background_blur_radius_medium">Moyen</string>
 	<string name="background_blur_radius_heavy">Fort</string>
