@@ -1,5 +1,6 @@
 package de.markusfisch.android.pielauncher.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -38,6 +39,9 @@ public class HomeActivity extends Activity {
 	private int immersiveMode = Preferences.IMMERSIVE_MODE_DISABLED;
 	private long pausedAt = 0L;
 
+	// I'm not including a support library to catch back presses.
+	// If this is no longer working on new Androids, so be it.
+	@SuppressLint("GestureBackNavigation")
 	@Override
 	public void onBackPressed() {
 		if (pieView.inEditMode()) {
