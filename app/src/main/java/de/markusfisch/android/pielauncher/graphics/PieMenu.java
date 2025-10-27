@@ -47,6 +47,10 @@ public class PieMenu {
 		return centerY;
 	}
 
+	public void addScrollShift(int scrollY) {
+		centerY += scrollY;
+	}
+
 	public void set(int centerX, int centerY, double radius, double twist,
 			float iconScale) {
 		this.centerX = centerX;

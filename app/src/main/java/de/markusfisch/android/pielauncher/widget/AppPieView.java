@@ -248,6 +248,7 @@ public class AppPieView extends View {
 		}
 		mode = MODE_LIST;
 		cancelRipple();
+		PieLauncherApp.appMenu.addScrollShift(lastScrollY);
 		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
 		resetDragDownList();
