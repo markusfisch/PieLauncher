@@ -362,6 +362,7 @@ public class AppPieView extends View {
 		float fList = Math.min(fadeList.get(now, ad), dragProgress);
 		float fEdit = fadeEdit.get(now, ad);
 		float fMax = easeSlowerIn(Math.max(fPie, Math.max(fList, fEdit)));
+
 		int bbr = prefs.getBackgroundBlurRadius();
 		if (bbr > 0) {
 			int blur = Math.round(fMax * bbr);
@@ -370,16 +371,19 @@ public class AppPieView extends View {
 				lastBlur = blur;
 			}
 		}
+
 		if (mode != MODE_PIE || prefs.darkenBackground() !=
 				Preferences.DARKEN_BACKGROUND_NONE) {
 			darkenBackground(canvas, fMax);
 		}
+
 		if ((pieFadingOut || fadePie.isFadingIn(now)) &&
 				Math.max(fList, fEdit) == 0f) {
 			applyBlur(1f - clamp(fPie, 0f, 1f));
 		} else {
 			clearBlur();
 		}
+
 		boolean invalidate = drawPieMenu(canvas, fPie);
 		invalidate |= ripple.draw(canvas, prefs);
 		if (PieLauncherApp.appMenu.isIndexing()) {
