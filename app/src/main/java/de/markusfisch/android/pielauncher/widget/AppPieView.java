@@ -370,22 +370,9 @@ public class AppPieView extends View {
 				lastBlur = blur;
 			}
 		}
-		int darkenBackground = prefs.darkenBackground();
-		if (mode != MODE_PIE ||
-				darkenBackground != Preferences.DARKEN_BACKGROUND_NONE) {
-			int max = (translucentBackgroundColor >> 24) & 0xff;
-			if (mode == MODE_PIE &&
-					darkenBackground == Preferences.DARKEN_BACKGROUND_LIGHT) {
-				max /= 2;
-			}
-			int alpha = Math.round(fMax * max);
-			if (alpha == 0) {
-				canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			} else {
-				canvas.drawColor(
-						(alpha << 24) | (translucentBackgroundColor & 0xffffff),
-						PorterDuff.Mode.SRC);
-			}
+		if (mode != MODE_PIE || prefs.darkenBackground() !=
+				Preferences.DARKEN_BACKGROUND_NONE) {
+			darkenBackground(canvas, fMax);
 		}
 		if ((pieFadingOut || fadePie.isFadingIn(now)) &&
 				Math.max(fList, fEdit) == 0f) {
@@ -1751,6 +1738,22 @@ public class AppPieView extends View {
 		return i == -1
 				? l // Only spaces, so treat first space as show icon.
 				: l - i; // Return number of trailing spaces.
+	}
+
+	private void darkenBackground(Canvas canvas, float f) {
+		int max = (translucentBackgroundColor >> 24) & 0xff;
+		if (mode == MODE_PIE && prefs.darkenBackground() ==
+				Preferences.DARKEN_BACKGROUND_LIGHT) {
+			max /= 2;
+		}
+		int alpha = Math.round(f * max);
+		if (alpha == 0) {
+			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		} else {
+			canvas.drawColor(
+					(alpha << 24) | (translucentBackgroundColor & 0xffffff),
+					PorterDuff.Mode.SRC);
+		}
 	}
 
 	private void applyBlur(float f) {
