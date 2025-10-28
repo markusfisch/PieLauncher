@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RenderEffect;
+import android.graphics.RenderNode;
 import android.graphics.Shader;
 import android.os.Build;
 import android.os.SystemClock;
@@ -122,9 +123,10 @@ public class AppPieView extends View {
 	private final float textHeight;
 	private final float textOffset;
 	private final float touchSlopSq;
-	private int currentBlur;
+	private int currentPieBlur;
 
 	private Window window;
+	private RenderNode pieRenderNode;
 	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
@@ -205,6 +207,10 @@ public class AppPieView extends View {
 		textHeight = paintText.descent() - paintText.ascent();
 		textOffset = (textHeight / 2) - paintText.descent();
 		translucentBackgroundColor = res.getColor(R.color.bg_ui);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			pieRenderNode = new RenderNode("PieMenu");
+		}
 
 		iconAdd = Converter.getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconEdit = Converter.getBitmapFromDrawable(res, R.drawable.ic_edit);
@@ -377,14 +383,17 @@ public class AppPieView extends View {
 			darkenBackground(canvas, fMax);
 		}
 
-		if ((pieFadingOut || fadePie.isFadingIn(now)) &&
-				Math.max(fList, fEdit) == 0f) {
-			applyBlur(1f - clamp(fPie, 0f, 1f));
+		Canvas pieCanvas = getRecordingCanvas(pieRenderNode, canvas);
+		if (pieFadingOut || fadePie.isFadingIn(now)) {
+			currentPieBlur = applyBlur(pieRenderNode, currentPieBlur,
+					1f - clamp(fPie, 0f, 1f));
 		} else {
-			clearBlur();
+			clearBlur(pieRenderNode);
+			currentPieBlur = 0;
 		}
+		boolean invalidate = drawPieMenu(pieCanvas, fPie);
+		drawRenderNode(pieRenderNode, canvas);
 
-		boolean invalidate = drawPieMenu(canvas, fPie);
 		invalidate |= ripple.draw(canvas, prefs);
 		if (PieLauncherApp.appMenu.isIndexing()) {
 			drawTip(canvas, loadingTip);
@@ -854,6 +863,11 @@ public class AppPieView extends View {
 		twist = prefs.getTwist();
 		minIconScale = (48f * dp) / maxIconSize;
 		iconScale = prefs.getIconScale();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+				pieRenderNode != null) {
+			pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
+		}
 
 		updateChangeTwistIcon();
 		updateChangeIconScaleIcon();
@@ -1582,6 +1596,22 @@ public class AppPieView extends View {
 		grabbedIcon.y = touch.y;
 	}
 
+	private Canvas getRecordingCanvas(RenderNode node, Canvas fallback) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+				!fallback.isHardwareAccelerated()) {
+			return fallback;
+		}
+		return node.beginRecording(viewWidth, viewHeight);
+	}
+
+	private void drawRenderNode(RenderNode node, Canvas canvas) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+				node != null) {
+			node.endRecording();
+			canvas.drawRenderNode(node);
+		}
+	}
+
 	private boolean drawPieMenu(Canvas canvas, float f) {
 		if (f <= 0) {
 			return false;
@@ -1760,29 +1790,29 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void applyBlur(float f) {
+	private int applyBlur(RenderNode node, int current, float f) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+				node == null ||
 				!isHardwareAccelerated()) {
-			return;
+			return 0;
 		}
 		if (f <= 0f) {
-			clearBlur();
-			return;
+			clearBlur(node);
+			return 0;
 		}
 		int radius = Math.max(1, Math.round(f * maxBlurRadius));
-		if (currentBlur == radius) {
-			return;
+		if (current != radius) {
+			node.setRenderEffect(RenderEffect.createBlurEffect(
+					radius, radius, Shader.TileMode.CLAMP));
 		}
-		setRenderEffect(RenderEffect.createBlurEffect(
-				radius, radius, Shader.TileMode.CLAMP));
-		currentBlur = radius;
+		return radius;
 	}
 
-	private void clearBlur() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			setRenderEffect(null);
+	private void clearBlur(RenderNode node) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+				node != null) {
+			node.setRenderEffect(null);
 		}
-		currentBlur = 0;
 	}
 
 	private class FlingRunnable implements Runnable {
