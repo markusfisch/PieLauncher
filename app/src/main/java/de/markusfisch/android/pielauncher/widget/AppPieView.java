@@ -124,9 +124,11 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 	private int currentPieBlur;
+	private int currentListBlur;
 
 	private Window window;
 	private RenderNode pieRenderNode;
+	private RenderNode listRenderNode;
 	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
@@ -211,6 +213,11 @@ public class AppPieView extends View {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			pieRenderNode = new RenderNode("PieMenu");
+			listRenderNode = new RenderNode("List");
+
+			// Disable clipping because the view is scrolled and
+			// `drawList()` already draws only the visible portion.
+			listRenderNode.setClipToBounds(false);
 		}
 
 		iconAdd = Converter.getBitmapFromDrawable(res, R.drawable.ic_add);
@@ -362,10 +369,9 @@ public class AppPieView extends View {
 	protected void onDraw(Canvas canvas) {
 		long now = SystemClock.uptimeMillis();
 		float ad = prefs.getAnimationDuration();
-		boolean pieFadingOut = fadePie.isFadingOut(now);
 		float fPie = fadePie.get(now,
 				// Prolong fade out to improve touch feedback.
-				pieFadingOut ? ad * 3f : ad);
+				fadePie.isFadingOut(now) ? ad * 3f : ad);
 		float fList = Math.min(fadeList.get(now, ad), dragProgress);
 		float fEdit = fadeEdit.get(now, ad);
 		float fMax = easeSlowerIn(Math.max(fPie, Math.max(fList, fEdit)));
@@ -385,13 +391,7 @@ public class AppPieView extends View {
 		}
 
 		Canvas pieCanvas = getRecordingCanvas(pieRenderNode, canvas);
-		if (pieFadingOut || fadePie.isFadingIn(now)) {
-			currentPieBlur = applyBlur(pieRenderNode, currentPieBlur,
-					1f - clamp(fPie, 0f, 1f));
-		} else {
-			clearBlur(pieRenderNode);
-			currentPieBlur = 0;
-		}
+		currentPieBlur = applyBlurOut(pieRenderNode, currentPieBlur, fPie);
 		boolean invalidate = drawPieMenu(pieCanvas, fPie);
 		drawRenderNode(pieRenderNode, canvas);
 
@@ -399,8 +399,14 @@ public class AppPieView extends View {
 		if (PieLauncherApp.appMenu.isIndexing()) {
 			drawTip(canvas, loadingTip);
 		}
-		invalidate |= drawList(canvas, fList);
+
+		Canvas listCanvas = getRecordingCanvas(listRenderNode, canvas);
+		currentListBlur = applyBlurOut(listRenderNode, currentListBlur, fList);
+		invalidate |= drawList(listCanvas, fList);
+		drawRenderNode(listRenderNode, canvas);
+
 		invalidate |= drawEditor(canvas, fEdit);
+
 		if (invalidate) {
 			invalidate();
 		}
@@ -868,6 +874,7 @@ public class AppPieView extends View {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
 				pieRenderNode != null) {
 			pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
+			listRenderNode.setPosition(0, 0, viewWidth, viewHeight);
 		}
 
 		updateChangeTwistIcon();
@@ -1608,7 +1615,7 @@ public class AppPieView extends View {
 				!fallback.isHardwareAccelerated()) {
 			return fallback;
 		}
-		return node.beginRecording(viewWidth, viewHeight);
+		return node.beginRecording();
 	}
 
 	private void drawRenderNode(RenderNode node, Canvas canvas) {
@@ -1796,6 +1803,10 @@ public class AppPieView extends View {
 					(alpha << 24) | (translucentBackgroundColor & 0xffffff),
 					PorterDuff.Mode.SRC);
 		}
+	}
+
+	private int applyBlurOut(RenderNode node, int current, float f) {
+		return applyBlur(node, current, 1f - clamp(f, 0f, 1f));
 	}
 
 	private int applyBlur(RenderNode node, int current, float f) {
