@@ -73,10 +73,10 @@ public class PieMenu {
 	}
 
 	public void calculate(float x, float y) {
-		calculate(x, y, 1f);
+		calculate(x, y, 1f, null);
 	}
 
-	public void calculate(float x, float y, float t) {
+	public void calculate(float x, float y, float t, Icon launching) {
 		selectedIcon = -1;
 
 		int numberOfIcons = icons.size();
@@ -232,6 +232,13 @@ public class PieMenu {
 					previousLeft = left;
 				}
 			}
+		}
+
+		// Animate launching icon into center.
+		if (launching != null) {
+			launching.x = centerX + Math.round((launching.x - centerX) * t);
+			launching.y = centerY + Math.round((launching.y - centerY) * t);
+			launching.size = maxIconSize;
 		}
 	}
 }

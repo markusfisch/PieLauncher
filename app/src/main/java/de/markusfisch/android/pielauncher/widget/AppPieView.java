@@ -159,6 +159,7 @@ public class AppPieView extends View {
 	private Rect highlightedAction;
 	private AppMenu.Icon grabbedIcon;
 	private AppMenu.Icon highlightedIcon;
+	private AppMenu.Icon launchingApp;
 	private long highlightedFrom;
 	private long grabbedIconAt;
 	private long lastTapUpTime;
@@ -331,7 +332,7 @@ public class AppPieView extends View {
 		if (selectedApp < 0 || isEmpty()) {
 			return;
 		}
-		PieLauncherApp.appMenu.launchApp(getContext(), appList.get(
+		launchApp(getContext(), appList.get(
 				clamp(selectedApp, 0, getIconCount() - 1)));
 	}
 
@@ -1093,7 +1094,7 @@ public class AppPieView extends View {
 				listListener.onOpenList(false);
 			}
 		} else if (appIcon != null) {
-			PieLauncherApp.appMenu.launchApp(context, appIcon);
+			launchApp(context, appIcon);
 			result = true;
 		}
 		if (result) {
@@ -1116,7 +1117,7 @@ public class AppPieView extends View {
 			}
 			return false;
 		}
-		PieLauncherApp.appMenu.launchApp(context, appIcon);
+		launchApp(context, appIcon);
 		if (listListener != null) {
 			listListener.onHideList();
 		}
@@ -1209,6 +1210,11 @@ public class AppPieView extends View {
 			return true;
 		}
 		return false;
+	}
+
+	private void launchApp(Context context, AppMenu.AppIcon appIcon) {
+		launchingApp = (AppMenu.Icon) appIcon;
+		PieLauncherApp.appMenu.launchApp(context, appIcon);
 	}
 
 	private void removeIconFromPie(AppMenu.Icon icon, boolean isDrawerIcon) {
@@ -1353,6 +1359,7 @@ public class AppPieView extends View {
 				twist,
 				iconScale);
 		lastSelectedIcon = -1;
+		launchingApp = null;
 	}
 
 	private void editIconAt(Point point) {
@@ -1619,7 +1626,8 @@ public class AppPieView extends View {
 
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		PieLauncherApp.appMenu.calculate(touch.x, touch.y,
-				prefs.animateInOut() ? easeSlowerOut(f) : 1f);
+				prefs.animateInOut() ? easeSlowerOut(f) : 1f,
+				launchingApp);
 		PieLauncherApp.appMenu.draw(canvas);
 
 		int selectedIcon = PieLauncherApp.appMenu.getSelectedIcon();
