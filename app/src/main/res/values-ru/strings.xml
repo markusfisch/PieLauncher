@@ -19,7 +19,7 @@
 	<string name="darken_background_light">Лёгкое</string>
 	<string name="darken_background_no">Нет (по умолчанию)</string>
 	<string name="blur_background">Размывать фон</string>
-	<string name="background_blur_radius_medium">Средство</string>
+	<string name="background_blur_radius_medium">Средняя</string>
 	<string name="background_blur_radius_heavy">Сильно</string>
 	<string name="background_blur_radius_none">Нет (Стандартно)</string>
 	<string name="blur_menu">Размывать меню</string>

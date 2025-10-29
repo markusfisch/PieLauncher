@@ -7,14 +7,14 @@
 	<string name="preferences">Configurações</string>
 	<string name="welcome">Bem-vindo!</string>
 	<string name="check_these_settings">Por favor, verifique as seguintes configurações:</string>
-	<string name="disable_battery_optimization"><big><font color="#ffffff">Desativar otimações de bateria</font></big>\nEconomiza energia e faz com que este app de início funcione mais rápido</string>
+	<string name="disable_battery_optimization"><big><font color="#ffffff">Desativar otimizações de bateria</font></big>\nEconomiza energia e faz com que este app de início funcione mais rápido</string>
 	<string name="make_default_launcher"><big><font color="#ffffff">Definir como app de início padrão</font></big>\nEvita o retorno ao seu app de início anterior</string>
 	<string name="category_home">Início</string>
 	<string name="orientation">Orientação</string>
 	<string name="orientation_portrait">Retrato (Padrão)</string>
 	<string name="orientation_landscape">Paisagem</string>
 	<string name="orientation_user">Automático</string>
-	<string name="darken_background">Escurer plano de fundo</string>
+	<string name="darken_background">Escurecer plano de fundo</string>
 	<string name="darken_background_yes">Forte</string>
 	<string name="darken_background_light">Leve</string>
 	<string name="darken_background_no">Nenhum (Padrão)</string>

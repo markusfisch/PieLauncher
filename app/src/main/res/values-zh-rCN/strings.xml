@@ -11,15 +11,15 @@
 	<string name="make_default_launcher"><big><font color="#ffffff">设为默认主屏幕启动器</font></big>\n避免回到先前的启动器</string>
 	<string name="category_home">启动屏幕</string>
 	<string name="orientation">屏幕方向</string>
-	<string name="orientation_portrait">横屏 (默认)</string>
-	<string name="orientation_landscape">竖屏</string>
+	<string name="orientation_portrait">纵向 (默认)</string>
+	<string name="orientation_landscape">横向</string>
 	<string name="orientation_user">自动</string>
 	<string name="darken_background">使背景变暗</string>
 	<string name="darken_background_yes">强烈</string>
 	<string name="darken_background_light">轻微</string>
 	<string name="darken_background_no">无（默认）</string>
 	<string name="blur_background">模糊背景</string>
-	<string name="background_blur_radius_medium">介质</string>
+	<string name="background_blur_radius_medium">中等</string>
 	<string name="background_blur_radius_heavy">强</string>
 	<string name="background_blur_radius_none">没有 (默认)</string>
 	<string name="blur_menu">模糊菜单</string>
