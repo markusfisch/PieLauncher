@@ -24,7 +24,7 @@ public class ConfigurationChangedReceiver extends BroadcastReceiver {
 		}
 		String action = intent.getAction();
 		if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context);
+			PieLauncherApp.apps.indexAppsAsync(context);
 		} else if (Intent.ACTION_CONFIGURATION_CHANGED.equals(action)) {
 			// Only index on color changes. `ACTION_CONFIGURATION_CHANGED`
 			// is sent for all kinds of changes and indexing should be
@@ -35,7 +35,7 @@ public class ConfigurationChangedReceiver extends BroadcastReceiver {
 				// Use `updateIconsAsync()` instead of `indexAppsAsync()`
 				// because indexing may already be running from
 				// `onPackageChanged()` but with the old color.
-				PieLauncherApp.appMenu.updateIconsAsync(context);
+				PieLauncherApp.apps.updateIconsAsync(context);
 			}
 		}
 	}

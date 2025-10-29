@@ -45,7 +45,7 @@ import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.io.Menu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
-public class AppMenu extends CanvasPieMenu {
+public class Apps extends CanvasPieMenu {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
 		public final Rect hitRect = new Rect();
 		public final String label;
@@ -403,7 +403,7 @@ public class AppMenu extends CanvasPieMenu {
 	private List<Icon> createMenu(Context context,
 			Map<LauncherItemKey, AppIcon> allApps,
 			boolean useDrawerIcon) {
-		AppMenu.Icon drawerIcon = useDrawerIcon
+		Apps.Icon drawerIcon = useDrawerIcon
 				? addDrawerIcon(context, allApps)
 				: null;
 		ArrayList<Icon> menu = Menu.restore(context, allApps);
@@ -421,7 +421,7 @@ public class AppMenu extends CanvasPieMenu {
 		return menu;
 	}
 
-	private AppMenu.Icon addDrawerIcon(Context context,
+	private Apps.Icon addDrawerIcon(Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		String appPackageName = context.getPackageName();
 		drawerPackageName = appPackageName + ".drawer";

@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.HiddenAppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.view.SystemBars;
@@ -112,17 +112,17 @@ public class HiddenAppsActivity extends Activity {
 				(view, which) -> {
 					switch (which) {
 						case 0:
-							PieLauncherApp.appMenu.hiddenApps.removeAndStore(
+							PieLauncherApp.apps.hiddenApps.removeAndStore(
 									this, componentName.getPackageName());
-							PieLauncherApp.appMenu.updateIconsAsync(this);
+							PieLauncherApp.apps.updateIconsAsync(this);
 							loadHiddenApps();
 							break;
 						case 1:
-							AppMenu.launchPackage(this,
+							Apps.launchPackage(this,
 									componentName.getPackageName());
 							break;
 						case 2:
-							PieLauncherApp.appMenu.launchAppInfo(this,
+							PieLauncherApp.apps.launchAppInfo(this,
 									componentName.getPackageName());
 							break;
 					}
@@ -135,7 +135,7 @@ public class HiddenAppsActivity extends Activity {
 			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps =
 					new ArrayList<>();
 			for (ComponentName componentName :
-					PieLauncherApp.appMenu.hiddenApps.componentNames) {
+					PieLauncherApp.apps.hiddenApps.componentNames) {
 				Pair<String, Drawable> nameAndIcon = getAppNameAndIcon(
 						this, componentName.getPackageName());
 				if (nameAndIcon != null) {

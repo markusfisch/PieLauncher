@@ -10,7 +10,7 @@ import android.content.pm.LauncherApps;
 import android.os.Build;
 import android.os.UserHandle;
 
-import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.receiver.ConfigurationChangedReceiver;
@@ -18,7 +18,7 @@ import de.markusfisch.android.pielauncher.receiver.ManagedProfileEventReceiver;
 import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
-	public static final AppMenu appMenu = new AppMenu();
+	public static final Apps apps = new Apps();
 	public static final IconPack iconPack = new IconPack();
 
 	private static final ConfigurationChangedReceiver configurationChangedReceiver =
@@ -97,19 +97,19 @@ public class PieLauncherApp extends Application {
 			@Override
 			public void onPackageAdded(String packageName,
 					UserHandle user) {
-				appMenu.indexAppsAsync(PieLauncherApp.this, packageName, user);
+				apps.indexAppsAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
 			public void onPackageChanged(String packageName,
 					UserHandle user) {
-				appMenu.indexAppsAsync(PieLauncherApp.this, packageName, user);
+				apps.indexAppsAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
 			public void onPackageRemoved(String packageName,
 					UserHandle user) {
-				appMenu.removePackage(PieLauncherApp.this, packageName, user);
+				apps.removePackage(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override

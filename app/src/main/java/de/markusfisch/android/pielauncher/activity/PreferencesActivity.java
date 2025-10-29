@@ -179,7 +179,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.openListWith(),
 				(value) -> {
 					prefs.setOpenListWith(value);
-					PieLauncherApp.appMenu.updateIconsAsync(this);
+					PieLauncherApp.apps.updateIconsAsync(this);
 				});
 		initPreference(R.id.list_animation_appearance,
 				R.string.list_animation_appearance,
@@ -222,7 +222,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.excludePie(),
 				(value) -> {
 					prefs.setExcludePie(value);
-					PieLauncherApp.appMenu.updateIconsAsync(this);
+					PieLauncherApp.apps.updateIconsAsync(this);
 				});
 		initPreference(R.id.icon_press,
 				R.string.icon_press,
@@ -235,7 +235,7 @@ public class PreferencesActivity extends Activity {
 				() -> prefs.getIconPack(),
 				(value) -> {
 					prefs.setIconPack(value);
-					PieLauncherApp.appMenu.updateIconsAsync(this);
+					PieLauncherApp.apps.updateIconsAsync(this);
 				},
 				() -> PieLauncherApp.iconPack.updatePacks(
 						getPackageManager()));

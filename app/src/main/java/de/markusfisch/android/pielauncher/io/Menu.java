@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.LauncherItemKey;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.PieMenu;
@@ -21,7 +21,7 @@ public class Menu {
 	private static final String MENU_FILE = "menu";
 
 	public static ArrayList<PieMenu.Icon> restore(Context context,
-			Map<LauncherItemKey, AppMenu.AppIcon> allApps) {
+			Map<LauncherItemKey, Apps.AppIcon> allApps) {
 		ArrayList<PieMenu.Icon> icons = new ArrayList<>();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -50,8 +50,8 @@ public class Menu {
 			for (CanvasPieMenu.Icon icon : icons) {
 				writer.write(LauncherItemKey.flattenToString(
 						context,
-						((AppMenu.AppIcon) icon).componentName,
-						((AppMenu.AppIcon) icon).userHandle));
+						((Apps.AppIcon) icon).componentName,
+						((Apps.AppIcon) icon).userHandle));
 				writer.newLine();
 			}
 			writer.close();

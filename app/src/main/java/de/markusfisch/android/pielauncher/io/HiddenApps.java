@@ -12,7 +12,7 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.content.Apps;
 
 public class HiddenApps {
 	private static final String HIDDEN_APPS_FILE = "hidden";
@@ -52,7 +52,7 @@ public class HiddenApps {
 						ComponentName.unflattenFromString(line);
 				if (componentName == null) {
 					migrated = true;
-					componentName = AppMenu.getLaunchComponentForPackageName(
+					componentName = Apps.getLaunchComponentForPackageName(
 							context, line);
 				}
 				if (componentName != null) {

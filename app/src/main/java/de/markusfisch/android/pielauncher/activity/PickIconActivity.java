@@ -68,9 +68,9 @@ public class PickIconActivity extends Activity {
 				.setTitle(R.string.hide_app)
 				.setMessage(R.string.want_to_hide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
-					PieLauncherApp.appMenu.hiddenApps.addAndStore(context,
+					PieLauncherApp.apps.hiddenApps.addAndStore(context,
 							componentName);
-					PieLauncherApp.appMenu.updateIconsAsync(context);
+					PieLauncherApp.apps.updateIconsAsync(context);
 					if (hideListener != null) {
 						hideListener.onHide();
 					}
@@ -158,7 +158,7 @@ public class PickIconActivity extends Activity {
 					componentName,
 					iconAdapter.getItem(position));
 			PieLauncherApp.iconPack.storeMappings(this);
-			PieLauncherApp.appMenu.updateIconsAsync(this);
+			PieLauncherApp.apps.updateIconsAsync(this);
 			finish();
 		});
 		loadPack(iconPackPackageName);
@@ -214,13 +214,13 @@ public class PickIconActivity extends Activity {
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
 					PieLauncherApp.iconPack.removeMapping(componentName);
 					PieLauncherApp.iconPack.storeMappings(this);
-					PieLauncherApp.appMenu.updateIconsAsync(this);
+					PieLauncherApp.apps.updateIconsAsync(this);
 					finish();
 				})
 				.setNeutralButton(R.string.all, (d, w) -> {
 					PieLauncherApp.iconPack.clearMappings();
 					PieLauncherApp.iconPack.storeMappings(this);
-					PieLauncherApp.appMenu.updateIconsAsync(this);
+					PieLauncherApp.apps.updateIconsAsync(this);
 					finish();
 				})
 				.setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -230,7 +230,7 @@ public class PickIconActivity extends Activity {
 
 	private void initHide(ComponentName componentName) {
 		View hideButton = findViewById(R.id.hide_app);
-		if (PieLauncherApp.appMenu.isDrawerPackageName(
+		if (PieLauncherApp.apps.isDrawerPackageName(
 				componentName.getPackageName())) {
 			hideButton.setVisibility(View.INVISIBLE);
 		} else {

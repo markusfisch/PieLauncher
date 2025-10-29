@@ -13,7 +13,7 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.markusfisch.android.pielauncher.content.AppMenu;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 
 public class IconMappings {
@@ -48,7 +48,7 @@ public class IconMappings {
 						ComponentName.unflattenFromString(componentPart);
 				if (componentName == null) {
 					migrated = true;
-					componentName = AppMenu.getLaunchComponentForPackageName(
+					componentName = Apps.getLaunchComponentForPackageName(
 							context, componentPart);
 				}
 				if (componentName != null) {

@@ -22,12 +22,12 @@ public class PackageEventReceiver extends BroadcastReceiver {
 		if (Intent.ACTION_PACKAGE_ADDED.equals(action) ||
 				// Sent when a component of a package changed.
 				Intent.ACTION_PACKAGE_CHANGED.equals(action)) {
-			PieLauncherApp.appMenu.indexAppsAsync(context, packageName, null);
+			PieLauncherApp.apps.indexAppsAsync(context, packageName, null);
 		} else if (Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
 				// Skip ACTION_PACKAGE_REMOVED when replacing because it
 				// will be immediately followed by ACTION_PACKAGE_ADDED.
 				!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
-			PieLauncherApp.appMenu.removePackage(context, packageName, null);
+			PieLauncherApp.apps.removePackage(context, packageName, null);
 		}
 	}
 }

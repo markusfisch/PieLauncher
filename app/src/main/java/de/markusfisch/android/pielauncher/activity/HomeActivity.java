@@ -216,7 +216,7 @@ public class HomeActivity extends Activity {
 				setAlpha(searchInput, alpha);
 			}
 		});
-		PieLauncherApp.appMenu.setUpdateListener(() -> {
+		PieLauncherApp.apps.setUpdateListener(() -> {
 			searchInput.getText().clear();
 			updateAppList();
 		});
