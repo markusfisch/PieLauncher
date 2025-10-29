@@ -22,6 +22,9 @@
 	<string name="background_blur_radius_medium">Medium</string>
 	<string name="background_blur_radius_heavy">Heavy</string>
 	<string name="background_blur_radius_none">No (Default)</string>
+	<string name="blur_menu">Blur menu</string>
+	<string name="blur_menu_yes">Yes (Default)</string>
+	<string name="blur_menu_no">No</string>
 	<string name="dead_zone">Ignore touches</string>
 	<string name="dead_zone_none">No restriction</string>
 	<string name="dead_zone_top">At the top</string>

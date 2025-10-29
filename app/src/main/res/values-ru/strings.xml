@@ -22,6 +22,9 @@
 	<string name="background_blur_radius_medium">Средство</string>
 	<string name="background_blur_radius_heavy">Сильно</string>
 	<string name="background_blur_radius_none">Нет (Стандартно)</string>
+	<string name="blur_menu">Размывать меню</string>
+	<string name="blur_menu_yes">Да (Стандартно)</string>
+	<string name="blur_menu_no">Нет</string>
 	<string name="dead_zone">Игнорировать касания</string>
 	<string name="dead_zone_none">Никакие</string>
 	<string name="dead_zone_top">Сверху</string>

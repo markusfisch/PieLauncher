@@ -52,6 +52,7 @@ public class Preferences {
 	private static final String ORIENTATION = "orientation";
 	private static final String DARKEN_BACKGROUND = "darken_background_level";
 	private static final String BLUR_BACKGROUND_RADIUS = "background_blur_radius";
+	private static final String BLUR_MENU = "blur_menu";
 	private static final String DEAD_ZONE = "dead_zone";
 	private static final String IMMERSIVE_MODE = "immersive_mode_option";
 	private static final String ANIMATE_IN_OUT = "animate_in_out";
@@ -79,6 +80,7 @@ public class Preferences {
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private int darkenBackground = DARKEN_BACKGROUND_NONE;
 	private int backgroundBlurRadius = 0;
+	private boolean blurMenu = true;
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;
@@ -101,12 +103,13 @@ public class Preferences {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		systemSettings = new SystemSettings(context.getContentResolver());
 
+		migrateSettings();
+
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 		int defaultOrientation = dm.heightPixels > dm.widthPixels
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-
-		migrateSettings();
+		boolean highRefreshRate = isHighRefreshRate(context);
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		twist = preferences.getFloat(TWIST, twist);
@@ -116,12 +119,13 @@ public class Preferences {
 				darkenBackground);
 		backgroundBlurRadius = preferences.getInt(BLUR_BACKGROUND_RADIUS,
 				backgroundBlurRadius);
+		blurMenu = preferences.getBoolean(BLUR_MENU, highRefreshRate);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
 		animateInOut = preferences.getBoolean(ANIMATE_IN_OUT, animateInOut);
 		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
 		listAnimationAppearance = preferences.getInt(LIST_ANIMATION_APPEARANCE,
-				isHighRefreshRate(context)
+				highRefreshRate
 						? LIST_APPEARANCE_ANIMATION_SLIDE
 						: LIST_APPEARANCE_ANIMATION_FADE);
 		displayKeyboard = preferences.getBoolean(DISPLAY_KEYBOARD,
@@ -204,6 +208,15 @@ public class Preferences {
 	public void setBackgroundBlurRadius(int backgroundBlurRadius) {
 		this.backgroundBlurRadius = backgroundBlurRadius;
 		put(BLUR_BACKGROUND_RADIUS, backgroundBlurRadius).apply();
+	}
+
+	public boolean blurMenu() {
+		return blurMenu;
+	}
+
+	public void setBlurMenu(boolean blurMenu) {
+		this.blurMenu = blurMenu;
+		put(BLUR_MENU, blurMenu).apply();
 	}
 
 	public int getDeadZone() {

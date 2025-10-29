@@ -154,6 +154,15 @@ public class PreferencesActivity extends Activity {
 		} else {
 			findViewById(R.id.blur_background).setVisibility(View.GONE);
 		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			initPreference(R.id.blur_menu,
+					R.string.blur_menu,
+					PreferencesActivity::getBlurMenuOptions,
+					() -> prefs.blurMenu(),
+					(value) -> prefs.setBlurMenu(value));
+		} else {
+			findViewById(R.id.blur_menu).setVisibility(View.GONE);
+		}
 		initPreference(R.id.dead_zone,
 				R.string.dead_zone,
 				PreferencesActivity::getDeadZoneOptions,
@@ -482,6 +491,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.display_keyboard_yes);
 		map.put(Boolean.FALSE, R.string.display_keyboard_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getBlurMenuOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.blur_menu_yes);
+		map.put(Boolean.FALSE, R.string.blur_menu_no);
 		return map;
 	}
 

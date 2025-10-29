@@ -22,6 +22,9 @@
 	<string name="background_blur_radius_medium">Середня</string>
 	<string name="background_blur_radius_heavy">Сильно</string>
 	<string name="background_blur_radius_none">Ні (за замовчуванням)</string>
+	<string name="blur_menu">Розмити меню</string>
+	<string name="blur_menu_yes">Так (за замовчуванням)</string>
+	<string name="blur_menu_no">Ні</string>
 	<string name="dead_zone">Ігнорувати дотики</string>
 	<string name="dead_zone_none">Без обмежень</string>
 	<string name="dead_zone_top">Вгорі</string>

@@ -53,6 +53,10 @@
 					android:text="@string/background_blur_radius_none" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/blur_menu"
+					android:text="@string/blur_menu_yes" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/dead_zone"
 					android:text="@string/dead_zone_top_bottom" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

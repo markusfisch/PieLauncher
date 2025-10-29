@@ -1815,7 +1815,7 @@ public class AppPieView extends View {
 				!isHardwareAccelerated()) {
 			return 0;
 		}
-		if (f <= 0f) {
+		if (!prefs.blurMenu() || f <= 0f) {
 			clearBlur(node);
 			return 0;
 		}

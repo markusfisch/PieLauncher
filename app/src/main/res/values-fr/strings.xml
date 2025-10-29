@@ -22,6 +22,9 @@
 	<string name="background_blur_radius_medium">Moyen</string>
 	<string name="background_blur_radius_heavy">Fort</string>
 	<string name="background_blur_radius_none">Non (par défaut)</string>
+	<string name="blur_menu">Flouter le menu</string>
+	<string name="blur_menu_yes">Oui (par défaut)</string>
+	<string name="blur_menu_no">Non</string>
 	<string name="dead_zone">Ignorer les touches</string>
 	<string name="dead_zone_none">Aucune restriction</string>
 	<string name="dead_zone_top">En haut de l\'écran</string>

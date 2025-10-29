@@ -22,6 +22,9 @@
 	<string name="background_blur_radius_medium">Medium</string>
 	<string name="background_blur_radius_heavy">Stark</string>
 	<string name="background_blur_radius_none">Nej (standard)</string>
+	<string name="blur_menu">Gör menyn oskarp</string>
+	<string name="blur_menu_yes">Ja (standard)</string>
+	<string name="blur_menu_no">Nej</string>
 	<string name="dead_zone">Ignorera tryckningar</string>
 	<string name="dead_zone_none">Ingen begränsning</string>
 	<string name="dead_zone_top">Högst upp</string>

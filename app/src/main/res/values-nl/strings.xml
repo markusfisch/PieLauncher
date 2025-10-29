@@ -22,6 +22,9 @@
 	<string name="background_blur_radius_medium">Medium</string>
 	<string name="background_blur_radius_heavy">Sterk</string>
 	<string name="background_blur_radius_none">Nee (standaard)</string>
+	<string name="blur_menu">Menu vervagen</string>
+	<string name="blur_menu_yes">Ja (standaard)</string>
+	<string name="blur_menu_no">Nee</string>
 	<string name="dead_zone">Aanraking onderdrukken</string>
 	<string name="dead_zone_none">Geen beperking</string>
 	<string name="dead_zone_top">Bovenaan</string>
