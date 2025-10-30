@@ -45,7 +45,7 @@ import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.io.Menu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
-public class Apps extends CanvasPieMenu {
+public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
 		public final Rect hitRect = new Rect();
 		public final String label;
@@ -184,7 +184,6 @@ public class Apps extends CanvasPieMenu {
 		if (query.isEmpty()) {
 			list.addAll(apps.values());
 			if (prefs.excludePie()) {
-				//noinspection SuspiciousMethodCalls
 				list.removeAll(new HashSet<>(icons));
 			}
 		} else {
@@ -273,7 +272,7 @@ public class Apps extends CanvasPieMenu {
 					userHandleRestriction,
 					hideApps,
 					newApps);
-			List<Icon> newIcons = createMenu(context, newApps,
+			List<AppIcon> newIcons = createMenu(context, newApps,
 					PieLauncherApp.getPrefs(context).openListWith() ==
 							Preferences.OPEN_LIST_WITH_ICON);
 			handler.post(() -> {
@@ -400,13 +399,13 @@ public class Apps extends CanvasPieMenu {
 		return appIcon;
 	}
 
-	private List<Icon> createMenu(Context context,
+	private List<AppIcon> createMenu(Context context,
 			Map<LauncherItemKey, AppIcon> allApps,
 			boolean useDrawerIcon) {
-		Apps.Icon drawerIcon = useDrawerIcon
+		AppIcon drawerIcon = useDrawerIcon
 				? addDrawerIcon(context, allApps)
 				: null;
-		ArrayList<Icon> menu = Menu.restore(context, allApps);
+		ArrayList<AppIcon> menu = Menu.restore(context, allApps);
 		if (menu.isEmpty()) {
 			createInitialMenu(menu, allApps, context.getPackageManager());
 		}
@@ -421,7 +420,7 @@ public class Apps extends CanvasPieMenu {
 		return menu;
 	}
 
-	private Apps.Icon addDrawerIcon(Context context,
+	private AppIcon addDrawerIcon(Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		String appPackageName = context.getPackageName();
 		drawerPackageName = appPackageName + ".drawer";
@@ -439,7 +438,7 @@ public class Apps extends CanvasPieMenu {
 				null);
 	}
 
-	private static void createInitialMenu(List<Icon> menu,
+	private static void createInitialMenu(List<AppIcon> menu,
 			Map<LauncherItemKey, AppIcon> allApps,
 			PackageManager pm) {
 		Intent[] intents = new Intent[]{
@@ -494,7 +493,7 @@ public class Apps extends CanvasPieMenu {
 		}
 	}
 
-	private static void addMenuIcon(List<Icon> menu, AppIcon appIcon) {
+	private static void addMenuIcon(List<AppIcon> menu, AppIcon appIcon) {
 		if (appIcon != null) {
 			menu.add(appIcon);
 		}
@@ -551,9 +550,9 @@ public class Apps extends CanvasPieMenu {
 
 	private void removePackageFromPieMenu(String packageName,
 			UserHandle userHandle) {
-		Iterator<Icon> it = icons.iterator();
+		Iterator<AppIcon> it = icons.iterator();
 		while (it.hasNext()) {
-			AppIcon appIcon = ((AppIcon) it.next());
+			AppIcon appIcon = it.next();
 			if (packageName.equals(appIcon.componentName.getPackageName()) &&
 					(userHandle == null || userHandle.equals(appIcon.userHandle))) {
 				it.remove();

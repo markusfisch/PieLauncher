@@ -14,21 +14,20 @@ import java.util.Map;
 
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.LauncherItemKey;
-import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.PieMenu;
 
 public class Menu {
 	private static final String MENU_FILE = "menu";
 
-	public static ArrayList<PieMenu.Icon> restore(Context context,
+	public static ArrayList<Apps.AppIcon> restore(Context context,
 			Map<LauncherItemKey, Apps.AppIcon> allApps) {
-		ArrayList<PieMenu.Icon> icons = new ArrayList<>();
+		ArrayList<Apps.AppIcon> icons = new ArrayList<>();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					context.openFileInput(MENU_FILE)));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				PieMenu.Icon icon = allApps.get(
+				Apps.AppIcon icon = allApps.get(
 						LauncherItemKey.unflattenFromString(context, line));
 				if (icon != null) {
 					icons.add(icon);
@@ -43,15 +42,15 @@ public class Menu {
 		return icons;
 	}
 
-	public static void store(Context context, List<PieMenu.Icon> icons) {
+	public static void store(Context context, List<Apps.AppIcon> icons) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 					context.openFileOutput(MENU_FILE, Context.MODE_PRIVATE)));
-			for (CanvasPieMenu.Icon icon : icons) {
+			for (Apps.AppIcon icon : icons) {
 				writer.write(LauncherItemKey.flattenToString(
 						context,
-						((Apps.AppIcon) icon).componentName,
-						((Apps.AppIcon) icon).userHandle));
+						icon.componentName,
+						icon.userHandle));
 				writer.newLine();
 			}
 			writer.close();

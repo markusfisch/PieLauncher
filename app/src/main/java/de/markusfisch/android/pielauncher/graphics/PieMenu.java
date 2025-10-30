@@ -2,7 +2,7 @@ package de.markusfisch.android.pielauncher.graphics;
 
 import java.util.ArrayList;
 
-public class PieMenu {
+public class PieMenu<T extends PieMenu.Icon> {
 	public static final double TAU = Math.PI + Math.PI;
 	public static final double HALF_PI = Math.PI * .5f;
 
@@ -14,7 +14,7 @@ public class PieMenu {
 		public int y;
 	}
 
-	public final ArrayList<Icon> icons = new ArrayList<>();
+	public final ArrayList<T> icons = new ArrayList<>();
 
 	private int selectedIcon = -1;
 	private int centerX = -1;

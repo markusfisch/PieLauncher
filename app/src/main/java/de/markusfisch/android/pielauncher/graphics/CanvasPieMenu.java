@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.SystemClock;
 
-public class CanvasPieMenu extends PieMenu {
+public class CanvasPieMenu<T extends CanvasPieMenu.CanvasIcon> extends PieMenu<T> {
 	public static final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
 	private long lastChange;

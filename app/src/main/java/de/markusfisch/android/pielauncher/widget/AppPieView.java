@@ -74,8 +74,8 @@ public class AppPieView extends View {
 	private final Fade fadePie = new Fade();
 	private final Fade fadeList = new Fade();
 	private final Fade fadeEdit = new Fade();
-	private final ArrayList<Apps.Icon> backup = new ArrayList<>();
-	private final ArrayList<Apps.Icon> ungrabbedIcons = new ArrayList<>();
+	private final ArrayList<Apps.AppIcon> backup = new ArrayList<>();
+	private final ArrayList<Apps.AppIcon> ungrabbedIcons = new ArrayList<>();
 	private final Paint paintList = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint paintDropZone = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Paint paintPressed = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -159,9 +159,9 @@ public class AppPieView extends View {
 	private ListListener listListener;
 	private List<Apps.AppIcon> appList;
 	private Rect highlightedAction;
-	private Apps.Icon grabbedIcon;
-	private Apps.Icon highlightedIcon;
-	private Apps.Icon launchingApp;
+	private Apps.AppIcon grabbedIcon;
+	private Apps.AppIcon highlightedIcon;
+	private Apps.AppIcon launchingApp;
 	private long highlightedFrom;
 	private long grabbedIconAt;
 	private long lastTapUpTime;
@@ -654,7 +654,7 @@ public class AppPieView extends View {
 					return;
 				}
 				cancelLongPress();
-				final Apps.Icon appIcon = getListIconAt(touch.x, touch.y);
+				final Apps.AppIcon appIcon = getListIconAt(touch.x, touch.y);
 				if (appIcon == null) {
 					return;
 				}
@@ -687,7 +687,7 @@ public class AppPieView extends View {
 				highlightedFrom = 0;
 			}
 
-			private void initLongPressFeedback(Apps.Icon appIcon) {
+			private void initLongPressFeedback(Apps.AppIcon appIcon) {
 				cancelRipple();
 				final Point at = new Point(touch.x, touch.y + getScrollY());
 				rippleRunnable = () -> {
@@ -965,7 +965,7 @@ public class AppPieView extends View {
 		actionSizeSq = actionSize * actionSize;
 	}
 
-	private void showIconOptions(Context context, Apps.Icon icon) {
+	private void showIconOptions(Context context, Apps.AppIcon icon) {
 		if (icon == null) {
 			return;
 		}
@@ -1000,7 +1000,7 @@ public class AppPieView extends View {
 				});
 	}
 
-	private void addIconInteractively(Apps.Icon appIcon) {
+	private void addIconInteractively(Apps.AppIcon appIcon) {
 		if (appIcon == null) {
 			return;
 		}
@@ -1014,7 +1014,7 @@ public class AppPieView extends View {
 		invalidate();
 	}
 
-	private void editIcon(Apps.Icon icon) {
+	private void editIcon(Apps.AppIcon icon) {
 		backup.clear();
 		backup.addAll(PieLauncherApp.apps.icons);
 		PieLauncherApp.apps.icons.remove(icon);
@@ -1220,11 +1220,11 @@ public class AppPieView extends View {
 	}
 
 	private void launchApp(Context context, Apps.AppIcon appIcon) {
-		launchingApp = (Apps.Icon) appIcon;
+		launchingApp = appIcon;
 		PieLauncherApp.apps.launchApp(context, appIcon);
 	}
 
-	private void removeIconFromPie(Apps.Icon icon, boolean isDrawerIcon) {
+	private void removeIconFromPie(Apps.AppIcon icon, boolean isDrawerIcon) {
 		if (isDrawerIcon) {
 			prefs.setOpenListWith(Preferences.OPEN_LIST_WITH_TAP);
 		}
@@ -1240,8 +1240,9 @@ public class AppPieView extends View {
 		PieLauncherApp.apps.icons.addAll(backup);
 	}
 
-	private static boolean sameOrder(List<Apps.Icon> a,
-			List<Apps.Icon> b) {
+	private static boolean sameOrder(
+			List<? extends PieMenu.Icon> a,
+			List<? extends PieMenu.Icon> b) {
 		int size = a.size();
 		if (size != b.size()) {
 			return false;
@@ -1372,7 +1373,7 @@ public class AppPieView extends View {
 	private void editIconAt(Point point) {
 		int size = PieLauncherApp.apps.icons.size();
 		for (int i = 0; i < size; ++i) {
-			Apps.Icon icon = PieLauncherApp.apps.icons.get(i);
+			Apps.AppIcon icon = PieLauncherApp.apps.icons.get(i);
 			double rad = icon.size * .5;
 			float sizeSq = Math.round(rad * rad);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
