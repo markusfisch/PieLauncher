@@ -123,8 +123,6 @@ public class AppPieView extends View {
 	private final float textHeight;
 	private final float textOffset;
 	private final float touchSlopSq;
-	private int currentPieBlur;
-	private int currentListBlur;
 
 	private Window window;
 	private RenderNode pieRenderNode;
@@ -153,7 +151,9 @@ public class AppPieView extends View {
 	private int lastScrollY;
 	private int lastInsertAt;
 	private int lastSelectedIcon;
-	private int lastBlur;
+	private int currentBackgroundBlur;
+	private int currentPieBlur;
+	private int currentListBlur;
 	private int selectedApp = -1;
 	private int mode = MODE_PIE;
 	private ListListener listListener;
@@ -379,9 +379,9 @@ public class AppPieView extends View {
 		int bbr = prefs.getBackgroundBlurRadius();
 		if (bbr > 0) {
 			int blur = Math.round(fMax * bbr);
-			if (blur != lastBlur) {
+			if (blur != currentBackgroundBlur) {
 				BackgroundBlur.setBlurRadius(window, blur);
-				lastBlur = blur;
+				currentBackgroundBlur = blur;
 			}
 		}
 
