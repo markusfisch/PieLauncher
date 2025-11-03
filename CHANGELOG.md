@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.23.8
+* Add blur effect to pie menu and app listing
+* Add an option for a lighter dark background
+* Add launch animation
+
 ## 1.23.7
 * Improve pie animations
 * Improve pie editor
