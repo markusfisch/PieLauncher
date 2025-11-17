@@ -164,19 +164,15 @@ public class PieMenu<T extends PieMenu.Icon> {
 
 		// Calculate icon positions.
 		{
+			Icon closest = icons.get(closestIcon);
 			double difference = getAngleDifference(cursorAngle, closestAngle);
 			double angle = getPositiveAngle(cursorAngle -
-					(pixelsPerRadian * icons.get(closestIcon).cellSize) /
+					(pixelsPerRadian * closest.cellSize) /
 							cellSize * difference);
 
 			// Calculate active icon.
-			{
-				Icon ic = icons.get(closestIcon);
-				ic.x = centerX + (int) Math.round(
-						rad * Math.cos(angle));
-				ic.y = centerY + (int) Math.round(
-						rad * Math.sin(angle));
-			}
+			closest.x = centerX + (int) Math.round(rad * Math.cos(angle));
+			closest.y = centerY + (int) Math.round(rad * Math.sin(angle));
 
 			// Calculate positions of all other icons.
 			{
