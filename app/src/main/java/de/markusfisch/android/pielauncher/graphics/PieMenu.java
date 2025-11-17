@@ -143,7 +143,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 					}
 				}
 
-				if (!cursorNearCenter) {
+				if (!cursorNearCenter && cursorRadius > rad) {
 					selectedIcon = closestIcon;
 				}
 			}
