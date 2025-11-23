@@ -164,6 +164,7 @@ public class AppPieView extends View {
 	private Apps.AppIcon launchingApp;
 	private long highlightedFrom;
 	private long grabbedIconAt;
+	private long lastActionUp;
 	private long lastTapUpTime;
 	private Bitmap iconChangeTwist;
 	private Bitmap iconChangeIconScale;
@@ -473,7 +474,9 @@ public class AppPieView extends View {
 								if (inDeadZone()) {
 									return false;
 								}
-								setCenter(touch.x, touch.y);
+								if (eventTime - lastActionUp > 200L) {
+									setCenter(touch.x, touch.y);
+								}
 								fadePie.fadeIn(eventTime);
 								performHapticFeedbackIfAllowed(
 										HAPTIC_FEEDBACK_DOWN);
@@ -507,6 +510,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_UP:
 						if (mode == MODE_PIE) {
+							lastActionUp = event.getEventTime();
 							cancelSpin();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
