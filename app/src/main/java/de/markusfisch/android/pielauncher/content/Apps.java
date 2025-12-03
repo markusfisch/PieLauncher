@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
@@ -74,6 +75,8 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 	public final HiddenApps hiddenApps = new HiddenApps();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
+	private final ExecutorService executor =
+			Executors.newSingleThreadExecutor();
 	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
 	private final Comparator<AppIcon> appLabelComparator = (left, right) -> {
 		// Fast enough to do it for every comparison.
@@ -266,7 +269,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 			// No need to call removePackageFromPieMenu() because the
 			// menu will be re-created by createMenu() after indexing.
 		}
-		Executors.newSingleThreadExecutor().execute(() -> {
+		executor.execute(() -> {
 			indexApps(context,
 					packageNameRestriction,
 					userHandleRestriction,

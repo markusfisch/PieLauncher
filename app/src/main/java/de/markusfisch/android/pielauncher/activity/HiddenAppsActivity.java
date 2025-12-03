@@ -22,6 +22,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
@@ -35,6 +36,8 @@ import de.markusfisch.android.pielauncher.widget.OptionsDialog;
 
 public class HiddenAppsActivity extends Activity {
 	private final Handler handler = new Handler(Looper.getMainLooper());
+	private final ExecutorService executor =
+			Executors.newSingleThreadExecutor();
 
 	private ToolbarBackground toolbarBackground;
 	private View progressView;
@@ -91,6 +94,12 @@ public class HiddenAppsActivity extends Activity {
 		loadHiddenApps(); // Because the list may have changed.
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		executor.shutdownNow();
+	}
+
 	private void initListView() {
 		listView = findViewById(R.id.apps);
 		listView.setEmptyView(findViewById(R.id.no_hidden_apps));
@@ -131,7 +140,7 @@ public class HiddenAppsActivity extends Activity {
 
 	private void loadHiddenApps() {
 		progressView.setVisibility(View.VISIBLE);
-		Executors.newSingleThreadExecutor().execute(() -> {
+		executor.execute(() -> {
 			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps =
 					new ArrayList<>();
 			for (ComponentName componentName :

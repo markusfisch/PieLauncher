@@ -17,6 +17,7 @@ import android.widget.TextView;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
@@ -34,6 +35,8 @@ public class PreferencesActivity extends Activity {
 	private static final String WELCOME = "welcome";
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
+	private final ExecutorService executor =
+			Executors.newSingleThreadExecutor();
 
 	private Preferences prefs;
 	private ToolbarBackground toolbarBackground;
@@ -129,6 +132,12 @@ public class PreferencesActivity extends Activity {
 				defaultLauncherView.getVisibility() == View.GONE) {
 			disableBatteryOptimizations.setBackgroundResource(0);
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		executor.shutdownNow();
 	}
 
 	private void initPreferences() {
@@ -297,7 +306,7 @@ public class PreferencesActivity extends Activity {
 			SetListener<T> setter,
 			Initializer initializer) {
 		if (initializer != null) {
-			Executors.newSingleThreadExecutor().execute(() -> {
+			executor.execute(() -> {
 				initializer.onInit();
 				handler.post(() -> initPreference(
 						tv, titleId, options, getter, setter, null));

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
@@ -42,6 +43,8 @@ public class PickIconActivity extends Activity {
 	private static final String COMPONENT_NAME = "package_name";
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
+	private final ExecutorService executor =
+			Executors.newSingleThreadExecutor();
 
 	private SoftKeyboard kb;
 	private ToolbarBackground toolbarBackground;
@@ -148,6 +151,12 @@ public class PickIconActivity extends Activity {
 		SystemBars.setTransparentSystemBars(window);
 		SystemBars.setNavigationBarColor(window,
 				toolbarBackground.backgroundColor);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		executor.shutdownNow();
 	}
 
 	private void initGridView(ComponentName componentName) {
@@ -262,7 +271,7 @@ public class PickIconActivity extends Activity {
 			return;
 		}
 		progressView.setVisibility(View.VISIBLE);
-		Executors.newSingleThreadExecutor().execute(() -> {
+		executor.execute(() -> {
 			IconPack.Pack pack = PieLauncherApp.iconPack.packs.get(
 					packageName);
 			if (pack != null) {
