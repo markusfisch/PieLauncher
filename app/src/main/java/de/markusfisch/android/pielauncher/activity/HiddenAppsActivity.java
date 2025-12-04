@@ -54,7 +54,7 @@ public class HiddenAppsActivity extends Activity {
 
 		setContentView(R.layout.activity_hidden_apps);
 
-		BackgroundBlur.blurIfTrue(getWindow(),
+		BackgroundBlur.setBlurRadius(getWindow(),
 				PieLauncherApp.getPrefs(this).getBackgroundBlurRadius());
 		toolbarBackground = new ToolbarBackground(getResources());
 		View toolbar = findViewById(R.id.toolbar);

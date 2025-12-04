@@ -64,7 +64,7 @@ public class PreferencesActivity extends Activity {
 		setContentView(R.layout.activity_preferences);
 
 		prefs = PieLauncherApp.getPrefs(this);
-		BackgroundBlur.blurIfTrue(getWindow(),
+		BackgroundBlur.setBlurRadius(getWindow(),
 				prefs.getBackgroundBlurRadius());
 		toolbarBackground = new ToolbarBackground(getResources());
 

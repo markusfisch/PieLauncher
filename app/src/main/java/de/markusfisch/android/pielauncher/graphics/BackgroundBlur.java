@@ -9,10 +9,6 @@ public class BackgroundBlur {
 				window.getWindowManager().isCrossWindowBlurEnabled();
 	}
 
-	public static void blurIfTrue(Window window, int radius) {
-		setBlurRadius(window, radius);
-	}
-
 	public static void setBlurRadius(Window window, int radius) {
 		if (window != null && canBlur(window)) {
 			window.setBackgroundBlurRadius(radius);
