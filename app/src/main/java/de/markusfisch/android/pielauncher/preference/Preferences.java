@@ -80,7 +80,7 @@ public class Preferences {
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private int darkenBackground = DARKEN_BACKGROUND_NONE;
 	private int backgroundBlurRadius = 0;
-	private boolean blurMenu = true;
+	private boolean blurMenu = false;
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;
