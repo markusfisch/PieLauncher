@@ -215,10 +215,6 @@ public class AppPieView extends View {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			pieRenderNode = new RenderNode("PieMenu");
 			listRenderNode = new RenderNode("List");
-
-			// Disable clipping because the view is scrolled and
-			// `drawList()` already draws only the visible portion.
-			listRenderNode.setClipToBounds(false);
 		}
 
 		iconAdd = Converter.getBitmapFromDrawable(res, R.drawable.ic_add);
@@ -878,7 +874,6 @@ public class AppPieView extends View {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
 				pieRenderNode != null) {
 			pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
-			listRenderNode.setPosition(0, 0, viewWidth, viewHeight);
 		}
 
 		updateChangeTwistIcon();
@@ -1502,6 +1497,12 @@ public class AppPieView extends View {
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		int viewHeightMinusPadding = viewHeight - getPaddingBottom();
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+				listRenderNode != null) {
+			listRenderNode.setPosition(0, 0, viewWidth, maxHeight);
+		}
+
 		return invalidate;
 	}
 
