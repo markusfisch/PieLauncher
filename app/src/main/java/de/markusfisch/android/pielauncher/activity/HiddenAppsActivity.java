@@ -144,7 +144,7 @@ public class HiddenAppsActivity extends Activity {
 			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps =
 					new ArrayList<>();
 			for (ComponentName componentName :
-					PieLauncherApp.apps.hiddenApps.componentNames) {
+					PieLauncherApp.apps.hiddenApps.copyComponentNames()) {
 				Pair<String, Drawable> nameAndIcon = getAppNameAndIcon(
 						this, componentName.getPackageName());
 				if (nameAndIcon != null) {

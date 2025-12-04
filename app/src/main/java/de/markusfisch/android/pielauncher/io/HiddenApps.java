@@ -21,12 +21,14 @@ public class HiddenApps {
 
 	private boolean restored = false;
 
-	public void addAndStore(Context context, ComponentName componentName) {
+	public synchronized void addAndStore(Context context,
+			ComponentName componentName) {
 		componentNames.add(componentName);
 		store(context);
 	}
 
-	public void removeAndStore(Context context, String packageName) {
+	public synchronized void removeAndStore(Context context,
+			String packageName) {
 		for (Iterator<ComponentName> it = componentNames.iterator();
 				it.hasNext(); ) {
 			ComponentName cn = it.next();
@@ -37,7 +39,7 @@ public class HiddenApps {
 		store(context);
 	}
 
-	public void restore(Context context) {
+	public synchronized void restore(Context context) {
 		if (restored) {
 			return;
 		}
@@ -71,7 +73,7 @@ public class HiddenApps {
 		restored = true;
 	}
 
-	public void store(Context context) {
+	public synchronized void store(Context context) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 					context.openFileOutput(HIDDEN_APPS_FILE,
@@ -84,5 +86,9 @@ public class HiddenApps {
 		} catch (IOException e) {
 			// Ignore.
 		}
+	}
+
+	public synchronized HashSet<ComponentName> copyComponentNames() {
+		return new HashSet<>(componentNames);
 	}
 }

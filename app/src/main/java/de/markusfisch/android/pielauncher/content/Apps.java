@@ -224,12 +224,20 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		return list;
 	}
 
-	public void removePackage(Context context, String packageName,
+	public void removePackageAsync(Context context, String packageName,
 			UserHandle userHandle) {
-		removePackageFromApps(apps, packageName, userHandle);
-		removePackageFromPieMenu(packageName, userHandle);
-		hiddenApps.removeAndStore(context, packageName);
-		propagateUpdate();
+		if (context == null || packageName == null) {
+			return;
+		}
+		Context appContext = context.getApplicationContext();
+		executor.execute(() -> {
+			hiddenApps.removeAndStore(appContext, packageName);
+			handler.post(() -> {
+				removePackageFromApps(apps, packageName, userHandle);
+				removePackageFromPieMenu(packageName, userHandle);
+				propagateUpdate();
+			});
+		});
 	}
 
 	public void updateIconsAsync(Context context) {
@@ -258,8 +266,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		}
 		indexing = true;
 		hiddenApps.restore(context);
-		HashSet<ComponentName> hideApps = new HashSet<>(
-				hiddenApps.componentNames);
+		HashSet<ComponentName> hideApps = hiddenApps.copyComponentNames();
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 		if (packageNameRestriction != null) {
 			// Copy apps since we're indexing just one app.

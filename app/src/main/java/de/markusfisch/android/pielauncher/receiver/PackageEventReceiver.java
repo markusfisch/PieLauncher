@@ -27,7 +27,8 @@ public class PackageEventReceiver extends BroadcastReceiver {
 				// Skip ACTION_PACKAGE_REMOVED when replacing because it
 				// will be immediately followed by ACTION_PACKAGE_ADDED.
 				!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
-			PieLauncherApp.apps.removePackage(context, packageName, null);
+			PieLauncherApp.apps.removePackageAsync(context, packageName,
+					null);
 		}
 	}
 }
