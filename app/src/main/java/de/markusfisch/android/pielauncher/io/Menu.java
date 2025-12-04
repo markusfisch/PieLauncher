@@ -14,7 +14,6 @@ import java.util.Map;
 
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.LauncherItemKey;
-import de.markusfisch.android.pielauncher.graphics.PieMenu;
 
 public class Menu {
 	private static final String MENU_FILE = "menu";
