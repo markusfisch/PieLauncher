@@ -46,9 +46,8 @@ public class PieLauncherApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		registerConfigurationChangedReceiver();
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-			registerPackageEventReceiver();
-		} else {
+		registerPackageEventReceiver();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			registerLauncherAppsCallback();
 			registerManagedEventReceiver();
 		}
