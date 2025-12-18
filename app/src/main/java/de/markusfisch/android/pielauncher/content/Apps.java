@@ -215,8 +215,9 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 				if (add) {
 					list.add(appIcon);
 				} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING) {
-					int distance = hammingDistance(subject, query);
-					if (distance < 3) {
+					int min = Math.min(subject.length(), query.length());
+					int distance = hammingDistance(subject, query, min);
+					if (distance <= min >> 1) {
 						hamming.add(new HammingHit(distance, appIcon));
 					}
 				}
@@ -681,9 +682,9 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		return appIcon.label.toLowerCase(defaultLocale);
 	}
 
-	private static int hammingDistance(String a, String b) {
+	private static int hammingDistance(String a, String b, int l) {
 		int count = 0;
-		for (int i = 0, l = Math.min(a.length(), b.length()); i < l; ++i) {
+		for (int i = 0; i < l; ++i) {
 			if (a.charAt(i) != b.charAt(i)) {
 				++count;
 			}
