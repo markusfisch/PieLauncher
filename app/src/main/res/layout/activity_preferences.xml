@@ -72,6 +72,10 @@
 					android:text="@string/category_app_drawer" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/home_button_opens_drawer"
+					android:text="@string/home_button_opens_drawer_yes" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/open_list_with"
 					android:text="@string/open_list_with_tap" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

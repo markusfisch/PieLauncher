@@ -40,6 +40,9 @@
 	<string name="animate_in_out_yes">Так (за замовчуванням)</string>
 	<string name="animate_in_out_no">Ні</string>
 	<string name="category_app_drawer">Список додатків</string>
+	<string name="home_button_opens_drawer">Кнопка Home відкриває список застосунків</string>
+	<string name="home_button_opens_drawer_yes">Так (за замовчуванням)</string>
+	<string name="home_button_opens_drawer_no">Ні</string>
 	<string name="open_list_with">Відкривається через</string>
 	<string name="open_list_with_tap">Натисніть на головному екрані (за замовчуванням)</string>
 	<string name="open_list_with_any_touch">Будь-який дотик, незалежно від тривалості</string>

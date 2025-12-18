@@ -40,6 +40,9 @@
 	<string name="animate_in_out_yes">Ja (standaard)</string>
 	<string name="animate_in_out_no">Nee</string>
 	<string name="category_app_drawer">App-lade</string>
+	<string name="home_button_opens_drawer">Homeknop opent app-lade</string>
+	<string name="home_button_opens_drawer_yes">Ja (standaard)</string>
+	<string name="home_button_opens_drawer_no">Nee</string>
 	<string name="open_list_with">Openen met</string>
 	<string name="open_list_with_tap">Tik op startscherm (Standaard)</string>
 	<string name="open_list_with_any_touch">Elke aanraking, hoe lang ook</string>

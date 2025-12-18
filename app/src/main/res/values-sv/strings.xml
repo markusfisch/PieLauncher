@@ -40,6 +40,9 @@
 	<string name="animate_in_out_yes">Ja (standard)</string>
 	<string name="animate_in_out_no">Nej</string>
 	<string name="category_app_drawer">Applåda</string>
+	<string name="home_button_opens_drawer">Hemknappen öppnar applådan</string>
+	<string name="home_button_opens_drawer_yes">Ja (standard)</string>
+	<string name="home_button_opens_drawer_no">Nej</string>
 	<string name="open_list_with">Öppnas med</string>
 	<string name="open_list_with_tap">Tryck på startskärmen (standard)</string>
 	<string name="open_list_with_any_touch">Varje beröring oavsett hur länge</string>

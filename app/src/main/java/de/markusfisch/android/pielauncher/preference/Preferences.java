@@ -70,6 +70,7 @@ public class Preferences {
 	private static final String HAPTIC_FEEDBACK = "haptic_feedback";
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
 	private static final String FORCE_RELAUNCH = "force_relaunch";
+	private static final String SHOW_DRAWER_ON_HOME = "show_drawer_on_home";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -98,6 +99,7 @@ public class Preferences {
 	private String iconPack;
 	private boolean useLightDialogs = false;
 	private boolean forceRelaunch = false;
+	private boolean showDrawerOnHome = true;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -146,6 +148,8 @@ public class Preferences {
 		useLightDialogs = preferences.getBoolean(USE_LIGHT_DIALOGS,
 				isEReader(context));
 		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
+		showDrawerOnHome = preferences.getBoolean(SHOW_DRAWER_ON_HOME,
+				showDrawerOnHome);
 	}
 
 	public boolean skipSetup() {
@@ -370,6 +374,15 @@ public class Preferences {
 	public void setForceRelaunch(boolean forceRelaunch) {
 		this.forceRelaunch = forceRelaunch;
 		put(FORCE_RELAUNCH, forceRelaunch).apply();
+	}
+
+	public boolean showDrawerOnHome() {
+		return showDrawerOnHome;
+	}
+
+	public void setShowDrawerOnHome(boolean showDrawerOnHome) {
+		this.showDrawerOnHome = showDrawerOnHome;
+		put(SHOW_DRAWER_ON_HOME, showDrawerOnHome).apply();
 	}
 
 	public float getAnimationDuration() {

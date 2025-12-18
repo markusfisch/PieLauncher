@@ -40,6 +40,9 @@
 	<string name="animate_in_out_yes">是 (默认)</string>
 	<string name="animate_in_out_no">没有</string>
 	<string name="category_app_drawer">应用程序列表</string>
+	<string name="home_button_opens_drawer">按下 Home 键打开应用列表</string>
+	<string name="home_button_opens_drawer_yes">是 (默认)</string>
+	<string name="home_button_opens_drawer_no">没有</string>
 	<string name="open_list_with">通过</string>
 	<string name="open_list_with_tap">点击主屏幕 (默认)</string>
 	<string name="open_list_with_any_touch">任何触摸，无论时间长短</string>

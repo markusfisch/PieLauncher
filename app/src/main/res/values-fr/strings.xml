@@ -40,6 +40,9 @@
 	<string name="animate_in_out_yes">Oui (par défaut)</string>
 	<string name="animate_in_out_no">Non</string>
 	<string name="category_app_drawer">Liste d\'apps</string>
+	<string name="home_button_opens_drawer">Le bouton Accueil ouvre la liste d\'apps</string>
+	<string name="home_button_opens_drawer_yes">Oui (Par défaut)</string>
+	<string name="home_button_opens_drawer_no">Non</string>
 	<string name="open_list_with">Ouvert par</string>
 	<string name="open_list_with_tap">Tapez sur l\'écran d\'accueil (par défaut)</string>
 	<string name="open_list_with_any_touch">Tout contact, même de longue durée</string>

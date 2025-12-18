@@ -191,6 +191,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getAnimateInOutOptions,
 				() -> prefs.animateInOut(),
 				(value) -> prefs.setAnimateInOut(value));
+		initPreference(R.id.home_button_opens_drawer,
+				R.string.home_button_opens_drawer,
+				PreferencesActivity::getHomeButtonOpensDrawerOptions,
+				() -> prefs.showDrawerOnHome(),
+				(value) -> prefs.setShowDrawerOnHome(value));
 		initPreference(R.id.open_list_with,
 				R.string.open_list_with,
 				PreferencesActivity::getOpenListWithOptions,
@@ -469,6 +474,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.animate_in_out_yes);
 		map.put(Boolean.FALSE, R.string.animate_in_out_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getHomeButtonOpensDrawerOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.home_button_opens_drawer_yes);
+		map.put(Boolean.FALSE, R.string.home_button_opens_drawer_no);
 		return map;
 	}
 

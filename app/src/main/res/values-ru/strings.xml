@@ -40,6 +40,9 @@
 	<string name="animate_in_out_yes">Да (Стандартно)</string>
 	<string name="animate_in_out_no">Нет</string>
 	<string name="category_app_drawer">Список приложений</string>
+	<string name="home_button_opens_drawer">Кнопка Home открывает список приложений</string>
+	<string name="home_button_opens_drawer_yes">Да (Стандартно)</string>
+	<string name="home_button_opens_drawer_no">Нет</string>
 	<string name="open_list_with">Открываться через</string>
 	<string name="open_list_with_tap">Нажатие на главный экран (Стандартно)</string>
 	<string name="open_list_with_any_touch">Любое прикосновение, независимо от продолжительности</string>

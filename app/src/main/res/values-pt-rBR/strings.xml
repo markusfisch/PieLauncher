@@ -44,6 +44,9 @@
 	<string name="haptic_feedback_disable_launch">Desativar apenas o feedback de lançamento</string>
 	<string name="haptic_feedback_disable_all">Desativar</string>
 	<string name="category_app_drawer">Gaveta de Aplicativos</string>
+	<string name="home_button_opens_drawer">Botão Home abre a gaveta de apps</string>
+	<string name="home_button_opens_drawer_yes">Sim (Padrão)</string>
+	<string name="home_button_opens_drawer_no">Não</string>
 	<string name="open_list_with">Abrir com</string>
 	<string name="open_list_with_tap">Um toque na tela inicial (Padrão)</string>
 	<string name="open_list_with_any_touch">Qualquer toque, não importa a duração</string>

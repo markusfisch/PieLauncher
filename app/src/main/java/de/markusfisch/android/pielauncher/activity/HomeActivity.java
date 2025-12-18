@@ -141,6 +141,7 @@ public class HomeActivity extends Activity {
 			if (pieView.inEditMode()) {
 				pieView.endEditMode();
 			} else if (!isSearchVisible() &&
+					prefs.showDrawerOnHome() &&
 					!isGestureNavigationEnabled() &&
 					// Only show all apps if the activity was recently paused
 					// (by pressing the home button) and _not_ if onPause()
