@@ -1567,7 +1567,7 @@ public class AppPieView extends View {
 		setCenter(centerX, centerY);
 
 		if (hasIcon) {
-			drawEditablePie(centerX, centerY);
+			calculateEditablePie(centerX, centerY);
 		} else {
 			PieLauncherApp.apps.calculate(centerX, centerY);
 		}
@@ -1576,7 +1576,7 @@ public class AppPieView extends View {
 		return PieLauncherApp.apps.drawSmoothed(canvas) || invalidate;
 	}
 
-	private void drawEditablePie(int centerX, int centerY) {
+	private void calculateEditablePie(int centerX, int centerY) {
 		int lastIndex = ungrabbedIcons.size();
 		double step = Apps.TAU / (lastIndex + 1);
 		double angle = Apps.getPositiveAngle(Math.atan2(
