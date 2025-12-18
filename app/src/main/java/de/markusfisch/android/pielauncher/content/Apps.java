@@ -91,6 +91,13 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 				? left.userHandle.hashCode() - right.userHandle.hashCode()
 				: result;
 	};
+	private final Comparator<HammingHit> hammingComparator = (left, right) -> {
+		int d = left.distance - right.distance;
+		if (d != 0) {
+			return d;
+		}
+		return appLabelComparator.compare(left.appIcon, right.appIcon);
+	};
 
 	private UpdateListener updateListener;
 	private LauncherApps launcherApps;
@@ -183,7 +190,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		Preferences prefs = PieLauncherApp.getPrefs(context);
 		int strategy = prefs.getSearchStrictness();
 		ArrayList<AppIcon> list = new ArrayList<>();
-		ArrayList<AppIcon> hamming = new ArrayList<>();
+		ArrayList<HammingHit> hamming = new ArrayList<>();
 		if (query.isEmpty()) {
 			list.addAll(apps.values());
 			if (prefs.excludePie()) {
@@ -207,9 +214,11 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 				}
 				if (add) {
 					list.add(appIcon);
-				} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING &&
-						hammingDistance(subject, query) < 2) {
-					hamming.add(appIcon);
+				} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING) {
+					int distance = hammingDistance(subject, query);
+					if (distance < 3) {
+						hamming.add(new HammingHit(distance, appIcon));
+					}
 				}
 			}
 		}
@@ -218,8 +227,10 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		if (!hamming.isEmpty()) {
 			// Only append hamming matches as they're less likely
 			// as good as exact matches.
-			Collections.sort(hamming, appLabelComparator);
-			list.addAll(hamming);
+			Collections.sort(hamming, hammingComparator);
+			for (HammingHit hit : hamming) {
+				list.add(hit.appIcon);
+			}
 		}
 		return list;
 	}
@@ -678,5 +689,15 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 			}
 		}
 		return count;
+	}
+
+	private static class HammingHit {
+		public final int distance;
+		public final AppIcon appIcon;
+
+		HammingHit(int distance, AppIcon appIcon) {
+			this.distance = distance;
+			this.appIcon = appIcon;
+		}
 	}
 }
