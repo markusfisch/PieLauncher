@@ -214,7 +214,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 				}
 				if (add) {
 					list.add(appIcon);
-				} else if (strategy == Preferences.SEARCH_STRICTNESS_HAMMING) {
+				} else {
 					int min = Math.min(subject.length(), query.length());
 					int distance = hammingDistance(subject, query, min);
 					if (distance <= min >> 1) {
@@ -225,7 +225,8 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		}
 
 		Collections.sort(list, appLabelComparator);
-		if (!hamming.isEmpty()) {
+		if (!hamming.isEmpty() && (list.isEmpty() ||
+				strategy == Preferences.SEARCH_STRICTNESS_HAMMING)) {
 			// Only append hamming matches as they're less likely
 			// as good as exact matches.
 			Collections.sort(hamming, hammingComparator);
