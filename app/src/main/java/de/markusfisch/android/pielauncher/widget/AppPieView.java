@@ -1577,12 +1577,12 @@ public class AppPieView extends View {
 	}
 
 	private void calculateEditablePie(int centerX, int centerY) {
-		int lastIndex = ungrabbedIcons.size();
-		double step = Apps.TAU / (lastIndex + 1);
+		int endIndex = ungrabbedIcons.size();
+		double step = Apps.TAU / (endIndex + 1);
 		double angle = Apps.getPositiveAngle(Math.atan2(
 				touch.y - centerY,
 				touch.x - centerX) - twist + step * .5);
-		int insertAt = Math.min(lastIndex, (int) Math.floor(angle / step));
+		int insertAt = Math.min(endIndex, (int) Math.floor(angle / step));
 		if (insertAt != lastInsertAt) {
 			// Avoid (visible) rotation of the menu when the first item
 			// changes. From the user's point of view, it is not clear
@@ -1591,9 +1591,9 @@ public class AppPieView extends View {
 			// icon is a newly added icon that is removed again. To
 			// prevent this, the menu is now rolled back if it has the
 			// sameOrder() as before (see below).
-			if (lastInsertAt == 0 && insertAt == lastIndex) {
+			if (lastInsertAt == 0 && insertAt == endIndex) {
 				Collections.rotate(ungrabbedIcons, 1);
-			} else if (lastInsertAt == lastIndex && insertAt == 0) {
+			} else if (lastInsertAt == endIndex && insertAt == 0) {
 				Collections.rotate(ungrabbedIcons, -1);
 			}
 
