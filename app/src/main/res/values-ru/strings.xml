@@ -15,9 +15,9 @@
 	<string name="orientation_landscape">Альбомная</string>
 	<string name="orientation_user">Автоматическая</string>
 	<string name="darken_background">Затемнять фон</string>
-	<string name="darken_background_yes">Сильное</string>
+	<string name="darken_background_yes">Сильное (по умолчанию)</string>
 	<string name="darken_background_light">Лёгкое</string>
-	<string name="darken_background_no">Нет (по умолчанию)</string>
+	<string name="darken_background_no">Нет</string>
 	<string name="blur_background">Размывать фон</string>
 	<string name="background_blur_radius_medium">Средняя</string>
 	<string name="background_blur_radius_heavy">Сильно</string>

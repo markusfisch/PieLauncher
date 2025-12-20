@@ -15,9 +15,9 @@
 	<string name="orientation_landscape">Liggend</string>
 	<string name="orientation_user">Automatisch</string>
 	<string name="darken_background">Donkere achtergrond</string>
-	<string name="darken_background_yes">Sterk</string>
+	<string name="darken_background_yes">Sterk (standaard)</string>
 	<string name="darken_background_light">Licht</string>
-	<string name="darken_background_no">Geen (standaard)</string>
+	<string name="darken_background_no">Geen</string>
 	<string name="blur_background">Vage achtergrond</string>
 	<string name="background_blur_radius_medium">Medium</string>
 	<string name="background_blur_radius_heavy">Sterk</string>

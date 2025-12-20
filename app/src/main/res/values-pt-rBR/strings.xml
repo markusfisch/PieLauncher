@@ -15,9 +15,9 @@
 	<string name="orientation_landscape">Paisagem</string>
 	<string name="orientation_user">Automático</string>
 	<string name="darken_background">Escurecer plano de fundo</string>
-	<string name="darken_background_yes">Forte</string>
+	<string name="darken_background_yes">Forte (Padrão)</string>
 	<string name="darken_background_light">Leve</string>
-	<string name="darken_background_no">Nenhum (Padrão)</string>
+	<string name="darken_background_no">Nenhum</string>
 	<string name="blur_background">Desfocar plano de fundo</string>
 	<string name="background_blur_radius_medium">Médio</string>
 	<string name="background_blur_radius_heavy">Muito</string>

@@ -79,7 +79,7 @@ public class Preferences {
 	private float twist = 0f;
 	private float iconScale = 1f;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-	private int darkenBackground = DARKEN_BACKGROUND_NONE;
+	private int darkenBackground = DARKEN_BACKGROUND_HEAVY;
 	private int backgroundBlurRadius = 0;
 	private boolean blurMenu = false;
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
