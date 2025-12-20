@@ -218,8 +218,7 @@ public class HomeActivity extends Activity {
 			}
 		});
 		PieLauncherApp.apps.setUpdateListener(() -> {
-			searchInput.getText().clear();
-			updateAppList();
+			updateAppList(false);
 		});
 	}
 
@@ -256,7 +255,7 @@ public class HomeActivity extends Activity {
 				if (endsWithDoubleSpace(e)) {
 					pieView.launchSelectedAppFromList();
 				}
-				updateAppList();
+				updateAppList(true);
 				// Check icon count after the list was updated.
 				if (prefs.autoLaunchMatching() &&
 						pieView.getIconCount() == 1) {
@@ -368,7 +367,7 @@ public class HomeActivity extends Activity {
 
 		// Remove filter and reset last scroll position.
 		if (!searchWasEmpty || pieView.isEmpty()) {
-			updateAppList();
+			updateAppList(true);
 		}
 
 		pieView.showList();
@@ -405,8 +404,8 @@ public class HomeActivity extends Activity {
 				"navigation_mode", 0) == 2;
 	}
 
-	private void updateAppList() {
-		pieView.filterAppList(searchInput.getText().toString());
+	private void updateAppList(boolean resetScroll) {
+		pieView.filterAppList(searchInput.getText().toString(), resetScroll);
 	}
 
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {

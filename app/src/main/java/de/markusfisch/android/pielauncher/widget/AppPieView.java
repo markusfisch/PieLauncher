@@ -317,7 +317,7 @@ public class AppPieView extends View {
 		return mode == MODE_LIST;
 	}
 
-	public void filterAppList(String query) {
+	public void filterAppList(String query, boolean resetScroll) {
 		List<Apps.AppIcon> newAppList =
 				PieLauncherApp.apps.filterAppsBy(getContext(), query);
 		if (newAppList != null) {
@@ -327,8 +327,10 @@ public class AppPieView extends View {
 		selectedApp = prefs.doubleSpaceLaunch()
 				? (appListIsFiltered ? 0 : -1)
 				: getSelectedAppFromTrailingSpace(query);
-		scrollList(0, false);
-		lastScrollY = 0;
+		if (resetScroll) {
+			scrollList(0, false);
+			lastScrollY = 0;
+		}
 		invalidate();
 	}
 
@@ -1497,6 +1499,11 @@ public class AppPieView extends View {
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		int viewHeightMinusPadding = viewHeight - getPaddingBottom();
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
+		if (scrollY > maxScrollY) {
+			int newScrollY = clamp(scrollY, 0, maxScrollY);
+			lastScrollY = newScrollY;
+			scrollList(newScrollY, false);
+		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
 				listRenderNode != null) {
