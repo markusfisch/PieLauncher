@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.23.9
+* Add an option to make the home button configurable
+* Keep scroll position at app updates
+* Improve app search
+
 ## 1.23.8
 * Add blur effect to pie menu and app listing
 * Add an option for a lighter dark background
