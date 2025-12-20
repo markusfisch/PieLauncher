@@ -1,0 +1,4 @@
+* Add an option to make the home button configurable
+* Keep scroll position at app updates
+* Improve app search
+

@@ -1,0 +1,4 @@
+* Add blur effect to pie menu and app listing
+* Add an option for a lighter dark background
+* Add launch animation
+
