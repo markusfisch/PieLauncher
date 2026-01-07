@@ -47,6 +47,9 @@
 	<string name="home_button_opens_drawer">Home button opens app drawer</string>
 	<string name="home_button_opens_drawer_yes">Yes (Default)</string>
 	<string name="home_button_opens_drawer_no">No</string>
+	<string name="hide_app_drawer">Hide app drawer</string>
+	<string name="hide_app_drawer_yes">Yes</string>
+	<string name="hide_app_drawer_no">No (Default)</string>
 	<string name="open_list_with">Opens with</string>
 	<string name="open_list_with_tap">A tap on the home screen (Default)</string>
 	<string name="open_list_with_any_touch">Any touch no matter how long</string>

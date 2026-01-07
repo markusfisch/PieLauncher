@@ -71,6 +71,7 @@ public class Preferences {
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
 	private static final String FORCE_RELAUNCH = "force_relaunch";
 	private static final String SHOW_DRAWER_ON_HOME = "show_drawer_on_home";
+	private static final String HIDE_APP_DRAWER = "hide_app_drawer";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -100,6 +101,7 @@ public class Preferences {
 	private boolean useLightDialogs = false;
 	private boolean forceRelaunch = false;
 	private boolean showDrawerOnHome = true;
+	private boolean hideAppDrawer = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -150,6 +152,7 @@ public class Preferences {
 		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
 		showDrawerOnHome = preferences.getBoolean(SHOW_DRAWER_ON_HOME,
 				showDrawerOnHome);
+		hideAppDrawer = preferences.getBoolean(HIDE_APP_DRAWER, hideAppDrawer);
 	}
 
 	public boolean skipSetup() {
@@ -383,6 +386,15 @@ public class Preferences {
 	public void setShowDrawerOnHome(boolean showDrawerOnHome) {
 		this.showDrawerOnHome = showDrawerOnHome;
 		put(SHOW_DRAWER_ON_HOME, showDrawerOnHome).apply();
+	}
+
+	public boolean hideAppDrawer() {
+		return hideAppDrawer;
+	}
+
+	public void setHideAppDrawer(boolean hideAppDrawer) {
+		this.hideAppDrawer = hideAppDrawer;
+		put(HIDE_APP_DRAWER, hideAppDrawer).apply();
 	}
 
 	public float getAnimationDuration() {

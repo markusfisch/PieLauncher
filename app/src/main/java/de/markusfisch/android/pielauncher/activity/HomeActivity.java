@@ -125,8 +125,7 @@ public class HomeActivity extends Activity {
 		// Because this activity has the launch mode "singleTask", it'll get
 		// an onNewIntent() when the activity is re-launched.
 		if (intent != null &&
-				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
-						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
+				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
 			// Deal with the gesture navigation/recent apps bug in Android 14:
 			// * make the home gesture twice
 			// * enter list of recent apps
@@ -178,6 +177,9 @@ public class HomeActivity extends Activity {
 			showAllAppsOnResume = false;
 		} else {
 			hideAllApps();
+		}
+		if (prefs.hideAppDrawer()) {
+			prefsButton.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -286,8 +288,8 @@ public class HomeActivity extends Activity {
 		boolean doubleSpaceLaunch = prefs.doubleSpaceLaunch();
 		String s = e.toString();
 		if ((doubleSpaceLaunch && s.endsWith("  ")) ||
-				// Some keyboards auto-replace two spaces with ". ",
-				// which means a new, different search result.
+		// Some keyboards auto-replace two spaces with ". ",
+		// which means a new, different search result.
 				s.endsWith(". ")) {
 			updateAfterTextChange = false;
 			e.clear();
@@ -341,13 +343,13 @@ public class HomeActivity extends Activity {
 	}
 
 	private void hidePrefsButton() {
-		if (prefsButton.getVisibility() == View.VISIBLE) {
+		if (!prefs.hideAppDrawer() && prefsButton.getVisibility() == View.VISIBLE) {
 			prefsButton.setVisibility(View.GONE);
 		}
 	}
 
 	private void showAllApps() {
-		if (isSearchVisible()) {
+		if (isSearchVisible() || prefs.hideAppDrawer()) {
 			return;
 		}
 

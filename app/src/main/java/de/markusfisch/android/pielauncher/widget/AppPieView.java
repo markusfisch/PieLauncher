@@ -55,18 +55,15 @@ public class AppPieView extends View {
 		void onDragDown(float alpha);
 	}
 
-	private static final int HAPTIC_FEEDBACK_DOWN =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-					? HapticFeedbackConstants.KEYBOARD_TAP
-					: HapticFeedbackConstants.CONTEXT_CLICK;
-	private static final int HAPTIC_FEEDBACK_CONFIRM =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.R
-					? HAPTIC_FEEDBACK_DOWN
-					: HapticFeedbackConstants.CONFIRM;
-	private static final int HAPTIC_FEEDBACK_CHOICE =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-					? HAPTIC_FEEDBACK_DOWN
-					: HapticFeedbackConstants.SEGMENT_TICK;
+	private static final int HAPTIC_FEEDBACK_DOWN = Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+			? HapticFeedbackConstants.KEYBOARD_TAP
+			: HapticFeedbackConstants.CONTEXT_CLICK;
+	private static final int HAPTIC_FEEDBACK_CONFIRM = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+			? HAPTIC_FEEDBACK_DOWN
+			: HapticFeedbackConstants.CONFIRM;
+	private static final int HAPTIC_FEEDBACK_CHOICE = Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+			? HAPTIC_FEEDBACK_DOWN
+			: HapticFeedbackConstants.SEGMENT_TICK;
 	private static final int MODE_PIE = 0;
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
@@ -237,7 +234,8 @@ public class AppPieView extends View {
 		tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
 		longPressTimeout = ViewConfiguration.getLongPressTimeout() *
 				(prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
-						? 2L : 1L);
+						? 2L
+						: 1L);
 		doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
 		if (PieLauncherApp.apps.isEmpty()) {
 			PieLauncherApp.apps.indexAppsAsync(context);
@@ -258,7 +256,7 @@ public class AppPieView extends View {
 	}
 
 	public void showList() {
-		if (mode == MODE_LIST) {
+		if (mode == MODE_LIST || prefs.hideAppDrawer()) {
 			return;
 		}
 		mode = MODE_LIST;
@@ -284,7 +282,7 @@ public class AppPieView extends View {
 	}
 
 	public void dragDownListBy(float y) {
-		if (mode != MODE_LIST) {
+		if (mode != MODE_LIST || prefs.hideAppDrawer()) {
 			return;
 		}
 		dragDistance -= y;
@@ -318,8 +316,7 @@ public class AppPieView extends View {
 	}
 
 	public void filterAppList(String query, boolean resetScroll) {
-		List<Apps.AppIcon> newAppList =
-				PieLauncherApp.apps.filterAppsBy(getContext(), query);
+		List<Apps.AppIcon> newAppList = PieLauncherApp.apps.filterAppsBy(getContext(), query);
 		if (newAppList != null) {
 			appList = newAppList;
 		}
@@ -384,8 +381,7 @@ public class AppPieView extends View {
 			}
 		}
 
-		if (mode != MODE_PIE || prefs.darkenBackground() !=
-				Preferences.DARKEN_BACKGROUND_NONE) {
+		if (mode != MODE_PIE || prefs.darkenBackground() != Preferences.DARKEN_BACKGROUND_NONE) {
 			darkenBackground(canvas, fMax);
 		}
 
@@ -424,8 +420,7 @@ public class AppPieView extends View {
 	private void initTouchListener() {
 		setOnTouchListener(new OnTouchListener() {
 			private final FlingRunnable flingRunnable = new FlingRunnable();
-			private final SparseArray<TouchReference> touchReferences =
-					new SparseArray<>();
+			private final SparseArray<TouchReference> touchReferences = new SparseArray<>();
 
 			private VelocityTracker velocityTracker;
 			private int primaryId;
@@ -896,8 +891,8 @@ public class AppPieView extends View {
 	}
 
 	private void layoutEditorControls(boolean portrait) {
-		Bitmap[] icons = new Bitmap[]{iconAdd, iconPreferences, iconDone};
-		Rect[] rects = new Rect[]{iconStartRect, iconCenterRect, iconEndRect};
+		Bitmap[] icons = new Bitmap[] { iconAdd, iconPreferences, iconDone };
+		Rect[] rects = new Rect[] { iconStartRect, iconCenterRect, iconEndRect };
 		int length = icons.length;
 		int totalWidth = 0;
 		int totalHeight = 0;
@@ -1083,8 +1078,7 @@ public class AppPieView extends View {
 				openList = wasTap || appIcon == null;
 				break;
 			case Preferences.OPEN_LIST_WITH_ICON:
-				result = openList =
-						PieLauncherApp.apps.isDrawerIcon(appIcon);
+				result = openList = PieLauncherApp.apps.isDrawerIcon(appIcon);
 				break;
 			case Preferences.OPEN_LIST_WITH_LONG_PRESS:
 				openList = wasLongPress;
@@ -1435,8 +1429,7 @@ public class AppPieView extends View {
 		int y = searchInputHeight + listPadding;
 
 		// Slide in/out animation.
-		if (prefs.listAnimationAppearance() ==
-				Preferences.LIST_APPEARANCE_ANIMATION_SLIDE ||
+		if (prefs.listAnimationAppearance() == Preferences.LIST_APPEARANCE_ANIMATION_SLIDE ||
 				isDraggingDownList()) {
 			y += Math.round((1f - f) * listFadeHeight);
 		}
@@ -1558,7 +1551,8 @@ public class AppPieView extends View {
 			}
 			drawAction(canvas, iconRemove, iconStartRect, radius);
 			drawAction(canvas, PieLauncherApp.iconPack.hasPacks()
-					? iconEdit : iconHide, iconCenterRect, radius);
+					? iconEdit
+					: iconHide, iconCenterRect, radius);
 			drawAction(canvas, iconDetails, iconEndRect, radius);
 		} else {
 			drawAction(canvas, iconChangeTwist, iconChangeTwistRect);
@@ -1667,7 +1661,8 @@ public class AppPieView extends View {
 			} else if (contains(iconCenterRect, touch)) {
 				setHighlightedAction(iconCenterRect);
 				return PieLauncherApp.iconPack.hasPacks()
-						? editAppTip : hideAppTip;
+						? editAppTip
+						: hideAppTip;
 			} else if (contains(iconEndRect, touch)) {
 				setHighlightedAction(iconEndRect);
 				return removeAppTip;
@@ -1753,8 +1748,7 @@ public class AppPieView extends View {
 	}
 
 	private boolean contains(Rect rect, Point point) {
-		return distSq(rect.centerX(), rect.centerY(), point.x, point.y) <
-				actionSizeSq;
+		return distSq(rect.centerX(), rect.centerY(), point.x, point.y) < actionSizeSq;
 	}
 
 	private static float distSq(int ax, int ay, int bx, int by) {
@@ -1804,8 +1798,7 @@ public class AppPieView extends View {
 
 	private void darkenBackground(Canvas canvas, float f) {
 		int max = (translucentBackgroundColor >> 24) & 0xff;
-		if (mode == MODE_PIE && prefs.darkenBackground() ==
-				Preferences.DARKEN_BACKGROUND_LIGHT) {
+		if (mode == MODE_PIE && prefs.darkenBackground() == Preferences.DARKEN_BACKGROUND_LIGHT) {
 			max /= 2;
 		}
 		int alpha = Math.round(f * max);

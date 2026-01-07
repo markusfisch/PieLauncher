@@ -35,8 +35,7 @@ public class PreferencesActivity extends Activity {
 	private static final String WELCOME = "welcome";
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
-	private final ExecutorService executor =
-			Executors.newSingleThreadExecutor();
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	private Preferences prefs;
 	private ToolbarBackground toolbarBackground;
@@ -121,7 +120,7 @@ public class PreferencesActivity extends Activity {
 		boolean disableBatteryVisible = updateDisableBatteryOptimizations();
 		boolean updateDefaultVisible = updateDefaultLauncher();
 		if (disableBatteryVisible && updateDefaultVisible &&
-				// Auto close in welcome mode only.
+		// Auto close in welcome mode only.
 				isWelcomeMode) {
 			finish();
 		}
@@ -196,6 +195,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getHomeButtonOpensDrawerOptions,
 				() -> prefs.showDrawerOnHome(),
 				(value) -> prefs.setShowDrawerOnHome(value));
+		initPreference(R.id.hide_app_drawer,
+				R.string.hide_app_drawer,
+				PreferencesActivity::getHideAppDrawerOptions,
+				() -> prefs.hideAppDrawer(),
+				(value) -> prefs.setHideAppDrawer(value));
 		initPreference(R.id.open_list_with,
 				R.string.open_list_with,
 				PreferencesActivity::getOpenListWithOptions,
@@ -390,9 +394,8 @@ public class PreferencesActivity extends Activity {
 			disableBatteryOptimizations.setVisibility(View.GONE);
 			return true;
 		} else {
-			disableBatteryOptimizations.setOnClickListener(v ->
-					BatteryOptimization.requestDisable(
-							PreferencesActivity.this));
+			disableBatteryOptimizations.setOnClickListener(v -> BatteryOptimization.requestDisable(
+					PreferencesActivity.this));
 			return false;
 		}
 	}
@@ -402,8 +405,7 @@ public class PreferencesActivity extends Activity {
 			defaultLauncherView.setVisibility(View.GONE);
 			return true;
 		} else {
-			defaultLauncherView.setOnClickListener(v ->
-					DefaultLauncher.setAsDefault(this));
+			defaultLauncherView.setOnClickListener(v -> DefaultLauncher.setAsDefault(this));
 			return false;
 		}
 	}
@@ -481,6 +483,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.home_button_opens_drawer_yes);
 		map.put(Boolean.FALSE, R.string.home_button_opens_drawer_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getHideAppDrawerOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.hide_app_drawer_yes);
+		map.put(Boolean.FALSE, R.string.hide_app_drawer_no);
 		return map;
 	}
 
