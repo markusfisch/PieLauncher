@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -41,7 +43,6 @@ import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.PieMenu;
-import de.markusfisch.android.pielauncher.graphics.Ripple;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class AppPieView extends View {
@@ -76,13 +77,13 @@ public class AppPieView extends View {
 	private final Fade fadeEdit = new Fade();
 	private final ArrayList<Apps.AppIcon> backup = new ArrayList<>();
 	private final ArrayList<Apps.AppIcon> ungrabbedIcons = new ArrayList<>();
+	private final ColorMatrixColorFilter dimFilter;
 	private final Paint paintList = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final Paint paintDropZone = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Paint paintPressed = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Paint paintAction = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 	private final Point touch = new Point();
-	private final Ripple ripple = Ripple.newFadingRipple();
 	private final Rect drawRect = new Rect();
 	private final Rect iconStartRect = new Rect();
 	private final Rect iconCenterRect = new Rect();
@@ -127,7 +128,6 @@ public class AppPieView extends View {
 	private Window window;
 	private RenderNode pieRenderNode;
 	private RenderNode listRenderNode;
-	private Runnable rippleRunnable;
 	private int viewWidth;
 	private int viewHeight;
 	private int controlsPadding;
@@ -160,8 +160,9 @@ public class AppPieView extends View {
 	private List<Apps.AppIcon> appList;
 	private Rect highlightedAction;
 	private Apps.AppIcon grabbedIcon;
+	private Apps.AppIcon touchedIcon;
 	private Apps.AppIcon highlightedIcon;
-	private Apps.AppIcon launchingApp;
+	private Apps.AppIcon launchingIcon;
 	private long highlightedFrom;
 	private long grabbedIconAt;
 	private long lastActionUp;
@@ -217,6 +218,14 @@ public class AppPieView extends View {
 			listRenderNode = new RenderNode("List");
 		}
 
+		// Set up dim filter.
+		{
+			float dimAmount = .5f;
+			ColorMatrix colorMatrix = new ColorMatrix();
+			colorMatrix.setScale(dimAmount, dimAmount, dimAmount, 1);
+			dimFilter = new ColorMatrixColorFilter(colorMatrix);
+		}
+
 		iconAdd = Converter.getBitmapFromDrawable(res, R.drawable.ic_add);
 		iconEdit = Converter.getBitmapFromDrawable(res, R.drawable.ic_edit);
 		iconHide = Converter.getBitmapFromDrawable(res, R.drawable.ic_hide);
@@ -262,7 +271,6 @@ public class AppPieView extends View {
 			return;
 		}
 		mode = MODE_LIST;
-		cancelRipple();
 		PieLauncherApp.apps.addScrollShift(lastScrollY);
 		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
@@ -394,7 +402,6 @@ public class AppPieView extends View {
 		boolean invalidate = drawPieMenu(pieCanvas, fPie);
 		drawRenderNode(pieRenderNode, canvas);
 
-		invalidate |= ripple.draw(canvas, prefs);
 		if (PieLauncherApp.apps.isIndexing()) {
 			drawTip(canvas, loadingTip);
 		}
@@ -433,6 +440,7 @@ public class AppPieView extends View {
 			private double spinAngleDown;
 			private double spinInitialTwist;
 			private int scrollOffset;
+			private Runnable highlightRunnable;
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
 
@@ -660,7 +668,16 @@ public class AppPieView extends View {
 				if (appIcon == null) {
 					return;
 				}
-				initLongPressFeedback(appIcon);
+
+				touchedIcon = appIcon;
+
+				// Delay touch feedback to not make it feel too sensitive.
+				highlightRunnable = () -> {
+					highlightedIcon = appIcon;
+					highlightedFrom = SystemClock.uptimeMillis();
+				};
+				postDelayed(highlightRunnable, longPressTimeout >> 1);
+
 				longPressRunnable = () -> {
 					performHapticFeedbackIfAllowed(
 							HapticFeedbackConstants.LONG_PRESS);
@@ -677,7 +694,6 @@ public class AppPieView extends View {
 
 			private void cancelLongPress() {
 				cancelHighlight();
-				cancelRipple();
 				if (longPressRunnable != null) {
 					removeCallbacks(longPressRunnable);
 					longPressRunnable = null;
@@ -685,21 +701,13 @@ public class AppPieView extends View {
 			}
 
 			private void cancelHighlight() {
+				touchedIcon = null;
 				highlightedIcon = null;
 				highlightedFrom = 0;
-			}
-
-			private void initLongPressFeedback(Apps.AppIcon appIcon) {
-				cancelRipple();
-				final Point at = new Point(touch.x, touch.y + getScrollY());
-				rippleRunnable = () -> {
-					highlightedIcon = appIcon;
-					highlightedFrom = SystemClock.uptimeMillis();
-					ripple.set(at.x, at.y);
-					invalidate();
-				};
-				// Delay touch feedback to not make it feel too sensitive.
-				postDelayed(rippleRunnable, longPressTimeout >> 1);
+				if (highlightRunnable != null) {
+					removeCallbacks(highlightRunnable);
+					highlightRunnable = null;
+				}
 			}
 
 			private boolean isScroll(MotionEvent event) {
@@ -1037,7 +1045,6 @@ public class AppPieView extends View {
 	}
 
 	private void resetScrollWithoutAnimation() {
-		cancelRipple();
 		scrollTo(0, 0);
 	}
 
@@ -1045,14 +1052,6 @@ public class AppPieView extends View {
 		scrollTo(0, y);
 		if (listListener != null) {
 			listListener.onScrollList(y, isScrolling);
-		}
-	}
-
-	private void cancelRipple() {
-		ripple.cancel();
-		if (rippleRunnable != null) {
-			removeCallbacks(rippleRunnable);
-			rippleRunnable = null;
 		}
 	}
 
@@ -1105,9 +1104,6 @@ public class AppPieView extends View {
 			launchApp(context, appIcon);
 			result = true;
 		}
-		if (result) {
-			ripple.set(at);
-		}
 		return result;
 	}
 
@@ -1129,7 +1125,6 @@ public class AppPieView extends View {
 		if (listListener != null) {
 			listListener.onHideList();
 		}
-		ripple.set(at);
 		return true;
 	}
 
@@ -1149,26 +1144,22 @@ public class AppPieView extends View {
 			twist = getTwistSegment(twist + Apps.HALF_PI) *
 					(float) Apps.HALF_PI;
 			updateChangeTwistIcon();
-			ripple.set(touch);
 			return true;
 		} else if (grabbedIcon == null &&
 				contains(iconChangeIconScaleRect, touch)) {
 			iconScale = iconScale < 1f ? 1f : minIconScale;
 			updateChangeIconScaleIcon();
-			ripple.set(touch);
 			return true;
 		} else if (grabbedIcon == null &&
 				contains(iconChangeRadiusRect, touch)) {
 			radius = getNextRadius(radius);
 			PieLauncherApp.apps.setRadius(radius);
 			updateChangeRadiusIcon();
-			ripple.set(touch);
 			return true;
 		} else if (contains(iconStartRect, touch)) {
 			if (grabbedIcon == null) {
 				((Activity) context).onBackPressed();
 			} else {
-				ripple.set(touch);
 				removeIconFromPie(grabbedIcon,
 						PieLauncherApp.apps.isDrawerIcon(
 								(Apps.AppIcon) grabbedIcon));
@@ -1178,7 +1169,6 @@ public class AppPieView extends View {
 			if (grabbedIcon == null) {
 				PreferencesActivity.start(context);
 			} else {
-				ripple.set(touch);
 				rollback();
 				if (neverDropped) {
 					fadeOutMode();
@@ -1200,7 +1190,6 @@ public class AppPieView extends View {
 			if (grabbedIcon == null) {
 				endEditMode();
 			} else {
-				ripple.set(touch);
 				rollback();
 				fadeOutMode();
 				if (PieLauncherApp.apps.isDrawerIcon(
@@ -1221,7 +1210,7 @@ public class AppPieView extends View {
 	}
 
 	private void launchApp(Context context, Apps.AppIcon appIcon) {
-		launchingApp = appIcon;
+		launchingIcon = appIcon;
 		PieLauncherApp.apps.launchApp(context, appIcon);
 	}
 
@@ -1368,7 +1357,7 @@ public class AppPieView extends View {
 				twist,
 				iconScale);
 		lastSelectedIcon = -1;
-		launchingApp = null;
+		launchingIcon = null;
 	}
 
 	private void editIconAt(Point point) {
@@ -1454,7 +1443,7 @@ public class AppPieView extends View {
 					paintList);
 		}
 
-		// Calculate magnification of touched icon.
+		// Calculate magnification of hightlighted icon.
 		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .3f);
 		boolean invalidate = f < 1f;
 		if (highlightedFrom > 0) {
@@ -1479,9 +1468,13 @@ public class AppPieView extends View {
 				int ix = x + hpad;
 				int iy = y + vpad;
 				int mag = appIcon == highlightedIcon ? magSize : 0;
-				drawRect.set(ix - mag, iy - mag,
-						ix + iconSize + mag, iy + iconSize + mag);
+				drawRect.set(ix - mag, iy - mag - mag,
+						ix + iconSize + mag, iy + iconSize);
+				if (mag == 0 && appIcon == touchedIcon) {
+					paintList.setColorFilter(dimFilter);
+				}
 				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintList);
+				paintList.setColorFilter(null);
 				if (showAppNames) {
 					CharSequence label = TextUtils.ellipsize(appIcon.label,
 							paintText, maxTextWidth, TextUtils.TruncateAt.END);
@@ -1647,7 +1640,7 @@ public class AppPieView extends View {
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		PieLauncherApp.apps.calculate(touch.x, touch.y,
 				prefs.animateInOut() ? easeSlowerOut(f) : 1f,
-				launchingApp);
+				launchingIcon);
 		PieLauncherApp.apps.draw(canvas);
 
 		int selectedIcon = PieLauncherApp.apps.getSelectedIcon();

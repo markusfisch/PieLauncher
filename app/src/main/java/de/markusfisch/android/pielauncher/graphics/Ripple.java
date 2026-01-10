@@ -15,21 +15,15 @@ import de.markusfisch.android.pielauncher.preference.Preferences;
 public class Ripple {
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Point hotSpot = new Point();
-	private final boolean fade;
 
 	private long offset = 0L;
 	private boolean pressed;
 
-	public static Ripple newFadingRipple() {
-		return new Ripple(0xffffffff, true);
-	}
-
 	public static Ripple newPressRipple() {
-		return new Ripple(0x22ffffff, false);
+		return new Ripple(0x22ffffff);
 	}
 
-	public Ripple(int color, boolean fade) {
-		this.fade = fade;
+	private Ripple(int color) {
 		paint.setColor(color);
 		paint.setStyle(Paint.Style.FILL);
 	}
@@ -103,16 +97,13 @@ public class Ripple {
 			return offset > 0;
 		}
 		if (delta > duration) {
-			if (!fade && pressed) {
+			if (pressed) {
 				canvas.drawColor(paint.getColor());
 			}
 			return false;
 		}
 		float maxRadius = Math.max(canvas.getWidth(), canvas.getHeight());
 		float radius = Math.max(48f, maxRadius / duration * delta);
-		if (fade) {
-			paint.setAlpha(Math.round(128f / duration * (duration - delta)));
-		}
 		canvas.drawCircle(hotSpot.x, hotSpot.y, radius, paint);
 		return true;
 	}
