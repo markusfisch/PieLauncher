@@ -118,13 +118,6 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		}
 	}
 
-	public AppIcon getSelectedApp() {
-		int index = getSelectedIcon();
-		return index > -1 && index < icons.size()
-				? (AppIcon) icons.get(index)
-				: null;
-	}
-
 	public boolean isDrawerIcon(AppIcon icon) {
 		return icon != null &&
 				isDrawerPackageName(icon.componentName.getPackageName());

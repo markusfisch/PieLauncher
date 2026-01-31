@@ -21,7 +21,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 	private int centerY = -1;
 	private double radius = 0;
 	private double twist = 0;
-	private float iconScale = 0;
+	private float iconScale = 1f;
 
 	public static double getPositiveAngle(double a) {
 		return (a + TAU + TAU) % TAU;

@@ -72,6 +72,7 @@ public class AppPieView extends View {
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
 
+	private final CanvasPieMenu<Apps.AppIcon> pieMenu = PieLauncherApp.apps;
 	private final Fade fadePie = new Fade();
 	private final Fade fadeList = new Fade();
 	private final Fade fadeEdit = new Fade();
@@ -271,7 +272,7 @@ public class AppPieView extends View {
 			return;
 		}
 		mode = MODE_LIST;
-		PieLauncherApp.apps.addScrollShift(lastScrollY);
+		pieMenu.addScrollShift(lastScrollY);
 		scrollList(lastScrollY, false);
 		setVerticalScrollBarEnabled(true);
 		resetDragDownList();
@@ -806,7 +807,7 @@ public class AppPieView extends View {
 				}
 				for (int i = 0; i < count; ++i) {
 					if (event.getPointerId(i) == spinId) {
-						PieLauncherApp.apps.setTwist(spinInitialTwist +
+						pieMenu.setTwist(spinInitialTwist +
 								PieMenu.getAngleDifference(
 										angleOf(event.getX(i), event.getY(i)),
 										spinAngleDown));
@@ -838,7 +839,7 @@ public class AppPieView extends View {
 			private void initSpin(MotionEvent event, int idx) {
 				spinId = event.getPointerId(idx);
 				spinAngleDown = angleOf(event.getX(idx), event.getY(idx));
-				spinInitialTwist = PieLauncherApp.apps.getTwist();
+				spinInitialTwist = pieMenu.getTwist();
 			}
 		});
 	}
@@ -1025,10 +1026,10 @@ public class AppPieView extends View {
 
 	private void editIcon(Apps.AppIcon icon) {
 		backup.clear();
-		backup.addAll(PieLauncherApp.apps.icons);
-		PieLauncherApp.apps.icons.remove(icon);
+		backup.addAll(pieMenu.icons);
+		pieMenu.icons.remove(icon);
 		ungrabbedIcons.clear();
-		ungrabbedIcons.addAll(PieLauncherApp.apps.icons);
+		ungrabbedIcons.addAll(pieMenu.icons);
 		CanvasPieMenu.paint.setAlpha(255);
 		grabbedIcon = icon;
 		grabbedIconAt = SystemClock.uptimeMillis();
@@ -1066,7 +1067,7 @@ public class AppPieView extends View {
 		} else if (mode == MODE_EDIT) {
 			boolean result = performEditAction(context);
 			releaseIcon();
-			PieLauncherApp.apps.updateSmoothing();
+			pieMenu.updateSmoothing();
 			return result;
 		}
 		return false;
@@ -1074,9 +1075,13 @@ public class AppPieView extends View {
 
 	private boolean performPieAction(Context context, Point at,
 			boolean wasTap, boolean wasDoubleTap, boolean wasLongPress) {
+		Apps.AppIcon appIcon = null;
+		int index = pieMenu.getSelectedIcon();
+		if (index > -1 && index < pieMenu.icons.size()) {
+			appIcon = pieMenu.icons.get(index);
+		}
 		boolean result = false;
 		boolean openList = false;
-		Apps.AppIcon appIcon = PieLauncherApp.apps.getSelectedApp();
 		switch (prefs.openListWith()) {
 			case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
 				openList = wasTap || appIcon == null;
@@ -1153,7 +1158,7 @@ public class AppPieView extends View {
 		} else if (grabbedIcon == null &&
 				contains(iconChangeRadiusRect, touch)) {
 			radius = getNextRadius(radius);
-			PieLauncherApp.apps.setRadius(radius);
+			pieMenu.setRadius(radius);
 			updateChangeRadiusIcon();
 			return true;
 		} else if (contains(iconStartRect, touch)) {
@@ -1218,16 +1223,16 @@ public class AppPieView extends View {
 		if (isDrawerIcon) {
 			prefs.setOpenListWith(Preferences.OPEN_LIST_WITH_TAP);
 		}
-		PieLauncherApp.apps.icons.remove(icon);
+		pieMenu.icons.remove(icon);
 		// Undo any rotation if the menu has not otherwise changed.
-		if (sameOrder(backup, PieLauncherApp.apps.icons)) {
+		if (sameOrder(backup, pieMenu.icons)) {
 			rollback();
 		}
 	}
 
 	private void rollback() {
-		PieLauncherApp.apps.icons.clear();
-		PieLauncherApp.apps.icons.addAll(backup);
+		pieMenu.icons.clear();
+		pieMenu.icons.addAll(backup);
 	}
 
 	private static boolean sameOrder(
@@ -1350,7 +1355,7 @@ public class AppPieView extends View {
 	}
 
 	private void setCenter(int x, int y) {
-		PieLauncherApp.apps.set(
+		pieMenu.set(
 				clamp(x, radius, viewWidth - radius),
 				clamp(y, radius, viewHeight - radius),
 				radius,
@@ -1361,9 +1366,9 @@ public class AppPieView extends View {
 	}
 
 	private void editIconAt(Point point) {
-		int size = PieLauncherApp.apps.icons.size();
+		int size = pieMenu.icons.size();
 		for (int i = 0; i < size; ++i) {
-			Apps.AppIcon icon = PieLauncherApp.apps.icons.get(i);
+			Apps.AppIcon icon = (Apps.AppIcon) pieMenu.icons.get(i);
 			double rad = icon.size * .5;
 			float sizeSq = Math.round(rad * rad);
 			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
@@ -1569,11 +1574,11 @@ public class AppPieView extends View {
 		if (hasIcon) {
 			calculateEditablePie(centerX, centerY);
 		} else {
-			PieLauncherApp.apps.calculate(centerX, centerY);
+			pieMenu.calculate(centerX, centerY);
 		}
 
 		// Invoke drawSmoothed() first to make sure it's always run.
-		return PieLauncherApp.apps.drawSmoothed(canvas) || invalidate;
+		return pieMenu.drawSmoothed(canvas) || invalidate;
 	}
 
 	private void calculateEditablePie(int centerX, int centerY) {
@@ -1597,21 +1602,21 @@ public class AppPieView extends View {
 				Collections.rotate(ungrabbedIcons, -1);
 			}
 
-			PieLauncherApp.apps.icons.clear();
-			PieLauncherApp.apps.icons.addAll(ungrabbedIcons);
-			PieLauncherApp.apps.icons.add(insertAt, grabbedIcon);
-			PieLauncherApp.apps.updateSmoothing();
+			pieMenu.icons.clear();
+			pieMenu.icons.addAll(ungrabbedIcons);
+			pieMenu.icons.add(insertAt, grabbedIcon);
+			pieMenu.updateSmoothing();
 
 			if (lastInsertAt < 0) {
-				PieLauncherApp.apps.calculate(centerX, centerY);
+				pieMenu.calculate(centerX, centerY);
 				grabbedIcon.x = touch.x;
 				grabbedIcon.y = touch.y;
-				PieLauncherApp.apps.initSmoothing();
+				pieMenu.initSmoothing();
 			}
 			lastInsertAt = insertAt;
 		}
 
-		PieLauncherApp.apps.calculate(touch.x, touch.y);
+		pieMenu.calculate(touch.x, touch.y);
 		grabbedIcon.x = touch.x;
 		grabbedIcon.y = touch.y;
 	}
@@ -1638,12 +1643,12 @@ public class AppPieView extends View {
 		}
 
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
-		PieLauncherApp.apps.calculate(touch.x, touch.y,
+		pieMenu.calculate(touch.x, touch.y,
 				prefs.animateInOut() ? easeSlowerOut(f) : 1f,
 				launchingIcon);
-		PieLauncherApp.apps.draw(canvas);
+		pieMenu.draw(canvas);
 
-		int selectedIcon = PieLauncherApp.apps.getSelectedIcon();
+		int selectedIcon = pieMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
 			lastSelectedIcon = selectedIcon;
 			performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CHOICE);
@@ -1756,10 +1761,10 @@ public class AppPieView extends View {
 		return dx * dx + dy * dy;
 	}
 
-	private static double angleOf(float x, float y) {
+	private double angleOf(float x, float y) {
 		return PieMenu.getPositiveAngle(Math.atan2(
-				y - PieLauncherApp.apps.getCenterY(),
-				x - PieLauncherApp.apps.getCenterX()));
+				y - pieMenu.getCenterY(),
+				x - pieMenu.getCenterX()));
 	}
 
 	private int clampRadius(int r) {
