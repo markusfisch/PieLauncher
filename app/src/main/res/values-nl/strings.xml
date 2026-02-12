@@ -71,6 +71,9 @@
 	<string name="show_app_names">App-namen weergeven</string>
 	<string name="show_app_names_always">Altijd</string>
 	<string name="show_app_names_search">Bij zoeken (standaard)</string>
+	<string name="private_space_not_available">Privéruimte niet beschikbaar</string>
+	<string name="private_space_unlocking">Privéruimte wordt ontgrendeld…</string>
+	<string name="private_space_unlock_failed">Kan privéruimte niet ontgrendelen</string>
 	<string name="show_app_names_never">Nooit</string>
 	<string name="exclude_pie">Pictogrammen op het beginscherm verbergen</string>
 	<string name="exclude_pie_yes">Ja</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Ja</string>
 	<string name="use_light_dialogs_no">Nee (standaard)</string>
 	<string name="force_relaunch">Startscherm niet opnieuw gebruiken</string>
-	<string name="force_relaunch_yes">Ja</string>
-	<string name="force_relaunch_no">Nee (standaard)</string>
+	<string name="force_relaunch_yes">Ja (standaard)</string>
+	<string name="force_relaunch_no">Nee</string>
 	<string name="skip">Overslaan</string>
 	<string name="reset">Herstellen</string>
 	<string name="edit_app">App bewerken</string>

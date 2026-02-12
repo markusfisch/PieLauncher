@@ -71,6 +71,9 @@
 	<string name="show_app_names">Показати назви програм</string>
 	<string name="show_app_names_always">Завжди</string>
 	<string name="show_app_names_search">Під час пошуку (за замовчуванням)</string>
+	<string name="private_space_not_available">Приватний простір недоступний</string>
+	<string name="private_space_unlocking">Розблокування приватного простору…</string>
+	<string name="private_space_unlock_failed">Не вдалося розблокувати приватний простір</string>
 	<string name="show_app_names_never">Ніколи</string>
 	<string name="exclude_pie">Приховати іконки на головному екрані</string>
 	<string name="exclude_pie_yes">Так</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Так</string>
 	<string name="use_light_dialogs_no">Ні (за замовчуванням)</string>
 	<string name="force_relaunch">Не використовуйте домашній екран повторно</string>
-	<string name="force_relaunch_yes">Так</string>
-	<string name="force_relaunch_no">Ні (за замовчуванням)</string>
+	<string name="force_relaunch_yes">Так (за замовчуванням)</string>
+	<string name="force_relaunch_no">Ні</string>
 	<string name="skip">Пропустити</string>
 	<string name="reset">Скинути</string>
 	<string name="edit_app">Редагування програми</string>

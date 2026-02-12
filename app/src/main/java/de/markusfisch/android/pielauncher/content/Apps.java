@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
+import android.content.pm.LauncherUserInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
@@ -67,6 +68,8 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 
 	public interface UpdateListener {
 		void onUpdate();
+
+		void onShowAllAppsOnResume();
 	}
 
 	public static final boolean HAS_LAUNCHER_APP =
@@ -175,17 +178,36 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		if (indexing) {
 			return null;
 		}
+
+		UserHandle privateUser = findPrivateProfileUser(context);
+		boolean privateOnly = false;
+
+		query = query == null ? "" : query.trim();
+		if (privateUser != null && query.startsWith(".")) {
+			query = query.substring(1);
+			if (isPrivateProfileLocked(context, privateUser)) {
+				if (unlockPrivateProfile(context)) {
+					return null;
+				}
+			} else {
+				privateOnly = true;
+			}
+		}
+
 		Locale defaultLocale = Locale.getDefault();
-		query = query == null
-				? ""
-				: query.trim().toLowerCase(defaultLocale);
+		query = query.toLowerCase(defaultLocale);
 
 		Preferences prefs = PieLauncherApp.getPrefs(context);
 		int strategy = prefs.getSearchStrictness();
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<HammingHit> hamming = new ArrayList<>();
+
 		if (query.isEmpty()) {
-			list.addAll(apps.values());
+			for (AppIcon appIcon : apps.values()) {
+				if (inProfile(appIcon.userHandle, privateUser, privateOnly)) {
+					list.add(appIcon);
+				}
+			}
 			if (prefs.excludePie()) {
 				list.removeAll(new HashSet<>(icons));
 			}
@@ -193,6 +215,9 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 			int item = prefs.getSearchParameter();
 			for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
 				AppIcon appIcon = entry.getValue();
+				if (!inProfile(appIcon.userHandle, privateUser, privateOnly)) {
+					continue;
+				}
 				String subject = getSubject(item, appIcon, defaultLocale);
 				boolean add = false;
 				switch (strategy) {
@@ -303,7 +328,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		return true;
 	}
 
-	private static void indexApps(
+	private void indexApps(
 			Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
@@ -316,11 +341,11 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		hideApps.add(new ComponentName(context, HomeActivity.class));
 		if (HAS_LAUNCHER_APP) {
 			indexProfilesApps(
-					(LauncherApps) context.getSystemService(
-							Context.LAUNCHER_APPS_SERVICE),
-					(UserManager) context.getSystemService(
-							Context.USER_SERVICE),
-					allApps, packageNameRestriction, userHandleRestriction,
+					getLauncherApps(context),
+					getUserManager(context),
+					allApps,
+					packageNameRestriction,
+					userHandleRestriction,
 					hideApps);
 		} else {
 			indexIntentsApps(pm, allApps, packageNameRestriction, hideApps);
@@ -364,10 +389,15 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 			String packageNameRestriction,
 			UserHandle userHandleRestriction,
 			Set<ComponentName> hideApps) {
-		List<UserHandle> profiles =
-				packageNameRestriction != null && userHandleRestriction != null
-						? Collections.singletonList(userHandleRestriction)
-						: um.getUserProfiles();
+		List<UserHandle> profiles;
+		if (packageNameRestriction != null && userHandleRestriction != null) {
+			profiles = Collections.singletonList(userHandleRestriction);
+		} else {
+			profiles = getProfiles(la, um);
+		}
+		if (la == null || profiles == null) {
+			return;
+		}
 		// If packageNameRestriction == null and userHandleRestriction != null
 		// apps was cleared and all profiles will be indexed.
 		for (UserHandle profile : profiles) {
@@ -605,20 +635,21 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.N)
 	private void launchAppWithLauncherApp(Context context, AppIcon icon) {
-		LauncherApps launcherApps = getLauncherApps(context);
-		UserManager userManager = getUserManager(context);
+		LauncherApps la = getLauncherApps(context);
+		UserManager um = getUserManager(context);
 		if (icon.componentName == null || icon.userHandle == null) {
 			return;
 		}
 		try {
-			if (!userManager.isUserUnlocked(icon.userHandle)) {
+			if (!um.isUserUnlocked(icon.userHandle)) {
 				toast(context, R.string.user_profile_locked);
 				return;
 			}
-			if (!launcherApps.isActivityEnabled(
+			if (!la.isActivityEnabled(
 					icon.componentName,
 					icon.userHandle)) {
 				ComponentName componentName = findEnabledActivity(
+						la,
 						icon.componentName.getPackageName(),
 						icon.userHandle);
 				if (componentName == null) {
@@ -627,7 +658,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 				}
 				icon.componentName = componentName;
 			}
-			launcherApps.startMainActivity(
+			la.startMainActivity(
 					icon.componentName,
 					icon.userHandle,
 					icon.rect,
@@ -639,14 +670,15 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.N)
-	private ComponentName findEnabledActivity(
+	private static ComponentName findEnabledActivity(
+			LauncherApps la,
 			String packageName,
 			UserHandle userHandle) {
 		List<LauncherActivityInfo> activities =
-				launcherApps.getActivityList(packageName, userHandle);
+				la.getActivityList(packageName, userHandle);
 		for (LauncherActivityInfo info : activities) {
 			if (info.getComponentName() != null &&
-					launcherApps.isActivityEnabled(
+					la.isActivityEnabled(
 							info.getComponentName(),
 							userHandle)) {
 				return info.getComponentName();
@@ -667,13 +699,106 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		Toast.makeText(context, m, Toast.LENGTH_SHORT).show();
 	}
 
-	private static String getSubject(int item, AppIcon appIcon,
+	private static String getSubject(
+			int item,
+			AppIcon appIcon,
 			Locale defaultLocale) {
 		if (item == Preferences.SEARCH_PARAMETER_PACKAGE_NAME) {
 			return appIcon.componentName.getPackageName()
 					.toLowerCase(defaultLocale);
 		}
 		return appIcon.label.toLowerCase(defaultLocale);
+	}
+
+	private UserHandle findPrivateProfileUser(Context context) {
+		LauncherApps la = getLauncherApps(context);
+		UserManager um = getUserManager(context);
+		for (UserHandle profile : getProfiles(la, um)) {
+			if (isPrivateProfile(la, profile)) {
+				return profile;
+			}
+		}
+		return null;
+	}
+
+	private static List<UserHandle> getProfiles(
+			LauncherApps la,
+			UserManager um) {
+		if (la == null || um == null) {
+			return new ArrayList<>();
+		}
+		List<UserHandle> profiles = null;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			profiles = la.getProfiles();
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+				(profiles == null || profiles.isEmpty())) {
+			profiles = um.getUserProfiles();
+		}
+		return profiles;
+	}
+
+	private static boolean isPrivateProfile(
+			LauncherApps la,
+			UserHandle userHandle) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+				la == null || userHandle == null) {
+			return false;
+		}
+		try {
+			LauncherUserInfo info = la.getLauncherUserInfo(userHandle);
+			return info != null &&
+					"android.os.usertype.profile.PRIVATE".equals(info.getUserType());
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	private boolean isPrivateProfileLocked(
+			Context context,
+			UserHandle userHandle) {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+				userHandle != null &&
+				getUserManager(context).isQuietModeEnabled(userHandle);
+	}
+
+	private boolean unlockPrivateProfile(Context context) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+			return false;
+		}
+		UserHandle privateUser = findPrivateProfileUser(context);
+		if (privateUser == null) {
+			toast(context, R.string.private_space_not_available);
+			return false;
+		}
+		if (!isPrivateProfileLocked(context, privateUser)) {
+			return false;
+		}
+		UserManager um = getUserManager(context);
+		if (um == null) {
+			toast(context, R.string.private_space_unlock_failed);
+			return false;
+		}
+		toast(context, R.string.private_space_unlocking);
+		try {
+			um.requestQuietModeEnabled(false, privateUser);
+			if (updateListener != null) {
+				updateListener.onShowAllAppsOnResume();
+			}
+			return true;
+		} catch (SecurityException e) {
+			toast(context, R.string.private_space_unlock_failed);
+		}
+		return false;
+	}
+
+	private static boolean inProfile(
+			UserHandle appProfile,
+			UserHandle privateUser,
+			boolean privateOnly) {
+		boolean isPrivate = privateUser != null &&
+				privateUser.equals(appProfile);
+		return privateOnly ? isPrivate : !isPrivate;
 	}
 
 	private static int hammingDistance(String a, String b, int l) {

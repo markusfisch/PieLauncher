@@ -78,6 +78,12 @@ Use 4, 6, or 8 icons in the pie menu to make the most out of it.
 
 ![How to edit the pie menu](svg/guide_edit_pie.svg)
 
+### How to access Private space
+
+[Private space](https://source.android.com/docs/security/features/private-space)
+is a new feature in Android 15. If you enabled private space on your device,
+use `.` in the app search to unlock and access it.
+
 ## Troubleshooting
 
 ### There's a short delay after doing the home gesture

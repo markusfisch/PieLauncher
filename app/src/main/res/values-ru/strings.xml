@@ -71,6 +71,9 @@
 	<string name="show_app_names">Показать названия приложений</string>
 	<string name="show_app_names_always">Всегда</string>
 	<string name="show_app_names_search">При поиске (Стандартно)</string>
+	<string name="private_space_not_available">Личное пространство недоступно</string>
+	<string name="private_space_unlocking">Разблокировка личного пространства…</string>
+	<string name="private_space_unlock_failed">Не удалось разблокировать личное пространство</string>
 	<string name="show_app_names_never">Никогда</string>
 	<string name="exclude_pie">Скрыть значки на главном экране</string>
 	<string name="exclude_pie_yes">Да</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Да</string>
 	<string name="use_light_dialogs_no">Нет (Стандартно)</string>
 	<string name="force_relaunch">Не использовать домашний экран повторно</string>
-	<string name="force_relaunch_yes">Да</string>
-	<string name="force_relaunch_no">Нет (Стандартно)</string>
+	<string name="force_relaunch_yes">Да (Стандартно)</string>
+	<string name="force_relaunch_no">Нет</string>
 	<string name="skip">Далее</string>
 	<string name="reset">Сброс</string>
 	<string name="edit_app">Редактировать приложение</string>

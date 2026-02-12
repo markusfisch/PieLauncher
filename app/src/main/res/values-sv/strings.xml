@@ -71,6 +71,9 @@
 	<string name="show_app_names">Visa appnamn</string>
 	<string name="show_app_names_always">Alltid</string>
 	<string name="show_app_names_search">Vid sökning (standard)</string>
+	<string name="private_space_not_available">Privat utrymme är inte tillgängligt</string>
+	<string name="private_space_unlocking">Låser upp privat utrymme…</string>
+	<string name="private_space_unlock_failed">Kunde inte låsa upp privat utrymme</string>
 	<string name="show_app_names_never">Aldrig</string>
 	<string name="exclude_pie">Dölj ikoner på startskärmen</string>
 	<string name="exclude_pie_yes">Ja</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Ja</string>
 	<string name="use_light_dialogs_no">Nej (standard)</string>
 	<string name="force_relaunch">Återanvänd inte startskärmen</string>
-	<string name="force_relaunch_yes">Ja</string>
-	<string name="force_relaunch_no">Nej (standard)</string>
+	<string name="force_relaunch_yes">Ja (standard)</string>
+	<string name="force_relaunch_no">Nej</string>
 	<string name="skip">Hoppa över</string>
 	<string name="reset">Återställ</string>
 	<string name="edit_app">Redigera app</string>

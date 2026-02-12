@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
@@ -217,8 +218,16 @@ public class HomeActivity extends Activity {
 				setAlpha(searchInput, alpha);
 			}
 		});
-		PieLauncherApp.apps.setUpdateListener(() -> {
-			updateAppList(false);
+		PieLauncherApp.apps.setUpdateListener(new Apps.UpdateListener() {
+			@Override
+			public void onUpdate() {
+				updateAppList(false);
+			}
+
+			@Override
+			public void onShowAllAppsOnResume() {
+				showAllAppsOnResume = true;
+			}
 		});
 	}
 

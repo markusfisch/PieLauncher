@@ -75,6 +75,9 @@
 	<string name="show_app_names">Exibir nomes de aplicativos</string>
 	<string name="show_app_names_always">Sempre</string>
 	<string name="show_app_names_search">Ao pesquisar (Padrão)</string>
+	<string name="private_space_not_available">Espaço privado indisponível</string>
+	<string name="private_space_unlocking">Desbloqueando o espaço privado…</string>
+	<string name="private_space_unlock_failed">Não foi possível desbloquear o espaço privado</string>
 	<string name="show_app_names_never">Nunca</string>
 	<string name="exclude_pie">Esconder ícones iniciais da gaveta de aplicativos</string>
 	<string name="exclude_pie_yes">Sim</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Sim</string>
 	<string name="use_light_dialogs_no">Não (Padrão)</string>
 	<string name="force_relaunch">Não reutilizar a tela inicial</string>
-	<string name="force_relaunch_yes">Sim</string>
-	<string name="force_relaunch_no">Não (Padrão)</string>
+	<string name="force_relaunch_yes">Sim (Padrão)</string>
+	<string name="force_relaunch_no">Não</string>
 	<string name="skip">Pular</string>
 	<string name="reset">Redefinir</string>
 	<string name="edit_app">Editar aplicativo</string>

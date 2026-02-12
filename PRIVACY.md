@@ -24,5 +24,11 @@ time you unlock your phone.
 
 Pie Launcher does not consume battery when not in use.
 
+### [ACCESS_HIDDEN_PROFILES][ACCESS_HIDDEN_PROFILES]
+
+Pie Launcher needs to detect hidden profiles so it can accurately list
+available apps for the active user profile.
+
 [QUERY_ALL_PACKAGES]: https://developer.android.com/reference/android/Manifest.permission#QUERY_ALL_PACKAGES
 [REQUEST_IGNORE_BATTERY_OPTIMIZATIONS]: https://developer.android.com/reference/android/Manifest.permission#REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+[ACCESS_HIDDEN_PROFILES]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_HIDDEN_PROFILES

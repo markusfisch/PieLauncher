@@ -71,6 +71,9 @@
 	<string name="show_app_names">Afficher les noms d\'app</string>
 	<string name="show_app_names_always">Toujours</string>
 	<string name="show_app_names_search">Lors d\'une recherche (par défaut)</string>
+	<string name="private_space_not_available">Espace privé non disponible</string>
+	<string name="private_space_unlocking">Déverrouillage de l\'espace privé…</string>
+	<string name="private_space_unlock_failed">Impossible de déverrouiller l\'espace privé</string>
 	<string name="show_app_names_never">Jamais</string>
 	<string name="exclude_pie">Masquer les icônes de l\'écran d\'accueil</string>
 	<string name="exclude_pie_yes">Oui</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Oui</string>
 	<string name="use_light_dialogs_no">Non (par défaut)</string>
 	<string name="force_relaunch">Ne pas réutiliser l\'écran d\'accueil</string>
-	<string name="force_relaunch_yes">Oui</string>
-	<string name="force_relaunch_no">Non (par défaut)</string>
+	<string name="force_relaunch_yes">Oui (par défaut)</string>
+	<string name="force_relaunch_no">Non</string>
 	<string name="skip">Sauter</string>
 	<string name="reset">Réinitialiser</string>
 	<string name="edit_app">Editer l\'app</string>

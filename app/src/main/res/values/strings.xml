@@ -75,6 +75,9 @@
 	<string name="show_app_names">Show app names</string>
 	<string name="show_app_names_always">Always</string>
 	<string name="show_app_names_search">When searching (Default)</string>
+	<string name="private_space_not_available">Private Space not available</string>
+	<string name="private_space_unlocking">Unlocking Private Space…</string>
+	<string name="private_space_unlock_failed">Unable to unlock Private Space</string>
 	<string name="show_app_names_never">Never</string>
 	<string name="exclude_pie">Hide home icons from app drawer</string>
 	<string name="exclude_pie_yes">Yes</string>
@@ -92,8 +95,8 @@
 	<string name="use_light_dialogs_yes">Yes</string>
 	<string name="use_light_dialogs_no">No (Default)</string>
 	<string name="force_relaunch">Do not reuse home screen</string>
-	<string name="force_relaunch_yes">Yes</string>
-	<string name="force_relaunch_no">No (Default)</string>
+	<string name="force_relaunch_yes">Yes (Default)</string>
+	<string name="force_relaunch_no">No</string>
 	<string name="skip">Skip</string>
 	<string name="reset">Reset</string>
 	<string name="edit_app">Edit app</string>

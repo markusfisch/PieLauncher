@@ -11,6 +11,8 @@
 		tools:ignore="QueryAllPackagesPermission" />
 	<!-- A launcher app should be available all the time. -->
 	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+	<!-- Allow launcher to access private profiles (Private Space). -->
+	<uses-permission android:name="android.permission.ACCESS_HIDDEN_PROFILES"/>
 	<application
 		tools:ignore="UnusedAttribute"
 		android:name=".app.PieLauncherApp"

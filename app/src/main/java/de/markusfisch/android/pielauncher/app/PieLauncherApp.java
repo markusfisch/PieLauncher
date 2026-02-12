@@ -84,6 +84,9 @@ public class PieLauncherApp extends Application {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_MANAGED_PROFILE_ADDED);
 		filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+			filter.addAction(Intent.ACTION_PROFILE_AVAILABLE);
+		}
 		registerReceiver(managedProfileEventReceiver, filter);
 	}
 
