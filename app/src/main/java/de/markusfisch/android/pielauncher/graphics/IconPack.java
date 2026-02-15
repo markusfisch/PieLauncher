@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import de.markusfisch.android.pielauncher.io.IconMappings;
+import de.markusfisch.android.pielauncher.io.IconMappingsStorage;
 
 public class IconPack {
 	public static class Pack {
@@ -133,11 +133,11 @@ public class IconPack {
 	}
 
 	public void restoreMappings(Context context) {
-		IconMappings.restore(context, getSelectedIconPackageName(), mappings);
+		IconMappingsStorage.restore(context, getSelectedIconPackageName(), mappings);
 	}
 
 	public void storeMappings(Context context) {
-		IconMappings.store(context, getSelectedIconPackageName(), mappings);
+		IconMappingsStorage.store(context, getSelectedIconPackageName(), mappings);
 	}
 
 	public boolean hasMapping(ComponentName componentName) {

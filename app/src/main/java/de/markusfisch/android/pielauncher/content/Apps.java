@@ -43,8 +43,8 @@ import de.markusfisch.android.pielauncher.activity.HomeActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
-import de.markusfisch.android.pielauncher.io.HiddenApps;
-import de.markusfisch.android.pielauncher.io.Menu;
+import de.markusfisch.android.pielauncher.io.HiddenAppsStorage;
+import de.markusfisch.android.pielauncher.io.MenuStorage;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class Apps {
@@ -79,7 +79,7 @@ public class Apps {
 
 	public final CanvasPieMenu<Apps.AppIcon> pieMain = new CanvasPieMenu<>();
 	public final CanvasPieMenu<Apps.AppIcon> pieAlt = new CanvasPieMenu<>();
-	public final HiddenApps hiddenApps = new HiddenApps();
+	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final ExecutorService executor =
@@ -174,9 +174,9 @@ public class Apps {
 	}
 
 	public void store(Context context) {
-		Menu.store(context, PIE_MENU_MAIN, pieMain.icons);
-		Menu.store(context, PIE_MENU_ALT, pieAlt.icons);
-		hiddenApps.store(context);
+		MenuStorage.store(context, PIE_MENU_MAIN, pieMain.icons);
+		MenuStorage.store(context, PIE_MENU_ALT, pieAlt.icons);
+		hiddenAppsStorage.store(context);
 	}
 
 	public List<AppIcon> filterAppsBy(Context context, String query) {
@@ -267,7 +267,7 @@ public class Apps {
 		}
 		Context appContext = context.getApplicationContext();
 		executor.execute(() -> {
-			hiddenApps.removeAndStore(appContext, packageName);
+			hiddenAppsStorage.removeAndStore(appContext, packageName);
 			handler.post(() -> {
 				removePackageFromApps(apps, packageName, userHandle);
 				removePackageFromPieMenu(pieMain.icons, packageName,
@@ -304,8 +304,8 @@ public class Apps {
 			return false;
 		}
 		indexing = true;
-		hiddenApps.restore(context);
-		HashSet<ComponentName> hideApps = hiddenApps.copyComponentNames();
+		hiddenAppsStorage.restore(context);
+		HashSet<ComponentName> hideApps = hiddenAppsStorage.copyComponentNames();
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 		if (packageNameRestriction != null) {
 			// Copy apps since we're indexing just one app.
@@ -324,7 +324,7 @@ public class Apps {
 			List<AppIcon> newIcons = createMenu(context, newApps,
 					PieLauncherApp.getPrefs(context).openListWith() ==
 							Preferences.OPEN_LIST_WITH_ICON);
-			List<AppIcon> newIconsAlt = Menu.restore(context,
+			List<AppIcon> newIconsAlt = MenuStorage.restore(context,
 					PIE_MENU_ALT, newApps);
 			handler.post(() -> {
 				apps.clear();
@@ -463,7 +463,7 @@ public class Apps {
 		AppIcon drawerIcon = useDrawerIcon
 				? addDrawerIcon(context, allApps)
 				: null;
-		ArrayList<AppIcon> menu = Menu.restore(context, PIE_MENU_MAIN, allApps);
+		ArrayList<AppIcon> menu = MenuStorage.restore(context, PIE_MENU_MAIN, allApps);
 		if (menu.isEmpty()) {
 			createInitialMenu(menu, allApps, context.getPackageManager());
 		}

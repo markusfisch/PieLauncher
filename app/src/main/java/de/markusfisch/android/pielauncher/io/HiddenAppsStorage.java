@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 import de.markusfisch.android.pielauncher.content.Apps;
 
-public class HiddenApps {
+public class HiddenAppsStorage {
 	private static final String HIDDEN_APPS_FILE = "hidden";
 
 	public final HashSet<ComponentName> componentNames = new HashSet<>();

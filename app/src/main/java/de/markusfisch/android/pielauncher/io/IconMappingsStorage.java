@@ -16,7 +16,7 @@ import java.util.Map;
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 
-public class IconMappings {
+public class IconMappingsStorage {
 	private static final String SEPARATOR = ";";
 	private static final String MAPPINGS_FILE = "mappings";
 

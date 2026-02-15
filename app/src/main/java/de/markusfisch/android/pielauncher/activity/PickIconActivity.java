@@ -71,7 +71,7 @@ public class PickIconActivity extends Activity {
 				.setTitle(R.string.hide_app)
 				.setMessage(R.string.want_to_hide_app)
 				.setPositiveButton(android.R.string.ok, (d, w) -> {
-					PieLauncherApp.apps.hiddenApps.addAndStore(context,
+					PieLauncherApp.apps.hiddenAppsStorage.addAndStore(context,
 							componentName);
 					PieLauncherApp.apps.updateIconsAsync(context);
 					if (hideListener != null) {

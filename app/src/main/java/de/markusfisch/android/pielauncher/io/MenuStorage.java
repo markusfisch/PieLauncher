@@ -15,7 +15,7 @@ import java.util.Map;
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.LauncherItemKey;
 
-public class Menu {
+public class MenuStorage {
 	public static ArrayList<Apps.AppIcon> restore(Context context,
 			String fileName,
 			Map<LauncherItemKey, Apps.AppIcon> allApps) {

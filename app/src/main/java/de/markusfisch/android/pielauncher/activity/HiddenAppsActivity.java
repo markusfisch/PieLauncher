@@ -121,7 +121,7 @@ public class HiddenAppsActivity extends Activity {
 				(view, which) -> {
 					switch (which) {
 						case 0:
-							PieLauncherApp.apps.hiddenApps.removeAndStore(
+							PieLauncherApp.apps.hiddenAppsStorage.removeAndStore(
 									this, componentName.getPackageName());
 							PieLauncherApp.apps.updateIconsAsync(this);
 							loadHiddenApps();
@@ -144,7 +144,7 @@ public class HiddenAppsActivity extends Activity {
 			final ArrayList<HiddenAppsAdapter.HiddenApp> hiddenApps =
 					new ArrayList<>();
 			for (ComponentName componentName :
-					PieLauncherApp.apps.hiddenApps.copyComponentNames()) {
+					PieLauncherApp.apps.hiddenAppsStorage.copyComponentNames()) {
 				Pair<String, Drawable> nameAndIcon = getAppNameAndIcon(
 						this, componentName.getPackageName());
 				if (nameAndIcon != null) {
