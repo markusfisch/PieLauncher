@@ -48,6 +48,7 @@
 	<string name="open_list_with_any_touch">Любое прикосновение, независимо от продолжительности</string>
 	<string name="open_list_with_long_press">Длительное нажатие</string>
 	<string name="open_list_with_double_tap">Двойное нажатие</string>
+	<string name="open_list_with_two_finger_tap">Касание двумя пальцами</string>
 	<string name="open_list_with_icon">Иконка в меню</string>
 	<string name="list_animation_appearance">Анимация при появлении</string>
 	<string name="list_animation_appearance_slide">Сдвиг (Стандартно)</string>

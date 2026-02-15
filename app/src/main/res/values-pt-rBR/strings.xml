@@ -52,6 +52,7 @@
 	<string name="open_list_with_any_touch">Qualquer toque, não importa a duração</string>
 	<string name="open_list_with_long_press">Um toque longo</string>
 	<string name="open_list_with_double_tap">Um toque duplo</string>
+	<string name="open_list_with_two_finger_tap">Um toque com dois dedos</string>
 	<string name="open_list_with_icon">Ícone no menu Pie</string>
 	<string name="list_animation_appearance">Animação ao aparecer</string>
 	<string name="list_animation_appearance_slide">Deslizar para dentro (Padrão)</string>

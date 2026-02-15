@@ -48,6 +48,7 @@
 	<string name="open_list_with_any_touch">Varje beröring oavsett hur länge</string>
 	<string name="open_list_with_long_press">Ett långt tryck</string>
 	<string name="open_list_with_double_tap">En dubbeltapp</string>
+	<string name="open_list_with_two_finger_tap">En tvåfingertapp</string>
 	<string name="open_list_with_icon">Ikon i cirkelmenyn</string>
 	<string name="list_animation_appearance">Animation vid visning</string>
 	<string name="list_animation_appearance_slide">Glid in (standard)</string>

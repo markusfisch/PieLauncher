@@ -52,6 +52,7 @@
 	<string name="open_list_with_any_touch">Any touch no matter how long</string>
 	<string name="open_list_with_long_press">A long press</string>
 	<string name="open_list_with_double_tap">A double tap</string>
+	<string name="open_list_with_two_finger_tap">A two-finger tap</string>
 	<string name="open_list_with_icon">Icon in pie menu</string>
 	<string name="list_animation_appearance">Animation on appearance</string>
 	<string name="list_animation_appearance_slide">Slide in (Standard)</string>

@@ -48,6 +48,7 @@
 	<string name="open_list_with_any_touch">Elke aanraking, hoe lang ook</string>
 	<string name="open_list_with_long_press">Lang drukken</string>
 	<string name="open_list_with_double_tap">Dubbele tik</string>
+	<string name="open_list_with_two_finger_tap">Tik met twee vingers</string>
 	<string name="open_list_with_icon">Pictogram in Pie menu</string>
 	<string name="list_animation_appearance">Animatie bij verschijnen</string>
 	<string name="list_animation_appearance_slide">Binnen schuiven (standaard)</string>

@@ -442,6 +442,7 @@ public class AppPieView extends View {
 
 			private VelocityTracker velocityTracker;
 			private int primaryId;
+			private int pointerCount;
 			private int spinId = -1;
 			private double spinAngleDown;
 			private double spinInitialTwist;
@@ -456,6 +457,7 @@ public class AppPieView extends View {
 				touch.set(Math.round(event.getX()), Math.round(event.getY()));
 				switch (event.getActionMasked()) {
 					case MotionEvent.ACTION_POINTER_DOWN:
+						pointerCount = event.getPointerCount();
 						if (mode == MODE_PIE) {
 							startSpin(event);
 							invalidate();
@@ -479,6 +481,7 @@ public class AppPieView extends View {
 							// is a pending action.
 							break;
 						}
+						pointerCount = 1;
 						addTouch(event);
 						long eventTime = event.getEventTime();
 						switch (mode) {
@@ -762,12 +765,14 @@ public class AppPieView extends View {
 				long eventTime = event.getEventTime();
 				final boolean wasDoubleTap = wasTap &&
 						eventTime - lastTapUpTime < doubleTapTimeout;
+				final boolean wasTwoFingerTap = pointerCount == 2;
 				lastTapUpTime = eventTime;
 				final Point at = new Point(touch.x, touch.y);
 				performActionRunnable = () -> {
 					v.performClick();
 					if (performAction(v.getContext(), at,
-							wasTap, wasDoubleTap, wasLongPress)) {
+							wasTap, wasDoubleTap, wasTwoFingerTap,
+							wasLongPress)) {
 						performHapticFeedbackIfAllowed(
 								HAPTIC_FEEDBACK_CONFIRM);
 					}
@@ -1084,11 +1089,11 @@ public class AppPieView extends View {
 	}
 
 	private boolean performAction(Context context, Point at, boolean wasTap,
-			boolean wasDoubleTap, boolean wasLongPress) {
-		if (mode == MODE_PIE && fadePie.isVisible()) {
-			fadeOutMode();
+			boolean wasDoubleTap, boolean wasTwoFingerTap,
+			boolean wasLongPress) {
+		if (mode == MODE_PIE) {
 			return performPieAction(context, at,
-					wasTap, wasDoubleTap, wasLongPress);
+					wasTap, wasDoubleTap, wasTwoFingerTap, wasLongPress);
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
@@ -1101,11 +1106,16 @@ public class AppPieView extends View {
 	}
 
 	private boolean performPieAction(Context context, Point at,
-			boolean wasTap, boolean wasDoubleTap, boolean wasLongPress) {
+			boolean wasTap, boolean wasDoubleTap, boolean wasTwoFingerTap,
+			boolean wasLongPress) {
 		Apps.AppIcon appIcon = null;
 		int index = pieMenu.getSelectedIcon();
 		if (index > -1 && index < pieMenu.icons.size()) {
 			appIcon = pieMenu.icons.get(index);
+		}
+		boolean pieVisible = fadePie.isVisible();
+		if (pieVisible) {
+			fadeOutMode();
 		}
 		boolean result = false;
 		boolean openList = false;
@@ -1123,6 +1133,9 @@ public class AppPieView extends View {
 			case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
 				openList = wasDoubleTap;
 				break;
+			case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
+				openList = wasTwoFingerTap;
+				break;
 			case Preferences.OPEN_LIST_WITH_TAP:
 			default:
 				openList = wasTap;
@@ -1132,7 +1145,7 @@ public class AppPieView extends View {
 			if (listListener != null) {
 				listListener.onOpenList(false);
 			}
-		} else if (appIcon != null) {
+		} else if (pieVisible && appIcon != null) {
 			launchApp(context, appIcon);
 			result = true;
 		}
@@ -1146,6 +1159,7 @@ public class AppPieView extends View {
 				case Preferences.OPEN_LIST_WITH_TAP:
 				case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
 				case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
+				case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
 					if (listListener != null) {
 						listListener.onHideList();
 					}
