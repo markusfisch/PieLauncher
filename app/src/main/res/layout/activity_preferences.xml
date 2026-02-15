@@ -64,9 +64,13 @@
 					android:id="@+id/immersive_mode"
 					android:text="@string/immersive_mode_disabled" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/animate_in_out"
 					android:text="@string/animate_in_out_yes" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/split_pie_enabled"
+					android:text="@string/split_pie_menu" />
 				<TextView
 					style="@style/CategoryHeader"
 					android:text="@string/category_app_drawer" />

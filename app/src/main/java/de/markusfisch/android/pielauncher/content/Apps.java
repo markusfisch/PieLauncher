@@ -47,7 +47,13 @@ import de.markusfisch.android.pielauncher.io.HiddenApps;
 import de.markusfisch.android.pielauncher.io.Menu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 
-public class Apps extends CanvasPieMenu<Apps.AppIcon> {
+public class Apps {
+	public interface UpdateListener {
+		void onUpdate();
+
+		void onShowAllAppsOnResume();
+	}
+
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
 		public final Rect hitRect = new Rect();
 		public final String label;
@@ -66,15 +72,13 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		}
 	}
 
-	public interface UpdateListener {
-		void onUpdate();
-
-		void onShowAllAppsOnResume();
-	}
-
+	public static final String PIE_MENU_MAIN = "menu";
+	public static final String PIE_MENU_ALT = "menu_alt";
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
+	public final CanvasPieMenu<Apps.AppIcon> pieMain = new CanvasPieMenu<>();
+	public final CanvasPieMenu<Apps.AppIcon> pieAlt = new CanvasPieMenu<>();
 	public final HiddenApps hiddenApps = new HiddenApps();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -170,7 +174,8 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 	}
 
 	public void store(Context context) {
-		Menu.store(context, icons);
+		Menu.store(context, PIE_MENU_MAIN, pieMain.icons);
+		Menu.store(context, PIE_MENU_ALT, pieAlt.icons);
 		hiddenApps.store(context);
 	}
 
@@ -209,7 +214,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 				}
 			}
 			if (prefs.excludePie()) {
-				list.removeAll(new HashSet<>(icons));
+				list.removeAll(new HashSet<>(pieMain.icons));
 			}
 		} else {
 			int item = prefs.getSearchParameter();
@@ -265,7 +270,10 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 			hiddenApps.removeAndStore(appContext, packageName);
 			handler.post(() -> {
 				removePackageFromApps(apps, packageName, userHandle);
-				removePackageFromPieMenu(packageName, userHandle);
+				removePackageFromPieMenu(pieMain.icons, packageName,
+						userHandle);
+				removePackageFromPieMenu(pieAlt.icons, packageName,
+						userHandle);
 				propagateUpdate();
 			});
 		});
@@ -316,11 +324,15 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 			List<AppIcon> newIcons = createMenu(context, newApps,
 					PieLauncherApp.getPrefs(context).openListWith() ==
 							Preferences.OPEN_LIST_WITH_ICON);
+			List<AppIcon> newIconsAlt = Menu.restore(context,
+					PIE_MENU_ALT, newApps);
 			handler.post(() -> {
 				apps.clear();
 				apps.putAll(newApps);
-				icons.clear();
-				icons.addAll(newIcons);
+				pieMain.icons.clear();
+				pieMain.icons.addAll(newIcons);
+				pieAlt.icons.clear();
+				pieAlt.icons.addAll(newIconsAlt);
 				indexing = false;
 				propagateUpdate();
 			});
@@ -451,7 +463,7 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		AppIcon drawerIcon = useDrawerIcon
 				? addDrawerIcon(context, allApps)
 				: null;
-		ArrayList<AppIcon> menu = Menu.restore(context, allApps);
+		ArrayList<AppIcon> menu = Menu.restore(context, PIE_MENU_MAIN, allApps);
 		if (menu.isEmpty()) {
 			createInitialMenu(menu, allApps, context.getPackageManager());
 		}
@@ -594,8 +606,8 @@ public class Apps extends CanvasPieMenu<Apps.AppIcon> {
 		}
 	}
 
-	private void removePackageFromPieMenu(String packageName,
-			UserHandle userHandle) {
+	private void removePackageFromPieMenu(List<AppIcon> icons,
+			String packageName, UserHandle userHandle) {
 		Iterator<AppIcon> it = icons.iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next();

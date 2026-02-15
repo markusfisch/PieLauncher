@@ -78,6 +78,9 @@
 	<string name="exclude_pie">Приховати іконки на головному екрані</string>
 	<string name="exclude_pie_yes">Так</string>
 	<string name="exclude_pie_no">Ні (за замовчуванням)</string>
+	<string name="split_pie_menu">Окремі кругові меню зверху/знизу</string>
+	<string name="split_pie_yes">Так</string>
+	<string name="split_pie_no">Ні (за замовчуванням)</string>
 	<string name="icon_press">Тривале натискання</string>
 	<string name="icon_press_default">Додає додаток до меню (за замовчуванням)</string>
 	<string name="icon_press_longer">Вимагає тривалого натискання</string>

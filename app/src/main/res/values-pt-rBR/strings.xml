@@ -82,6 +82,9 @@
 	<string name="exclude_pie">Esconder ícones iniciais da gaveta de aplicativos</string>
 	<string name="exclude_pie_yes">Sim</string>
 	<string name="exclude_pie_no">Não (Padrão)</string>
+	<string name="split_pie_menu">Menus Pie separados em cima/embaixo</string>
+	<string name="split_pie_yes">Sim</string>
+	<string name="split_pie_no">Não (Padrão)</string>
 	<string name="icon_press">Toque longo</string>
 	<string name="icon_press_default">Adiciona aplicativo ao menu Pie (Padrão)</string>
 	<string name="icon_press_longer">Requer toque prolongado</string>

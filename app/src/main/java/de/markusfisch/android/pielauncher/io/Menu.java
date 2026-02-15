@@ -16,14 +16,13 @@ import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.LauncherItemKey;
 
 public class Menu {
-	private static final String MENU_FILE = "menu";
-
 	public static ArrayList<Apps.AppIcon> restore(Context context,
+			String fileName,
 			Map<LauncherItemKey, Apps.AppIcon> allApps) {
 		ArrayList<Apps.AppIcon> icons = new ArrayList<>();
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					context.openFileInput(MENU_FILE)));
+					context.openFileInput(fileName)));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				Apps.AppIcon icon = allApps.get(
@@ -41,10 +40,12 @@ public class Menu {
 		return icons;
 	}
 
-	public static void store(Context context, List<Apps.AppIcon> icons) {
+	public static void store(Context context,
+			String fileName,
+			List<Apps.AppIcon> icons) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					context.openFileOutput(MENU_FILE, Context.MODE_PRIVATE)));
+					context.openFileOutput(fileName, Context.MODE_PRIVATE)));
 			for (Apps.AppIcon icon : icons) {
 				writer.write(LauncherItemKey.flattenToString(
 						context,

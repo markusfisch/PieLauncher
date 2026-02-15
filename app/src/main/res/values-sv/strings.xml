@@ -78,6 +78,9 @@
 	<string name="exclude_pie">Dölj ikoner på startskärmen</string>
 	<string name="exclude_pie_yes">Ja</string>
 	<string name="exclude_pie_no">Nej (standard)</string>
+	<string name="split_pie_menu">Separata cirkelmenyer upptill/nedtill</string>
+	<string name="split_pie_yes">Ja</string>
+	<string name="split_pie_no">Nej (standard)</string>
 	<string name="icon_press">Långtryckning</string>
 	<string name="icon_press_default">Lägg till app i cirkelmenyn (standard)</string>
 	<string name="icon_press_longer">Kräver långvarig tryckning</string>

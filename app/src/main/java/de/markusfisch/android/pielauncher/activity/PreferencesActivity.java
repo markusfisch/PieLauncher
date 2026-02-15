@@ -191,6 +191,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getAnimateInOutOptions,
 				() -> prefs.animateInOut(),
 				(value) -> prefs.setAnimateInOut(value));
+		initPreference(R.id.split_pie_enabled,
+				R.string.split_pie_menu,
+				PreferencesActivity::getSplitPieEnabledOptions,
+				() -> prefs.splitPieEnabled(),
+				(value) -> prefs.setSplitPieEnabled(value));
 		initPreference(R.id.home_button_opens_drawer,
 				R.string.home_button_opens_drawer,
 				PreferencesActivity::getHomeButtonOpensDrawerOptions,
@@ -474,6 +479,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.animate_in_out_yes);
 		map.put(Boolean.FALSE, R.string.animate_in_out_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getSplitPieEnabledOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.split_pie_yes);
+		map.put(Boolean.FALSE, R.string.split_pie_no);
 		return map;
 	}
 

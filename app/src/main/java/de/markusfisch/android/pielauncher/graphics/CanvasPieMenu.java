@@ -24,6 +24,24 @@ public class CanvasPieMenu<T extends CanvasPieMenu.CanvasIcon> extends PieMenu<T
 			this.bitmap = bitmap;
 		}
 
+		public void setStartPosition(int x, int y) {
+			smoothedX = x;
+			smoothedY = y;
+		}
+
+		public void draw(Canvas canvas, double iconSize, int centerX,
+				int centerY) {
+			int s = (int) iconSize >> 1;
+			if (s < 1) {
+				return;
+			}
+			int left = centerX - s;
+			int top = centerY - s;
+			s <<= 1;
+			rect.set(left, top, left + s, top + s);
+			canvas.drawBitmap(bitmap, null, rect, paint);
+		}
+
 		void draw(Canvas canvas) {
 			draw(canvas, size, x, y);
 		}
@@ -39,19 +57,6 @@ public class CanvasPieMenu<T extends CanvasPieMenu.CanvasIcon> extends PieMenu<T
 			smoothedX += Math.round(dx * f);
 			smoothedY += Math.round(dy * f);
 			draw(canvas, smoothedSize, smoothedX, smoothedY);
-		}
-
-		public void draw(Canvas canvas, double iconSize, int centerX,
-				int centerY) {
-			int s = (int) iconSize >> 1;
-			if (s < 1) {
-				return;
-			}
-			int left = centerX - s;
-			int top = centerY - s;
-			s <<= 1;
-			rect.set(left, top, left + s, top + s);
-			canvas.drawBitmap(bitmap, null, rect, paint);
 		}
 
 		private void initSmoothing() {

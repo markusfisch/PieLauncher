@@ -22,7 +22,7 @@
 	<string name="background_blur_radius_medium">Etwas</string>
 	<string name="background_blur_radius_heavy">Stark</string>
 	<string name="background_blur_radius_none">Nein (Standard)</string>
-	<string name="blur_menu">Menü verwischen</string>
+	<string name="blur_menu">Menu verwischen</string>
 	<string name="blur_menu_yes">Ja (Standard)</string>
 	<string name="blur_menu_no">Nein</string>
 	<string name="dead_zone">Berührungen ignorieren</string>
@@ -78,6 +78,9 @@
 	<string name="exclude_pie">Symbole des Startbildschirms ausblenden</string>
 	<string name="exclude_pie_yes">Ja</string>
 	<string name="exclude_pie_no">Nein (Standard)</string>
+	<string name="split_pie_menu">Ein Menu für oben und unten</string>
+	<string name="split_pie_yes">Ja</string>
+	<string name="split_pie_no">Nein (Standard)</string>
 	<string name="icon_press">Langes Drücken</string>
 	<string name="icon_press_default">Fügt App zum Menu hinzu (Standard)</string>
 	<string name="icon_press_longer">Erfordert längeres Drücken</string>
