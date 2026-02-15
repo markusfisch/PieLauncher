@@ -508,6 +508,8 @@ public class PreferencesActivity extends Activity {
 				R.string.open_list_with_double_tap);
 		map.put(Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP,
 				R.string.open_list_with_two_finger_tap);
+		map.put(Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP,
+				R.string.open_list_with_four_finger_tap);
 		map.put(Preferences.OPEN_LIST_WITH_ICON,
 				R.string.open_list_with_icon);
 		return map;

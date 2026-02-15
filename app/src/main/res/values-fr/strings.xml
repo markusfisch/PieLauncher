@@ -49,6 +49,7 @@
 	<string name="open_list_with_long_press">Un appui long</string>
 	<string name="open_list_with_double_tap">Une double tape</string>
 	<string name="open_list_with_two_finger_tap">Une tape à deux doigts</string>
+	<string name="open_list_with_four_finger_tap">Une tape à quatre doigts</string>
 	<string name="open_list_with_icon">Icône dans le menu</string>
 	<string name="list_animation_appearance">Animation à l\’apparition</string>
 	<string name="list_animation_appearance_slide">Glisser (par défaut)</string>

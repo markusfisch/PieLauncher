@@ -766,12 +766,14 @@ public class AppPieView extends View {
 				final boolean wasDoubleTap = wasTap &&
 						eventTime - lastTapUpTime < doubleTapTimeout;
 				final boolean wasTwoFingerTap = pointerCount == 2;
+				final boolean wasFourFingerTap = pointerCount == 4;
 				lastTapUpTime = eventTime;
 				final Point at = new Point(touch.x, touch.y);
 				performActionRunnable = () -> {
 					v.performClick();
 					if (performAction(v.getContext(), at,
-							wasTap, wasDoubleTap, wasTwoFingerTap,
+							wasTap, wasDoubleTap,
+							wasTwoFingerTap, wasFourFingerTap,
 							wasLongPress)) {
 						performHapticFeedbackIfAllowed(
 								HAPTIC_FEEDBACK_CONFIRM);
@@ -1090,10 +1092,10 @@ public class AppPieView extends View {
 
 	private boolean performAction(Context context, Point at, boolean wasTap,
 			boolean wasDoubleTap, boolean wasTwoFingerTap,
-			boolean wasLongPress) {
+			boolean wasFourFingerTap, boolean wasLongPress) {
 		if (mode == MODE_PIE) {
-			return performPieAction(context, at,
-					wasTap, wasDoubleTap, wasTwoFingerTap, wasLongPress);
+			return performPieAction(context, at, wasTap, wasDoubleTap,
+					wasTwoFingerTap, wasFourFingerTap, wasLongPress);
 		} else if (mode == MODE_LIST && wasTap) {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
@@ -1107,7 +1109,7 @@ public class AppPieView extends View {
 
 	private boolean performPieAction(Context context, Point at,
 			boolean wasTap, boolean wasDoubleTap, boolean wasTwoFingerTap,
-			boolean wasLongPress) {
+			boolean wasFourFingerTap, boolean wasLongPress) {
 		Apps.AppIcon appIcon = null;
 		int index = pieMenu.getSelectedIcon();
 		if (index > -1 && index < pieMenu.icons.size()) {
@@ -1136,6 +1138,9 @@ public class AppPieView extends View {
 			case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
 				openList = wasTwoFingerTap;
 				break;
+			case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
+				openList = wasFourFingerTap;
+				break;
 			case Preferences.OPEN_LIST_WITH_TAP:
 			default:
 				openList = wasTap;
@@ -1160,6 +1165,7 @@ public class AppPieView extends View {
 				case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
 				case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
 				case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
+				case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
 					if (listListener != null) {
 						listListener.onHideList();
 					}

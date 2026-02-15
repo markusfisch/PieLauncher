@@ -49,6 +49,7 @@
 	<string name="open_list_with_long_press">长按</string>
 	<string name="open_list_with_double_tap">双击</string>
 	<string name="open_list_with_two_finger_tap">双指轻触</string>
+	<string name="open_list_with_four_finger_tap">四指轻触</string>
 	<string name="open_list_with_icon">菜单中的图标</string>
 	<string name="list_animation_appearance">出现时的动画</string>
 	<string name="list_animation_appearance_slide">滑入（默认）</string>
