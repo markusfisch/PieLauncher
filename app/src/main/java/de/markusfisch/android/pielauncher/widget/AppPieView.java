@@ -72,6 +72,10 @@ public class AppPieView extends View {
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
 
+	private final CanvasPieMenu<Apps.AppIcon> lowerPieMenu =
+			PieLauncherApp.apps.pieMain;
+	private final CanvasPieMenu<Apps.AppIcon> upperPieMenu =
+			PieLauncherApp.apps.pieAlt;
 	private final Fade fadePie = new Fade();
 	private final Fade fadeList = new Fade();
 	private final Fade fadeEdit = new Fade();
@@ -125,10 +129,6 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 
-	private CanvasPieMenu<Apps.AppIcon> lowerPieMenu =
-			PieLauncherApp.apps.pieMain;
-	private CanvasPieMenu<Apps.AppIcon> upperPieMenu =
-			PieLauncherApp.apps.pieAlt;
 	private CanvasPieMenu<Apps.AppIcon> pieMenu = lowerPieMenu;
 	private Window window;
 	private RenderNode pieRenderNode;
