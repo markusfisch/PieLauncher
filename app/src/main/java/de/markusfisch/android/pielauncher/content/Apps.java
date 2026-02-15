@@ -808,9 +808,8 @@ public class Apps {
 			UserHandle appProfile,
 			UserHandle privateUser,
 			boolean privateOnly) {
-		boolean isPrivate = privateUser != null &&
-				privateUser.equals(appProfile);
-		return privateOnly ? isPrivate : !isPrivate;
+		return privateUser != null &&
+				privateUser.equals(appProfile) == privateOnly;
 	}
 
 	private static int hammingDistance(String a, String b, int l) {
