@@ -1,0 +1,5 @@
+* Add support to access private space (by typing '.')
+* Add option to have separate pie menus for the upper/lower screen
+* Add option for open app drawer with two or four fingers
+* Remove ripple effect from pie menu and app listing
+

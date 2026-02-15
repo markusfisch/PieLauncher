@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.24.0
+* Add support to access private space (by typing '.')
+* Add option to have separate pie menus for the upper/lower screen
+* Add option for open app drawer with two or four fingers
+* Remove ripple effect from pie menu and app listing
+
 ## 1.23.9
 * Add an option to make the home button configurable
 * Keep scroll position at app updates
