@@ -439,6 +439,7 @@ public class AppPieView extends View {
 			private final FlingRunnable flingRunnable = new FlingRunnable();
 			private final SparseArray<TouchReference> touchReferences =
 					new SparseArray<>();
+			private final TapFlags tapFlags = new TapFlags();
 
 			private VelocityTracker velocityTracker;
 			private int primaryId;
@@ -759,22 +760,19 @@ public class AppPieView extends View {
 				cancelPerformAction();
 				// Any duration shorter than the long press timeout is
 				// considered to be a press/tap.
-				final boolean wasTap = isTap(event, longPressTimeout);
-				final boolean wasLongPress = !wasTap &&
+				tapFlags.wasTap = isTap(event, longPressTimeout);
+				tapFlags.longPress = !tapFlags.wasTap &&
 						isTap(event, Long.MAX_VALUE);
 				long eventTime = event.getEventTime();
-				final boolean wasDoubleTap = wasTap &&
+				tapFlags.doubleTap = tapFlags.wasTap &&
 						eventTime - lastTapUpTime < doubleTapTimeout;
-				final boolean wasTwoFingerTap = pointerCount == 2;
-				final boolean wasFourFingerTap = pointerCount == 4;
+				tapFlags.twoFingerTap = pointerCount == 2;
+				tapFlags.fourFingerTap = pointerCount == 4;
 				lastTapUpTime = eventTime;
 				final Point at = new Point(touch.x, touch.y);
 				performActionRunnable = () -> {
 					v.performClick();
-					if (performAction(v.getContext(), at,
-							wasTap, wasDoubleTap,
-							wasTwoFingerTap, wasFourFingerTap,
-							wasLongPress)) {
+					if (performAction(v.getContext(), at, tapFlags)) {
 						performHapticFeedbackIfAllowed(
 								HAPTIC_FEEDBACK_CONFIRM);
 					}
@@ -1090,13 +1088,11 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean performAction(Context context, Point at, boolean wasTap,
-			boolean wasDoubleTap, boolean wasTwoFingerTap,
-			boolean wasFourFingerTap, boolean wasLongPress) {
+	private boolean performAction(Context context, Point at,
+			TapFlags tapFlags) {
 		if (mode == MODE_PIE) {
-			return performPieAction(context, at, wasTap, wasDoubleTap,
-					wasTwoFingerTap, wasFourFingerTap, wasLongPress);
-		} else if (mode == MODE_LIST && wasTap) {
+			return performPieAction(context, tapFlags);
+		} else if (mode == MODE_LIST && tapFlags.wasTap) {
 			return performListAction(context, at);
 		} else if (mode == MODE_EDIT) {
 			boolean result = performEditAction(context);
@@ -1107,9 +1103,7 @@ public class AppPieView extends View {
 		return false;
 	}
 
-	private boolean performPieAction(Context context, Point at,
-			boolean wasTap, boolean wasDoubleTap, boolean wasTwoFingerTap,
-			boolean wasFourFingerTap, boolean wasLongPress) {
+	private boolean performPieAction(Context context, TapFlags tapFlags) {
 		Apps.AppIcon appIcon = null;
 		int index = pieMenu.getSelectedIcon();
 		if (index > -1 && index < pieMenu.icons.size()) {
@@ -1123,27 +1117,27 @@ public class AppPieView extends View {
 		boolean openList = false;
 		switch (prefs.openListWith()) {
 			case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
-				openList = wasTap || appIcon == null;
+				openList = tapFlags.wasTap || appIcon == null;
 				break;
 			case Preferences.OPEN_LIST_WITH_ICON:
 				result = openList =
 						PieLauncherApp.apps.isDrawerIcon(appIcon);
 				break;
 			case Preferences.OPEN_LIST_WITH_LONG_PRESS:
-				openList = wasLongPress;
+				openList = tapFlags.longPress;
 				break;
 			case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
-				openList = wasDoubleTap;
+				openList = tapFlags.doubleTap;
 				break;
 			case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
-				openList = wasTwoFingerTap;
+				openList = tapFlags.twoFingerTap;
 				break;
 			case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
-				openList = wasFourFingerTap;
+				openList = tapFlags.fourFingerTap;
 				break;
 			case Preferences.OPEN_LIST_WITH_TAP:
 			default:
-				openList = wasTap;
+				openList = tapFlags.wasTap;
 				break;
 		}
 		if (openList) {
@@ -1996,6 +1990,14 @@ public class AppPieView extends View {
 			this.scrollRef = this.y = Math.round(y);
 			this.time = time;
 		}
+	}
+
+	private static final class TapFlags {
+		private boolean wasTap;
+		private boolean doubleTap;
+		private boolean twoFingerTap;
+		private boolean fourFingerTap;
+		private boolean longPress;
 	}
 
 	private static final class Fade {
