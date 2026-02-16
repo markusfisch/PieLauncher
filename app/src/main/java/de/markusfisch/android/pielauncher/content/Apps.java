@@ -407,7 +407,7 @@ public class Apps {
 		} else {
 			profiles = getProfiles(um);
 		}
-		if (la == null || profiles == null) {
+		if (la == null || profiles.isEmpty()) {
 			return;
 		}
 		// If packageNameRestriction == null and userHandleRestriction != null
