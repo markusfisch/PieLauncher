@@ -414,7 +414,7 @@ public class Apps {
 		// apps was cleared and all profiles will be indexed.
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
-					la.getActivityList(packageNameRestriction, profile)) {
+					getActivityList(la, packageNameRestriction, profile)) {
 				ComponentName componentName = info.getComponentName();
 				if (hideApps.contains(componentName)) {
 					continue;
@@ -686,9 +686,8 @@ public class Apps {
 			LauncherApps la,
 			String packageName,
 			UserHandle userHandle) {
-		List<LauncherActivityInfo> activities =
-				la.getActivityList(packageName, userHandle);
-		for (LauncherActivityInfo info : activities) {
+		for (LauncherActivityInfo info :
+				getActivityList(la, packageName, userHandle)) {
 			if (info.getComponentName() != null &&
 					la.isActivityEnabled(
 							info.getComponentName(),
@@ -697,6 +696,18 @@ public class Apps {
 			}
 		}
 		return null;
+	}
+
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private static List<LauncherActivityInfo> getActivityList(
+			LauncherApps la, String packageName, UserHandle userHandle) {
+		try {
+			return la.getActivityList(packageName, userHandle);
+		} catch (Exception e) {
+			// Throws on some Android versions for private profiles.
+			return new ArrayList<>();
+		}
 	}
 
 	private <T> void toast(Context context, T message) {
