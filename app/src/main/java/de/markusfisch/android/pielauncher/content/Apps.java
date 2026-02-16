@@ -359,9 +359,13 @@ public class Apps {
 					packageNameRestriction,
 					userHandleRestriction,
 					hideApps);
-		} else {
-			indexIntentsApps(pm, allApps, packageNameRestriction, hideApps);
+			if (!allApps.isEmpty()) {
+				return;
+			}
+			// Fall through if no apps were loaded (can happen on some
+			// Android distributions where getActivityList() fails).
 		}
+		indexIntentsApps(pm, allApps, packageNameRestriction, hideApps);
 	}
 
 	private static void indexIntentsApps(
