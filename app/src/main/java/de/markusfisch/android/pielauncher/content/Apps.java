@@ -405,7 +405,7 @@ public class Apps {
 		if (packageNameRestriction != null && userHandleRestriction != null) {
 			profiles = Collections.singletonList(userHandleRestriction);
 		} else {
-			profiles = getProfiles(la, um);
+			profiles = getProfiles(um);
 		}
 		if (la == null || profiles == null) {
 			return;
@@ -725,7 +725,7 @@ public class Apps {
 	private UserHandle findPrivateProfileUser(Context context) {
 		LauncherApps la = getLauncherApps(context);
 		UserManager um = getUserManager(context);
-		for (UserHandle profile : getProfiles(la, um)) {
+		for (UserHandle profile : getProfiles(um)) {
 			if (isPrivateProfile(la, profile)) {
 				return profile;
 			}
@@ -733,21 +733,15 @@ public class Apps {
 		return null;
 	}
 
-	private static List<UserHandle> getProfiles(
-			LauncherApps la,
-			UserManager um) {
-		if (la == null || um == null) {
-			return new ArrayList<>();
-		}
-		List<UserHandle> profiles = null;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			profiles = la.getProfiles();
-		}
+	private static List<UserHandle> getProfiles(UserManager um) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-				(profiles == null || profiles.isEmpty())) {
-			profiles = um.getUserProfiles();
+				um != null) {
+			List<UserHandle> profiles = um.getUserProfiles();
+			if (profiles != null) {
+				return profiles;
+			}
 		}
-		return profiles;
+		return new ArrayList<>();
 	}
 
 	private static boolean isPrivateProfile(
