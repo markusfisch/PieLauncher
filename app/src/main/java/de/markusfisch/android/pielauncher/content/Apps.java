@@ -817,7 +817,7 @@ public class Apps {
 			UserHandle appProfile,
 			UserHandle privateUser,
 			boolean privateOnly) {
-		return privateUser != null &&
+		return privateUser == null ||
 				privateUser.equals(appProfile) == privateOnly;
 	}
 
