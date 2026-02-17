@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.24.1
+* Improve accessing apps in private space
+
 ## 1.24.0
 * Add support to access private space (by typing '.')
 * Add option to have separate pie menus for the upper/lower screen
