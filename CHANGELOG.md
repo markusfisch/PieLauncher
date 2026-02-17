@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.24.2
+* Fix app filtering
+
 ## 1.24.1
 * Improve accessing apps in private space
 
