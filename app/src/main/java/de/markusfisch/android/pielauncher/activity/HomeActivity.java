@@ -156,6 +156,17 @@ public class HomeActivity extends Activity {
 	}
 
 	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		// On some devices, after unlock, the activity resumes normally but
+		// WindowManager never issues a draw command to its Surface. Forcing
+		// an invalidate here triggers a redraw when the window regains focus.
+		if (hasFocus) {
+			getWindow().getDecorView().invalidate();
+		}
+	}
+
+	@Override
 	public void onRestart() {
 		super.onRestart();
 		if (prefs.forceRelaunch()) {
