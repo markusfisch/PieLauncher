@@ -107,6 +107,20 @@ This is an issue of your keyboard app that may do too much work.
 Unfortunately, GBoard is not the best choice for all devices.
 Please check for a lighter alternative keyboard.
 
+### The launcher is unresponsive after unlocking the device
+
+On some devices, after unlock, the home screen appears frozen: taps
+produce haptic feedback but the pie menu doesn't open. This is a known
+Android bug affecting all 3rd party launchers
+([issuetracker.google.com/issues/353538494](https://issuetracker.google.com/issues/353538494)).
+It occurs when another app (e.g. Assistant, Tasker, or an incoming call)
+controls the display while the screen is off, causing Android to skip the
+initial draw of the launcher's window on unlock.
+
+Pie Launcher works around this by forcing a redraw when the window regains
+focus. If this doesn't help on your device, you can enable **Force relaunch**
+in the settings, which fully recreates the home screen on each restart.
+
 ### Home returns to the default launcher
 
 Please set Pie Launcher as your default home screen launcher.
