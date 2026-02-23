@@ -72,13 +72,13 @@ public class Apps {
 		}
 	}
 
-	public static final String PIE_MENU_MAIN = "menu";
-	public static final String PIE_MENU_ALT = "menu_alt";
+	public static final String MENU_PRIMARY = "menu";
+	public static final String MENU_SECONDARY = "menu_alt";
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-	public final CanvasPieMenu<Apps.AppIcon> pieMain = new CanvasPieMenu<>();
-	public final CanvasPieMenu<Apps.AppIcon> pieAlt = new CanvasPieMenu<>();
+	public final CanvasPieMenu<Apps.AppIcon> piePrimary = new CanvasPieMenu<>();
+	public final CanvasPieMenu<Apps.AppIcon> pieSecondary = new CanvasPieMenu<>();
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -174,8 +174,8 @@ public class Apps {
 	}
 
 	public void store(Context context) {
-		MenuStorage.store(context, PIE_MENU_MAIN, pieMain.icons);
-		MenuStorage.store(context, PIE_MENU_ALT, pieAlt.icons);
+		MenuStorage.store(context, MENU_PRIMARY, piePrimary.icons);
+		MenuStorage.store(context, MENU_SECONDARY, pieSecondary.icons);
 		hiddenAppsStorage.store(context);
 	}
 
@@ -214,7 +214,7 @@ public class Apps {
 				}
 			}
 			if (prefs.excludePie()) {
-				list.removeAll(new HashSet<>(pieMain.icons));
+				list.removeAll(new HashSet<>(piePrimary.icons));
 			}
 		} else {
 			int item = prefs.getSearchParameter();
@@ -270,9 +270,9 @@ public class Apps {
 			hiddenAppsStorage.removeAndStore(appContext, packageName);
 			handler.post(() -> {
 				removePackageFromApps(apps, packageName, userHandle);
-				removePackageFromPieMenu(pieMain.icons, packageName,
+				removePackageFromPieMenu(piePrimary.icons, packageName,
 						userHandle);
-				removePackageFromPieMenu(pieAlt.icons, packageName,
+				removePackageFromPieMenu(pieSecondary.icons, packageName,
 						userHandle);
 				propagateUpdate();
 			});
@@ -325,14 +325,14 @@ public class Apps {
 					PieLauncherApp.getPrefs(context).openListWith() ==
 							Preferences.OPEN_LIST_WITH_ICON);
 			List<AppIcon> newIconsAlt = MenuStorage.restore(context,
-					PIE_MENU_ALT, newApps);
+					MENU_SECONDARY, newApps);
 			handler.post(() -> {
 				apps.clear();
 				apps.putAll(newApps);
-				pieMain.icons.clear();
-				pieMain.icons.addAll(newIcons);
-				pieAlt.icons.clear();
-				pieAlt.icons.addAll(newIconsAlt);
+				piePrimary.icons.clear();
+				piePrimary.icons.addAll(newIcons);
+				pieSecondary.icons.clear();
+				pieSecondary.icons.addAll(newIconsAlt);
 				indexing = false;
 				propagateUpdate();
 			});
@@ -467,7 +467,8 @@ public class Apps {
 		AppIcon drawerIcon = useDrawerIcon
 				? addDrawerIcon(context, allApps)
 				: null;
-		ArrayList<AppIcon> menu = MenuStorage.restore(context, PIE_MENU_MAIN, allApps);
+		ArrayList<AppIcon> menu = MenuStorage.restore(context,
+				MENU_PRIMARY, allApps);
 		if (menu.isEmpty()) {
 			createInitialMenu(menu, allApps, context.getPackageManager());
 		}

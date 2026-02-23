@@ -72,10 +72,10 @@ public class AppPieView extends View {
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
 
-	private final CanvasPieMenu<Apps.AppIcon> lowerPieMenu =
-			PieLauncherApp.apps.pieMain;
-	private final CanvasPieMenu<Apps.AppIcon> upperPieMenu =
-			PieLauncherApp.apps.pieAlt;
+	private final CanvasPieMenu<Apps.AppIcon> menuPrimary =
+			PieLauncherApp.apps.piePrimary;
+	private final CanvasPieMenu<Apps.AppIcon> menuSecondary =
+			PieLauncherApp.apps.pieSecondary;
 	private final Fade fadePie = new Fade();
 	private final Fade fadeList = new Fade();
 	private final Fade fadeEdit = new Fade();
@@ -129,7 +129,7 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 
-	private CanvasPieMenu<Apps.AppIcon> pieMenu = lowerPieMenu;
+	private CanvasPieMenu<Apps.AppIcon> pieMenu = menuPrimary;
 	private Window window;
 	private RenderNode pieRenderNode;
 	private RenderNode listRenderNode;
@@ -1215,9 +1215,9 @@ public class AppPieView extends View {
 		} else if (contains(iconCenterRect, touch)) {
 			if (grabbedIcon == null) {
 				if (prefs.splitPieEnabled()) {
-					pieMenu = pieMenu == lowerPieMenu
-							? upperPieMenu
-							: lowerPieMenu;
+					pieMenu = pieMenu == menuPrimary
+							? menuSecondary
+							: menuPrimary;
 					centerIcons(pieMenu.icons);
 					updateSplitPieIcon();
 					invalidate();
@@ -1408,7 +1408,7 @@ public class AppPieView extends View {
 	}
 
 	private int getDrawableForSplitPie() {
-		return pieMenu == upperPieMenu
+		return pieMenu == menuSecondary
 				? R.drawable.ic_screen_upper
 				: R.drawable.ic_screen_lower;
 	}
@@ -1428,8 +1428,8 @@ public class AppPieView extends View {
 		pieMenu = (viewWidth > viewHeight
 				? x < viewWidth >> 1
 				: y < viewHeight >> 1)
-				? upperPieMenu
-				: lowerPieMenu;
+				? menuSecondary
+				: menuPrimary;
 	}
 
 	private void setCenter(int x, int y) {
