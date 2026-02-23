@@ -140,7 +140,7 @@
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/Preference"
 					android:id="@+id/force_relaunch"
-					android:text="@string/force_relaunch_yes" />
+					android:text="@string/force_relaunch_no" />
 			</LinearLayout>
 			<Button
 				style="@style/Button"

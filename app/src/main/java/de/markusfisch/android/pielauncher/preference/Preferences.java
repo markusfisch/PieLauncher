@@ -101,7 +101,7 @@ public class Preferences {
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 	private boolean useLightDialogs = false;
-	private boolean forceRelaunch = true;
+	private boolean forceRelaunch = false;
 	private boolean showDrawerOnHome = true;
 	private boolean splitPieEnabled = false;
 

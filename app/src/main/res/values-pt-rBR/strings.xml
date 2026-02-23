@@ -100,8 +100,8 @@
 	<string name="use_light_dialogs_yes">Sim</string>
 	<string name="use_light_dialogs_no">Não (Padrão)</string>
 	<string name="force_relaunch">Não reutilizar a tela inicial</string>
-	<string name="force_relaunch_yes">Sim (Padrão)</string>
-	<string name="force_relaunch_no">Não</string>
+	<string name="force_relaunch_yes">Sim</string>
+	<string name="force_relaunch_no">Não (Padrão)</string>
 	<string name="skip">Pular</string>
 	<string name="reset">Redefinir</string>
 	<string name="edit_app">Editar aplicativo</string>
