@@ -105,6 +105,7 @@
 	<string name="skip">Пропустити</string>
 	<string name="reset">Скинути</string>
 	<string name="edit_app">Редагування програми</string>
+	<string name="edit_pie_menu">Редагувати кругове меню</string>
 	<string name="add_to_pie_menu">Додати в меню</string>
 	<string name="change_icon">Змінити значок</string>
 	<string name="hidden_apps">Приховані програми</string>

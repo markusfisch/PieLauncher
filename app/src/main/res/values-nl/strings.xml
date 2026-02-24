@@ -105,6 +105,7 @@
 	<string name="skip">Overslaan</string>
 	<string name="reset">Herstellen</string>
 	<string name="edit_app">App bewerken</string>
+	<string name="edit_pie_menu">Pie menu bewerken</string>
 	<string name="add_to_pie_menu">Toevoegen aan Pie menu</string>
 	<string name="change_icon">Pictogram aanpassen</string>
 	<string name="hidden_apps">Verborgen apps</string>

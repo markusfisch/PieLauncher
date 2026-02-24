@@ -105,6 +105,7 @@
 	<string name="skip">跳过</string>
 	<string name="reset">重置</string>
 	<string name="edit_app">编辑应用程序</string>
+	<string name="edit_pie_menu">编辑饼状菜单</string>
 	<string name="add_to_pie_menu">添加到菜单</string>
 	<string name="change_icon">更改图标</string>
 	<string name="hidden_apps">隐藏的应用程序</string>

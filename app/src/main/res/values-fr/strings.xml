@@ -105,6 +105,7 @@
 	<string name="skip">Sauter</string>
 	<string name="reset">Réinitialiser</string>
 	<string name="edit_app">Editer l\'app</string>
+	<string name="edit_pie_menu">Modifier le menu Pie</string>
 	<string name="add_to_pie_menu">Ajouter au menu</string>
 	<string name="change_icon">Changer d\'icône</string>
 	<string name="hidden_apps">Applications cachées</string>

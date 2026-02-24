@@ -105,6 +105,7 @@
 	<string name="skip">Далее</string>
 	<string name="reset">Сброс</string>
 	<string name="edit_app">Редактировать приложение</string>
+	<string name="edit_pie_menu">Редактировать круговое меню</string>
 	<string name="add_to_pie_menu">Добавить в меню</string>
 	<string name="change_icon">Заменить иконку</string>
 	<string name="hidden_apps">Скрытые приложения</string>

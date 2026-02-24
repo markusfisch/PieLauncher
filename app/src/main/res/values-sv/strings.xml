@@ -105,6 +105,7 @@
 	<string name="skip">Hoppa över</string>
 	<string name="reset">Återställ</string>
 	<string name="edit_app">Redigera app</string>
+	<string name="edit_pie_menu">Redigera cirkelmenyn</string>
 	<string name="add_to_pie_menu">Lägg till i cirkelmenyn</string>
 	<string name="change_icon">Ändra ikon</string>
 	<string name="hidden_apps">Dolda appar</string>

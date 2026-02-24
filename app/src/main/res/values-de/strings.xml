@@ -105,7 +105,8 @@
 	<string name="skip">Überspringen</string>
 	<string name="reset">Zurücksetzen</string>
 	<string name="edit_app">App ändern</string>
-	<string name="add_to_pie_menu">Zum Menu hinzufügen</string>
+	<string name="edit_pie_menu">Pie Menu bearbeiten</string>
+	<string name="add_to_pie_menu">Zum Pie Menu hinzufügen</string>
 	<string name="change_icon">Icon ändern</string>
 	<string name="hidden_apps">Versteckte Apps</string>
 	<string name="hide_app">App verstecken</string>

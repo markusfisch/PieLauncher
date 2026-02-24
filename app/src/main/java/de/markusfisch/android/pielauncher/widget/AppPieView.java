@@ -1011,6 +1011,7 @@ public class AppPieView extends View {
 			return;
 		}
 		ArrayList<String> list = new ArrayList<>();
+		list.add(context.getString(R.string.edit_pie_menu));
 		list.add(context.getString(R.string.add_to_pie_menu));
 		list.add(context.getString(R.string.show_app_info));
 		list.add(context.getString(R.string.hide_app));
@@ -1022,18 +1023,21 @@ public class AppPieView extends View {
 				(view, which) -> {
 					switch (which) {
 						case 0:
+							addIconInteractively(null);
+							break;
+						case 1:
 							addIconInteractively(icon);
 							postDelayed(this::releaseIcon, 100);
 							break;
-						case 1:
+						case 2:
 							PieLauncherApp.apps.launchAppInfo(context,
 									(Apps.AppIcon) icon);
 							break;
-						case 2:
+						case 3:
 							PickIconActivity.askToHide(context,
 									((Apps.AppIcon) icon).componentName);
 							break;
-						case 3:
+						case 4:
 							returnToList();
 							changeIcon(context, icon);
 							break;
@@ -1042,9 +1046,6 @@ public class AppPieView extends View {
 	}
 
 	private void addIconInteractively(Apps.AppIcon appIcon) {
-		if (appIcon == null) {
-			return;
-		}
 		if (listListener != null) {
 			listListener.onHideList();
 		}
