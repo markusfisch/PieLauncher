@@ -1528,7 +1528,7 @@ public class AppPieView extends View {
 		}
 
 		// Calculate magnification of hightlighted icon.
-		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .3f);
+		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .2f);
 		boolean invalidate = f < 1f;
 		if (highlightedFrom > 0) {
 			float ad = prefs.getAnimationDuration();
@@ -1552,8 +1552,8 @@ public class AppPieView extends View {
 				int ix = x + hpad;
 				int iy = y + vpad;
 				int mag = appIcon == highlightedIcon ? magSize : 0;
-				drawRect.set(ix - mag, iy - mag - mag,
-						ix + iconSize + mag, iy + iconSize);
+				drawRect.set(ix - mag, iy - mag,
+						ix + iconSize + mag, iy + iconSize + mag);
 				if (mag == 0 && appIcon == touchedIcon) {
 					paintList.setColorFilter(dimFilter);
 				}
