@@ -91,6 +91,7 @@ public class HomeActivity extends Activity {
 		prefsButton = findViewById(R.id.preferences);
 
 		initPieView();
+		initPrefsButton();
 		initSearchInput();
 
 		SystemBars.listenForWindowInsets(pieView,
@@ -183,7 +184,6 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		updatePrefsButton();
 		updateSystemBars();
 		if (showAllAppsOnResume) {
 			showAllApps();
@@ -239,6 +239,14 @@ public class HomeActivity extends Activity {
 			public void onShowAllAppsOnResume() {
 				showAllAppsOnResume = true;
 			}
+		});
+	}
+
+	private void initPrefsButton() {
+		prefsButton.setOnClickListener(v -> showPreferences());
+		prefsButton.setOnLongClickListener(v -> {
+			showEditor();
+			return true;
 		});
 	}
 
@@ -320,24 +328,6 @@ public class HomeActivity extends Activity {
 			return doubleSpaceLaunch;
 		}
 		return false;
-	}
-
-	private void updatePrefsButton() {
-		if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
-			prefsButton.setImageResource(R.drawable.ic_edit);
-			prefsButton.setOnClickListener(v -> showEditor());
-			prefsButton.setOnLongClickListener(v -> {
-				showPreferences();
-				return true;
-			});
-		} else {
-			prefsButton.setImageResource(R.drawable.ic_preferences);
-			prefsButton.setOnClickListener(v -> showPreferences());
-			prefsButton.setOnLongClickListener(v -> {
-				showEditor();
-				return true;
-			});
-		}
 	}
 
 	private void updateSystemBars() {
