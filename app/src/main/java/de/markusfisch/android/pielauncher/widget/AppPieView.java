@@ -1628,7 +1628,7 @@ public class AppPieView extends View {
 
 		boolean invalidate = f < 1f;
 		if (hasIcon) {
-			float radius = actionSize;
+			float r = actionSize;
 			float ad = prefs.getAnimationDuration();
 			if (ad > 0) {
 				long now = SystemClock.uptimeMillis();
@@ -1636,12 +1636,12 @@ public class AppPieView extends View {
 				if (t < 1f) {
 					invalidate = true;
 				}
-				radius *= t;
+				r *= t;
 			}
-			drawAction(canvas, iconRemove, iconStartRect, radius);
+			drawAction(canvas, iconRemove, iconStartRect, r);
 			drawAction(canvas, PieLauncherApp.iconPack.hasPacks()
-					? iconEdit : iconHide, iconCenterRect, radius);
-			drawAction(canvas, iconDetails, iconEndRect, radius);
+					? iconEdit : iconHide, iconCenterRect, r);
+			drawAction(canvas, iconDetails, iconEndRect, r);
 		} else {
 			drawAction(canvas, iconChangeTwist, iconChangeTwistRect);
 			drawAction(canvas, iconChangeIconScale, iconChangeIconScaleRect);
