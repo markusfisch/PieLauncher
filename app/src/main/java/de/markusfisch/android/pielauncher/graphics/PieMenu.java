@@ -14,7 +14,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 		public int y;
 	}
 
-	public final ArrayList<T> icons = new ArrayList<>();
+	public ArrayList<T> icons = new ArrayList<>();
 
 	private int selectedIcon = -1;
 	private int centerX = -1;

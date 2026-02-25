@@ -77,8 +77,8 @@ public class Apps {
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-	public final CanvasPieMenu<Apps.AppIcon> piePrimary = new CanvasPieMenu<>();
-	public final CanvasPieMenu<Apps.AppIcon> pieSecondary = new CanvasPieMenu<>();
+	public final ArrayList<Apps.AppIcon> menuPrimary = new ArrayList<>();
+	public final ArrayList<Apps.AppIcon> menuSecondary = new ArrayList<>();
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -174,8 +174,8 @@ public class Apps {
 	}
 
 	public void store(Context context) {
-		MenuStorage.store(context, MENU_PRIMARY, piePrimary.icons);
-		MenuStorage.store(context, MENU_SECONDARY, pieSecondary.icons);
+		MenuStorage.store(context, MENU_PRIMARY, menuPrimary);
+		MenuStorage.store(context, MENU_SECONDARY, menuSecondary);
 		hiddenAppsStorage.store(context);
 	}
 
@@ -214,7 +214,7 @@ public class Apps {
 				}
 			}
 			if (prefs.excludePie()) {
-				list.removeAll(new HashSet<>(piePrimary.icons));
+				list.removeAll(new HashSet<>(menuPrimary));
 			}
 		} else {
 			int item = prefs.getSearchParameter();
@@ -270,9 +270,9 @@ public class Apps {
 			hiddenAppsStorage.removeAndStore(appContext, packageName);
 			handler.post(() -> {
 				removePackageFromApps(apps, packageName, userHandle);
-				removePackageFromPieMenu(piePrimary.icons, packageName,
+				removePackageFromPieMenu(menuPrimary, packageName,
 						userHandle);
-				removePackageFromPieMenu(pieSecondary.icons, packageName,
+				removePackageFromPieMenu(menuSecondary, packageName,
 						userHandle);
 				propagateUpdate();
 			});
@@ -329,10 +329,10 @@ public class Apps {
 			handler.post(() -> {
 				apps.clear();
 				apps.putAll(newApps);
-				piePrimary.icons.clear();
-				piePrimary.icons.addAll(newIcons);
-				pieSecondary.icons.clear();
-				pieSecondary.icons.addAll(newIconsAlt);
+				menuPrimary.clear();
+				menuPrimary.addAll(newIcons);
+				menuSecondary.clear();
+				menuSecondary.addAll(newIconsAlt);
 				indexing = false;
 				propagateUpdate();
 			});

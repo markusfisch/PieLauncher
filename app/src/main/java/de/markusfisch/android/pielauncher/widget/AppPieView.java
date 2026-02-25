@@ -72,10 +72,11 @@ public class AppPieView extends View {
 	private static final int MODE_LIST = 1;
 	private static final int MODE_EDIT = 2;
 
-	private final CanvasPieMenu<Apps.AppIcon> menuPrimary =
-			PieLauncherApp.apps.piePrimary;
-	private final CanvasPieMenu<Apps.AppIcon> menuSecondary =
-			PieLauncherApp.apps.pieSecondary;
+	private final CanvasPieMenu<Apps.AppIcon> pieMenu = new CanvasPieMenu<>();
+	private final ArrayList<Apps.AppIcon> menuPrimary =
+			PieLauncherApp.apps.menuPrimary;
+	private final ArrayList<Apps.AppIcon> menuSecondary =
+			PieLauncherApp.apps.menuSecondary;
 	private final Fade fadePie = new Fade();
 	private final Fade fadeList = new Fade();
 	private final Fade fadeEdit = new Fade();
@@ -129,7 +130,6 @@ public class AppPieView extends View {
 	private final float textOffset;
 	private final float touchSlopSq;
 
-	private CanvasPieMenu<Apps.AppIcon> pieMenu = menuPrimary;
 	private Window window;
 	private RenderNode pieRenderNode;
 	private RenderNode listRenderNode;
@@ -189,6 +189,7 @@ public class AppPieView extends View {
 		dp = dm.density;
 		float sp = dm.scaledDensity;
 
+		pieMenu.icons = menuPrimary;
 		controlsPadding = Math.round(80f * dp);
 		listPadding = Math.round(16f * dp);
 		searchInputHeight = Math.round(112f * dp);
@@ -1216,10 +1217,9 @@ public class AppPieView extends View {
 		} else if (contains(iconCenterRect, touch)) {
 			if (grabbedIcon == null) {
 				if (prefs.splitPieEnabled()) {
-					pieMenu = pieMenu == menuPrimary
-							? menuSecondary
-							: menuPrimary;
-					centerIcons(pieMenu.icons);
+					swapMenus(pieMenu.icons == menuPrimary);
+					centerSmoothCoordinatesAt(pieMenu.icons,
+							viewWidth >> 1, viewHeight >> 1);
 					updateSplitPieIcon();
 					invalidate();
 				} else {
@@ -1266,14 +1266,6 @@ public class AppPieView extends View {
 		return false;
 	}
 
-	private void centerIcons(ArrayList<Apps.AppIcon> icons) {
-		int centerX = viewWidth >> 1;
-		int centerY = viewHeight >> 1;
-		for (Apps.AppIcon ic : icons) {
-			ic.setStartPosition(centerX, centerY);
-		}
-	}
-
 	private void launchApp(Context context, Apps.AppIcon appIcon) {
 		launchingIcon = appIcon;
 		PieLauncherApp.apps.launchApp(context, appIcon);
@@ -1293,6 +1285,13 @@ public class AppPieView extends View {
 	private void rollback() {
 		pieMenu.icons.clear();
 		pieMenu.icons.addAll(backup);
+	}
+
+	private static void centerSmoothCoordinatesAt(
+			ArrayList<Apps.AppIcon> icons, int centerX, int centerY) {
+		for (Apps.AppIcon ic : icons) {
+			ic.setStartPosition(centerX, centerY);
+		}
 	}
 
 	private static boolean sameOrder(
@@ -1409,7 +1408,7 @@ public class AppPieView extends View {
 	}
 
 	private int getDrawableForSplitPie() {
-		return pieMenu == menuSecondary
+		return pieMenu.icons == menuSecondary
 				? R.drawable.ic_screen_upper
 				: R.drawable.ic_screen_lower;
 	}
@@ -1426,11 +1425,17 @@ public class AppPieView extends View {
 	}
 
 	private void selectMenu(int x, int y) {
-		pieMenu = (viewWidth > viewHeight
+		swapMenus(viewWidth > viewHeight
 				? x < viewWidth >> 1
-				: y < viewHeight >> 1)
-				? menuSecondary
-				: menuPrimary;
+				: y < viewHeight >> 1);
+	}
+
+	private void swapMenus() {
+		swapMenus(pieMenu.icons == menuPrimary);
+	}
+
+	private void swapMenus(boolean isPrimary) {
+		pieMenu.icons = isPrimary ? menuSecondary : menuPrimary;
 	}
 
 	private void setCenter(int x, int y) {
