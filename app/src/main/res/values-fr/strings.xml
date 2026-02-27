@@ -83,6 +83,9 @@
 	<string name="split_pie_menu">Menus Pie séparés en haut/en bas</string>
 	<string name="split_pie_yes">Oui</string>
 	<string name="split_pie_no">Non (par défaut)</string>
+	<string name="circle_swaps_menus">Entourer permute les menus</string>
+	<string name="circle_swaps_menus_yes">Oui</string>
+	<string name="circle_swaps_menus_no">Non (par défaut)</string>
 	<string name="icon_press">Appui long</string>
 	<string name="icon_press_default">Lancer l\'app dans le menu (par défaut)</string>
 	<string name="icon_press_longer">Nécessite une pression prolongée</string>

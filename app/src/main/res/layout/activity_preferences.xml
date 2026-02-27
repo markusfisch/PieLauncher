@@ -68,9 +68,13 @@
 					android:id="@+id/animate_in_out"
 					android:text="@string/animate_in_out_yes" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
-					style="@style/Preference"
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/split_pie_enabled"
 					android:text="@string/split_pie_menu" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/Preference"
+					android:id="@+id/circle_swaps_menus"
+					android:text="@string/circle_swaps_menus" />
 				<TextView
 					style="@style/CategoryHeader"
 					android:text="@string/category_app_drawer" />

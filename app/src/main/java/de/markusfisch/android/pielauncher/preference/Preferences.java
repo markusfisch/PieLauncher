@@ -74,6 +74,7 @@ public class Preferences {
 	private static final String FORCE_RELAUNCH = "force_relaunch";
 	private static final String SHOW_DRAWER_ON_HOME = "show_drawer_on_home";
 	private static final String SPLIT_PIE_ENABLED = "split_pie_enabled";
+	private static final String CIRCLE_SWAPS_MENUS = "circle_swaps_menus";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -104,6 +105,7 @@ public class Preferences {
 	private boolean forceRelaunch = false;
 	private boolean showDrawerOnHome = true;
 	private boolean splitPieEnabled = false;
+	private boolean circleSwapsMenus = false;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -156,6 +158,8 @@ public class Preferences {
 				showDrawerOnHome);
 		splitPieEnabled = preferences.getBoolean(SPLIT_PIE_ENABLED,
 				splitPieEnabled);
+		circleSwapsMenus = preferences.getBoolean(CIRCLE_SWAPS_MENUS,
+				circleSwapsMenus);
 	}
 
 	public boolean skipSetup() {
@@ -398,6 +402,15 @@ public class Preferences {
 	public void setSplitPieEnabled(boolean splitPieEnabled) {
 		this.splitPieEnabled = splitPieEnabled;
 		put(SPLIT_PIE_ENABLED, splitPieEnabled).apply();
+	}
+
+	public boolean circleSwapsMenus() {
+		return circleSwapsMenus;
+	}
+
+	public void setCircleSwapsMenus(boolean circleSwapsMenus) {
+		this.circleSwapsMenus = circleSwapsMenus;
+		put(CIRCLE_SWAPS_MENUS, circleSwapsMenus).apply();
 	}
 
 	public float getAnimationDuration() {

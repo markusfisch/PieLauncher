@@ -83,6 +83,9 @@
 	<string name="split_pie_menu">Aparte bovenste/onderste Pie-menu\'s</string>
 	<string name="split_pie_yes">Ja</string>
 	<string name="split_pie_no">Nee (standaard)</string>
+	<string name="circle_swaps_menus">Omcirkelen wisselt menu\'s</string>
+	<string name="circle_swaps_menus_yes">Ja</string>
+	<string name="circle_swaps_menus_no">Nee (standaard)</string>
 	<string name="icon_press">Lang drukken</string>
 	<string name="icon_press_default">Voegt app toe aan het Pie menu (standaard)</string>
 	<string name="icon_press_longer">Vereist lang drukken</string>

@@ -172,6 +172,7 @@ public class AppPieView extends View {
 	private long grabbedIconAt;
 	private long lastActionUp;
 	private long lastTapUpTime;
+	private long lastCircleAt;
 	private Bitmap iconChangeTwist;
 	private Bitmap iconChangeIconScale;
 	private Bitmap iconChangeRadius;
@@ -190,6 +191,8 @@ public class AppPieView extends View {
 		float sp = dm.scaledDensity;
 
 		pieMenu.icons = menuPrimary;
+		pieMenu.onCircle(this::onCircle);
+
 		controlsPadding = Math.round(80f * dp);
 		listPadding = Math.round(16f * dp);
 		searchInputHeight = Math.round(112f * dp);
@@ -406,7 +409,7 @@ public class AppPieView extends View {
 
 		Canvas pieCanvas = getRecordingCanvas(pieRenderNode, canvas);
 		currentPieBlur = applyBlurOut(pieRenderNode, currentPieBlur, fPie);
-		boolean invalidate = drawPieMenu(pieCanvas, fPie);
+		boolean invalidate = drawPieMenu(pieCanvas, fPie, ad);
 		drawRenderNode(pieRenderNode, canvas);
 
 		if (PieLauncherApp.apps.isIndexing()) {
@@ -1217,7 +1220,7 @@ public class AppPieView extends View {
 		} else if (contains(iconCenterRect, touch)) {
 			if (grabbedIcon == null) {
 				if (prefs.splitPieEnabled()) {
-					swapMenus(pieMenu.icons == menuPrimary);
+					swapMenus();
 					centerSmoothCoordinatesAt(pieMenu.icons,
 							viewWidth >> 1, viewHeight >> 1);
 					updateSplitPieIcon();
@@ -1422,6 +1425,18 @@ public class AppPieView extends View {
 		if (listListener != null) {
 			listListener.onOpenList(true);
 		}
+	}
+
+	private void onCircle() {
+		if (!prefs.circleSwapsMenus()) {
+			return;
+		}
+		if (menuSecondary.isEmpty()) {
+			return;
+		}
+		swapMenus();
+		lastCircleAt = SystemClock.uptimeMillis();
+		performHapticFeedbackIfAllowed(HapticFeedbackConstants.LONG_PRESS);
 	}
 
 	private void selectMenu(int x, int y) {
@@ -1723,14 +1738,23 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean drawPieMenu(Canvas canvas, float f) {
+	private boolean drawPieMenu(Canvas canvas, float f, float ad) {
 		if (f <= 0) {
 			return false;
 		}
 
+
+		float circleSince = Math.round(
+				SystemClock.uptimeMillis() - lastCircleAt);
+		boolean animateInOut = prefs.animateInOut();
+		if (animateInOut && f == 1f && circleSince <= ad) {
+			f = circleSince / ad;
+		}
+
+		f = easeSlowerOut(f);
 		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		pieMenu.calculate(touch.x, touch.y,
-				prefs.animateInOut() ? easeSlowerOut(f) : 1f,
+				animateInOut ? f : 1f,
 				launchingIcon);
 		pieMenu.draw(canvas);
 

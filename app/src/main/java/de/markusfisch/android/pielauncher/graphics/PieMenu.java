@@ -14,7 +14,18 @@ public class PieMenu<T extends PieMenu.Icon> {
 		public int y;
 	}
 
+	public interface OnCircleListener {
+		public void onCircle();
+	}
+
 	public ArrayList<T> icons = new ArrayList<>();
+
+	private OnCircleListener onCircleListener;
+	private final CircleDetector circleDetector = new CircleDetector(() -> {
+		if (onCircleListener != null) {
+			onCircleListener.onCircle();
+		}
+	});
 
 	private int selectedIcon = -1;
 	private int centerX = -1;
@@ -33,6 +44,10 @@ public class PieMenu<T extends PieMenu.Icon> {
 			d -= TAU;
 		}
 		return d;
+	}
+
+	public void onCircle(OnCircleListener listener) {
+		onCircleListener = listener;
 	}
 
 	public int getSelectedIcon() {
@@ -58,6 +73,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 		this.radius = radius;
 		this.twist = twist;
 		this.iconScale = iconScale;
+		circleDetector.reset();
 	}
 
 	public void setRadius(double radius) {
@@ -105,6 +121,13 @@ public class PieMenu<T extends PieMenu.Icon> {
 					centeredY * centeredY + centeredX * centeredX);
 			double infieldRadius = rad / 2f;
 			double factor = cursorRadius / infieldRadius;
+
+			if (circleDetector.update(centeredX, centeredY,
+					infieldRadius * .75f)) {
+				// Because onCircle() may change the icons.
+				calculate(x, y, t, launching);
+				return;
+			}
 
 			if (cursorRadius < infieldRadius) {
 				double b = circumference / numberOfIcons * .75f;
@@ -235,6 +258,76 @@ public class PieMenu<T extends PieMenu.Icon> {
 			launching.x = centerX + Math.round((launching.x - centerX) * t);
 			launching.y = centerY + Math.round((launching.y - centerY) * t);
 			launching.size = maxIconSize;
+		}
+	}
+
+	private static class CircleDetector {
+		private interface CircleDetectorListener {
+			void onCircle();
+		}
+
+		private final CircleDetectorListener listener;
+
+		private double ldx;
+		private double ldy;
+		private double sum;
+		private double direction;
+
+		private CircleDetector(CircleDetectorListener listener) {
+			this.listener = listener;
+			reset();
+		}
+
+		private void reset() {
+			ldx = ldy = Double.MAX_VALUE;
+			sum = 0;
+			direction = 0;
+		}
+
+		private boolean update(double dx, double dy, double minRadius) {
+			// Reset detection when touch is too close to the center.
+			if (dx * dx + dy * dy < minRadius * minRadius) {
+				reset();
+				return false;
+			}
+
+			if (ldx == Double.MAX_VALUE && ldy == Double.MAX_VALUE) {
+				ldx = dx;
+				ldy = dy;
+				return false;
+			}
+
+			double crossProduct = ldx * dy - ldy * dx;
+			double dotProduct = ldx * dx + ldy * dy;
+			ldx = dx;
+			ldy = dy;
+
+			// Calculate angle change using atan2 of cross/dot.
+			// This is equivalent to atan2(sin(θ), cos(θ)).
+			double change = Math.atan2(crossProduct, dotProduct);
+			if (Math.abs(change) > 1.0) {
+				// Touch moved too far.
+				reset();
+				return false;
+			}
+
+			// Direction changed.
+			if ((direction > 0 && change < 0) ||
+					(direction < 0 && change > 0)) {
+				reset();
+				return false;
+			}
+			direction = change;
+
+			sum += change;
+
+			if (Math.abs(sum) < TAU) {
+				return false;
+			}
+
+			reset();
+			listener.onCircle();
+			return true;
 		}
 	}
 }

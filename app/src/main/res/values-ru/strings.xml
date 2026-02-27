@@ -83,6 +83,9 @@
 	<string name="split_pie_menu">Отдельные круговые меню сверху/снизу</string>
 	<string name="split_pie_yes">Да</string>
 	<string name="split_pie_no">Нет (Стандартно)</string>
+	<string name="circle_swaps_menus">Обведение по кругу переключает меню</string>
+	<string name="circle_swaps_menus_yes">Да</string>
+	<string name="circle_swaps_menus_no">Нет (Стандартно)</string>
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>
 	<string name="icon_press_longer">Добавляет приложение в меню (С задержкой)</string>

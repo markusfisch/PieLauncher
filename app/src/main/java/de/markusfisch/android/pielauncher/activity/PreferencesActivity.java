@@ -196,6 +196,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getSplitPieEnabledOptions,
 				() -> prefs.splitPieEnabled(),
 				(value) -> prefs.setSplitPieEnabled(value));
+		initPreference(R.id.circle_swaps_menus,
+				R.string.circle_swaps_menus,
+				PreferencesActivity::getCircleSwapsMenusOptions,
+				() -> prefs.circleSwapsMenus(),
+				(value) -> prefs.setCircleSwapsMenus(value));
 		initPreference(R.id.home_button_opens_drawer,
 				R.string.home_button_opens_drawer,
 				PreferencesActivity::getHomeButtonOpensDrawerOptions,
@@ -486,6 +491,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.split_pie_yes);
 		map.put(Boolean.FALSE, R.string.split_pie_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getCircleSwapsMenusOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.circle_swaps_menus_yes);
+		map.put(Boolean.FALSE, R.string.circle_swaps_menus_no);
 		return map;
 	}
 
