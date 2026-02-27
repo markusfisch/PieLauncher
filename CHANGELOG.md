@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.25.0
+* Add an option to swap menus when circling around the pie
+* Keep settings icon for context menu mode and add a context menu entry
+* Fix post-unlock freeze
+
 ## 1.24.2
 * Fix app filtering
 

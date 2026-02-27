@@ -1,0 +1,4 @@
+* Add an option to swap menus when circling around the pie
+* Keep settings icon for context menu mode and add a context menu entry
+* Fix post-unlock freeze
+
