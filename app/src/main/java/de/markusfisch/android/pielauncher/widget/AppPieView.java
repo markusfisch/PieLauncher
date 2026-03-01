@@ -170,7 +170,6 @@ public class AppPieView extends View {
 	private Apps.AppIcon launchingIcon;
 	private long highlightedFrom;
 	private long grabbedIconAt;
-	private long lastActionUp;
 	private long lastTapUpTime;
 	private long lastCircleAt;
 	private Bitmap iconChangeTwist;
@@ -452,6 +451,7 @@ public class AppPieView extends View {
 			private double spinAngleDown;
 			private double spinInitialTwist;
 			private int scrollOffset;
+			private long lastActionUp;
 			private Runnable highlightRunnable;
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
