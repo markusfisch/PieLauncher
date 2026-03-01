@@ -494,18 +494,7 @@ public class AppPieView extends View {
 								if (inDeadZone()) {
 									return false;
 								}
-								if (prefs.splitPieEnabled()) {
-									selectMenu(touch.x, touch.y);
-									// Always update to make the touch
-									// immediate.
-									setCenter(touch.x, touch.y);
-								} else if (eventTime - lastActionUp > 200L) {
-									// But not when there's just one pie.
-									setCenter(touch.x, touch.y);
-								}
-								fadePie.fadeIn(eventTime);
-								performHapticFeedbackIfAllowed(
-										HAPTIC_FEEDBACK_DOWN);
+								openMenu(eventTime);
 								break;
 							case MODE_LIST:
 								// Ignore ACTION_DOWN during animation to
@@ -622,6 +611,20 @@ public class AppPieView extends View {
 
 			private boolean inLeftOrRightDeadZone() {
 				return touch.x < deadZoneLeft || touch.x > deadZoneRight;
+			}
+
+			private void openMenu(long eventTime) {
+				if (prefs.splitPieEnabled()) {
+					selectMenu(touch.x, touch.y);
+					setCenter(touch.x, touch.y);
+				} else {
+					// Keep center for interrupted touches.
+					if (eventTime - lastActionUp > 200L) {
+						setCenter(touch.x, touch.y);
+					}
+				}
+				fadePie.fadeIn(eventTime);
+				performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
 			}
 
 			private void initScroll(MotionEvent event) {
