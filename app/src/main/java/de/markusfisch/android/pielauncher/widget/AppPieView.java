@@ -618,6 +618,9 @@ public class AppPieView extends View {
 					selectMenu(touch.x, touch.y);
 					setCenter(touch.x, touch.y);
 				} else {
+					if (prefs.circleSwapsMenus()) {
+						pieMenu.icons = menuPrimary;
+					}
 					// Keep center for interrupted touches.
 					if (eventTime - lastActionUp > 200L) {
 						setCenter(touch.x, touch.y);
