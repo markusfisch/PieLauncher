@@ -739,6 +739,9 @@ public class Apps {
 	}
 
 	private UserHandle findPrivateProfileUser(Context context) {
+		if (!HAS_LAUNCHER_APP) {
+			return null;
+		}
 		LauncherApps la = getLauncherApps(context);
 		UserManager um = getUserManager(context);
 		for (UserHandle profile : getProfiles(um)) {
