@@ -46,6 +46,8 @@ public class Preferences {
 	public static final int HAPTIC_FEEDBACK_FOLLOW_SYSTEM = 0;
 	public static final int HAPTIC_FEEDBACK_DISABLE_LAUNCH = 1;
 	public static final int HAPTIC_FEEDBACK_DISABLE_ALL = 2;
+	public static final int CIRCLE_SWAPS_NO = 0;
+	public static final int CIRCLE_SWAPS_SECONDARY_MENU = 1;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -74,7 +76,7 @@ public class Preferences {
 	private static final String FORCE_RELAUNCH = "force_relaunch";
 	private static final String SHOW_DRAWER_ON_HOME = "show_drawer_on_home";
 	private static final String SPLIT_PIE_ENABLED = "split_pie_enabled";
-	private static final String CIRCLE_SWAPS_MENUS = "circle_swaps_menus";
+	private static final String CIRCLE_SWAPS_MENUS = "circle_swaps";
 
 	private final SharedPreferences preferences;
 	private final SystemSettings systemSettings;
@@ -105,7 +107,7 @@ public class Preferences {
 	private boolean forceRelaunch = false;
 	private boolean showDrawerOnHome = true;
 	private boolean splitPieEnabled = false;
-	private boolean circleSwapsMenus = false;
+	private int circleSwapsMenus = CIRCLE_SWAPS_NO;
 
 	public Preferences(Context context) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -158,7 +160,7 @@ public class Preferences {
 				showDrawerOnHome);
 		splitPieEnabled = preferences.getBoolean(SPLIT_PIE_ENABLED,
 				splitPieEnabled);
-		circleSwapsMenus = preferences.getBoolean(CIRCLE_SWAPS_MENUS,
+		circleSwapsMenus = preferences.getInt(CIRCLE_SWAPS_MENUS,
 				circleSwapsMenus);
 	}
 
@@ -404,11 +406,11 @@ public class Preferences {
 		put(SPLIT_PIE_ENABLED, splitPieEnabled).apply();
 	}
 
-	public boolean circleSwapsMenus() {
+	public int circleSwapsMenus() {
 		return circleSwapsMenus;
 	}
 
-	public void setCircleSwapsMenus(boolean circleSwapsMenus) {
+	public void setCircleSwapsMenus(int circleSwapsMenus) {
 		this.circleSwapsMenus = circleSwapsMenus;
 		put(CIRCLE_SWAPS_MENUS, circleSwapsMenus).apply();
 	}
@@ -440,6 +442,12 @@ public class Preferences {
 			put(oldDarkenBackground, false).apply();
 			setDarkenBackground(DARKEN_BACKGROUND_HEAVY);
 		}
+
+		// Migrate old circle swaps setting.
+		String circleSwapsMenus = "circle_swaps_menus";
+		if (preferences.getBoolean(circleSwapsMenus, false)) {
+			put(circleSwapsMenus, false);
+			setCircleSwapsMenus(CIRCLE_SWAPS_SECONDARY_MENU);
 	}
 
 	private int getOpenListWith() {

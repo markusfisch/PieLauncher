@@ -88,7 +88,7 @@
 	<string name="split_pie_yes">Sim</string>
 	<string name="split_pie_no">Não (Padrão)</string>
 	<string name="circle_swaps_menus">Circular alterna menus</string>
-	<string name="circle_swaps_menus_yes">Sim</string>
+	<string name="circle_swaps_menus_yes">Menu secundário</string>
 	<string name="circle_swaps_menus_no">Não (Padrão)</string>
 	<string name="icon_press">Toque longo</string>
 	<string name="icon_press_default">Adiciona aplicativo ao menu Pie (Padrão)</string>

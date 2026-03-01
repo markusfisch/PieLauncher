@@ -494,10 +494,12 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getCircleSwapsMenusOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.circle_swaps_menus_yes);
-		map.put(Boolean.FALSE, R.string.circle_swaps_menus_no);
+	private static Map<Integer, Integer> getCircleSwapsMenusOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.CIRCLE_SWAPS_SECONDARY_MENU,
+				R.string.circle_swaps_menus_yes);
+		map.put(Preferences.CIRCLE_SWAPS_NO,
+				R.string.circle_swaps_menus_no);
 		return map;
 	}
 

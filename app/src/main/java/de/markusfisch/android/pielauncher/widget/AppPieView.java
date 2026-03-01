@@ -618,7 +618,8 @@ public class AppPieView extends View {
 					selectMenu(touch.x, touch.y);
 					setCenter(touch.x, touch.y);
 				} else {
-					if (prefs.circleSwapsMenus()) {
+					if (prefs.circleSwapsMenus() !=
+							Preferences.CIRCLE_SWAPS_NO) {
 						pieMenu.icons = menuPrimary;
 					}
 					// Keep center for interrupted touches.
@@ -1434,10 +1435,8 @@ public class AppPieView extends View {
 	}
 
 	private void onCircle() {
-		if (!prefs.circleSwapsMenus()) {
-			return;
-		}
-		if (menuSecondary.isEmpty()) {
+		if (prefs.circleSwapsMenus() == Preferences.CIRCLE_SWAPS_NO ||
+				menuSecondary.isEmpty()) {
 			return;
 		}
 		swapMenus();
