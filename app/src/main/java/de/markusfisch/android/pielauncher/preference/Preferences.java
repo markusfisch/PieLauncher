@@ -133,7 +133,7 @@ public class Preferences {
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
 		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
 		animateInOut = preferences.getBoolean(ANIMATE_IN_OUT, animateInOut);
-		openListWith = preferences.getInt(OPEN_LIST_WITH, getOpenListWith());
+		openListWith = preferences.getInt(OPEN_LIST_WITH, openListWith);
 		listAnimationAppearance = preferences.getInt(LIST_ANIMATION_APPEARANCE,
 				highRefreshRate
 						? LIST_APPEARANCE_ANIMATION_SLIDE
@@ -443,23 +443,19 @@ public class Preferences {
 			setDarkenBackground(DARKEN_BACKGROUND_HEAVY);
 		}
 
+		// Migrate old use drawer icon setting.
+		String useDrawerIcon = "use_drawer_icon";
+		if (preferences.getBoolean(useDrawerIcon, false)) {
+			put(useDrawerIcon, false);
+			setOpenListWith(OPEN_LIST_WITH_ICON);
+		}
+
 		// Migrate old circle swaps setting.
 		String circleSwapsMenus = "circle_swaps_menus";
 		if (preferences.getBoolean(circleSwapsMenus, false)) {
 			put(circleSwapsMenus, false);
 			setCircleSwapsMenus(CIRCLE_SWAPS_SECONDARY_MENU);
-	}
-
-	private int getOpenListWith() {
-		// Initialize from previous setting that existed before
-		// versionCode 45. Subject to be removed after a couple
-		// of versions.
-		String useDrawerIcon = "use_drawer_icon";
-		if (preferences.getBoolean(useDrawerIcon, false)) {
-			put(useDrawerIcon, false);
-			return OPEN_LIST_WITH_ICON;
 		}
-		return openListWith;
 	}
 
 	private boolean isEReader(Context context) {
