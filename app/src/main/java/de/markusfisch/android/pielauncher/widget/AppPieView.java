@@ -367,7 +367,7 @@ public class AppPieView extends View {
 		fadeOutMode();
 		mode = MODE_PIE;
 		invalidate();
-		if (prefs.excludePie()) {
+		if (prefs.excludePie() != Preferences.EXCLUDE_PIE_NONE) {
 			PieLauncherApp.apps.propagateUpdate();
 		}
 	}

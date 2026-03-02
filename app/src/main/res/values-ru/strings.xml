@@ -78,7 +78,8 @@
 	<string name="private_space_unlock_failed">Не удалось разблокировать личное пространство</string>
 	<string name="show_app_names_never">Никогда</string>
 	<string name="exclude_pie">Скрыть значки на главном экране</string>
-	<string name="exclude_pie_yes">Да</string>
+	<string name="exclude_pie_yes">Из основного меню</string>
+	<string name="exclude_pie_all">Из обоих меню</string>
 	<string name="exclude_pie_no">Нет (Стандартно)</string>
 	<string name="split_pie_menu">Отдельные круговые меню сверху/снизу</string>
 	<string name="split_pie_yes">Да</string>

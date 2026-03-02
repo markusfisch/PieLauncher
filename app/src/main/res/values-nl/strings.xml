@@ -78,7 +78,8 @@
 	<string name="private_space_unlock_failed">Kan privéruimte niet ontgrendelen</string>
 	<string name="show_app_names_never">Nooit</string>
 	<string name="exclude_pie">Pictogrammen op het beginscherm verbergen</string>
-	<string name="exclude_pie_yes">Ja</string>
+	<string name="exclude_pie_yes">Uit primair menu</string>
+	<string name="exclude_pie_all">Uit beide menu\'s</string>
 	<string name="exclude_pie_no">Nee (standaard)</string>
 	<string name="split_pie_menu">Aparte bovenste/onderste Pie-menu\'s</string>
 	<string name="split_pie_yes">Ja</string>

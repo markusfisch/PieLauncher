@@ -78,7 +78,8 @@
 	<string name="private_space_unlock_failed">无法解锁私人空间</string>
 	<string name="show_app_names_never">从不</string>
 	<string name="exclude_pie">隐藏主屏幕上的图标</string>
-	<string name="exclude_pie_yes">是</string>
+	<string name="exclude_pie_yes">从主菜单</string>
+	<string name="exclude_pie_all">从两个菜单</string>
 	<string name="exclude_pie_no">没有 (默认)</string>
 	<string name="split_pie_menu">上下独立饼状菜单</string>
 	<string name="split_pie_yes">是</string>

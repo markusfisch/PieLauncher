@@ -213,8 +213,13 @@ public class Apps {
 					list.add(appIcon);
 				}
 			}
-			if (prefs.excludePie()) {
-				list.removeAll(new HashSet<>(menuPrimary));
+			switch (prefs.excludePie()) {
+				case Preferences.EXCLUDE_PIE_ALL:
+					list.removeAll(new HashSet<>(menuSecondary));
+					// Fall through.
+				case Preferences.EXCLUDE_PIE_PRIMARY:
+					list.removeAll(new HashSet<>(menuPrimary));
+					break;
 			}
 		} else {
 			int item = prefs.getSearchParameter();

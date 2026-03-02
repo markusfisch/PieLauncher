@@ -48,6 +48,9 @@ public class Preferences {
 	public static final int HAPTIC_FEEDBACK_DISABLE_ALL = 2;
 	public static final int CIRCLE_SWAPS_NO = 0;
 	public static final int CIRCLE_SWAPS_SECONDARY_MENU = 1;
+	public static final int EXCLUDE_PIE_NONE = 0;
+	public static final int EXCLUDE_PIE_PRIMARY = 1;
+	public static final int EXCLUDE_PIE_ALL = 2;
 
 	private static final String SKIP_SETUP = "skip_setup";
 	private static final String RADIUS = "radius";
@@ -69,7 +72,7 @@ public class Preferences {
 	private static final String SEARCH_PARAMETER = "search_parameter";
 	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
-	private static final String EXCLUDE_PIE = "exclude_pie";
+	private static final String EXCLUDE_PIE = "exclude_pie_icons";
 	private static final String ICON_PACK = "icon_pack";
 	private static final String HAPTIC_FEEDBACK = "haptic_feedback";
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
@@ -100,7 +103,7 @@ public class Preferences {
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private int searchParameter = SEARCH_PARAMETER_APP_LABEL;
 	private int showAppNames = SHOW_APP_NAMES_SEARCH;
-	private boolean excludePie = false;
+	private int excludePie = EXCLUDE_PIE_NONE;
 	private int iconPress = ICON_PRESS_DEFAULT;
 	private String iconPack;
 	private boolean useLightDialogs = false;
@@ -149,7 +152,7 @@ public class Preferences {
 		searchParameter = preferences.getInt(SEARCH_PARAMETER,
 				searchParameter);
 		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
-		excludePie = preferences.getBoolean(EXCLUDE_PIE, excludePie);
+		excludePie = preferences.getInt(EXCLUDE_PIE, excludePie);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 		hapticFeedback = preferences.getInt(HAPTIC_FEEDBACK, hapticFeedback);
@@ -334,11 +337,11 @@ public class Preferences {
 		put(SHOW_APP_NAMES, showAppNames).apply();
 	}
 
-	public boolean excludePie() {
+	public int excludePie() {
 		return excludePie;
 	}
 
-	public void setExcludePie(boolean excludePie) {
+	public void setExcludePie(int excludePie) {
 		this.excludePie = excludePie;
 		put(EXCLUDE_PIE, excludePie).apply();
 	}
@@ -455,6 +458,13 @@ public class Preferences {
 		if (preferences.getBoolean(circleSwapsMenus, false)) {
 			put(circleSwapsMenus, false);
 			setCircleSwapsMenus(CIRCLE_SWAPS_SECONDARY_MENU);
+		}
+
+		// Migrate old boolean exclude pie setting.
+		String excludePie = "exclude_pie";
+		if (preferences.getBoolean(excludePie, false)) {
+			put(excludePie, false);
+			setExcludePie(EXCLUDE_PIE_PRIMARY);
 		}
 	}
 

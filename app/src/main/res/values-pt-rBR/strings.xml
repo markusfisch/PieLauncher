@@ -82,7 +82,8 @@
 	<string name="private_space_unlock_failed">Não foi possível desbloquear o espaço privado</string>
 	<string name="show_app_names_never">Nunca</string>
 	<string name="exclude_pie">Esconder ícones iniciais da gaveta de aplicativos</string>
-	<string name="exclude_pie_yes">Sim</string>
+	<string name="exclude_pie_yes">Do menu principal</string>
+	<string name="exclude_pie_all">Dos dois menus</string>
 	<string name="exclude_pie_no">Não (Padrão)</string>
 	<string name="split_pie_menu">Menus Pie separados em cima/embaixo</string>
 	<string name="split_pie_yes">Sim</string>

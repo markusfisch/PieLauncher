@@ -78,7 +78,8 @@
 	<string name="private_space_unlock_failed">Impossible de déverrouiller l\'espace privé</string>
 	<string name="show_app_names_never">Jamais</string>
 	<string name="exclude_pie">Masquer les icônes de l\'écran d\'accueil</string>
-	<string name="exclude_pie_yes">Oui</string>
+	<string name="exclude_pie_yes">Du menu principal</string>
+	<string name="exclude_pie_all">Des deux menus</string>
 	<string name="exclude_pie_no">Non (par défaut)</string>
 	<string name="split_pie_menu">Menus Pie séparés en haut/en bas</string>
 	<string name="split_pie_yes">Oui</string>

@@ -597,10 +597,11 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getExcludePieOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.exclude_pie_yes);
-		map.put(Boolean.FALSE, R.string.exclude_pie_no);
+	private static Map<Integer, Integer> getExcludePieOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.EXCLUDE_PIE_NONE, R.string.exclude_pie_no);
+		map.put(Preferences.EXCLUDE_PIE_PRIMARY, R.string.exclude_pie_yes);
+		map.put(Preferences.EXCLUDE_PIE_ALL, R.string.exclude_pie_all);
 		return map;
 	}
 
