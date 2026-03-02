@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.25.1
+* Add option to exclude icons from both menus
+* Always open primary menu for initial touch
+* Add missing runtime check for pre-Lollipop
+
 ## 1.25.0
 * Add an option to swap menus when circling around the pie
 * Keep settings icon for context menu mode and add a context menu entry

@@ -1,0 +1,4 @@
+* Add option to exclude icons from both menus
+* Always open primary menu for initial touch
+* Add missing runtime check for pre-Lollipop
+
