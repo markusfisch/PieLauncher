@@ -1226,7 +1226,7 @@ public class AppPieView extends View {
 			return true;
 		} else if (contains(iconCenterRect, touch)) {
 			if (grabbedIcon == null) {
-				if (prefs.splitPieEnabled()) {
+				if (hasSecondaryMenu()) {
 					swapMenus();
 					centerSmoothCoordinatesAt(pieMenu.icons,
 							viewWidth >> 1, viewHeight >> 1);
@@ -1667,7 +1667,7 @@ public class AppPieView extends View {
 			drawAction(canvas, iconChangeIconScale, iconChangeIconScaleRect);
 			drawAction(canvas, iconChangeRadius, iconChangeRadiusRect);
 			drawAction(canvas, iconAdd, iconStartRect);
-			drawAction(canvas, prefs.splitPieEnabled()
+			drawAction(canvas, hasSecondaryMenu()
 					? iconSplitPie
 					: iconPreferences, iconCenterRect);
 			drawAction(canvas, iconDone, iconEndRect);
@@ -1685,6 +1685,11 @@ public class AppPieView extends View {
 
 		// Invoke drawSmoothed() first to make sure it's always run.
 		return pieMenu.drawSmoothed(canvas) || invalidate;
+	}
+
+	private boolean hasSecondaryMenu() {
+		return prefs.splitPieEnabled() || prefs.circleSwapsMenus() ==
+				Preferences.CIRCLE_SWAPS_SECONDARY_MENU;
 	}
 
 	private void calculateEditablePie(int centerX, int centerY) {
