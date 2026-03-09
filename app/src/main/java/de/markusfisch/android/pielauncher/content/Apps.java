@@ -747,26 +747,33 @@ public class Apps {
 				toast(context, R.string.user_profile_locked);
 				return;
 			}
-			if (!la.isActivityEnabled(
-					icon.componentName,
-					icon.userHandle)) {
-				ComponentName componentName = findEnabledActivity(
-						la,
-						icon.componentName.getPackageName(),
-						icon.userHandle);
-				if (componentName == null) {
-					toast(context, R.string.activity_not_enabled);
-					return;
-				}
-				icon.componentName = componentName;
-			}
 			la.startMainActivity(
 					icon.componentName,
 					icon.userHandle,
 					icon.rect,
 					null);
 		} catch (Exception e) {
-			toast(context, e.getMessage());
+			// The stored component may have changed (e.g. app rotated its
+			// activity alias). Try the first launcher activity we can find.
+			ComponentName componentName = findEnabledActivity(
+					la,
+					icon.componentName.getPackageName(),
+					icon.userHandle);
+			if (componentName == null ||
+					componentName.equals(icon.componentName)) {
+				toast(context, R.string.activity_not_enabled);
+				return;
+			}
+			icon.componentName = componentName;
+			try {
+				la.startMainActivity(
+						icon.componentName,
+						icon.userHandle,
+						icon.rect,
+						null);
+			} catch (Exception e2) {
+				toast(context, R.string.activity_not_enabled);
+			}
 		}
 	}
 
@@ -776,16 +783,12 @@ public class Apps {
 			LauncherApps la,
 			String packageName,
 			UserHandle userHandle) {
-		for (LauncherActivityInfo info :
-				getActivityList(la, packageName, userHandle)) {
-			if (info.getComponentName() != null &&
-					la.isActivityEnabled(
-							info.getComponentName(),
-							userHandle)) {
-				return info.getComponentName();
-			}
-		}
-		return null;
+		// getActivityList() already returns only enabled launcher activities,
+		// so an additional isActivityEnabled() check is redundant — and on
+		// some ROMs it returns false negatives that skip every result.
+		List<LauncherActivityInfo> list =
+				getActivityList(la, packageName, userHandle);
+		return list.isEmpty() ? null : list.get(0).getComponentName();
 	}
 
 	@SuppressLint("UseRequiresApi")
