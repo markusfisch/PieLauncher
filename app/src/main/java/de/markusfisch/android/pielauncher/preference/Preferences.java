@@ -1,8 +1,11 @@
 package de.markusfisch.android.pielauncher.preference;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -132,6 +135,8 @@ public class Preferences {
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 		boolean highRefreshRate = isHighRefreshRate(appContext);
+
+		initializeDynamicDefaults(highRefreshRate);
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		primaryTwist = preferences.getFloat(TWIST, primaryTwist);
@@ -455,6 +460,18 @@ public class Preferences {
 		return 200f * systemSettings.getAnimatorDurationScale();
 	}
 
+	private void initializeDynamicDefaults(boolean highRefreshRate) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+				!preferences.contains(BLUR_MENU)) {
+			setBlurMenu(highRefreshRate);
+		}
+		if (!preferences.contains(LIST_ANIMATION_APPEARANCE)) {
+			setListAnimationAppearance(highRefreshRate
+					? LIST_APPEARANCE_ANIMATION_SLIDE
+					: LIST_APPEARANCE_ANIMATION_FADE);
+		}
+	}
+
 	private void migrateSettings() {
 		// Migrate old immersive mode setting.
 		String oldImmersiveModeName = "immersive_mode";
@@ -535,20 +552,31 @@ public class Preferences {
 	private static boolean isHighRefreshRate(Context context) {
 		float refreshRate = 60f;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			try {
-				Display display = context.getDisplay();
-				if (display.getMode() != null) {
-					refreshRate = display.getMode().getRefreshRate();
-				}
-			} catch (UnsupportedOperationException e) {
-				// Fall through. Thrown when the context isn't associated
-				// with a display.
+			Display display = getDisplay(context);
+			if (display != null && display.getMode() != null) {
+				refreshRate = display.getMode().getRefreshRate();
 			}
 		} else {
-			Display display = ((WindowManager) context.getSystemService(
+			Display defaultDisplay = ((WindowManager) context.getSystemService(
 					Context.WINDOW_SERVICE)).getDefaultDisplay();
-			refreshRate = display.getRefreshRate();
+			refreshRate = defaultDisplay.getRefreshRate();
 		}
 		return refreshRate > 61f; // Because of rounding.
+	}
+
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.R)
+	private static Display getDisplay(Context context) {
+		try {
+			return context.getDisplay();
+		} catch (UnsupportedOperationException e) {
+			// Fall through. Thrown when the context isn't associated
+			// with a display.
+		}
+		DisplayManager displayManager = context.getSystemService(
+				DisplayManager.class);
+		return displayManager == null
+				? null
+				: displayManager.getDisplay(Display.DEFAULT_DISPLAY);
 	}
 }
