@@ -1815,7 +1815,8 @@ public class AppPieView extends View {
 
 	private void drawRenderNode(RenderNode node, Canvas canvas) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-				node != null) {
+				node != null &&
+				canvas.isHardwareAccelerated()) {
 			node.endRecording();
 			canvas.drawRenderNode(node);
 		}
