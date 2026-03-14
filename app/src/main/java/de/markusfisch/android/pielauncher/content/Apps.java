@@ -663,7 +663,8 @@ public class Apps {
 			return;
 		}
 		try {
-			if (!um.isUserUnlocked(icon.userHandle)) {
+			if (!um.isUserUnlocked(icon.userHandle) &&
+					isPrivateProfile(la, icon.userHandle)) {
 				toast(context, R.string.user_profile_locked);
 				return;
 			}
