@@ -21,11 +21,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 	public ArrayList<T> icons = new ArrayList<>();
 
 	private OnCircleListener onCircleListener;
-	private final CircleDetector circleDetector = new CircleDetector(() -> {
-		if (onCircleListener != null) {
-			onCircleListener.onCircle();
-		}
-	});
+	private final CircleDetector circleDetector = new CircleDetector();
 
 	private int selectedIcon = -1;
 	private int centerX = -1;
@@ -122,8 +118,10 @@ public class PieMenu<T extends PieMenu.Icon> {
 			double infieldRadius = rad / 2f;
 			double factor = cursorRadius / infieldRadius;
 
-			if (circleDetector.update(centeredX, centeredY,
-					infieldRadius * .75f)) {
+			if (onCircleListener != null &&
+					circleDetector.update(centeredX, centeredY,
+							infieldRadius * .75f)) {
+				onCircleListener.onCircle();
 				// Because onCircle() may change the icons.
 				calculate(x, y, t, launching);
 				return;
@@ -266,15 +264,12 @@ public class PieMenu<T extends PieMenu.Icon> {
 			void onCircle();
 		}
 
-		private final CircleDetectorListener listener;
-
 		private double ldx;
 		private double ldy;
 		private double sum;
 		private double direction;
 
-		private CircleDetector(CircleDetectorListener listener) {
-			this.listener = listener;
+		private CircleDetector() {
 			reset();
 		}
 
@@ -326,7 +321,6 @@ public class PieMenu<T extends PieMenu.Icon> {
 			}
 
 			reset();
-			listener.onCircle();
 			return true;
 		}
 	}
