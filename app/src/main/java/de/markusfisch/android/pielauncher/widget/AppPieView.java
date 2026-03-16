@@ -621,7 +621,7 @@ public class AppPieView extends View {
 					// Reset menu to primary if necessary.
 					if (prefs.circleSwapsMenus() !=
 							Preferences.CIRCLE_SWAPS_NO &&
-									!isPrimaryMenu()) {
+							!isPrimaryMenu()) {
 						pieMenu.icons = menuPrimary;
 						applyPiePreferences();
 					}
