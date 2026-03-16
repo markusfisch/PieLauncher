@@ -318,7 +318,7 @@ public class Apps {
 			removePackageFromApps(newApps, packageNameRestriction,
 					userHandleRestriction);
 			// No need to call removePackageFromPieMenu() because the
-			// menu will be re-created by createMenu() after indexing.
+			// menu will be re-created by getPrimaryMenu() after indexing.
 		}
 		executor.execute(() -> {
 			indexApps(context,
@@ -326,18 +326,17 @@ public class Apps {
 					userHandleRestriction,
 					hideApps,
 					newApps);
-			List<AppIcon> newIcons = createMenu(context, newApps,
+			List<AppIcon> newPrimary = getPrimaryMenu(context, newApps,
 					PieLauncherApp.getPrefs(context).openListWith() ==
 							Preferences.OPEN_LIST_WITH_ICON);
-			List<AppIcon> newIconsAlt = MenuStorage.restore(context,
-					MENU_SECONDARY, newApps);
+			List<AppIcon> newSecondary = getSecondaryMenu(context, newApps);
 			handler.post(() -> {
 				apps.clear();
 				apps.putAll(newApps);
 				menuPrimary.clear();
-				menuPrimary.addAll(newIcons);
+				menuPrimary.addAll(newPrimary);
 				menuSecondary.clear();
-				menuSecondary.addAll(newIconsAlt);
+				menuSecondary.addAll(newSecondary);
 				indexing = false;
 				propagateUpdate();
 			});
@@ -466,7 +465,7 @@ public class Apps {
 		return appIcon;
 	}
 
-	private List<AppIcon> createMenu(Context context,
+	private List<AppIcon> getPrimaryMenu(Context context,
 			Map<LauncherItemKey, AppIcon> allApps,
 			boolean useDrawerIcon) {
 		AppIcon drawerIcon = useDrawerIcon
@@ -486,6 +485,12 @@ public class Apps {
 			drawerPackageName = null;
 		}
 		return menu;
+	}
+
+	private List<AppIcon> getSecondaryMenu(Context context,
+			Map<LauncherItemKey, AppIcon> allApps) {
+		return MenuStorage.restore(context,
+				MENU_SECONDARY, allApps);
 	}
 
 	private AppIcon addDrawerIcon(Context context,
