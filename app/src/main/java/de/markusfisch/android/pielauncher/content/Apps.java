@@ -77,8 +77,8 @@ public class Apps {
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
-	public final ArrayList<Apps.AppIcon> menuPrimary = new ArrayList<>();
-	public final ArrayList<Apps.AppIcon> menuSecondary = new ArrayList<>();
+	public final ArrayList<AppIcon> menuPrimary = new ArrayList<>();
+	public final ArrayList<AppIcon> menuSecondary = new ArrayList<>();
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
@@ -473,9 +473,6 @@ public class Apps {
 				: null;
 		ArrayList<AppIcon> menu = MenuStorage.restore(context,
 				MENU_PRIMARY, allApps);
-		if (menu.isEmpty()) {
-			createInitialMenu(menu, allApps, context.getPackageManager());
-		}
 		if (drawerIcon != null) {
 			if (!menu.contains(drawerIcon)) {
 				menu.add(0, drawerIcon);
@@ -484,13 +481,24 @@ public class Apps {
 		} else {
 			drawerPackageName = null;
 		}
+		if (menu.isEmpty()) {
+			createInitialMenu(menu, allApps,
+					context.getPackageManager());
+			MenuStorage.store(context, MENU_PRIMARY, menu);
+		}
 		return menu;
 	}
 
 	private List<AppIcon> getSecondaryMenu(Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
-		return MenuStorage.restore(context,
+		ArrayList<AppIcon> menu = MenuStorage.restore(context,
 				MENU_SECONDARY, allApps);
+		if (menu.isEmpty()) {
+			// Just add a few apps so users aren't confused by an empty menu.
+			createMenuForPopularApps(menu, allApps, 4);
+			MenuStorage.store(context, MENU_SECONDARY, menu);
+		}
+		return menu;
 	}
 
 	private AppIcon addDrawerIcon(Context context,
@@ -511,7 +519,8 @@ public class Apps {
 				null);
 	}
 
-	private static void createInitialMenu(List<AppIcon> menu,
+	private static void createInitialMenu(
+			List<AppIcon> menu,
 			Map<LauncherItemKey, AppIcon> allApps,
 			PackageManager pm) {
 		Intent[] intents = new Intent[]{
@@ -553,7 +562,61 @@ public class Apps {
 				addMenuIcon(menu, appIcon);
 			}
 		}
-		int max = Math.min(allApps.size(), 8);
+
+		fillMenu(menu, allApps, defaults, 8);
+	}
+
+	private static void createMenuForPopularApps(
+			List<AppIcon> menu,
+			Map<LauncherItemKey, AppIcon> allApps,
+			int numberOfIcons) {
+		String[] popularApps = new String[]{
+				"com.whatsapp",
+				"com.facebook.katana",
+				"com.facebook.orca",
+				"com.instagram.android",
+				"com.google.android.youtube",
+				"com.snapchat.android",
+				"com.twitter.android",
+				"com.netflix.mediaclient",
+				"com.spotify.music"};
+		ArrayList<LauncherItemKey> defaults = new ArrayList<>();
+		int max = Math.min(allApps.size(), numberOfIcons);
+		int i = menu.size();
+		for (String packageName : popularApps) {
+			if (i >= max) {
+				break;
+			}
+			Map.Entry<LauncherItemKey, AppIcon> entry = findByPackageName(
+					allApps, packageName);
+			if (entry != null) {
+				defaults.add(entry.getKey());
+				addMenuIcon(menu, entry.getValue());
+				++i;
+			}
+		}
+
+		fillMenu(menu, allApps, defaults, numberOfIcons);
+	}
+
+	private static Map.Entry<LauncherItemKey, AppIcon> findByPackageName(
+			Map<LauncherItemKey, AppIcon> allApps,
+			String packageName) {
+		for (Map.Entry<LauncherItemKey, AppIcon> entry : allApps.entrySet()) {
+			if (entry.getKey().componentName.getPackageName().equals(
+					packageName)) {
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	private static void fillMenu(
+			List<AppIcon> menu,
+			Map<LauncherItemKey, AppIcon> allApps,
+			ArrayList<LauncherItemKey> defaults,
+			int numberOfIcons) {
+		int max = Math.min(allApps.size(), numberOfIcons);
 		int i = menu.size();
 		for (Map.Entry<LauncherItemKey, AppIcon> entry : allApps.entrySet()) {
 			if (i >= max) {
