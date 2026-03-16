@@ -66,6 +66,11 @@ public class PieMenu<T extends PieMenu.Icon> {
 			float iconScale) {
 		this.centerX = centerX;
 		this.centerY = centerY;
+		setRadiusTwistIconScale(radius, twist, iconScale);
+	}
+
+	public void setRadiusTwistIconScale(double radius, double twist,
+			float iconScale) {
 		this.radius = radius;
 		this.twist = twist;
 		this.iconScale = iconScale;

@@ -618,11 +618,14 @@ public class AppPieView extends View {
 					selectMenu(touch.x, touch.y);
 					setCenter(touch.x, touch.y);
 				} else {
+					// Reset menu to primary if necessary.
 					if (prefs.circleSwapsMenus() !=
-							Preferences.CIRCLE_SWAPS_NO) {
+							Preferences.CIRCLE_SWAPS_NO &&
+									!isPrimaryMenu()) {
 						pieMenu.icons = menuPrimary;
+						applyPiePreferences();
 					}
-					// Keep center for interrupted touches.
+					// Don't re-center for interrupted touches.
 					if (eventTime - lastActionUp > 200L) {
 						setCenter(touch.x, touch.y);
 					}
@@ -904,19 +907,15 @@ public class AppPieView extends View {
 		maxRadius = Math.round(viewMin * .5f);
 		minRadius = Math.round(maxRadius * .5f);
 		medRadius = minRadius + (maxRadius - minRadius) / 2;
-		radius = clampRadius(prefs.getRadius(maxRadius));
-		twist = prefs.getTwist();
 		minIconScale = (48f * dp) / maxIconSize;
-		iconScale = prefs.getIconScale();
+		loadPiePreferences();
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
 				pieRenderNode != null) {
 			pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
 		}
 
-		updateChangeTwistIcon();
-		updateChangeIconScaleIcon();
-		updateChangeRadiusIcon();
+		updateChangePieIcons();
 		updateSplitPieIcon();
 
 		int pieBottom = viewMax / 2 + maxRadius;
@@ -1227,10 +1226,12 @@ public class AppPieView extends View {
 		} else if (contains(iconCenterRect, touch)) {
 			if (grabbedIcon == null) {
 				if (hasSecondaryMenu()) {
+					storeMenu();
 					swapMenus();
 					centerSmoothCoordinatesAt(pieMenu.icons,
 							viewWidth >> 1, viewHeight >> 1);
 					updateSplitPieIcon();
+					updateChangePieIcons();
 					invalidate();
 				} else {
 					PreferencesActivity.start(context);
@@ -1330,6 +1331,12 @@ public class AppPieView extends View {
 			}
 		}
 		return true;
+	}
+
+	private void updateChangePieIcons() {
+		updateChangeTwistIcon();
+		updateChangeIconScaleIcon();
+		updateChangeRadiusIcon();
 	}
 
 	private void updateChangeTwistIcon() {
@@ -1451,11 +1458,16 @@ public class AppPieView extends View {
 	}
 
 	private void swapMenus() {
-		swapMenus(pieMenu.icons == menuPrimary);
+		swapMenus(isPrimaryMenu());
 	}
 
 	private void swapMenus(boolean isPrimary) {
 		pieMenu.icons = isPrimary ? menuSecondary : menuPrimary;
+		applyPiePreferences();
+	}
+
+	private boolean isPrimaryMenu() {
+		return pieMenu.icons == menuPrimary;
 	}
 
 	private void setCenter(int x, int y) {
@@ -1837,9 +1849,22 @@ public class AppPieView extends View {
 		if (context != null) {
 			PieLauncherApp.apps.store(context);
 		}
-		prefs.setRadius(radius);
-		prefs.setTwist(twist);
-		prefs.setIconScale(iconScale);
+		boolean primary = isPrimaryMenu();
+		prefs.setRadius(primary, radius);
+		prefs.setTwist(primary, twist);
+		prefs.setIconScale(primary, iconScale);
+	}
+
+	private void applyPiePreferences() {
+		loadPiePreferences();
+		pieMenu.setRadiusTwistIconScale(radius, twist, iconScale);
+	}
+
+	private void loadPiePreferences() {
+		boolean primary = isPrimaryMenu();
+		radius = clampRadius(prefs.getRadius(primary, maxRadius));
+		twist = prefs.getTwist(primary);
+		iconScale = prefs.getIconScale(primary);
 	}
 
 	private void fadeOutMode() {

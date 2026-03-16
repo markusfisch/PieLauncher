@@ -56,6 +56,9 @@ public class Preferences {
 	private static final String RADIUS = "radius";
 	private static final String TWIST = "twist";
 	private static final String ICON_SCALE = "icon_scale";
+	private static final String SECONDARY_RADIUS = "secondary_radius";
+	private static final String SECONDARY_TWIST = "secondary_twist";
+	private static final String SECONDARY_ICON_SCALE = "secondary_icon_scale";
 	private static final String ORIENTATION = "orientation";
 	private static final String DARKEN_BACKGROUND = "darken_background_level";
 	private static final String BLUR_BACKGROUND_RADIUS = "background_blur_radius";
@@ -85,8 +88,10 @@ public class Preferences {
 	private final SystemSettings systemSettings;
 
 	private boolean skipSetup = false;
-	private float twist = 0f;
-	private float iconScale = 1f;
+	private float primaryTwist = 0f;
+	private float secondaryTwist = 0f;
+	private float primaryIconScale = 1f;
+	private float secondaryIconScale = 1f;
 	private int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	private int darkenBackground = DARKEN_BACKGROUND_HEAVY;
 	private int backgroundBlurRadius = 0;
@@ -125,8 +130,11 @@ public class Preferences {
 		boolean highRefreshRate = isHighRefreshRate(context);
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
-		twist = preferences.getFloat(TWIST, twist);
-		iconScale = preferences.getFloat(ICON_SCALE, iconScale);
+		primaryTwist = preferences.getFloat(TWIST, primaryTwist);
+		secondaryTwist = preferences.getFloat(SECONDARY_TWIST, primaryTwist);
+		primaryIconScale = preferences.getFloat(ICON_SCALE, primaryIconScale);
+		secondaryIconScale = preferences.getFloat(SECONDARY_ICON_SCALE,
+				primaryIconScale);
 		orientation = preferences.getInt(ORIENTATION, defaultOrientation);
 		darkenBackground = preferences.getInt(DARKEN_BACKGROUND,
 				darkenBackground);
@@ -176,30 +184,40 @@ public class Preferences {
 		put(SKIP_SETUP, true).apply();
 	}
 
-	public int getRadius(int preset) {
-		return preferences.getInt(RADIUS, preset);
+	public int getRadius(boolean primary, int preset) {
+		return preferences.getInt(primary ? RADIUS : SECONDARY_RADIUS, preset);
 	}
 
-	public void setRadius(int radius) {
-		put(RADIUS, radius).apply();
+	public void setRadius(boolean primary, int radius) {
+		put(primary ? RADIUS : SECONDARY_RADIUS, radius).apply();
 	}
 
-	public float getTwist() {
-		return twist;
+	public float getTwist(boolean primary) {
+		return primary ? primaryTwist : secondaryTwist;
 	}
 
-	public void setTwist(float twist) {
-		this.twist = twist;
-		put(TWIST, twist).apply();
+	public void setTwist(boolean primary, float twist) {
+		if (primary) {
+			primaryTwist = twist;
+			put(TWIST, twist).apply();
+		} else {
+			secondaryTwist = twist;
+			put(SECONDARY_TWIST, secondaryTwist).apply();
+		}
 	}
 
-	public float getIconScale() {
-		return iconScale;
+	public float getIconScale(boolean primary) {
+		return primary ? primaryIconScale : secondaryIconScale;
 	}
 
-	public void setIconScale(float iconScale) {
-		this.iconScale = iconScale;
-		put(ICON_SCALE, iconScale).apply();
+	public void setIconScale(boolean primary, float iconScale) {
+		if (primary) {
+			primaryIconScale = iconScale;
+			put(ICON_SCALE, iconScale).apply();
+		} else {
+			secondaryIconScale = iconScale;
+			put(SECONDARY_ICON_SCALE, secondaryIconScale).apply();
+		}
 	}
 
 	public int getOrientation() {
