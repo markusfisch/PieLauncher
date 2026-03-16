@@ -376,16 +376,11 @@ public class HomeActivity extends Activity {
 
 		// Clear search input.
 		Editable editable = searchInput.getText();
-		boolean searchWasEmpty = editable.toString().isEmpty();
 		updateAfterTextChange = false;
 		editable.clear();
 		updateAfterTextChange = true;
 
-		// Remove filter and reset last scroll position.
-		if (!searchWasEmpty || pieView.isEmpty()) {
-			updateAppList(true);
-		}
-
+		updateAppList(true);
 		pieView.showList();
 	}
 
