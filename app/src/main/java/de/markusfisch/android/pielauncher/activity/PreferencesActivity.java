@@ -177,6 +177,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getDeadZoneOptions,
 				() -> prefs.getDeadZone(),
 				(value) -> prefs.setDeadZone(value));
+		initPreference(R.id.expand_panel_in_dead_zone,
+				R.string.expand_panel_in_dead_zone,
+				PreferencesActivity::getExpandPanelInDeadZoneOptions,
+				() -> prefs.expandPanelInDeadZone(),
+				(value) -> prefs.setExpandPanelInDeadZone(value));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			initPreference(R.id.immersive_mode,
 					R.string.immersive_mode,
@@ -464,6 +469,13 @@ public class PreferencesActivity extends Activity {
 		map.put(Preferences.DEAD_ZONE_TOP_BOTTOM,
 				R.string.dead_zone_top_bottom);
 		map.put(Preferences.DEAD_ZONE_ALL, R.string.dead_zone_all);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getExpandPanelInDeadZoneOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.expand_panel_in_dead_zone_yes);
+		map.put(Boolean.FALSE, R.string.expand_panel_in_dead_zone_no);
 		return map;
 	}
 

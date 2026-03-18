@@ -31,6 +31,9 @@
 	<string name="dead_zone_bottom">Na parte inferior</string>
 	<string name="dead_zone_top_bottom">Na parte superior e inferior (Padrão)</string>
 	<string name="dead_zone_all">Em todas as bordas</string>
+	<string name="expand_panel_in_dead_zone">Abrir painel de notificações na borda</string>
+	<string name="expand_panel_in_dead_zone_yes">Sim (Padrão)</string>
+	<string name="expand_panel_in_dead_zone_no">Não</string>
 	<string name="immersive_mode">Modo imersivo</string>
 	<string name="immersive_mode_full">Ocultar as barras de status e navegação</string>
 	<string name="immersive_mode_status_bar">Ocultar apenas a barra do sistema</string>

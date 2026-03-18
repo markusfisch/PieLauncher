@@ -31,6 +31,9 @@
 	<string name="dead_zone_bottom">Снизу</string>
 	<string name="dead_zone_top_bottom">Сверху и снизу (Стандартно)</string>
 	<string name="dead_zone_all">По всем краям экрана</string>
+	<string name="expand_panel_in_dead_zone">Открыть панель уведомлений у края</string>
+	<string name="expand_panel_in_dead_zone_yes">Да (Стандартно)</string>
+	<string name="expand_panel_in_dead_zone_no">Нет</string>
 	<string name="immersive_mode">Режим погружения</string>
 	<string name="immersive_mode_full">Скрывать системную и навигационную панели</string>
 	<string name="immersive_mode_status_bar">Скрыть строку состояния</string>

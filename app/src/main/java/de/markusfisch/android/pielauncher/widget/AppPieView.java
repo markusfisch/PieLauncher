@@ -44,6 +44,7 @@ import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.PieMenu;
 import de.markusfisch.android.pielauncher.preference.Preferences;
+import de.markusfisch.android.pielauncher.view.SystemBars;
 
 public class AppPieView extends View {
 	public interface ListListener {
@@ -124,6 +125,8 @@ public class AppPieView extends View {
 	private final int alphaDropZone;
 	private final int alphaPressed;
 	private final int alphaText;
+	private final int minFlingVelocity;
+	private final int maxFlingVelocity;
 	private final float maxBlurRadius;
 	private final float dp;
 	private final float textHeight;
@@ -252,6 +255,8 @@ public class AppPieView extends View {
 		ViewConfiguration configuration = ViewConfiguration.get(context);
 		float touchSlop = configuration.getScaledTouchSlop();
 		touchSlopSq = touchSlop * touchSlop;
+		minFlingVelocity = configuration.getScaledMinimumFlingVelocity();
+		maxFlingVelocity = configuration.getScaledMaximumFlingVelocity();
 		tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
 		longPressTimeout = ViewConfiguration.getLongPressTimeout() *
 				(prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
@@ -442,6 +447,7 @@ public class AppPieView extends View {
 			private final FlingRunnable flingRunnable = new FlingRunnable();
 			private final SparseArray<TouchReference> touchReferences =
 					new SparseArray<>();
+			private final Point expandTouch = new Point();
 			private final TapFlags tapFlags = new TapFlags();
 
 			private VelocityTracker velocityTracker;
@@ -452,6 +458,7 @@ public class AppPieView extends View {
 			private double spinInitialTwist;
 			private int scrollOffset;
 			private long lastActionUp;
+			private long expandDownTime;
 			private Runnable highlightRunnable;
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
@@ -464,6 +471,7 @@ public class AppPieView extends View {
 					case MotionEvent.ACTION_POINTER_DOWN:
 						pointerCount = event.getPointerCount();
 						if (mode == MODE_PIE) {
+							cancelExpandPanel();
 							startSpin(event);
 							invalidate();
 						} else if (mode == MODE_LIST) {
@@ -492,7 +500,8 @@ public class AppPieView extends View {
 						switch (mode) {
 							case MODE_PIE:
 								if (inDeadZone()) {
-									return false;
+									initExpandPanel(event, eventTime);
+									return true;
 								}
 								openMenu(eventTime);
 								break;
@@ -514,6 +523,7 @@ public class AppPieView extends View {
 						break;
 					case MotionEvent.ACTION_MOVE:
 						if (mode == MODE_PIE) {
+							expandPanel(v.getContext(), event);
 							spin(event);
 						} else if (mode == MODE_LIST) {
 							if (isScroll(event)) {
@@ -527,6 +537,7 @@ public class AppPieView extends View {
 						if (mode == MODE_PIE) {
 							lastActionUp = event.getEventTime();
 							cancelSpin();
+							cancelExpandPanel();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							cancelDragDownList();
@@ -537,6 +548,7 @@ public class AppPieView extends View {
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_PIE) {
 							cancelSpin();
+							cancelExpandPanel();
 							fadeOutMode();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
@@ -636,9 +648,7 @@ public class AppPieView extends View {
 
 			private void initScroll(MotionEvent event) {
 				flingRunnable.stop();
-				recycleVelocityTracker();
-				velocityTracker = VelocityTracker.obtain();
-				velocityTracker.addMovement(event);
+				initVelocityTracker(event);
 				scrollOffset = getScrollY();
 			}
 
@@ -682,11 +692,49 @@ public class AppPieView extends View {
 				}
 			}
 
+			private void initVelocityTracker(MotionEvent event) {
+				recycleVelocityTracker();
+				velocityTracker = VelocityTracker.obtain();
+				velocityTracker.addMovement(event);
+			}
+
 			private void recycleVelocityTracker() {
 				if (velocityTracker != null) {
 					velocityTracker.recycle();
 					velocityTracker = null;
 				}
+			}
+
+			private void initExpandPanel(MotionEvent event, long eventTime) {
+				if (!prefs.expandPanelInDeadZone()) {
+					return;
+				}
+				expandDownTime = eventTime;
+				expandTouch.set(touch.x, touch.y);
+				initVelocityTracker(event);
+			}
+
+			private void expandPanel(Context context, MotionEvent event) {
+				if (velocityTracker == null) {
+					return;
+				}
+				velocityTracker.addMovement(event);
+				velocityTracker.computeCurrentVelocity(1000);
+				float vy = velocityTracker.getYVelocity();
+				if (expandDownTime > 0 &&
+						event.getEventTime() - expandDownTime > tapOrScrollTimeout &&
+						distSq(expandTouch.x, expandTouch.y,
+								touch.x, touch.y) > touchSlopSq &&
+						vy > minFlingVelocity &&
+						vy < maxFlingVelocity) {
+					cancelExpandPanel();
+					SystemBars.expandNotificationPanel(context);
+				}
+			}
+
+			private void cancelExpandPanel() {
+				expandDownTime = 0;
+				recycleVelocityTracker();
 			}
 
 			private void initLongPress(Context context) {

@@ -64,6 +64,7 @@ public class Preferences {
 	private static final String BLUR_BACKGROUND_RADIUS = "background_blur_radius";
 	private static final String BLUR_MENU = "blur_menu";
 	private static final String DEAD_ZONE = "dead_zone";
+	private static final String EXPAND_PANEL_IN_DEAD_ZONE = "expand_panel_in_dead_zone";
 	private static final String IMMERSIVE_MODE = "immersive_mode_option";
 	private static final String ANIMATE_IN_OUT = "animate_in_out";
 	private static final String OPEN_LIST_WITH = "open_list_with";
@@ -97,6 +98,7 @@ public class Preferences {
 	private int backgroundBlurRadius = 0;
 	private boolean blurMenu = false;
 	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
+	private boolean expandPanelInDeadZone = true;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;
 	private int hapticFeedback = HAPTIC_FEEDBACK_FOLLOW_SYSTEM;
@@ -142,6 +144,8 @@ public class Preferences {
 				backgroundBlurRadius);
 		blurMenu = preferences.getBoolean(BLUR_MENU, highRefreshRate);
 		deadZone = preferences.getInt(DEAD_ZONE, deadZone);
+		expandPanelInDeadZone = preferences.getBoolean(
+				EXPAND_PANEL_IN_DEAD_ZONE, expandPanelInDeadZone);
 		immersiveMode = preferences.getInt(IMMERSIVE_MODE, immersiveMode);
 		animateInOut = preferences.getBoolean(ANIMATE_IN_OUT, animateInOut);
 		openListWith = preferences.getInt(OPEN_LIST_WITH, openListWith);
@@ -260,9 +264,18 @@ public class Preferences {
 		return deadZone;
 	}
 
+	public boolean expandPanelInDeadZone() {
+		return expandPanelInDeadZone;
+	}
+
 	public void setDeadZone(int deadZone) {
 		this.deadZone = deadZone;
 		put(DEAD_ZONE, deadZone).commit();
+	}
+
+	public void setExpandPanelInDeadZone(boolean expandPanelInDeadZone) {
+		this.expandPanelInDeadZone = expandPanelInDeadZone;
+		put(EXPAND_PANEL_IN_DEAD_ZONE, expandPanelInDeadZone).commit();
 	}
 
 	public int getImmersiveMode() {

@@ -61,6 +61,10 @@
 					android:text="@string/dead_zone_top_bottom" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/expand_panel_in_dead_zone"
+					android:text="@string/expand_panel_in_dead_zone_yes" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/immersive_mode"
 					android:text="@string/immersive_mode_disabled" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

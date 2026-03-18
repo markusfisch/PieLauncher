@@ -1,5 +1,7 @@
 package de.markusfisch.android.pielauncher.view;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
@@ -162,5 +164,24 @@ public class SystemBars {
 								toolbarPadding.bottom);
 					}
 				});
+	}
+
+	public static void expandNotificationPanel(Context context) {
+		if (context == null) {
+			return;
+		}
+		try {
+			@SuppressLint("WrongConstant")
+			Object statusBarService = context.getSystemService("statusbar");
+			if (statusBarService != null) {
+				Class<?> statusBarManager = Class.forName(
+						"android.app.StatusBarManager");
+				//noinspection JavaReflectionMemberAccess
+				statusBarManager.getMethod("expandNotificationsPanel")
+						.invoke(statusBarService);
+			}
+		} catch (Exception e) {
+			// Silently fail if reflection doesn't work.
+		}
 	}
 }

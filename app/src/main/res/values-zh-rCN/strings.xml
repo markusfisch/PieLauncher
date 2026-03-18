@@ -31,6 +31,9 @@
 	<string name="dead_zone_bottom">屏幕底部</string>
 	<string name="dead_zone_top_bottom">在屏幕顶部和底部 (默认)</string>
 	<string name="dead_zone_all">围绕所有屏幕边缘</string>
+	<string name="expand_panel_in_dead_zone">在边缘打开通知面板</string>
+	<string name="expand_panel_in_dead_zone_yes">是 (默认)</string>
+	<string name="expand_panel_in_dead_zone_no">否</string>
 	<string name="immersive_mode">沉浸模式</string>
 	<string name="immersive_mode_full">隐藏状态栏和导航栏</string>
 	<string name="immersive_mode_status_bar">隐藏状态栏</string>

@@ -29,6 +29,13 @@ Pie Launcher does not consume battery when not in use.
 Pie Launcher needs to detect hidden profiles so it can accurately list
 available apps for the active user profile.
 
+### [EXPAND_STATUS_BAR][EXPAND_STATUS_BAR]
+
+Pie Launcher uses this permission to expand the notification panel when
+you tap the dead zone of the pie menu, providing quick access to your
+notifications.
+
 [QUERY_ALL_PACKAGES]: https://developer.android.com/reference/android/Manifest.permission#QUERY_ALL_PACKAGES
 [REQUEST_IGNORE_BATTERY_OPTIMIZATIONS]: https://developer.android.com/reference/android/Manifest.permission#REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 [ACCESS_HIDDEN_PROFILES]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_HIDDEN_PROFILES
+[EXPAND_STATUS_BAR]: https://developer.android.com/reference/android/Manifest.permission#EXPAND_STATUS_BAR

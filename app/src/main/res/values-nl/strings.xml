@@ -31,6 +31,9 @@
 	<string name="dead_zone_bottom">Onderaan</string>
 	<string name="dead_zone_top_bottom">Boven- en onderaan (standaard)</string>
 	<string name="dead_zone_all">Rond alle schermranden</string>
+	<string name="expand_panel_in_dead_zone">Meldingenpaneel openen aan de rand</string>
+	<string name="expand_panel_in_dead_zone_yes">Ja (standaard)</string>
+	<string name="expand_panel_in_dead_zone_no">Nee</string>
 	<string name="immersive_mode">Immersieve modus</string>
 	<string name="immersive_mode_full">Status- en navigatiebalk verbergen</string>
 	<string name="immersive_mode_status_bar">Statusbalk verbergen</string>
