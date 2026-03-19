@@ -93,6 +93,7 @@
 	<string name="split_pie_no">No (Default)</string>
 	<string name="circle_swaps_menus">Circling swaps menus</string>
 	<string name="circle_swaps_menus_yes">Secondary menu</string>
+	<string name="circle_swaps_menus_all_apps">All apps</string>
 	<string name="circle_swaps_menus_no">No (Default)</string>
 	<string name="icon_press">Long press</string>
 	<string name="icon_press_default">Adds app to the pie menu (Default)</string>

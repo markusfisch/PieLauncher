@@ -48,6 +48,7 @@ public class Preferences {
 	public static final int HAPTIC_FEEDBACK_DISABLE_ALL = 2;
 	public static final int CIRCLE_SWAPS_NO = 0;
 	public static final int CIRCLE_SWAPS_SECONDARY_MENU = 1;
+	public static final int CIRCLE_SWAPS_ALL_APPS = 2;
 	public static final int EXCLUDE_PIE_NONE = 0;
 	public static final int EXCLUDE_PIE_PRIMARY = 1;
 	public static final int EXCLUDE_PIE_ALL = 2;

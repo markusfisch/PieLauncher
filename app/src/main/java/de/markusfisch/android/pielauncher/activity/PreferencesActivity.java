@@ -510,6 +510,8 @@ public class PreferencesActivity extends Activity {
 		Map<Integer, Integer> map = new LinkedHashMap<>();
 		map.put(Preferences.CIRCLE_SWAPS_SECONDARY_MENU,
 				R.string.circle_swaps_menus_yes);
+		map.put(Preferences.CIRCLE_SWAPS_ALL_APPS,
+				R.string.circle_swaps_menus_all_apps);
 		map.put(Preferences.CIRCLE_SWAPS_NO,
 				R.string.circle_swaps_menus_no);
 		return map;

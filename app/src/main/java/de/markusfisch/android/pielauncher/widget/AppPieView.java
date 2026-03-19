@@ -1490,11 +1490,26 @@ public class AppPieView extends View {
 	}
 
 	private void onCircle() {
-		if (prefs.circleSwapsMenus() == Preferences.CIRCLE_SWAPS_NO ||
-				menuSecondary.isEmpty()) {
-			return;
+		switch (prefs.circleSwapsMenus()) {
+			case Preferences.CIRCLE_SWAPS_ALL_APPS:
+				if (isPrimaryMenu()) {
+					pieMenu.icons = new ArrayList<Apps.AppIcon>(
+							PieLauncherApp.apps.filterAppsBy(
+									getContext(), null));
+				} else {
+					return;
+				}
+				break;
+			case Preferences.CIRCLE_SWAPS_SECONDARY_MENU:
+				if (menuSecondary.isEmpty()) {
+					return;
+				}
+				swapMenus();
+				break;
+			case Preferences.CIRCLE_SWAPS_NO:
+			default:
+				return;
 		}
-		swapMenus();
 		lastCircleAt = SystemClock.uptimeMillis();
 		performHapticFeedbackIfAllowed(HapticFeedbackConstants.LONG_PRESS);
 	}
