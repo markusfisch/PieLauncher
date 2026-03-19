@@ -1828,7 +1828,6 @@ public class AppPieView extends View {
 			return false;
 		}
 
-
 		float circleSince = Math.round(
 				SystemClock.uptimeMillis() - lastCircleAt);
 		boolean animateInOut = prefs.animateInOut();
