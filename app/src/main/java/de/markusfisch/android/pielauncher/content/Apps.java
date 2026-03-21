@@ -699,8 +699,9 @@ public class Apps {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private LauncherApps getLauncherApps(Context context) {
+		Context appContext = context.getApplicationContext();
 		if (launcherApps == null) {
-			launcherApps = (LauncherApps) context.getSystemService(
+			launcherApps = (LauncherApps) appContext.getSystemService(
 					Context.LAUNCHER_APPS_SERVICE);
 		}
 		return launcherApps;
@@ -709,8 +710,9 @@ public class Apps {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private UserManager getUserManager(Context context) {
+		Context appContext = context.getApplicationContext();
 		if (userManager == null) {
-			userManager = (UserManager) context.getSystemService(
+			userManager = (UserManager) appContext.getSystemService(
 					Context.USER_SERVICE);
 		}
 		return userManager;

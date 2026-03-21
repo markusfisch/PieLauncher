@@ -199,6 +199,12 @@ public class HomeActivity extends Activity {
 		pausedAt = System.currentTimeMillis();
 	}
 
+	@Override
+	protected void onDestroy() {
+		PieLauncherApp.apps.setUpdateListener(null);
+		super.onDestroy();
+	}
+
 	private void initPieView() {
 		pieView.setWindow(getWindow());
 		pieView.setListListener(new AppPieView.ListListener() {
