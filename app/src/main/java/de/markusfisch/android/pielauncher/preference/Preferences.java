@@ -121,16 +121,17 @@ public class Preferences {
 	private int circleSwapsMenus = CIRCLE_SWAPS_NO;
 
 	public Preferences(Context context) {
-		preferences = PreferenceManager.getDefaultSharedPreferences(context);
-		systemSettings = new SystemSettings(context.getContentResolver());
+		Context appContext = context.getApplicationContext();
+		preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+		systemSettings = new SystemSettings(appContext.getContentResolver());
 
 		migrateSettings();
 
-		DisplayMetrics dm = context.getResources().getDisplayMetrics();
+		DisplayMetrics dm = appContext.getResources().getDisplayMetrics();
 		int defaultOrientation = dm.heightPixels > dm.widthPixels
 				? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 				: ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-		boolean highRefreshRate = isHighRefreshRate(context);
+		boolean highRefreshRate = isHighRefreshRate(appContext);
 
 		skipSetup = preferences.getBoolean(SKIP_SETUP, skipSetup);
 		primaryTwist = preferences.getFloat(TWIST, primaryTwist);
@@ -170,7 +171,7 @@ public class Preferences {
 		iconPack = preferences.getString(ICON_PACK, iconPack);
 		hapticFeedback = preferences.getInt(HAPTIC_FEEDBACK, hapticFeedback);
 		useLightDialogs = preferences.getBoolean(USE_LIGHT_DIALOGS,
-				isEReader(context));
+				isEReader(appContext));
 		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
 		showDrawerOnHome = preferences.getBoolean(SHOW_DRAWER_ON_HOME,
 				showDrawerOnHome);

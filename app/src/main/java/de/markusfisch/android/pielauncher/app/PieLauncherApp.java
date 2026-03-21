@@ -37,7 +37,7 @@ public class PieLauncherApp extends Application {
 	// the device (and encrypted storage with it).
 	public static Preferences getPrefs(Context context) {
 		if (prefs == null) {
-			prefs = new Preferences(context);
+			prefs = new Preferences(context.getApplicationContext());
 		}
 		return prefs;
 	}
