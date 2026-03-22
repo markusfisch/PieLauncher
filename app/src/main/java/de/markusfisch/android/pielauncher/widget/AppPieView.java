@@ -1169,9 +1169,7 @@ public class AppPieView extends View {
 			appIcon = pieMenu.icons.get(index);
 		}
 		boolean pieVisible = fadePie.isVisible();
-		if (pieVisible) {
-			fadeOutMode();
-		}
+		fadeOutMode();
 		boolean result = false;
 		boolean openList = false;
 		switch (prefs.openListWith()) {
@@ -2149,6 +2147,9 @@ public class AppPieView extends View {
 		}
 
 		private void fadeOut(long now) {
+			if (!isVisible()) {
+				return;
+			}
 			fadeInFrom = 0;
 			fadeInTo = 0;
 			fadeOutFrom = now;
