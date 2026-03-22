@@ -29,8 +29,8 @@
 	<string name="dead_zone_none">Ingen begränsning</string>
 	<string name="dead_zone_top">Högst upp</string>
 	<string name="dead_zone_bottom">Längst ner</string>
-	<string name="dead_zone_top_bottom">Högst upp och längst ner (standard)</string>
-	<string name="dead_zone_all">Runt alla skärmkanter</string>
+	<string name="dead_zone_top_bottom">Högst upp och längst ner</string>
+	<string name="dead_zone_all">Runt alla skärmkanter (standard)</string>
 	<string name="expand_panel_in_dead_zone">Öppna aviseringspanelen vid kanten</string>
 	<string name="expand_panel_in_dead_zone_yes">Ja (standard)</string>
 	<string name="expand_panel_in_dead_zone_no">Nej</string>

@@ -29,8 +29,8 @@
 	<string name="dead_zone_none">Sem restrições</string>
 	<string name="dead_zone_top">Na parte superior</string>
 	<string name="dead_zone_bottom">Na parte inferior</string>
-	<string name="dead_zone_top_bottom">Na parte superior e inferior (Padrão)</string>
-	<string name="dead_zone_all">Em todas as bordas</string>
+	<string name="dead_zone_top_bottom">Na parte superior e inferior</string>
+	<string name="dead_zone_all">Em todas as bordas (Padrão)</string>
 	<string name="expand_panel_in_dead_zone">Abrir painel de notificações na borda</string>
 	<string name="expand_panel_in_dead_zone_yes">Sim (Padrão)</string>
 	<string name="expand_panel_in_dead_zone_no">Não</string>

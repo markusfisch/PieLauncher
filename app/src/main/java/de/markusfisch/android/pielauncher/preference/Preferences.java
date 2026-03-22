@@ -98,7 +98,7 @@ public class Preferences {
 	private int darkenBackground = DARKEN_BACKGROUND_HEAVY;
 	private int backgroundBlurRadius = 0;
 	private boolean blurMenu = false;
-	private int deadZone = DEAD_ZONE_TOP_BOTTOM;
+	private int deadZone = DEAD_ZONE_ALL;
 	private boolean expandPanelInDeadZone = true;
 	private int immersiveMode = IMMERSIVE_MODE_DISABLED;
 	private boolean animateInOut = true;

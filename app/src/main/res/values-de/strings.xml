@@ -29,8 +29,8 @@
 	<string name="dead_zone_none">Keine Einschränkung</string>
 	<string name="dead_zone_top">Nur Oben</string>
 	<string name="dead_zone_bottom">Nur Unten</string>
-	<string name="dead_zone_top_bottom">Oben und unten (Standard)</string>
-	<string name="dead_zone_all">Um alle Bildschirmkanten</string>
+	<string name="dead_zone_top_bottom">Oben und unten</string>
+	<string name="dead_zone_all">Um alle Bildschirmkanten (Standard)</string>
 	<string name="expand_panel_in_dead_zone">Benachrichtigungsleiste am Rand öffnen</string>
 	<string name="expand_panel_in_dead_zone_yes">Ja (Standard)</string>
 	<string name="expand_panel_in_dead_zone_no">Nein</string>

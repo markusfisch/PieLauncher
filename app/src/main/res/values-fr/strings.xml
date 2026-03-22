@@ -29,8 +29,8 @@
 	<string name="dead_zone_none">Aucune restriction</string>
 	<string name="dead_zone_top">En haut de l\'écran</string>
 	<string name="dead_zone_bottom">En bas de l\'écran</string>
-	<string name="dead_zone_top_bottom">En haut et en bas de l\'écran (par défaut)</string>
-	<string name="dead_zone_all">Sur tous les bords de l\'écran</string>
+	<string name="dead_zone_top_bottom">En haut et en bas de l\'écran</string>
+	<string name="dead_zone_all">Sur tous les bords de l\'écran (par défaut)</string>
 	<string name="expand_panel_in_dead_zone">Ouvrir le panneau de notifications au bord</string>
 	<string name="expand_panel_in_dead_zone_yes">Oui (par défaut)</string>
 	<string name="expand_panel_in_dead_zone_no">Non</string>

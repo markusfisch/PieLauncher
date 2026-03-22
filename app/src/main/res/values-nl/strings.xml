@@ -29,8 +29,8 @@
 	<string name="dead_zone_none">Geen beperking</string>
 	<string name="dead_zone_top">Bovenaan</string>
 	<string name="dead_zone_bottom">Onderaan</string>
-	<string name="dead_zone_top_bottom">Boven- en onderaan (standaard)</string>
-	<string name="dead_zone_all">Rond alle schermranden</string>
+	<string name="dead_zone_top_bottom">Boven- en onderaan</string>
+	<string name="dead_zone_all">Rond alle schermranden (standaard)</string>
 	<string name="expand_panel_in_dead_zone">Meldingenpaneel openen aan de rand</string>
 	<string name="expand_panel_in_dead_zone_yes">Ja (standaard)</string>
 	<string name="expand_panel_in_dead_zone_no">Nee</string>
