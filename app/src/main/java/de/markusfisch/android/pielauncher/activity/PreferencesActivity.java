@@ -181,7 +181,10 @@ public class PreferencesActivity extends Activity {
 				R.string.expand_panel_in_dead_zone,
 				PreferencesActivity::getExpandPanelInDeadZoneOptions,
 				() -> prefs.expandPanelInDeadZone(),
-				(value) -> prefs.setExpandPanelInDeadZone(value));
+				(value) -> {
+					prefs.setDeadZone(Preferences.DEAD_ZONE_ALL);
+					prefs.setExpandPanelInDeadZone(value);
+				});
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			initPreference(R.id.immersive_mode,
 					R.string.immersive_mode,
