@@ -482,21 +482,21 @@ public class Preferences {
 		// Migrate old use drawer icon setting.
 		String useDrawerIcon = "use_drawer_icon";
 		if (preferences.getBoolean(useDrawerIcon, false)) {
-			put(useDrawerIcon, false);
+			put(useDrawerIcon, false).apply();
 			setOpenListWith(OPEN_LIST_WITH_ICON);
 		}
 
 		// Migrate old circle swaps setting.
 		String circleSwapsMenus = "circle_swaps_menus";
 		if (preferences.getBoolean(circleSwapsMenus, false)) {
-			put(circleSwapsMenus, false);
+			put(circleSwapsMenus, false).apply();
 			setCircleSwapsMenus(CIRCLE_SWAPS_SECONDARY_MENU);
 		}
 
 		// Migrate old boolean exclude pie setting.
 		String excludePie = "exclude_pie";
 		if (preferences.getBoolean(excludePie, false)) {
-			put(excludePie, false);
+			put(excludePie, false).apply();
 			setExcludePie(EXCLUDE_PIE_PRIMARY);
 		}
 	}
