@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.26.0
+* Add an option for circling to all apps
+* Add an option to expand panel with a swipe
+* Save radius, twist and icon scale per pie menu
+* Allow locked work profile app launches
+* Fix memory leaks
+
 ## 1.25.1
 * Add option to exclude icons from both menus
 * Always open primary menu for initial touch
