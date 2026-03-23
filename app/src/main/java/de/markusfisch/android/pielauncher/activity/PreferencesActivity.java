@@ -182,7 +182,9 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getExpandPanelInDeadZoneOptions,
 				() -> prefs.expandPanelInDeadZone(),
 				(value) -> {
-					prefs.setDeadZone(Preferences.DEAD_ZONE_ALL);
+					if (value) {
+						prefs.setDeadZone(Preferences.DEAD_ZONE_ALL);
+					}
 					prefs.setExpandPanelInDeadZone(value);
 				});
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
