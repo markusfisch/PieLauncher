@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.26.1
+* Fix persisting settings
+* Fix receiving package events
+
 ## 1.26.0
 * Add an option for circling to all apps
 * Add an option to expand panel with a swipe
