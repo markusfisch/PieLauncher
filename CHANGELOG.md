@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.26.2
+* Fix refreshing app drawer
+
 ## 1.26.1
 * Fix persisting settings
 * Fix receiving package events

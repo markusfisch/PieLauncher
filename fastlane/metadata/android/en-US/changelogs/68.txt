@@ -1,2 +1,6 @@
-* Fix persisting settings
+* Add an option for circling to all apps
+* Add an option to expand panel with a swipe
+* Save radius, twist and icon scale per pie menu
+* Allow locked work profile app launches
+* Fix memory leaks
 

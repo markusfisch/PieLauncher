@@ -1,0 +1,3 @@
+* Fix persisting settings
+* Fix receiving package events
+
