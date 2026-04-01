@@ -15,6 +15,7 @@ import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.receiver.ConfigurationChangedReceiver;
 import de.markusfisch.android.pielauncher.receiver.ManagedProfileEventReceiver;
+import de.markusfisch.android.pielauncher.receiver.PackageEventReceiver;
 
 public class PieLauncherApp extends Application {
 	public static final Apps apps = new Apps();
@@ -24,6 +25,8 @@ public class PieLauncherApp extends Application {
 			new ConfigurationChangedReceiver();
 	private static final ManagedProfileEventReceiver managedProfileEventReceiver =
 			new ManagedProfileEventReceiver();
+	private static final PackageEventReceiver packageEventReceiver =
+			new PackageEventReceiver();
 
 	private static Preferences prefs;
 
@@ -46,9 +49,20 @@ public class PieLauncherApp extends Application {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			registerLauncherAppsCallback();
 			registerManagedEventReceiver();
+		} else {
+			registerPackageEventReceiver();
 		}
 		// Note it's not required to unregister receivers because they
 		// need to be there as long as this application is running.
+	}
+
+	private void registerPackageEventReceiver() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+		filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+		filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+		filter.addDataScheme("package");
+		registerReceiver(packageEventReceiver, filter);
 	}
 
 	private void registerConfigurationChangedReceiver() {

@@ -312,18 +312,27 @@ public class Apps {
 		hiddenAppsStorage.restore(context);
 		HashSet<ComponentName> hideApps = hiddenAppsStorage.copyComponentNames();
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
-		if (packageNameRestriction != null) {
+		// If apps haven't been indexed yet, a partial index would restore
+		// the menu against a near-empty map, causing all stored entries to
+		// be silently dropped. Fall back to a full index in that case.
+		final String packageRestriction =
+				packageNameRestriction != null && !apps.isEmpty()
+						? packageNameRestriction
+						: null;
+		final UserHandle userRestriction = packageRestriction != null
+				? userHandleRestriction
+				: null;
+		if (packageRestriction != null) {
 			// Copy apps since we're indexing just one app.
 			newApps.putAll(apps);
-			removePackageFromApps(newApps, packageNameRestriction,
-					userHandleRestriction);
+			removePackageFromApps(newApps, packageRestriction, userRestriction);
 			// No need to call removePackageFromPieMenu() because the
 			// menu will be re-created by getPrimaryMenu() after indexing.
 		}
 		executor.execute(() -> {
 			indexApps(context,
-					packageNameRestriction,
-					userHandleRestriction,
+					packageRestriction,
+					userRestriction,
 					hideApps,
 					newApps);
 			List<AppIcon> newPrimary = getPrimaryMenu(context, newApps,
