@@ -1,0 +1,3 @@
+* Fix activity-not-enabled launch failures
+* Fix persisting dynamic defaults
+

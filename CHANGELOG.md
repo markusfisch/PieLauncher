@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.26.4
+* Fix activity-not-enabled launch failures
+* Fix persisting dynamic defaults
+
 ## 1.26.3
 * Fix receiving package events
 
