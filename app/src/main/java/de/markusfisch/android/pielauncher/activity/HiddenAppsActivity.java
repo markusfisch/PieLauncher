@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.HiddenAppsAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.Apps;
+import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.view.SystemBars;
@@ -127,11 +127,11 @@ public class HiddenAppsActivity extends Activity {
 							loadHiddenApps();
 							break;
 						case 1:
-							Apps.launchPackage(this,
+							AppLauncher.launchPackage(this,
 									componentName.getPackageName());
 							break;
 						case 2:
-							PieLauncherApp.apps.launchAppInfo(this,
+							AppLauncher.launchAppInfo(this,
 									componentName.getPackageName());
 							break;
 					}

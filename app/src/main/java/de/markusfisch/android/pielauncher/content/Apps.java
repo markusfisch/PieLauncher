@@ -8,31 +8,22 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
-import android.content.pm.LauncherUserInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.provider.CalendarContract;
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -74,8 +65,6 @@ public class Apps {
 
 	public static final String MENU_PRIMARY = "menu";
 	public static final String MENU_SECONDARY = "menu_alt";
-	public static final boolean HAS_LAUNCHER_APP =
-			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
 	public final ArrayList<AppIcon> menuPrimary = new ArrayList<>();
 	public final ArrayList<AppIcon> menuSecondary = new ArrayList<>();
@@ -84,46 +73,12 @@ public class Apps {
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final ExecutorService executor =
 			Executors.newSingleThreadExecutor();
-	private final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
-	private final Comparator<AppIcon> appLabelComparator = (left, right) -> {
-		// Fast enough to do it for every comparison.
-		// Otherwise, if defaultLocale was a permanent field outside
-		// this scope, we'd need to listen for configuration changes
-		// because the locale may change.
-		Locale defaultLocale = Locale.getDefault();
-		// compareToIgnoreCase() does not take locale into account.
-		int result = left.label.toLowerCase(defaultLocale).compareTo(
-				right.label.toLowerCase(defaultLocale));
-		return result == 0 && left.userHandle != null && right.userHandle != null
-				? left.userHandle.hashCode() - right.userHandle.hashCode()
-				: result;
-	};
-	private final Comparator<HammingHit> hammingComparator = (left, right) -> {
-		int d = left.distance - right.distance;
-		if (d != 0) {
-			return d;
-		}
-		return appLabelComparator.compare(left.appIcon, right.appIcon);
-	};
-
-	private UpdateListener updateListener;
-	private LauncherApps launcherApps;
-	private UserManager userManager;
+	public final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
+	public UpdateListener updateListener;
 	private String drawerPackageName;
 	private boolean indexing = false;
 
-	public static ComponentName getLaunchComponentForPackageName(
-			Context context, String packageName) {
-		Intent intent = getLaunchIntent(context, packageName);
-		return intent != null ? intent.getComponent() : null;
-	}
 
-	public static void launchPackage(Context context, String packageName) {
-		Intent intent = getLaunchIntent(context, packageName);
-		if (intent != null) {
-			context.startActivity(intent);
-		}
-	}
 
 	public boolean isDrawerIcon(AppIcon icon) {
 		return icon != null &&
@@ -133,34 +88,6 @@ public class Apps {
 	public boolean isDrawerPackageName(String packageName) {
 		return drawerPackageName != null &&
 				drawerPackageName.equals(packageName);
-	}
-
-	public void launchApp(Context context, AppIcon icon) {
-		if (HAS_LAUNCHER_APP) {
-			launchAppWithLauncherApp(context, icon);
-		} else {
-			launchPackage(context, icon.componentName.getPackageName());
-		}
-	}
-
-	public void launchAppInfo(Context context, AppIcon icon) {
-		if (HAS_LAUNCHER_APP) {
-			getLauncherApps(context).startAppDetailsActivity(
-					icon.componentName,
-					icon.userHandle,
-					icon.rect,
-					null);
-		} else {
-			launchAppInfo(context, icon.componentName.getPackageName());
-		}
-	}
-
-	public void launchAppInfo(Context context, String packageName) {
-		Intent intent = new Intent(
-				Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-		intent.addCategory(Intent.CATEGORY_DEFAULT);
-		intent.setData(Uri.parse("package:" + packageName));
-		context.startActivity(intent);
 	}
 
 	public void setUpdateListener(UpdateListener listener) {
@@ -177,92 +104,6 @@ public class Apps {
 		MenuStorage.store(context, MENU_PRIMARY, menuPrimary);
 		MenuStorage.store(context, MENU_SECONDARY, menuSecondary);
 		hiddenAppsStorage.store(context);
-	}
-
-	public List<AppIcon> filterAppsBy(Context context, String query) {
-		if (indexing) {
-			return null;
-		}
-
-		UserHandle privateUser = findPrivateProfileUser(context);
-		boolean privateOnly = false;
-
-		query = query == null ? "" : query.trim();
-		if (privateUser != null && query.startsWith(".")) {
-			query = query.substring(1);
-			if (isPrivateProfileLocked(context, privateUser)) {
-				if (unlockPrivateProfile(context)) {
-					return null;
-				}
-			} else {
-				privateOnly = true;
-			}
-		}
-
-		Locale defaultLocale = Locale.getDefault();
-		query = query.toLowerCase(defaultLocale);
-
-		Preferences prefs = PieLauncherApp.getPrefs(context);
-		int strategy = prefs.getSearchStrictness();
-		ArrayList<AppIcon> list = new ArrayList<>();
-		ArrayList<HammingHit> hamming = new ArrayList<>();
-
-		if (query.isEmpty()) {
-			for (AppIcon appIcon : apps.values()) {
-				if (inProfile(appIcon.userHandle, privateUser, privateOnly)) {
-					list.add(appIcon);
-				}
-			}
-			switch (prefs.excludePie()) {
-				case Preferences.EXCLUDE_PIE_ALL:
-					list.removeAll(new HashSet<>(menuSecondary));
-					// Fall through.
-				case Preferences.EXCLUDE_PIE_PRIMARY:
-					list.removeAll(new HashSet<>(menuPrimary));
-					break;
-			}
-		} else {
-			int item = prefs.getSearchParameter();
-			for (Map.Entry<LauncherItemKey, AppIcon> entry : apps.entrySet()) {
-				AppIcon appIcon = entry.getValue();
-				if (!inProfile(appIcon.userHandle, privateUser, privateOnly)) {
-					continue;
-				}
-				String subject = getSubject(item, appIcon, defaultLocale);
-				boolean add = false;
-				switch (strategy) {
-					// HAMMING includes CONTAINS for historical reasons.
-					case Preferences.SEARCH_STRICTNESS_HAMMING:
-					case Preferences.SEARCH_STRICTNESS_CONTAINS:
-						add = subject.contains(query);
-						break;
-					case Preferences.SEARCH_STRICTNESS_STARTS_WITH:
-						add = subject.startsWith(query);
-						break;
-				}
-				if (add) {
-					list.add(appIcon);
-				} else {
-					int min = Math.min(subject.length(), query.length());
-					int distance = hammingDistance(subject, query, min);
-					if (distance <= min >> 1) {
-						hamming.add(new HammingHit(distance, appIcon));
-					}
-				}
-			}
-		}
-
-		Collections.sort(list, appLabelComparator);
-		if (!hamming.isEmpty() && (list.isEmpty() ||
-				strategy == Preferences.SEARCH_STRICTNESS_HAMMING)) {
-			// Only append hamming matches as they're less likely
-			// as good as exact matches.
-			Collections.sort(hamming, hammingComparator);
-			for (HammingHit hit : hamming) {
-				list.add(hit.appIcon);
-			}
-		}
-		return list;
 	}
 
 	public void removePackageAsync(Context context, String packageName,
@@ -364,10 +205,10 @@ public class Apps {
 				PieLauncherApp.getPrefs(context).getIconPack());
 		PieLauncherApp.iconPack.restoreMappings(context);
 		hideApps.add(new ComponentName(context, HomeActivity.class));
-		if (HAS_LAUNCHER_APP) {
+		if (AppLauncher.HAS_LAUNCHER_APP) {
 			indexProfilesApps(
-					getLauncherApps(context),
-					getUserManager(context),
+					AppLauncher.getLauncherApps(context),
+					AppLauncher.getUserManager(context),
 					allApps,
 					packageNameRestriction,
 					userHandleRestriction,
@@ -376,7 +217,7 @@ public class Apps {
 				return;
 			}
 			// Fall through if no apps were loaded (can happen on some
-			// Android distributions where getActivityList() fails).
+			// Android distributions where AppLauncher.getActivityList() fails).
 		}
 		indexIntentsApps(pm, allApps, packageNameRestriction, hideApps);
 	}
@@ -422,7 +263,7 @@ public class Apps {
 		if (packageNameRestriction != null && userHandleRestriction != null) {
 			profiles = Collections.singletonList(userHandleRestriction);
 		} else {
-			profiles = getProfiles(um);
+			profiles = AppLauncher.getProfiles(um);
 		}
 		if (la == null || profiles.isEmpty()) {
 			return;
@@ -431,7 +272,7 @@ public class Apps {
 		// apps was cleared and all profiles will be indexed.
 		for (UserHandle profile : profiles) {
 			for (LauncherActivityInfo info :
-					getActivityList(la, packageNameRestriction, profile)) {
+					AppLauncher.getActivityList(la, packageNameRestriction, profile)) {
 				ComponentName componentName = info.getComponentName();
 				if (hideApps.contains(componentName)) {
 					continue;
@@ -491,7 +332,7 @@ public class Apps {
 			drawerPackageName = null;
 		}
 		if (menu.isEmpty()) {
-			createInitialMenu(menu, allApps,
+			MenuDefaults.createInitialMenu(menu, allApps,
 					context.getPackageManager());
 			MenuStorage.store(context, MENU_PRIMARY, menu);
 		}
@@ -504,7 +345,7 @@ public class Apps {
 				MENU_SECONDARY, allApps);
 		if (menu.isEmpty()) {
 			// Just add a few apps so users aren't confused by an empty menu.
-			createMenuForPopularApps(menu, allApps, 4);
+			MenuDefaults.createMenuForPopularApps(menu, allApps, 4);
 			MenuStorage.store(context, MENU_SECONDARY, menu);
 		}
 		return menu;
@@ -528,154 +369,8 @@ public class Apps {
 				null);
 	}
 
-	private static void createInitialMenu(
-			List<AppIcon> menu,
-			Map<LauncherItemKey, AppIcon> allApps,
-			PackageManager pm) {
-		Intent[] intents = new Intent[]{
-				new Intent(Intent.ACTION_VIEW, Uri.parse("http://")),
-				new Intent(Intent.ACTION_DIAL),
-				new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:")),
-				new Intent(Intent.ACTION_PICK,
-						MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
-				new Intent(Intent.ACTION_VIEW, Uri.parse("geo:47.6,-122.3")),
-				new Intent(Intent.ACTION_VIEW, Uri.parse("google.streetview:cbll=46.414382,10.013988"))
-						.setPackage("com.google.android.apps.maps"),
-				getCalendarIntent(),
-				new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")),
-				new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-		};
-		UserHandle userHandle = HAS_LAUNCHER_APP
-				? Process.myUserHandle()
-				: null;
-		ArrayList<LauncherItemKey> defaults = new ArrayList<>();
-		for (Intent intent : intents) {
-			LauncherItemKey defaultItemKey = resolveDefaultAppForIntent(
-					pm, intent, userHandle);
-			if (defaultItemKey == null || defaults.contains(defaultItemKey)) {
-				continue;
-			}
-			// Get launch intent because the class name from above
-			// doesn't necessarily match the launch intent and so
-			// doesn't match with the keys in apps.
-			Intent launchIntent = pm.getLaunchIntentForPackage(
-					defaultItemKey.componentName.getPackageName());
-			if (launchIntent == null) {
-				continue;
-			}
-			LauncherItemKey launcherItemKey = new LauncherItemKey(
-					launchIntent.getComponent(), userHandle);
-			AppIcon appIcon = allApps.get(launcherItemKey);
-			if (appIcon != null) {
-				defaults.add(launcherItemKey);
-				addMenuIcon(menu, appIcon);
-			}
-		}
-
-		fillMenu(menu, allApps, defaults, 8);
-	}
-
-	private static void createMenuForPopularApps(
-			List<AppIcon> menu,
-			Map<LauncherItemKey, AppIcon> allApps,
-			int numberOfIcons) {
-		String[] popularApps = new String[]{
-				"com.whatsapp",
-				"com.facebook.katana",
-				"com.facebook.orca",
-				"com.instagram.android",
-				"com.google.android.youtube",
-				"com.snapchat.android",
-				"com.twitter.android",
-				"com.netflix.mediaclient",
-				"com.spotify.music"};
-		ArrayList<LauncherItemKey> defaults = new ArrayList<>();
-		int max = Math.min(allApps.size(), numberOfIcons);
-		int i = menu.size();
-		for (String packageName : popularApps) {
-			if (i >= max) {
-				break;
-			}
-			Map.Entry<LauncherItemKey, AppIcon> entry = findByPackageName(
-					allApps, packageName);
-			if (entry != null) {
-				defaults.add(entry.getKey());
-				addMenuIcon(menu, entry.getValue());
-				++i;
-			}
-		}
-
-		fillMenu(menu, allApps, defaults, numberOfIcons);
-	}
-
-	private static Map.Entry<LauncherItemKey, AppIcon> findByPackageName(
-			Map<LauncherItemKey, AppIcon> allApps,
-			String packageName) {
-		for (Map.Entry<LauncherItemKey, AppIcon> entry : allApps.entrySet()) {
-			if (entry.getKey().componentName.getPackageName().equals(
-					packageName)) {
-				return entry;
-			}
-		}
-		return null;
-	}
-
-	private static void fillMenu(
-			List<AppIcon> menu,
-			Map<LauncherItemKey, AppIcon> allApps,
-			ArrayList<LauncherItemKey> defaults,
-			int numberOfIcons) {
-		int max = Math.min(allApps.size(), numberOfIcons);
-		int i = menu.size();
-		for (Map.Entry<LauncherItemKey, AppIcon> entry : allApps.entrySet()) {
-			if (i >= max) {
-				break;
-			}
-			if (!defaults.contains(entry.getKey())) {
-				addMenuIcon(menu, entry.getValue());
-				++i;
-			}
-		}
-	}
-
-	private static void addMenuIcon(List<AppIcon> menu, AppIcon appIcon) {
-		if (appIcon != null) {
-			menu.add(appIcon);
-		}
-	}
-
-	private static LauncherItemKey resolveDefaultAppForIntent(
-			PackageManager pm,
-			Intent intent,
-			UserHandle userHandle) {
-		ResolveInfo resolveInfo = pm.resolveActivity(intent,
-				PackageManager.MATCH_DEFAULT_ONLY);
-		if (resolveInfo == null) {
-			return null;
-		}
-		return new LauncherItemKey(
-				getComponentName(resolveInfo.activityInfo),
-				userHandle);
-	}
-
-	private static ComponentName getComponentName(ActivityInfo info) {
+	public static ComponentName getComponentName(ActivityInfo info) {
 		return new ComponentName(info.packageName, info.name);
-	}
-
-	private static Intent getCalendarIntent() {
-		Intent intent = new Intent(Intent.ACTION_EDIT)
-				.setType("vnd.android.cursor.item/event");
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			return intent
-					.putExtra("title", "dummy")
-					.putExtra("beginTime", 0)
-					.putExtra("endTime", 0);
-		} else {
-			return intent
-					.putExtra(CalendarContract.Events.TITLE, "dummy")
-					.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0)
-					.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0);
-		}
 	}
 
 	private static void removePackageFromApps(
@@ -702,234 +397,6 @@ public class Apps {
 					(userHandle == null || userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
-		}
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private LauncherApps getLauncherApps(Context context) {
-		Context appContext = context.getApplicationContext();
-		if (launcherApps == null) {
-			launcherApps = (LauncherApps) appContext.getSystemService(
-					Context.LAUNCHER_APPS_SERVICE);
-		}
-		return launcherApps;
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private UserManager getUserManager(Context context) {
-		Context appContext = context.getApplicationContext();
-		if (userManager == null) {
-			userManager = (UserManager) appContext.getSystemService(
-					Context.USER_SERVICE);
-		}
-		return userManager;
-	}
-
-	private static Intent getLaunchIntent(Context context,
-			String packageName) {
-		PackageManager pm = context.getPackageManager();
-		return pm != null ? pm.getLaunchIntentForPackage(packageName) : null;
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.N)
-	private void launchAppWithLauncherApp(Context context, AppIcon icon) {
-		LauncherApps la = getLauncherApps(context);
-		UserManager um = getUserManager(context);
-		if (icon.componentName == null || icon.userHandle == null) {
-			return;
-		}
-		try {
-			if (!um.isUserUnlocked(icon.userHandle) &&
-					isPrivateProfile(la, icon.userHandle)) {
-				toast(context, R.string.user_profile_locked);
-				return;
-			}
-			la.startMainActivity(
-					icon.componentName,
-					icon.userHandle,
-					icon.rect,
-					null);
-		} catch (Exception e) {
-			// The stored component may have changed (e.g. app rotated its
-			// activity alias). Try the first launcher activity we can find.
-			ComponentName componentName = findEnabledActivity(
-					la,
-					icon.componentName.getPackageName(),
-					icon.userHandle);
-			if (componentName == null ||
-					componentName.equals(icon.componentName)) {
-				toast(context, R.string.activity_not_enabled);
-				return;
-			}
-			icon.componentName = componentName;
-			try {
-				la.startMainActivity(
-						icon.componentName,
-						icon.userHandle,
-						icon.rect,
-						null);
-			} catch (Exception e2) {
-				toast(context, R.string.activity_not_enabled);
-			}
-		}
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.N)
-	private static ComponentName findEnabledActivity(
-			LauncherApps la,
-			String packageName,
-			UserHandle userHandle) {
-		// getActivityList() already returns only enabled launcher activities,
-		// so an additional isActivityEnabled() check is redundant — and on
-		// some ROMs it returns false negatives that skip every result.
-		List<LauncherActivityInfo> list =
-				getActivityList(la, packageName, userHandle);
-		return list.isEmpty() ? null : list.get(0).getComponentName();
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static List<LauncherActivityInfo> getActivityList(
-			LauncherApps la, String packageName, UserHandle userHandle) {
-		try {
-			return la.getActivityList(packageName, userHandle);
-		} catch (Exception e) {
-			// Throws on some Android versions for private profiles.
-			return new ArrayList<>();
-		}
-	}
-
-	private <T> void toast(Context context, T message) {
-		String m;
-		if (message instanceof Integer) {
-			m = context.getString((Integer) message);
-		} else if (message instanceof String) {
-			m = (String) message;
-		} else {
-			return;
-		}
-		Toast.makeText(context, m, Toast.LENGTH_SHORT).show();
-	}
-
-	private static String getSubject(
-			int item,
-			AppIcon appIcon,
-			Locale defaultLocale) {
-		if (item == Preferences.SEARCH_PARAMETER_PACKAGE_NAME) {
-			return appIcon.componentName.getPackageName()
-					.toLowerCase(defaultLocale);
-		}
-		return appIcon.label.toLowerCase(defaultLocale);
-	}
-
-	private UserHandle findPrivateProfileUser(Context context) {
-		if (!HAS_LAUNCHER_APP) {
-			return null;
-		}
-		LauncherApps la = getLauncherApps(context);
-		UserManager um = getUserManager(context);
-		for (UserHandle profile : getProfiles(um)) {
-			if (isPrivateProfile(la, profile)) {
-				return profile;
-			}
-		}
-		return null;
-	}
-
-	private static List<UserHandle> getProfiles(UserManager um) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-				um != null) {
-			List<UserHandle> profiles = um.getUserProfiles();
-			if (profiles != null) {
-				return profiles;
-			}
-		}
-		return new ArrayList<>();
-	}
-
-	private static boolean isPrivateProfile(
-			LauncherApps la,
-			UserHandle userHandle) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
-				la == null || userHandle == null) {
-			return false;
-		}
-		try {
-			LauncherUserInfo info = la.getLauncherUserInfo(userHandle);
-			return info != null &&
-					"android.os.usertype.profile.PRIVATE".equals(info.getUserType());
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	private boolean isPrivateProfileLocked(
-			Context context,
-			UserHandle userHandle) {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-				userHandle != null &&
-				getUserManager(context).isQuietModeEnabled(userHandle);
-	}
-
-	private boolean unlockPrivateProfile(Context context) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-			return false;
-		}
-		UserHandle privateUser = findPrivateProfileUser(context);
-		if (privateUser == null) {
-			toast(context, R.string.private_space_not_available);
-			return false;
-		}
-		if (!isPrivateProfileLocked(context, privateUser)) {
-			return false;
-		}
-		UserManager um = getUserManager(context);
-		if (um == null) {
-			toast(context, R.string.private_space_unlock_failed);
-			return false;
-		}
-		toast(context, R.string.private_space_unlocking);
-		try {
-			um.requestQuietModeEnabled(false, privateUser);
-			if (updateListener != null) {
-				updateListener.onShowAllAppsOnResume();
-			}
-			return true;
-		} catch (SecurityException e) {
-			toast(context, R.string.private_space_unlock_failed);
-		}
-		return false;
-	}
-
-	private static boolean inProfile(
-			UserHandle appProfile,
-			UserHandle privateUser,
-			boolean privateOnly) {
-		return privateUser == null ||
-				privateUser.equals(appProfile) == privateOnly;
-	}
-
-	private static int hammingDistance(String a, String b, int l) {
-		int count = 0;
-		for (int i = 0; i < l; ++i) {
-			if (a.charAt(i) != b.charAt(i)) {
-				++count;
-			}
-		}
-		return count;
-	}
-
-	private static class HammingHit {
-		public final int distance;
-		public final AppIcon appIcon;
-
-		HammingHit(int distance, AppIcon appIcon) {
-			this.distance = distance;
-			this.appIcon = appIcon;
 		}
 	}
 }

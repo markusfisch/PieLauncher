@@ -13,7 +13,7 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.markusfisch.android.pielauncher.content.Apps;
+import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 
 public class IconMappingsStorage {
@@ -48,7 +48,7 @@ public class IconMappingsStorage {
 						ComponentName.unflattenFromString(componentPart);
 				if (componentName == null) {
 					migrated = true;
-					componentName = Apps.getLaunchComponentForPackageName(
+					componentName = AppLauncher.getLaunchComponentForPackageName(
 							context, componentPart);
 				}
 				if (componentName != null) {

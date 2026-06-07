@@ -12,7 +12,7 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import de.markusfisch.android.pielauncher.content.Apps;
+import de.markusfisch.android.pielauncher.content.AppLauncher;
 
 public class HiddenAppsStorage {
 	private static final String HIDDEN_APPS_FILE = "hidden";
@@ -54,7 +54,7 @@ public class HiddenAppsStorage {
 						ComponentName.unflattenFromString(line);
 				if (componentName == null) {
 					migrated = true;
-					componentName = Apps.getLaunchComponentForPackageName(
+					componentName = AppLauncher.getLaunchComponentForPackageName(
 							context, line);
 				}
 				if (componentName != null) {
