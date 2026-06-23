@@ -1493,9 +1493,12 @@ public class AppPieView extends View {
 		switch (prefs.circleSwapsMenus()) {
 			case Preferences.CIRCLE_SWAPS_ALL_APPS:
 				if (isPrimaryMenu()) {
-					pieMenu.icons = new ArrayList<Apps.AppIcon>(
-							AppSearch.filterAppsBy(PieLauncherApp.apps,
-									getContext(), null));
+					List<Apps.AppIcon> all = AppSearch.filterAppsBy(
+							PieLauncherApp.apps, getContext(), null);
+					if (all == null) {
+						return;
+					}
+					pieMenu.icons = new ArrayList<Apps.AppIcon>(all);
 				} else {
 					return;
 				}
