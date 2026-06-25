@@ -1,0 +1,2 @@
+* Fix broken recent-apps overview for some Android versions
+

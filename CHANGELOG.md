@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.26.5
+* Fix broken recent-apps overview for some Android versions
+
 ## 1.26.4
 * Fix activity-not-enabled launch failures
 * Fix persisting dynamic defaults
