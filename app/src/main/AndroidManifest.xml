@@ -30,7 +30,6 @@
 			android:clearTaskOnLaunch="true"
 			android:stateNotNeeded="true"
 			android:taskAffinity=""
-			android:excludeFromRecents="true"
 			android:exported="true"
 			android:configChanges="orientation">
 			<intent-filter>
