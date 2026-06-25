@@ -30,7 +30,7 @@ public class LauncherItemKey {
 	public static LauncherItemKey unflattenFromString(
 			Context context,
 			String s) {
-		return Apps.HAS_LAUNCHER_APP
+		return AppLauncher.HAS_LAUNCHER_APP
 				? unflattenFromStringWithUserHandle(context, s)
 				: new LauncherItemKey(
 				ComponentName.unflattenFromString(s), null);
@@ -40,7 +40,7 @@ public class LauncherItemKey {
 			ComponentName componentName,
 			UserHandle userHandle) {
 		this.componentName = componentName;
-		this.userHandle = Apps.HAS_LAUNCHER_APP
+		this.userHandle = AppLauncher.HAS_LAUNCHER_APP
 				? getUserHandle(userHandle)
 				: null;
 		this.cachedHashCode = Arrays.hashCode(

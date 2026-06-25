@@ -39,6 +39,8 @@ import de.markusfisch.android.pielauncher.activity.PickIconActivity;
 import de.markusfisch.android.pielauncher.activity.PreferencesActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.Apps;
+import de.markusfisch.android.pielauncher.content.AppSearch;
+import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -341,7 +343,7 @@ public class AppPieView extends View {
 
 	public void filterAppList(String query, boolean resetScroll) {
 		List<Apps.AppIcon> newAppList =
-				PieLauncherApp.apps.filterAppsBy(getContext(), query);
+				AppSearch.filterAppsBy(PieLauncherApp.apps,getContext(), query);
 		if (newAppList != null) {
 			appList = newAppList;
 		}
@@ -1088,7 +1090,7 @@ public class AppPieView extends View {
 							postDelayed(this::releaseIcon, 100);
 							break;
 						case 2:
-							PieLauncherApp.apps.launchAppInfo(context,
+							AppLauncher.launchAppInfo(context,
 									(Apps.AppIcon) icon);
 							break;
 						case 3:
@@ -1314,7 +1316,7 @@ public class AppPieView extends View {
 					// that can be used to uninstall an app which would
 					// trigger indexing what would reset any changes.
 					storeMenu();
-					PieLauncherApp.apps.launchAppInfo(context,
+					AppLauncher.launchAppInfo(context,
 							(Apps.AppIcon) grabbedIcon);
 				}
 			}
@@ -1325,7 +1327,7 @@ public class AppPieView extends View {
 
 	private void launchApp(Context context, Apps.AppIcon appIcon) {
 		launchingIcon = appIcon;
-		PieLauncherApp.apps.launchApp(context, appIcon);
+		AppLauncher.launchApp(context, appIcon);
 	}
 
 	private void removeIconFromPie(Apps.AppIcon icon, boolean isDrawerIcon) {
@@ -1492,7 +1494,7 @@ public class AppPieView extends View {
 			case Preferences.CIRCLE_SWAPS_ALL_APPS:
 				if (isPrimaryMenu()) {
 					pieMenu.icons = new ArrayList<Apps.AppIcon>(
-							PieLauncherApp.apps.filterAppsBy(
+							AppSearch.filterAppsBy(PieLauncherApp.apps,
 									getContext(), null));
 				} else {
 					return;
