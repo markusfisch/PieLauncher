@@ -10,6 +10,7 @@ import android.content.pm.LauncherApps;
 import android.os.Build;
 import android.os.UserHandle;
 
+import de.markusfisch.android.pielauncher.content.AppCacheDatabase;
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.preference.Preferences;
@@ -29,6 +30,7 @@ public class PieLauncherApp extends Application {
 			new PackageEventReceiver();
 
 	private static Preferences prefs;
+	private static AppCacheDatabase appCache;
 
 	// Necessary because PreferenceManager.getDefaultSharedPreferences()
 	// requires a context after encrypted storage has been unlocked.
@@ -40,6 +42,13 @@ public class PieLauncherApp extends Application {
 			prefs = new Preferences(context.getApplicationContext());
 		}
 		return prefs;
+	}
+
+	public static synchronized AppCacheDatabase getAppCache(Context context) {
+		if (appCache == null) {
+			appCache = new AppCacheDatabase(context.getApplicationContext());
+		}
+		return appCache;
 	}
 
 	@Override

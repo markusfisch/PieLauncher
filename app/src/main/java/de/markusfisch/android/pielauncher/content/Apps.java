@@ -10,6 +10,7 @@ import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -61,6 +62,16 @@ public class Apps {
 			this.label = label;
 			this.userHandle = userHandle;
 		}
+
+		AppIcon(ComponentName componentName, String label, Bitmap icon,
+				UserHandle userHandle) {
+			super(icon);
+			this.componentName = componentName;
+			this.label = label;
+			this.userHandle = userHandle;
+		}
+
+		byte[] iconBytes;
 	}
 
 	public static final String MENU_PRIMARY = "menu";
@@ -117,6 +128,8 @@ public class Apps {
 		Context appContext = context.getApplicationContext();
 		executor.execute(() -> {
 			hiddenAppsStorage.removeAndStore(appContext, packageName);
+			PieLauncherApp.getAppCache(appContext).removePackage(
+					appContext, packageName, userHandle);
 			handler.post(() -> {
 				removePackageFromApps(apps, packageName, userHandle);
 				removePackageFromPieMenu(menuPrimary, packageName,
@@ -139,7 +152,7 @@ public class Apps {
 	}
 
 	public boolean isIndexing() {
-		return apps.isEmpty() && indexing;
+		return indexing;
 	}
 
 	public boolean indexAppsAsync(Context context) {
@@ -155,7 +168,10 @@ public class Apps {
 		indexing = true;
 		hiddenAppsStorage.restore(context);
 		HashSet<ComponentName> hideApps = hiddenAppsStorage.copyComponentNames();
+		hideApps.add(new ComponentName(context, HomeActivity.class));
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
+		final boolean needsCacheRestore =
+				apps.isEmpty() && packageNameRestriction == null;
 		// If apps haven't been indexed yet, a partial index would restore
 		// the menu against a near-empty map, causing all stored entries to
 		// be silently dropped. Fall back to a full index in that case.
@@ -174,27 +190,89 @@ public class Apps {
 			// menu will be re-created by getPrimaryMenu() after indexing.
 		}
 		executor.execute(() -> {
+			if (needsCacheRestore) {
+				restoreAppsFromCache(context, hideApps);
+			}
 			indexApps(context,
 					packageRestriction,
 					userRestriction,
 					hideApps,
 					newApps);
-			List<AppIcon> newPrimary = getPrimaryMenu(context, newApps,
-					PieLauncherApp.getPrefs(context).openListWith() ==
-							Preferences.OPEN_LIST_WITH_ICON);
-			List<AppIcon> newSecondary = getSecondaryMenu(context, newApps);
-			handler.post(() -> {
-				apps.clear();
-				apps.putAll(newApps);
-				menuPrimary.clear();
-				menuPrimary.addAll(newPrimary);
-				menuSecondary.clear();
-				menuSecondary.addAll(newSecondary);
-				indexing = false;
-				propagateUpdate();
-			});
+			Menus menus = compileMenus(context, newApps);
+			AppCacheDatabase cache = PieLauncherApp.getAppCache(context);
+			if (packageRestriction == null) {
+				cache.replaceAllApps(context, newApps);
+			} else {
+				cache.replacePackage(context,
+						packageRestriction,
+						userRestriction,
+						newApps);
+			}
+			handler.post(() -> updateApps(newApps, menus, true));
 		});
 		return true;
+	}
+
+	private void restoreAppsFromCache(Context context,
+			HashSet<ComponentName> hideApps) {
+		Map<LauncherItemKey, AppIcon> cachedApps = new HashMap<>();
+		PieLauncherApp.getAppCache(context).restoreApps(context, cachedApps);
+		if (cachedApps.isEmpty()) {
+			return;
+		}
+		removeApps(cachedApps, hideApps);
+		if (cachedApps.isEmpty()) {
+			return;
+		}
+		Menus menus = compileMenus(context, cachedApps);
+		handler.post(() -> updateApps(cachedApps, menus, false));
+	}
+
+	private Menus compileMenus(Context context,
+			Map<LauncherItemKey, AppIcon> newApps) {
+		return new Menus(
+				getPrimaryMenu(context, newApps,
+						PieLauncherApp.getPrefs(context).openListWith() ==
+								Preferences.OPEN_LIST_WITH_ICON),
+				getSecondaryMenu(context, newApps));
+	}
+
+	private void updateApps(
+			Map<LauncherItemKey, AppIcon> newApps,
+			Menus menus,
+			boolean done) {
+		apps.clear();
+		apps.putAll(newApps);
+		menuPrimary.clear();
+		menuPrimary.addAll(menus.primary);
+		menuSecondary.clear();
+		menuSecondary.addAll(menus.secondary);
+		if (done) {
+			indexing = false;
+		}
+		propagateUpdate();
+	}
+
+	private static class Menus {
+		final List<AppIcon> primary;
+		final List<AppIcon> secondary;
+
+		Menus(List<AppIcon> primary, List<AppIcon> secondary) {
+			this.primary = primary;
+			this.secondary = secondary;
+		}
+	}
+
+	private static void removeApps(
+			Map<LauncherItemKey, AppIcon> allApps,
+			Set<ComponentName> componentNames) {
+		Iterator<Map.Entry<LauncherItemKey, AppIcon>> it =
+				allApps.entrySet().iterator();
+		while (it.hasNext()) {
+			if (componentNames.contains(it.next().getValue().componentName)) {
+				it.remove();
+			}
+		}
 	}
 
 	private void indexApps(
@@ -207,7 +285,6 @@ public class Apps {
 		PieLauncherApp.iconPack.selectPack(pm,
 				PieLauncherApp.getPrefs(context).getIconPack());
 		PieLauncherApp.iconPack.restoreMappings(context);
-		hideApps.add(new ComponentName(context, HomeActivity.class));
 		if (AppLauncher.HAS_LAUNCHER_APP) {
 			indexProfilesApps(
 					AppLauncher.getLauncherApps(context),
