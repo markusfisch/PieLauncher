@@ -128,7 +128,7 @@ public class Apps {
 		Context appContext = context.getApplicationContext();
 		executor.execute(() -> {
 			hiddenAppsStorage.removeAndStore(appContext, packageName);
-			PieLauncherApp.getAppCache(appContext).removePackage(
+			PieLauncherApp.getDatabase(appContext).removePackage(
 					appContext, packageName, userHandle);
 			handler.post(() -> {
 				removePackageFromApps(apps, packageName, userHandle);
@@ -199,11 +199,11 @@ public class Apps {
 					hideApps,
 					newApps);
 			Menus menus = compileMenus(context, newApps);
-			AppCacheDatabase cache = PieLauncherApp.getAppCache(context);
+			Database database = PieLauncherApp.getDatabase(context);
 			if (packageRestriction == null) {
-				cache.replaceAllApps(context, newApps);
+				database.replaceAllApps(context, newApps);
 			} else {
-				cache.replacePackage(context,
+				database.replacePackage(context,
 						packageRestriction,
 						userRestriction,
 						newApps);
@@ -216,7 +216,7 @@ public class Apps {
 	private void restoreAppsFromCache(Context context,
 			HashSet<ComponentName> hideApps) {
 		Map<LauncherItemKey, AppIcon> cachedApps = new HashMap<>();
-		PieLauncherApp.getAppCache(context).restoreApps(context, cachedApps);
+		PieLauncherApp.getDatabase(context).restoreApps(context, cachedApps);
 		if (cachedApps.isEmpty()) {
 			return;
 		}

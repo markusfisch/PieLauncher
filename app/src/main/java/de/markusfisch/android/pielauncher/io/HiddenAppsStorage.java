@@ -3,21 +3,13 @@ package de.markusfisch.android.pielauncher.io;
 import android.content.ComponentName;
 import android.content.Context;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import de.markusfisch.android.pielauncher.content.AppLauncher;
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 
 public class HiddenAppsStorage {
 	public final HashSet<ComponentName> componentNames = new HashSet<>();
-
-	private static final String HIDDEN_APPS_FILE = "hidden";
 
 	private boolean restored = false;
 
@@ -44,48 +36,12 @@ public class HiddenAppsStorage {
 			return;
 		}
 		componentNames.clear();
-		try {
-			boolean migrated = false;
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					context.openFileInput(HIDDEN_APPS_FILE)));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				ComponentName componentName =
-						ComponentName.unflattenFromString(line);
-				if (componentName == null) {
-					migrated = true;
-					componentName = AppLauncher.getLaunchComponentForPackageName(
-							context, line);
-				}
-				if (componentName != null) {
-					componentNames.add(componentName);
-				}
-			}
-			reader.close();
-			if (migrated) {
-				store(context);
-			}
-		} catch (FileNotFoundException e) {
-			// Return an empty array.
-		} catch (IOException e) {
-			// Return an empty array.
-		}
+		PieLauncherApp.getDatabase(context).restoreHiddenApps(componentNames);
 		restored = true;
 	}
 
 	public synchronized void store(Context context) {
-		try {
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					context.openFileOutput(HIDDEN_APPS_FILE,
-							Context.MODE_PRIVATE)));
-			for (ComponentName componentName : componentNames) {
-				writer.write(componentName.flattenToString());
-				writer.newLine();
-			}
-			writer.close();
-		} catch (IOException e) {
-			// Ignore.
-		}
+		PieLauncherApp.getDatabase(context).storeHiddenApps(componentNames);
 	}
 
 	public synchronized HashSet<ComponentName> copyComponentNames() {
