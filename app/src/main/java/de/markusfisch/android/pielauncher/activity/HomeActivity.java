@@ -17,6 +17,8 @@ import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
@@ -39,12 +41,15 @@ public class HomeActivity extends Activity {
 	private boolean showAllAppsOnResume = false;
 	private int immersiveMode = Preferences.IMMERSIVE_MODE_DISABLED;
 	private long pausedAt = 0L;
+	private OnBackInvokedCallback onBackInvokedCallback = null;
 
-	// I'm not including a support library to catch back presses.
-	// If this is no longer working on new Androids, so be it.
 	@SuppressLint("GestureBackNavigation")
 	@Override
 	public void onBackPressed() {
+		handleBack();
+	}
+
+	private void handleBack() {
 		if (pieView.inEditMode()) {
 			pieView.endEditMode();
 			showAllApps();
@@ -81,6 +86,7 @@ public class HomeActivity extends Activity {
 				ViewConfiguration.get(this).getScaledMinimumFlingVelocity()));
 
 		setContentView(R.layout.activity_home);
+		registerBackCallback();
 		if (!PreferencesActivity.isReady(this)) {
 			PreferencesActivity.startWelcome(this);
 		}
@@ -201,6 +207,7 @@ public class HomeActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
+		unregisterBackCallback();
 		PieLauncherApp.apps.setUpdateListener(null);
 		super.onDestroy();
 	}
@@ -417,6 +424,29 @@ public class HomeActivity extends Activity {
 
 	private void updateAppList(boolean resetScroll) {
 		pieView.filterAppList(searchInput.getText().toString(), resetScroll);
+	}
+
+	private void registerBackCallback() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+				onBackInvokedCallback != null) {
+			return;
+		}
+
+		onBackInvokedCallback = this::handleBack;
+		getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+				OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+				onBackInvokedCallback);
+	}
+
+	private void unregisterBackCallback() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+				onBackInvokedCallback == null) {
+			return;
+		}
+
+		getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(
+				onBackInvokedCallback);
+		onBackInvokedCallback = null;
 	}
 
 	private class FlingListener extends GestureDetector.SimpleOnGestureListener {

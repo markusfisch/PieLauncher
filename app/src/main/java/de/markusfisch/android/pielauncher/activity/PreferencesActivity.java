@@ -13,6 +13,8 @@ import android.text.Spanned;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,6 +40,8 @@ public class PreferencesActivity extends Activity {
 	private final ExecutorService executor =
 			Executors.newSingleThreadExecutor();
 
+	private OnBackInvokedCallback onBackInvokedCallback = null;
+
 	private Preferences prefs;
 	private ToolbarBackground toolbarBackground;
 	private View disableBatteryOptimizations;
@@ -61,6 +65,7 @@ public class PreferencesActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle state) {
 		super.onCreate(state);
+		registerBackCallback();
 		setContentView(R.layout.activity_preferences);
 
 		prefs = PieLauncherApp.getPrefs(this);
@@ -137,7 +142,31 @@ public class PreferencesActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		unregisterBackCallback();
 		executor.shutdownNow();
+	}
+
+	private void registerBackCallback() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+				onBackInvokedCallback != null) {
+			return;
+		}
+
+		onBackInvokedCallback = this::finish;
+		getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+				OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+				onBackInvokedCallback);
+	}
+
+	private void unregisterBackCallback() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+				onBackInvokedCallback == null) {
+			return;
+		}
+
+		getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(
+				onBackInvokedCallback);
+		onBackInvokedCallback = null;
 	}
 
 	private void initPreferences() {
