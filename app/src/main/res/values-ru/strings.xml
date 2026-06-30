@@ -88,13 +88,11 @@
 	<string name="exclude_pie_all">Из обоих меню</string>
 	<string name="exclude_pie_no">Нет (Стандартно)</string>
 	<string name="split_pie_menu">Отдельные круговые меню сверху/снизу</string>
-	<string name="split_pie_yes">Да</string>
-	<string name="split_pie_no">Нет (Стандартно)</string>
 	<string name="circle_swaps_menus">Обведение по кругу переключает меню</string>
-	<string name="circle_swaps_menus_yes">Вторичное меню</string>
-	<string name="circle_swaps_menus_all_apps">Все приложения</string>
-	<string name="circle_swaps_menus_frecency">Первые 6 по частоте и недавности</string>
-	<string name="circle_swaps_menus_no">Нет (Стандартно)</string>
+	<string name="alternate_menu_none">Нет (Стандартно)</string>
+	<string name="alternate_menu_secondary">Вторичное меню</string>
+	<string name="alternate_menu_all_apps">Все приложения</string>
+	<string name="alternate_menu_last_used">Недавно использованные приложения</string>
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>
 	<string name="icon_press_longer">Добавляет приложение в меню (С задержкой)</string>

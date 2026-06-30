@@ -92,13 +92,11 @@
 	<string name="exclude_pie_all">From both menus</string>
 	<string name="exclude_pie_no">No (Default)</string>
 	<string name="split_pie_menu">Separate top/bottom pie menus</string>
-	<string name="split_pie_yes">Yes</string>
-	<string name="split_pie_no">No (Default)</string>
 	<string name="circle_swaps_menus">Circling swaps menus</string>
-	<string name="circle_swaps_menus_yes">Secondary menu</string>
-	<string name="circle_swaps_menus_all_apps">All apps</string>
-	<string name="circle_swaps_menus_frecency">Top 6 by frecency</string>
-	<string name="circle_swaps_menus_no">No (Default)</string>
+	<string name="alternate_menu_none">No (Default)</string>
+	<string name="alternate_menu_secondary">Secondary menu</string>
+	<string name="alternate_menu_all_apps">All apps</string>
+	<string name="alternate_menu_last_used">Last used apps</string>
 	<string name="icon_press">Long press</string>
 	<string name="icon_press_default">Adds app to the pie menu (Default)</string>
 	<string name="icon_press_longer">Requires prolonged pressing</string>

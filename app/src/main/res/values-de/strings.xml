@@ -88,13 +88,11 @@
 	<string name="exclude_pie_all">Aus beiden Menüs</string>
 	<string name="exclude_pie_no">Nein (Standard)</string>
 	<string name="split_pie_menu">Ein Menu für oben und unten</string>
-	<string name="split_pie_yes">Ja</string>
-	<string name="split_pie_no">Nein (Standard)</string>
 	<string name="circle_swaps_menus">Umkreisen wechselt Menüs</string>
-	<string name="circle_swaps_menus_yes">Sekundäres Menü</string>
-	<string name="circle_swaps_menus_all_apps">Alle Apps</string>
-	<string name="circle_swaps_menus_frecency">Top 6 nach Nutzung</string>
-	<string name="circle_swaps_menus_no">Nein (Standard)</string>
+	<string name="alternate_menu_none">Nein (Standard)</string>
+	<string name="alternate_menu_secondary">Sekundäres Menü</string>
+	<string name="alternate_menu_all_apps">Alle Apps</string>
+	<string name="alternate_menu_last_used">Zuletzt verwendete Apps</string>
 	<string name="icon_press">Langes Drücken</string>
 	<string name="icon_press_default">Fügt App zum Menu hinzu (Standard)</string>
 	<string name="icon_press_longer">Erfordert längeres Drücken</string>

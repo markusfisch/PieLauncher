@@ -51,10 +51,10 @@ public class Preferences {
 	public static final int HAPTIC_FEEDBACK_FOLLOW_SYSTEM = 0;
 	public static final int HAPTIC_FEEDBACK_DISABLE_LAUNCH = 1;
 	public static final int HAPTIC_FEEDBACK_DISABLE_ALL = 2;
-	public static final int CIRCLE_SWAPS_NO = 0;
-	public static final int CIRCLE_SWAPS_SECONDARY_MENU = 1;
-	public static final int CIRCLE_SWAPS_ALL_APPS = 2;
-	public static final int CIRCLE_SWAPS_FRECENCY = 3;
+	public static final int ALTERNATE_MENU_NONE = 0;
+	public static final int ALTERNATE_MENU_SECONDARY = 1;
+	public static final int ALTERNATE_MENU_ALL_APPS = 2;
+	public static final int ALTERNATE_MENU_LAST_USED = 3;
 	public static final int EXCLUDE_PIE_NONE = 0;
 	public static final int EXCLUDE_PIE_PRIMARY = 1;
 	public static final int EXCLUDE_PIE_ALL = 2;
@@ -90,7 +90,7 @@ public class Preferences {
 	private static final String USE_LIGHT_DIALOGS = "use_light_dialogs";
 	private static final String FORCE_RELAUNCH = "force_relaunch";
 	private static final String SHOW_DRAWER_ON_HOME = "show_drawer_on_home";
-	private static final String SPLIT_PIE_ENABLED = "split_pie_enabled";
+	private static final String SPLIT_PIE_MENU = "split_pie_menu";
 	private static final String CIRCLE_SWAPS_MENUS = "circle_swaps";
 
 	private final SharedPreferences preferences;
@@ -125,8 +125,8 @@ public class Preferences {
 	private boolean useLightDialogs = false;
 	private boolean forceRelaunch = false;
 	private boolean showDrawerOnHome = true;
-	private boolean splitPieEnabled = false;
-	private int circleSwapsMenus = CIRCLE_SWAPS_NO;
+	private int splitPieMenu = ALTERNATE_MENU_NONE;
+	private int circleSwapsMenus = ALTERNATE_MENU_NONE;
 
 	public Preferences(Context context) {
 		Context appContext = context.getApplicationContext();
@@ -186,8 +186,7 @@ public class Preferences {
 		forceRelaunch = preferences.getBoolean(FORCE_RELAUNCH, forceRelaunch);
 		showDrawerOnHome = preferences.getBoolean(SHOW_DRAWER_ON_HOME,
 				showDrawerOnHome);
-		splitPieEnabled = preferences.getBoolean(SPLIT_PIE_ENABLED,
-				splitPieEnabled);
+		splitPieMenu = preferences.getInt(SPLIT_PIE_MENU, splitPieMenu);
 		circleSwapsMenus = preferences.getInt(CIRCLE_SWAPS_MENUS,
 				circleSwapsMenus);
 	}
@@ -453,13 +452,13 @@ public class Preferences {
 		put(SHOW_DRAWER_ON_HOME, showDrawerOnHome).apply();
 	}
 
-	public boolean splitPieEnabled() {
-		return splitPieEnabled;
+	public int splitPieMenu() {
+		return splitPieMenu;
 	}
 
-	public void setSplitPieEnabled(boolean splitPieEnabled) {
-		this.splitPieEnabled = splitPieEnabled;
-		put(SPLIT_PIE_ENABLED, splitPieEnabled).apply();
+	public void setSplitPieMenu(int splitPieMenu) {
+		this.splitPieMenu = splitPieMenu;
+		put(SPLIT_PIE_MENU, splitPieMenu).apply();
 	}
 
 	public int circleSwapsMenus() {
@@ -488,6 +487,13 @@ public class Preferences {
 	}
 
 	private void migrateSettings() {
+		// Migrate old boolean split pie setting.
+		String splitPieEnabled = "split_pie_enabled";
+		if (preferences.getBoolean(splitPieEnabled, false)) {
+			put(splitPieEnabled, false).apply();
+			setSplitPieMenu(ALTERNATE_MENU_SECONDARY);
+		}
+
 		// Migrate old immersive mode setting.
 		String oldImmersiveModeName = "immersive_mode";
 		if (preferences.getBoolean(oldImmersiveModeName, false)) {
@@ -522,7 +528,7 @@ public class Preferences {
 		String circleSwapsMenus = "circle_swaps_menus";
 		if (preferences.getBoolean(circleSwapsMenus, false)) {
 			put(circleSwapsMenus, false).apply();
-			setCircleSwapsMenus(CIRCLE_SWAPS_SECONDARY_MENU);
+			setCircleSwapsMenus(ALTERNATE_MENU_SECONDARY);
 		}
 
 		// Migrate old boolean exclude pie setting.

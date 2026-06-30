@@ -88,13 +88,11 @@
 	<string name="exclude_pie_all">Från båda menyerna</string>
 	<string name="exclude_pie_no">Nej (standard)</string>
 	<string name="split_pie_menu">Separata cirkelmenyer upptill/nedtill</string>
-	<string name="split_pie_yes">Ja</string>
-	<string name="split_pie_no">Nej (standard)</string>
 	<string name="circle_swaps_menus">Att cirkla växlar menyer</string>
-	<string name="circle_swaps_menus_yes">Sekundärmeny</string>
-	<string name="circle_swaps_menus_all_apps">Alla appar</string>
-	<string name="circle_swaps_menus_frecency">Topp 6 efter frekvens och aktualitet</string>
-	<string name="circle_swaps_menus_no">Nej (standard)</string>
+	<string name="alternate_menu_none">Nej (standard)</string>
+	<string name="alternate_menu_secondary">Sekundärmeny</string>
+	<string name="alternate_menu_all_apps">Alla appar</string>
+	<string name="alternate_menu_last_used">Senast använda appar</string>
 	<string name="icon_press">Långtryckning</string>
 	<string name="icon_press_default">Lägg till app i cirkelmenyn (standard)</string>
 	<string name="icon_press_longer">Kräver långvarig tryckning</string>

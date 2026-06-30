@@ -92,13 +92,11 @@
 	<string name="exclude_pie_all">Dos dois menus</string>
 	<string name="exclude_pie_no">Não (Padrão)</string>
 	<string name="split_pie_menu">Menus Pie separados em cima/embaixo</string>
-	<string name="split_pie_yes">Sim</string>
-	<string name="split_pie_no">Não (Padrão)</string>
 	<string name="circle_swaps_menus">Circular alterna menus</string>
-	<string name="circle_swaps_menus_yes">Menu secundário</string>
-	<string name="circle_swaps_menus_all_apps">Todos os apps</string>
-	<string name="circle_swaps_menus_frecency">6 principais por frequência e uso recente</string>
-	<string name="circle_swaps_menus_no">Não (Padrão)</string>
+	<string name="alternate_menu_none">Não (Padrão)</string>
+	<string name="alternate_menu_secondary">Menu secundário</string>
+	<string name="alternate_menu_all_apps">Todos os apps</string>
+	<string name="alternate_menu_last_used">Apps usados recentemente</string>
 	<string name="icon_press">Toque longo</string>
 	<string name="icon_press_default">Adiciona aplicativo ao menu Pie (Padrão)</string>
 	<string name="icon_press_longer">Requer toque prolongado</string>

@@ -628,16 +628,16 @@ public class AppPieView extends View {
 			}
 
 			private void openMenu(long eventTime) {
-				if (prefs.splitPieEnabled()) {
+				if (prefs.splitPieMenu() !=
+						Preferences.ALTERNATE_MENU_NONE) {
 					selectMenu(touch.x, touch.y);
 					setCenter(touch.x, touch.y);
 				} else {
 					// Reset menu to primary if necessary.
 					if (prefs.circleSwapsMenus() !=
-							Preferences.CIRCLE_SWAPS_NO &&
+							Preferences.ALTERNATE_MENU_NONE &&
 							!isPrimaryMenu()) {
-						pieMenu.icons = menuPrimary;
-						applyPiePreferences();
+						setMenu(menuPrimary);
 					}
 					// Don't re-center for interrupted touches.
 					if (eventTime - lastActionUp > 200L) {
@@ -1275,7 +1275,7 @@ public class AppPieView extends View {
 			if (grabbedIcon == null) {
 				if (hasSecondaryMenu()) {
 					storeMenu();
-					swapMenus();
+					setMenu(isPrimaryMenu() ? menuSecondary : menuPrimary);
 					centerSmoothCoordinatesAt(pieMenu.icons,
 							viewWidth >> 1, viewHeight >> 1);
 					updateSplitPieIcon();
@@ -1492,58 +1492,51 @@ public class AppPieView extends View {
 	}
 
 	private void onCircle() {
-		switch (prefs.circleSwapsMenus()) {
-			case Preferences.CIRCLE_SWAPS_FRECENCY:
-				if (isPrimaryMenu()) {
-					List<Apps.AppIcon> apps = AppSearch.filterAppsByFrecency(
-							PieLauncherApp.apps, getContext());
-					if (apps == null) {
-						return;
-					}
-					pieMenu.icons = new ArrayList<Apps.AppIcon>(
-							apps.subList(0, Math.min(6, apps.size())));
-				} else {
-					return;
-				}
-				break;
-			case Preferences.CIRCLE_SWAPS_ALL_APPS:
-				if (isPrimaryMenu()) {
-					List<Apps.AppIcon> all = AppSearch.filterAppsBy(
-							PieLauncherApp.apps, getContext(), null);
-					if (all == null) {
-						return;
-					}
-					pieMenu.icons = new ArrayList<Apps.AppIcon>(all);
-				} else {
-					return;
-				}
-				break;
-			case Preferences.CIRCLE_SWAPS_SECONDARY_MENU:
-				if (menuSecondary.isEmpty()) {
-					return;
-				}
-				swapMenus();
-				break;
-			case Preferences.CIRCLE_SWAPS_NO:
-			default:
-				return;
+		ArrayList<Apps.AppIcon> icons = getAlternateMenu(
+				prefs.circleSwapsMenus());
+		if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
+			return;
 		}
+		setMenu(icons);
 		lastCircleAt = SystemClock.uptimeMillis();
 		performHapticFeedbackIfAllowed(HapticFeedbackConstants.LONG_PRESS);
 	}
 
 	private void selectMenu(int x, int y) {
-		swapMenus(viewWidth > viewHeight
+		boolean alternate = viewWidth > viewHeight
 				? x < viewWidth >> 1
-				: y < viewHeight >> 1);
+				: y < viewHeight >> 1;
+		ArrayList<Apps.AppIcon> icons = alternate
+				? getAlternateMenu(prefs.splitPieMenu())
+				: menuPrimary;
+		setMenu(icons == null || icons.isEmpty()
+				? menuPrimary
+				: icons);
 	}
 
-	private void swapMenus() {
-		swapMenus(isPrimaryMenu());
+	private ArrayList<Apps.AppIcon> getAlternateMenu(int option) {
+		switch (option) {
+			case Preferences.ALTERNATE_MENU_SECONDARY:
+				return menuSecondary;
+			case Preferences.ALTERNATE_MENU_ALL_APPS:
+				List<Apps.AppIcon> all = AppSearch.filterAppsBy(
+						PieLauncherApp.apps, getContext(), null);
+				return all != null ? new ArrayList<Apps.AppIcon>(all) : null;
+			case Preferences.ALTERNATE_MENU_LAST_USED:
+				List<Apps.AppIcon> lastUsed = AppSearch.filterAppsByFrecency(
+						PieLauncherApp.apps, getContext());
+				return lastUsed != null
+						? new ArrayList<Apps.AppIcon>(lastUsed.subList(
+								0, Math.min(8, lastUsed.size())))
+						: null;
+			case Preferences.ALTERNATE_MENU_NONE:
+			default:
+				return null;
+		}
 	}
 
-	private void swapMenus(boolean isPrimary) {
-		pieMenu.icons = isPrimary ? menuSecondary : menuPrimary;
+	private void setMenu(ArrayList<Apps.AppIcon> icons) {
+		pieMenu.icons = icons;
 		applyPiePreferences();
 	}
 
@@ -1781,8 +1774,9 @@ public class AppPieView extends View {
 	}
 
 	private boolean hasSecondaryMenu() {
-		return prefs.splitPieEnabled() || prefs.circleSwapsMenus() ==
-				Preferences.CIRCLE_SWAPS_SECONDARY_MENU;
+		return prefs.splitPieMenu() == Preferences.ALTERNATE_MENU_SECONDARY ||
+				prefs.circleSwapsMenus() ==
+						Preferences.ALTERNATE_MENU_SECONDARY;
 	}
 
 	private void calculateEditablePie(int centerX, int centerY) {

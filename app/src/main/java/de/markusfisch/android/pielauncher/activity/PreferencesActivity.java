@@ -230,14 +230,14 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getAnimateInOutOptions,
 				() -> prefs.animateInOut(),
 				(value) -> prefs.setAnimateInOut(value));
-		initPreference(R.id.split_pie_enabled,
+		initPreference(R.id.split_pie_menu,
 				R.string.split_pie_menu,
-				PreferencesActivity::getSplitPieEnabledOptions,
-				() -> prefs.splitPieEnabled(),
-				(value) -> prefs.setSplitPieEnabled(value));
+				PreferencesActivity::getAlternateMenuOptions,
+				() -> prefs.splitPieMenu(),
+				(value) -> prefs.setSplitPieMenu(value));
 		initPreference(R.id.circle_swaps_menus,
 				R.string.circle_swaps_menus,
-				PreferencesActivity::getCircleSwapsMenusOptions,
+				PreferencesActivity::getAlternateMenuOptions,
 				() -> prefs.circleSwapsMenus(),
 				(value) -> prefs.setCircleSwapsMenus(value));
 		initPreference(R.id.home_button_opens_drawer,
@@ -538,23 +538,16 @@ public class PreferencesActivity extends Activity {
 		return map;
 	}
 
-	private static Map<Boolean, Integer> getSplitPieEnabledOptions() {
-		Map<Boolean, Integer> map = new LinkedHashMap<>();
-		map.put(Boolean.TRUE, R.string.split_pie_yes);
-		map.put(Boolean.FALSE, R.string.split_pie_no);
-		return map;
-	}
-
-	private static Map<Integer, Integer> getCircleSwapsMenusOptions() {
+	private static Map<Integer, Integer> getAlternateMenuOptions() {
 		Map<Integer, Integer> map = new LinkedHashMap<>();
-		map.put(Preferences.CIRCLE_SWAPS_SECONDARY_MENU,
-				R.string.circle_swaps_menus_yes);
-		map.put(Preferences.CIRCLE_SWAPS_ALL_APPS,
-				R.string.circle_swaps_menus_all_apps);
-		map.put(Preferences.CIRCLE_SWAPS_FRECENCY,
-				R.string.circle_swaps_menus_frecency);
-		map.put(Preferences.CIRCLE_SWAPS_NO,
-				R.string.circle_swaps_menus_no);
+		map.put(Preferences.ALTERNATE_MENU_NONE,
+				R.string.alternate_menu_none);
+		map.put(Preferences.ALTERNATE_MENU_SECONDARY,
+				R.string.alternate_menu_secondary);
+		map.put(Preferences.ALTERNATE_MENU_ALL_APPS,
+				R.string.alternate_menu_all_apps);
+		map.put(Preferences.ALTERNATE_MENU_LAST_USED,
+				R.string.alternate_menu_last_used);
 		return map;
 	}
 

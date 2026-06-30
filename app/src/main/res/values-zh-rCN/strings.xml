@@ -88,13 +88,11 @@
 	<string name="exclude_pie_all">从两个菜单</string>
 	<string name="exclude_pie_no">没有 (默认)</string>
 	<string name="split_pie_menu">上下独立饼状菜单</string>
-	<string name="split_pie_yes">是</string>
-	<string name="split_pie_no">没有 (默认)</string>
 	<string name="circle_swaps_menus">画圈会切换菜单</string>
-	<string name="circle_swaps_menus_yes">次级菜单</string>
-	<string name="circle_swaps_menus_all_apps">所有应用</string>
-	<string name="circle_swaps_menus_frecency">按使用频率和最近使用排序的前 6 个</string>
-	<string name="circle_swaps_menus_no">没有 (默认)</string>
+	<string name="alternate_menu_none">否（默认）</string>
+	<string name="alternate_menu_secondary">次级菜单</string>
+	<string name="alternate_menu_all_apps">所有应用</string>
+	<string name="alternate_menu_last_used">最近使用的应用</string>
 	<string name="icon_press">长按</string>
 	<string name="icon_press_default">在菜单中添加应用程序 (默认)</string>
 	<string name="icon_press_longer">需要长时间按压</string>

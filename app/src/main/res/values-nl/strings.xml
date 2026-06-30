@@ -88,13 +88,11 @@
 	<string name="exclude_pie_all">Uit beide menu\'s</string>
 	<string name="exclude_pie_no">Nee (standaard)</string>
 	<string name="split_pie_menu">Aparte bovenste/onderste Pie-menu\'s</string>
-	<string name="split_pie_yes">Ja</string>
-	<string name="split_pie_no">Nee (standaard)</string>
 	<string name="circle_swaps_menus">Omcirkelen wisselt menu\'s</string>
-	<string name="circle_swaps_menus_yes">Secundair menu</string>
-	<string name="circle_swaps_menus_all_apps">Alle apps</string>
-	<string name="circle_swaps_menus_frecency">Top 6 op frequentie en recentheid</string>
-	<string name="circle_swaps_menus_no">Nee (standaard)</string>
+	<string name="alternate_menu_none">Nee (standaard)</string>
+	<string name="alternate_menu_secondary">Secundair menu</string>
+	<string name="alternate_menu_all_apps">Alle apps</string>
+	<string name="alternate_menu_last_used">Laatst gebruikte apps</string>
 	<string name="icon_press">Lang drukken</string>
 	<string name="icon_press_default">Voegt app toe aan het Pie menu (standaard)</string>
 	<string name="icon_press_longer">Vereist lang drukken</string>
