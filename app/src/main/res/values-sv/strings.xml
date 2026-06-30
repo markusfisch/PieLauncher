@@ -73,6 +73,9 @@
 	<string name="search_parameter">Sök efter</string>
 	<string name="search_parameter_app_label">Appnamn (standard)</string>
 	<string name="search_parameter_package_name">Paketnamn</string>
+	<string name="app_sorting">Sortera appar efter</string>
+	<string name="app_sorting_alphabetical">Namn (standard)</string>
+	<string name="app_sorting_frecency">Frekvens och aktualitet</string>
 	<string name="show_app_names">Visa appnamn</string>
 	<string name="show_app_names_always">Alltid</string>
 	<string name="show_app_names_search">Vid sökning (standard)</string>

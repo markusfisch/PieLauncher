@@ -283,6 +283,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getSearchParameterOptions,
 				() -> prefs.getSearchParameter(),
 				(value) -> prefs.setSearchParameter(value));
+		initPreference(R.id.app_sorting,
+				R.string.app_sorting,
+				PreferencesActivity::getAppSortingOptions,
+				() -> prefs.getAppSorting(),
+				(value) -> prefs.setAppSorting(value));
 		initPreference(R.id.show_app_names,
 				R.string.show_app_names,
 				PreferencesActivity::getShowAppNamesOptions,
@@ -631,6 +636,15 @@ public class PreferencesActivity extends Activity {
 				R.string.search_parameter_app_label);
 		map.put(Preferences.SEARCH_PARAMETER_PACKAGE_NAME,
 				R.string.search_parameter_package_name);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getAppSortingOptions() {
+		Map<Integer, Integer> map = new LinkedHashMap<>();
+		map.put(Preferences.APP_SORT_ALPHABETICAL,
+				R.string.app_sorting_alphabetical);
+		map.put(Preferences.APP_SORT_FRECENCY,
+				R.string.app_sorting_frecency);
 		return map;
 	}
 

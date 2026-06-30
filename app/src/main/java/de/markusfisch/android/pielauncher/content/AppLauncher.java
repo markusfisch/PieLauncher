@@ -35,11 +35,13 @@ public class AppLauncher {
 		return intent != null ? intent.getComponent() : null;
 	}
 
-	public static void launchPackage(Context context, String packageName) {
+	public static boolean launchPackage(Context context, String packageName) {
 		Intent intent = getLaunchIntent(context, packageName);
 		if (intent != null) {
 			context.startActivity(intent);
+			return true;
 		}
+		return false;
 	}
 
 	public static Intent getLaunchIntent(Context context, String packageName) {
@@ -47,12 +49,11 @@ public class AppLauncher {
 		return pm != null ? pm.getLaunchIntentForPackage(packageName) : null;
 	}
 
-	public static void launchApp(Context context, AppIcon icon) {
+	public static boolean launchApp(Context context, AppIcon icon) {
 		if (HAS_LAUNCHER_APP) {
-			launchAppWithLauncherApp(context, icon);
-		} else {
-			launchPackage(context, icon.componentName.getPackageName());
+			return launchAppWithLauncherApp(context, icon);
 		}
+		return launchPackage(context, icon.componentName.getPackageName());
 	}
 
 	public static void launchAppInfo(Context context, AppIcon icon) {
@@ -77,23 +78,25 @@ public class AppLauncher {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.N)
-	public static void launchAppWithLauncherApp(Context context, AppIcon icon) {
+	public static boolean launchAppWithLauncherApp(
+			Context context, AppIcon icon) {
 		LauncherApps la = getLauncherApps(context);
 		UserManager um = getUserManager(context);
 		if (icon.componentName == null || icon.userHandle == null) {
-			return;
+			return false;
 		}
 		try {
 			if (!um.isUserUnlocked(icon.userHandle) &&
 					isPrivateProfile(la, icon.userHandle)) {
 				AppLauncher.toast(context, R.string.user_profile_locked);
-				return;
+				return false;
 			}
 			la.startMainActivity(
 					icon.componentName,
 					icon.userHandle,
 					icon.rect,
 					null);
+			return true;
 		} catch (Exception e) {
 			// The stored component may have changed (e.g. app rotated its
 			// activity alias). Try the first launcher activity we can find.
@@ -104,7 +107,7 @@ public class AppLauncher {
 			if (componentName == null ||
 					componentName.equals(icon.componentName)) {
 				AppLauncher.toast(context, R.string.activity_not_enabled);
-				return;
+				return false;
 			}
 			icon.componentName = componentName;
 			try {
@@ -113,8 +116,10 @@ public class AppLauncher {
 						icon.userHandle,
 						icon.rect,
 						null);
+				return true;
 			} catch (Exception e2) {
 				AppLauncher.toast(context, R.string.activity_not_enabled);
+				return false;
 			}
 		}
 	}

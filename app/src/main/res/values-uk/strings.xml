@@ -73,6 +73,9 @@
 	<string name="search_parameter">Пошук за</string>
 	<string name="search_parameter_app_label">Назвою програми (за замовчуванням)</string>
 	<string name="search_parameter_package_name">Назвою пакета</string>
+	<string name="app_sorting">Сортувати програми за</string>
+	<string name="app_sorting_alphabetical">Назвою (за замовчуванням)</string>
+	<string name="app_sorting_frecency">Частотою та нещодавністю використання</string>
 	<string name="show_app_names">Показати назви програм</string>
 	<string name="show_app_names_always">Завжди</string>
 	<string name="show_app_names_search">Під час пошуку (за замовчуванням)</string>

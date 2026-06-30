@@ -30,14 +30,6 @@ public class AppSearch {
 				: result;
 	};
 
-	public static final Comparator<HammingHit> hammingComparator = (left, right) -> {
-		int d = left.distance - right.distance;
-		if (d != 0) {
-			return d;
-		}
-		return appLabelComparator.compare(left.appIcon, right.appIcon);
-	};
-
 	public static String getSubject(
 			int item,
 			AppIcon appIcon,
@@ -99,6 +91,8 @@ public class AppSearch {
 
 		Preferences prefs = PieLauncherApp.getPrefs(context);
 		int strategy = prefs.getSearchStrictness();
+		Comparator<AppIcon> appComparator = getAppComparator(
+				prefs.getAppSorting(), System.currentTimeMillis());
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppSearch.HammingHit> hamming = new ArrayList<>();
 
@@ -149,17 +143,39 @@ public class AppSearch {
 			}
 		}
 
-		Collections.sort(list, AppSearch.appLabelComparator);
+		Collections.sort(list, appComparator);
 		if (!hamming.isEmpty() && (list.isEmpty() ||
 				strategy == Preferences.SEARCH_STRICTNESS_HAMMING)) {
 			// Only append hamming matches as they're less likely
 			// as good as exact matches.
-			Collections.sort(hamming, AppSearch.hammingComparator);
+			Collections.sort(hamming, (left, right) -> {
+				int result = left.distance - right.distance;
+				return result != 0
+						? result
+						: appComparator.compare(left.appIcon, right.appIcon);
+			});
 			for (AppSearch.HammingHit hit : hamming) {
 				list.add(hit.appIcon);
 			}
 		}
 		return list;
+	}
+
+	static Comparator<AppIcon> getAppComparator(int sorting, long now) {
+		if (sorting != Preferences.APP_SORT_FRECENCY) {
+			return appLabelComparator;
+		}
+		return (left, right) -> {
+			int result = Frecency.compare(
+					left.frecencyScore,
+					left.frecencyUpdatedAt,
+					right.frecencyScore,
+					right.frecencyUpdatedAt,
+					now);
+			return result != 0
+					? result
+					: appLabelComparator.compare(left, right);
+		};
 	}
 
 	private static boolean inProfile(

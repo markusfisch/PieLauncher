@@ -32,6 +32,8 @@ public class Preferences {
 	public static final int SEARCH_STRICTNESS_STARTS_WITH = 3;
 	public static final int SEARCH_PARAMETER_APP_LABEL = 0;
 	public static final int SEARCH_PARAMETER_PACKAGE_NAME = 1;
+	public static final int APP_SORT_ALPHABETICAL = 0;
+	public static final int APP_SORT_FRECENCY = 1;
 	public static final int SHOW_APP_NAMES_ALWAYS = 0;
 	public static final int SHOW_APP_NAMES_SEARCH = 1;
 	public static final int SHOW_APP_NAMES_NEVER = 2;
@@ -78,6 +80,7 @@ public class Preferences {
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String SEARCH_STRICTNESS = "strictness";
 	private static final String SEARCH_PARAMETER = "search_parameter";
+	private static final String APP_SORTING = "app_sorting";
 	private static final String SHOW_APP_NAMES = "show_app_names";
 	private static final String ICON_PRESS = "icon_press";
 	private static final String EXCLUDE_PIE = "exclude_pie_icons";
@@ -113,6 +116,7 @@ public class Preferences {
 	private boolean autoLaunchMatching = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private int searchParameter = SEARCH_PARAMETER_APP_LABEL;
+	private int appSorting = APP_SORT_ALPHABETICAL;
 	private int showAppNames = SHOW_APP_NAMES_SEARCH;
 	private int excludePie = EXCLUDE_PIE_NONE;
 	private int iconPress = ICON_PRESS_DEFAULT;
@@ -170,6 +174,7 @@ public class Preferences {
 				searchStrictness);
 		searchParameter = preferences.getInt(SEARCH_PARAMETER,
 				searchParameter);
+		appSorting = preferences.getInt(APP_SORTING, appSorting);
 		showAppNames = preferences.getInt(SHOW_APP_NAMES, showAppNames);
 		excludePie = preferences.getInt(EXCLUDE_PIE, excludePie);
 		iconPress = preferences.getInt(ICON_PRESS, iconPress);
@@ -364,6 +369,15 @@ public class Preferences {
 	public void setSearchParameter(int searchParameter) {
 		this.searchParameter = searchParameter;
 		put(SEARCH_PARAMETER, searchParameter).apply();
+	}
+
+	public int getAppSorting() {
+		return appSorting;
+	}
+
+	public void setAppSorting(int appSorting) {
+		this.appSorting = appSorting;
+		put(APP_SORTING, appSorting).apply();
 	}
 
 	public int showAppNames() {

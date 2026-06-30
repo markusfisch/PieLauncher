@@ -73,6 +73,9 @@
 	<string name="search_parameter">Suche nach</string>
 	<string name="search_parameter_app_label">App-Name (Standard)</string>
 	<string name="search_parameter_package_name">Paketnamen</string>
+	<string name="app_sorting">Apps sortieren nach</string>
+	<string name="app_sorting_alphabetical">Name (Standard)</string>
+	<string name="app_sorting_frecency">Nutzungshäufigkeit und Aktualität</string>
 	<string name="show_app_names">Zeige App-Namen</string>
 	<string name="show_app_names_always">Immer</string>
 	<string name="show_app_names_search">Beim Suchen (Standard)</string>

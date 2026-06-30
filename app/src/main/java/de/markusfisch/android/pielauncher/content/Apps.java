@@ -72,6 +72,8 @@ public class Apps {
 		}
 
 		byte[] iconBytes;
+		double frecencyScore;
+		long frecencyUpdatedAt;
 	}
 
 	public static final String MENU_PRIMARY = "menu";
@@ -198,8 +200,9 @@ public class Apps {
 					userRestriction,
 					hideApps,
 					newApps);
-			Menus menus = compileMenus(context, newApps);
 			Database database = PieLauncherApp.getDatabase(context);
+			database.restoreFrecency(context, newApps);
+			Menus menus = compileMenus(context, newApps);
 			if (packageRestriction == null) {
 				database.replaceAllApps(context, newApps);
 			} else {

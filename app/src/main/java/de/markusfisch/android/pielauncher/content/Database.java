@@ -36,6 +36,8 @@ public class Database {
 	private static final String ICON = "icon";
 	private static final String UPDATED_AT = "updated_at";
 	private static final long NO_USER = -1L;
+	private static final String APP_USAGE = "app_usage";
+	private static final String SCORE = "score";
 
 	private static final String MENU_ITEMS = "menu_items";
 	private static final String MENU_NAME = "menu_name";
@@ -399,6 +401,59 @@ public class Database {
 		} finally {
 			cursor.close();
 		}
+		restoreFrecency(context, apps);
+	}
+
+	public void restoreFrecency(Context context,
+			Map<LauncherItemKey, Apps.AppIcon> apps) {
+		for (Apps.AppIcon appIcon : apps.values()) {
+			appIcon.frecencyScore = 0d;
+			appIcon.frecencyUpdatedAt = 0L;
+		}
+		Cursor cursor = openHelper.getReadableDatabase().query(APP_USAGE,
+				new String[]{COMPONENT_NAME, USER_SERIAL, SCORE, UPDATED_AT},
+				null, null, null, null, null);
+		try {
+			while (cursor.moveToNext()) {
+				ComponentName componentName =
+						ComponentName.unflattenFromString(cursor.getString(0));
+				if (componentName == null) {
+					continue;
+				}
+				UserHandle userHandle = null;
+				long serialNumber = cursor.getLong(1);
+				if (AppLauncher.HAS_LAUNCHER_APP && serialNumber != NO_USER) {
+					userHandle = getUserForSerialNumber(context, serialNumber);
+					if (userHandle == null) {
+						continue;
+					}
+				}
+				Apps.AppIcon appIcon = apps.get(
+						new LauncherItemKey(componentName, userHandle));
+				if (appIcon != null) {
+					appIcon.frecencyScore = cursor.getDouble(2);
+					appIcon.frecencyUpdatedAt = cursor.getLong(3);
+				}
+			}
+		} finally {
+			cursor.close();
+		}
+	}
+
+	public void recordLaunch(Context context, Apps.AppIcon appIcon) {
+		long now = System.currentTimeMillis();
+		double score = Frecency.addLaunch(
+				appIcon.frecencyScore, appIcon.frecencyUpdatedAt, now);
+		ContentValues values = new ContentValues();
+		values.put(COMPONENT_NAME, appIcon.componentName.flattenToString());
+		values.put(PACKAGE_NAME, appIcon.componentName.getPackageName());
+		putUserSerial(context, values, appIcon.userHandle);
+		values.put(SCORE, score);
+		values.put(UPDATED_AT, now);
+		openHelper.getWritableDatabase().insertWithOnConflict(
+				APP_USAGE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		appIcon.frecencyScore = score;
+		appIcon.frecencyUpdatedAt = now;
 	}
 
 	public void replaceAllApps(Context context,
@@ -444,6 +499,7 @@ public class Database {
 		db.beginTransaction();
 		try {
 			deletePackage(context, db, packageName, userHandle);
+			deleteUsage(context, db, packageName, userHandle);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
@@ -488,6 +544,24 @@ public class Database {
 		}
 	}
 
+	private void deleteUsage(Context context,
+			SQLiteDatabase db,
+			String packageName,
+			UserHandle userHandle) {
+		if (AppLauncher.HAS_LAUNCHER_APP && userHandle != null) {
+			db.delete(APP_USAGE,
+					PACKAGE_NAME + "=? AND " + USER_SERIAL + "=?",
+					new String[]{
+							packageName,
+							String.valueOf(getSerialNumberForUser(
+									context, userHandle))
+					});
+		} else {
+			db.delete(APP_USAGE, PACKAGE_NAME + "=?",
+					new String[]{packageName});
+		}
+	}
+
 	private static byte[] getIconBlob(Apps.AppIcon appIcon) {
 		if (appIcon.iconBytes != null) {
 			return appIcon.iconBytes;
@@ -529,13 +603,14 @@ public class Database {
 
 	private static class OpenHelper extends SQLiteOpenHelper {
 		OpenHelper(Context context) {
-			super(context, "app_cache.db", null, 2);
+			super(context, "app_cache.db", null, 3);
 		}
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			createAppsTables(db);
 			createStorageTables(db);
+			createUsageTables(db);
 		}
 
 		private static void createAppsTables(SQLiteDatabase db) {
@@ -574,12 +649,28 @@ public class Database {
 					META_VALUE + " TEXT NOT NULL);");
 		}
 
+		private static void createUsageTables(SQLiteDatabase db) {
+			db.execSQL("CREATE TABLE " + APP_USAGE + " (" +
+					COMPONENT_NAME + " TEXT NOT NULL," +
+					PACKAGE_NAME + " TEXT NOT NULL," +
+					USER_SERIAL + " INTEGER NOT NULL," +
+					SCORE + " REAL NOT NULL," +
+					UPDATED_AT + " INTEGER NOT NULL," +
+					"PRIMARY KEY (" + COMPONENT_NAME + "," +
+					USER_SERIAL + "));");
+			db.execSQL("CREATE INDEX app_usage_package_name ON " +
+					APP_USAGE + " (" + PACKAGE_NAME + ");");
+		}
+
 		@Override
 		public void onUpgrade(SQLiteDatabase db,
 				int oldVersion,
 				int newVersion) {
 			if (oldVersion < 2) {
 				createStorageTables(db);
+			}
+			if (oldVersion < 3) {
+				createUsageTables(db);
 			}
 		}
 

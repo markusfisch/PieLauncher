@@ -1327,7 +1327,9 @@ public class AppPieView extends View {
 
 	private void launchApp(Context context, Apps.AppIcon appIcon) {
 		launchingIcon = appIcon;
-		AppLauncher.launchApp(context, appIcon);
+		if (AppLauncher.launchApp(context, appIcon)) {
+			PieLauncherApp.getDatabase(context).recordLaunch(context, appIcon);
+		}
 	}
 
 	private void removeIconFromPie(Apps.AppIcon icon, boolean isDrawerIcon) {

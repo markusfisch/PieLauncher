@@ -116,6 +116,10 @@
 					android:text="@string/search_parameter_app_label" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/app_sorting"
+					android:text="@string/app_sorting_alphabetical" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/show_app_names"
 					android:text="@string/show_app_names_always" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

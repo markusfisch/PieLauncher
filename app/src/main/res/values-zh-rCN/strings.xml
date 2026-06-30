@@ -73,6 +73,9 @@
 	<string name="search_parameter">搜索参数</string>
 	<string name="search_parameter_app_label">应用程序名称 (默认)</string>
 	<string name="search_parameter_package_name">包裹名字</string>
+	<string name="app_sorting">应用排序方式</string>
+	<string name="app_sorting_alphabetical">名称（默认）</string>
+	<string name="app_sorting_frecency">使用频率和最近使用情况</string>
 	<string name="show_app_names">显示应用程序名称</string>
 	<string name="show_app_names_always">始终如一</string>
 	<string name="show_app_names_search">搜索时 (默认)</string>
