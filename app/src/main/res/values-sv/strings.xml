@@ -93,6 +93,7 @@
 	<string name="circle_swaps_menus">Att cirkla växlar menyer</string>
 	<string name="circle_swaps_menus_yes">Sekundärmeny</string>
 	<string name="circle_swaps_menus_all_apps">Alla appar</string>
+	<string name="circle_swaps_menus_frecency">Topp 6 efter frekvens och aktualitet</string>
 	<string name="circle_swaps_menus_no">Nej (standard)</string>
 	<string name="icon_press">Långtryckning</string>
 	<string name="icon_press_default">Lägg till app i cirkelmenyn (standard)</string>

@@ -1493,6 +1493,19 @@ public class AppPieView extends View {
 
 	private void onCircle() {
 		switch (prefs.circleSwapsMenus()) {
+			case Preferences.CIRCLE_SWAPS_FRECENCY:
+				if (isPrimaryMenu()) {
+					List<Apps.AppIcon> apps = AppSearch.filterAppsByFrecency(
+							PieLauncherApp.apps, getContext());
+					if (apps == null) {
+						return;
+					}
+					pieMenu.icons = new ArrayList<Apps.AppIcon>(
+							apps.subList(0, Math.min(6, apps.size())));
+				} else {
+					return;
+				}
+				break;
 			case Preferences.CIRCLE_SWAPS_ALL_APPS:
 				if (isPrimaryMenu()) {
 					List<Apps.AppIcon> all = AppSearch.filterAppsBy(

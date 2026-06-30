@@ -551,6 +551,8 @@ public class PreferencesActivity extends Activity {
 				R.string.circle_swaps_menus_yes);
 		map.put(Preferences.CIRCLE_SWAPS_ALL_APPS,
 				R.string.circle_swaps_menus_all_apps);
+		map.put(Preferences.CIRCLE_SWAPS_FRECENCY,
+				R.string.circle_swaps_menus_frecency);
 		map.put(Preferences.CIRCLE_SWAPS_NO,
 				R.string.circle_swaps_menus_no);
 		return map;

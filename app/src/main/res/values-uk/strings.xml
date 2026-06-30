@@ -93,6 +93,7 @@
 	<string name="circle_swaps_menus">Обведення колом перемикає меню</string>
 	<string name="circle_swaps_menus_yes">Вторинне меню</string>
 	<string name="circle_swaps_menus_all_apps">Усі застосунки</string>
+	<string name="circle_swaps_menus_frecency">Перші 6 за частотою та нещодавністю</string>
 	<string name="circle_swaps_menus_no">Ні (за замовчуванням)</string>
 	<string name="icon_press">Тривале натискання</string>
 	<string name="icon_press_default">Додає додаток до меню (за замовчуванням)</string>

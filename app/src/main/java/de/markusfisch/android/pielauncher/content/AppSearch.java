@@ -62,6 +62,22 @@ public class AppSearch {
 	}
 
 	public static List<AppIcon> filterAppsBy(Apps repo, Context context, String query) {
+		Preferences prefs = PieLauncherApp.getPrefs(context);
+		return filterAppsBy(repo, context, query, prefs, prefs.getAppSorting());
+	}
+
+	public static List<AppIcon> filterAppsByFrecency(
+			Apps repo, Context context) {
+		Preferences prefs = PieLauncherApp.getPrefs(context);
+		return filterAppsBy(repo, context, null, prefs,
+				Preferences.APP_SORT_FRECENCY);
+	}
+
+	private static List<AppIcon> filterAppsBy(Apps repo,
+			Context context,
+			String query,
+			Preferences prefs,
+			int appSorting) {
 		if (repo.isIndexing()) {
 			return null;
 		}
@@ -89,10 +105,9 @@ public class AppSearch {
 		Locale defaultLocale = Locale.getDefault();
 		query = query.toLowerCase(defaultLocale);
 
-		Preferences prefs = PieLauncherApp.getPrefs(context);
 		int strategy = prefs.getSearchStrictness();
 		Comparator<AppIcon> appComparator = getAppComparator(
-				prefs.getAppSorting(), System.currentTimeMillis());
+				appSorting, System.currentTimeMillis());
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppSearch.HammingHit> hamming = new ArrayList<>();
 

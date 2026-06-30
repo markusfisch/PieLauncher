@@ -93,6 +93,7 @@
 	<string name="circle_swaps_menus">Обведение по кругу переключает меню</string>
 	<string name="circle_swaps_menus_yes">Вторичное меню</string>
 	<string name="circle_swaps_menus_all_apps">Все приложения</string>
+	<string name="circle_swaps_menus_frecency">Первые 6 по частоте и недавности</string>
 	<string name="circle_swaps_menus_no">Нет (Стандартно)</string>
 	<string name="icon_press">Длительное нажатие</string>
 	<string name="icon_press_default">Добавляет приложение в меню (Стандартно)</string>

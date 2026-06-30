@@ -93,6 +93,7 @@
 	<string name="circle_swaps_menus">画圈会切换菜单</string>
 	<string name="circle_swaps_menus_yes">次级菜单</string>
 	<string name="circle_swaps_menus_all_apps">所有应用</string>
+	<string name="circle_swaps_menus_frecency">按使用频率和最近使用排序的前 6 个</string>
 	<string name="circle_swaps_menus_no">没有 (默认)</string>
 	<string name="icon_press">长按</string>
 	<string name="icon_press_default">在菜单中添加应用程序 (默认)</string>
