@@ -1117,6 +1117,10 @@ public class AppPieView extends View {
 	}
 
 	private void editIcon(Apps.AppIcon icon) {
+		if (pieMenu.icons != menuPrimary &&
+				pieMenu.icons != menuSecondary) {
+			setMenu(menuPrimary);
+		}
 		updateSplitPieIcon();
 		backup.clear();
 		backup.addAll(pieMenu.icons);
