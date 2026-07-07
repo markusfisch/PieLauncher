@@ -10,7 +10,6 @@ import android.content.pm.LauncherApps;
 import android.os.Build;
 import android.os.UserHandle;
 
-import de.markusfisch.android.pielauncher.content.AppCacheDatabase;
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.Database;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
