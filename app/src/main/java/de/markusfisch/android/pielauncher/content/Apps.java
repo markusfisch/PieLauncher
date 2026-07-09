@@ -84,9 +84,14 @@ public class Apps {
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
 	public final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
 
+	private static final int RECONCILED_MENU = 1;
+	private static final int RETRY_PACKAGE = 2;
+
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final ExecutorService executor =
 			Executors.newSingleThreadExecutor();
+	private final HashSet<LauncherItemKey> pendingPackageRetries =
+			new HashSet<>();
 
 	private UpdateListener updateListener;
 	private String drawerPackageName;
@@ -149,6 +154,14 @@ public class Apps {
 		}
 	}
 
+	public void updatePackageAsync(Context context, String packageName,
+			UserHandle userHandle) {
+		if (!indexAppsAsync(context, packageName, userHandle)) {
+			handler.postDelayed(() -> updatePackageAsync(
+					context, packageName, userHandle), 1000L);
+		}
+	}
+
 	public boolean isEmpty() {
 		return apps.isEmpty();
 	}
@@ -192,6 +205,8 @@ public class Apps {
 			// menu will be re-created by getPrimaryMenu() after indexing.
 		}
 		executor.execute(() -> {
+			Map<LauncherItemKey, AppIcon> oldPackageApps =
+					getPackageApps(apps, packageRestriction, userRestriction);
 			if (needsCacheRestore) {
 				restoreAppsFromCache(context, hideApps);
 			}
@@ -200,9 +215,17 @@ public class Apps {
 					userRestriction,
 					hideApps,
 					newApps);
+			int reconciliation = reconcileChangedPackage(
+					newApps, oldPackageApps, packageRestriction, userRestriction);
 			Database database = PieLauncherApp.getDatabase(context);
 			database.restoreFrecency(context, newApps);
 			Menus menus = compileMenus(context, newApps);
+			removeObsoletePackageKeys(newApps, oldPackageApps,
+					packageRestriction);
+			if ((reconciliation & RECONCILED_MENU) != 0) {
+				MenuStorage.store(context, MENU_PRIMARY, menus.primary);
+				MenuStorage.store(context, MENU_SECONDARY, menus.secondary);
+			}
 			if (packageRestriction == null) {
 				database.replaceAllApps(context, newApps);
 			} else {
@@ -212,8 +235,80 @@ public class Apps {
 						newApps);
 			}
 			handler.post(() -> updateApps(newApps, menus, true));
+			if ((reconciliation & RETRY_PACKAGE) != 0) {
+				handler.postDelayed(() -> updatePackageAsync(context,
+						packageRestriction, userRestriction), 1000L);
+			}
 		});
 		return true;
+	}
+
+	private static Map<LauncherItemKey, AppIcon> getPackageApps(
+			Map<LauncherItemKey, AppIcon> allApps, String packageName,
+			UserHandle userHandle) {
+		Map<LauncherItemKey, AppIcon> packageApps = new HashMap<>();
+		if (packageName == null) {
+			return packageApps;
+		}
+		for (Map.Entry<LauncherItemKey, AppIcon> entry : allApps.entrySet()) {
+			AppIcon icon = entry.getValue();
+			if (packageName.equals(icon.componentName.getPackageName()) &&
+					(userHandle == null || userHandle.equals(icon.userHandle))) {
+				packageApps.put(entry.getKey(), icon);
+			}
+		}
+		return packageApps;
+	}
+
+	private int reconcileChangedPackage(
+			Map<LauncherItemKey, AppIcon> allApps,
+			Map<LauncherItemKey, AppIcon> oldPackageApps,
+			String packageName, UserHandle userHandle) {
+		if (packageName == null || oldPackageApps.isEmpty()) {
+			return 0;
+		}
+		LauncherItemKey retryKey = new LauncherItemKey(
+				new ComponentName(packageName, ""), userHandle);
+		Map<LauncherItemKey, AppIcon> newPackageApps = getPackageApps(
+				allApps, packageName, userHandle);
+		if (newPackageApps.isEmpty()) {
+			// Alias switches may briefly leave no launcher alias enabled.
+			if (pendingPackageRetries.add(retryKey)) {
+				allApps.putAll(oldPackageApps);
+				return RETRY_PACKAGE;
+			}
+			pendingPackageRetries.remove(retryKey);
+			return 0;
+		}
+		pendingPackageRetries.remove(retryKey);
+		if (oldPackageApps.size() != 1 || newPackageApps.size() != 1) {
+			return 0;
+		}
+		Map.Entry<LauncherItemKey, AppIcon> oldEntry =
+				oldPackageApps.entrySet().iterator().next();
+		Map.Entry<LauncherItemKey, AppIcon> newEntry =
+				newPackageApps.entrySet().iterator().next();
+		if (oldEntry.getKey().equals(newEntry.getKey())) {
+			return 0;
+		}
+		// Let menu restoration resolve the persisted old alias to the new one.
+		allApps.put(oldEntry.getKey(), newEntry.getValue());
+		return RECONCILED_MENU;
+	}
+
+	private static void removeObsoletePackageKeys(
+			Map<LauncherItemKey, AppIcon> allApps,
+			Map<LauncherItemKey, AppIcon> oldPackageApps,
+			String packageName) {
+		if (packageName == null) {
+			return;
+		}
+		for (LauncherItemKey key : oldPackageApps.keySet()) {
+			AppIcon icon = allApps.get(key);
+			if (icon != null && !key.componentName.equals(icon.componentName)) {
+				allApps.remove(key);
+			}
+		}
 	}
 
 	private void restoreAppsFromCache(Context context,

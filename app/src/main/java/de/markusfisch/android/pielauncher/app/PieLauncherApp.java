@@ -107,13 +107,13 @@ public class PieLauncherApp extends Application {
 			@Override
 			public void onPackageAdded(String packageName,
 					UserHandle user) {
-				apps.indexAppsAsync(PieLauncherApp.this, packageName, user);
+				apps.updatePackageAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
 			public void onPackageChanged(String packageName,
 					UserHandle user) {
-				apps.indexAppsAsync(PieLauncherApp.this, packageName, user);
+				apps.updatePackageAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
