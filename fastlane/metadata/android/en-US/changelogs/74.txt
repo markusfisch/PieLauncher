@@ -1,0 +1,4 @@
+* Add frecency app sorting and circle swap option
+* Preserve pie entries across app icon changes
+* Fix going back for some version of Android
+

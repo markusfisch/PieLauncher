@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.27.0
+* Add frecency app sorting and circle swap option
+* Preserve pie entries across app icon changes
+* Fix going back for some version of Android
+
 ## 1.26.5
 * Fix broken recent-apps overview for some Android versions
 
