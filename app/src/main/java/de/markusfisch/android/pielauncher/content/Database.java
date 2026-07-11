@@ -46,6 +46,10 @@ public class Database {
 
 	private static final String HIDDEN_APPS = "hidden_apps";
 
+	private static final String PINNED_SHORTCUTS = "pinned_shortcuts";
+	private static final String OWNER_PACKAGE = "owner_package";
+	private static final String SHORTCUT_ID = "shortcut_id";
+
 	private static final String ICON_MAPPING_SETS = "icon_mapping_sets";
 	private static final String ICON_MAPPINGS = "icon_mappings";
 	private static final String ICON_PACK = "icon_pack";
@@ -148,6 +152,82 @@ public class Database {
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
+		}
+	}
+
+	public void restorePinnedShortcuts(Context context,
+			Map<LauncherItemKey, Apps.AppIcon> apps) {
+		Cursor cursor = openHelper.getReadableDatabase().query(PINNED_SHORTCUTS,
+				new String[]{COMPONENT_NAME, USER_SERIAL, OWNER_PACKAGE,
+						SHORTCUT_ID, LABEL, ICON},
+				null, null, null, null, null);
+		try {
+			while (cursor.moveToNext()) {
+				ComponentName componentName =
+						ComponentName.unflattenFromString(cursor.getString(0));
+				String ownerPackage = cursor.getString(2);
+				String shortcutId = cursor.getString(3);
+				String label = cursor.getString(4);
+				byte[] icon = cursor.getBlob(5);
+				if (componentName == null || ownerPackage == null ||
+						shortcutId == null || label == null || icon == null) {
+					continue;
+				}
+				Bitmap bitmap = BitmapFactory.decodeByteArray(
+						icon, 0, icon.length);
+				if (bitmap == null) {
+					continue;
+				}
+				UserHandle userHandle = null;
+				long serialNumber = cursor.getLong(1);
+				if (AppLauncher.HAS_LAUNCHER_APP && serialNumber != NO_USER) {
+					userHandle = getUserForSerialNumber(context, serialNumber);
+					if (userHandle == null) {
+						continue;
+					}
+				}
+				Apps.AppIcon appIcon = new Apps.AppIcon(
+						componentName, label, bitmap, userHandle);
+				appIcon.shortcutPackage = ownerPackage;
+				appIcon.shortcutId = shortcutId;
+				apps.put(new LauncherItemKey(componentName, userHandle),
+						appIcon);
+			}
+		} finally {
+			cursor.close();
+		}
+	}
+
+	public void storePinnedShortcut(Context context, Apps.AppIcon appIcon) {
+		byte[] icon = getIconBlob(appIcon);
+		if (icon == null) {
+			return;
+		}
+		ContentValues values = new ContentValues();
+		values.put(COMPONENT_NAME, appIcon.componentName.flattenToString());
+		putUserSerial(context, values, appIcon.userHandle);
+		values.put(OWNER_PACKAGE, appIcon.shortcutPackage);
+		values.put(SHORTCUT_ID, appIcon.shortcutId);
+		values.put(LABEL, appIcon.label);
+		values.put(ICON, icon);
+		openHelper.getWritableDatabase().insertWithOnConflict(
+				PINNED_SHORTCUTS, null, values,
+				SQLiteDatabase.CONFLICT_REPLACE);
+	}
+
+	public void removePinnedShortcut(Context context, Apps.AppIcon appIcon) {
+		SQLiteDatabase db = openHelper.getWritableDatabase();
+		if (AppLauncher.HAS_LAUNCHER_APP && appIcon.userHandle != null) {
+			db.delete(PINNED_SHORTCUTS,
+					COMPONENT_NAME + "=? AND " + USER_SERIAL + "=?",
+					new String[]{
+							appIcon.componentName.flattenToString(),
+							String.valueOf(getSerialNumberForUser(
+									context, appIcon.userHandle))
+					});
+		} else {
+			db.delete(PINNED_SHORTCUTS, COMPONENT_NAME + "=?",
+					new String[]{appIcon.componentName.flattenToString()});
 		}
 	}
 
@@ -511,6 +591,12 @@ public class Database {
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		long now = System.currentTimeMillis();
 		for (Apps.AppIcon appIcon : apps.values()) {
+			// Pinned shortcuts share the apps map but are persisted in their
+			// own table, so keep them out of the app cache.
+			if (Apps.SHORTCUT_PACKAGE.equals(
+					appIcon.componentName.getPackageName())) {
+				continue;
+			}
 			byte[] icon = getIconBlob(appIcon);
 			if (icon == null) {
 				continue;
@@ -603,7 +689,7 @@ public class Database {
 
 	private static class OpenHelper extends SQLiteOpenHelper {
 		OpenHelper(Context context) {
-			super(context, "app_cache.db", null, 3);
+			super(context, "app_cache.db", null, 4);
 		}
 
 		@Override
@@ -611,6 +697,7 @@ public class Database {
 			createAppsTables(db);
 			createStorageTables(db);
 			createUsageTables(db);
+			createShortcutsTable(db);
 		}
 
 		private static void createAppsTables(SQLiteDatabase db) {
@@ -662,6 +749,18 @@ public class Database {
 					APP_USAGE + " (" + PACKAGE_NAME + ");");
 		}
 
+		private static void createShortcutsTable(SQLiteDatabase db) {
+			db.execSQL("CREATE TABLE " + PINNED_SHORTCUTS + " (" +
+					COMPONENT_NAME + " TEXT NOT NULL," +
+					USER_SERIAL + " INTEGER NOT NULL," +
+					OWNER_PACKAGE + " TEXT NOT NULL," +
+					SHORTCUT_ID + " TEXT NOT NULL," +
+					LABEL + " TEXT NOT NULL," +
+					ICON + " BLOB NOT NULL," +
+					"PRIMARY KEY (" + COMPONENT_NAME + "," +
+					USER_SERIAL + "));");
+		}
+
 		@Override
 		public void onUpgrade(SQLiteDatabase db,
 				int oldVersion,
@@ -671,6 +770,9 @@ public class Database {
 			}
 			if (oldVersion < 3) {
 				createUsageTables(db);
+			}
+			if (oldVersion < 4) {
+				createShortcutsTable(db);
 			}
 		}
 

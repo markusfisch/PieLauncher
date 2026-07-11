@@ -11,6 +11,7 @@ import android.content.pm.LauncherUserInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -50,13 +51,47 @@ public class AppLauncher {
 	}
 
 	public static boolean launchApp(Context context, AppIcon icon) {
+		if (Apps.isShortcut(icon)) {
+			return launchShortcut(context, icon);
+		}
 		if (HAS_LAUNCHER_APP) {
 			return launchAppWithLauncherApp(context, icon);
 		}
 		return launchPackage(context, icon.componentName.getPackageName());
 	}
 
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.O)
+	private static boolean launchShortcut(Context context, AppIcon icon) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+			return false;
+		}
+		LauncherApps la = getLauncherApps(context);
+		if (la == null || icon.shortcutPackage == null) {
+			return false;
+		}
+		UserHandle user = icon.userHandle != null
+				? icon.userHandle
+				: Process.myUserHandle();
+		try {
+			la.startShortcut(icon.shortcutPackage, icon.shortcutId,
+					icon.rect, null, user);
+			return true;
+		} catch (Exception e) {
+			// e.g. IllegalStateException when this isn't the default launcher,
+			// or ActivityNotFoundException if the shortcut no longer exists.
+			toast(context, R.string.activity_not_enabled);
+			return false;
+		}
+	}
+
 	public static void launchAppInfo(Context context, AppIcon icon) {
+		if (Apps.isShortcut(icon)) {
+			// A pinned shortcut has no app-info page of its own; show the
+			// owning app (e.g. the browser that created the PWA) instead.
+			launchAppInfo(context, icon.shortcutPackage);
+			return;
+		}
 		if (HAS_LAUNCHER_APP) {
 			getLauncherApps(context).startAppDetailsActivity(
 					icon.componentName,

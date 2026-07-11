@@ -111,6 +111,10 @@ public class HomeActivity extends Activity {
 
 		immersiveMode = prefs.getImmersiveMode();
 		SystemBars.setTransparentSystemBars(getWindow(), immersiveMode);
+
+		// We may have been started with a request to pin a shortcut, e.g. when
+		// a browser adds a PWA to the home screen. No-op for regular launches.
+		PieLauncherApp.apps.acceptPinRequest(this, getIntent());
 	}
 
 	@Override
@@ -130,6 +134,13 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		// A shortcut-pin request (e.g. adding a PWA from a browser) arrives
+		// here while the launcher is already running. Handle it and return so
+		// the home-gesture logic below doesn't act on this unrelated intent.
+		if (Apps.isPinItemRequest(intent)) {
+			PieLauncherApp.apps.acceptPinRequest(this, intent);
+			return;
+		}
 		// Because this activity has the launch mode "singleTask", it'll get
 		// an onNewIntent() when the activity is re-launched.
 		if (intent != null &&
