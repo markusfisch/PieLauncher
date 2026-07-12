@@ -1315,6 +1315,16 @@ public class AppPieView extends View {
 				if (PieLauncherApp.apps.isDrawerIcon(
 						(Apps.AppIcon) grabbedIcon)) {
 					removeIconFromPie(grabbedIcon, true);
+				} else if (Apps.isShortcut((Apps.AppIcon) grabbedIcon)) {
+					// The end target uninstalls apps; a pinned shortcut (e.g.
+					// a PWA) has nothing to uninstall, so remove it instead.
+					// Unlike launchAppInfo() this stays in-app, so we must end
+					// edit mode ourselves — otherwise the view is left in
+					// MODE_EDIT and the pie won't open until the activity is
+					// recreated (e.g. by pressing Home).
+					PieLauncherApp.apps.removePinnedShortcut(context,
+							(Apps.AppIcon) grabbedIcon);
+					endEditMode();
 				} else {
 					// Persist changes before launching app info because
 					// that can be used to uninstall an app which would
