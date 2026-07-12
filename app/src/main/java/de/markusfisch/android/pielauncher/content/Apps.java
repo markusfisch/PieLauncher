@@ -304,7 +304,8 @@ public class Apps {
 			PieLauncherApp.getDatabase(appContext).removePackage(
 					appContext, packageName, userHandle);
 			handler.post(() -> {
-				removePackageFromApps(apps, packageName, userHandle);
+				removePackageFromApps(apps, packageName, userHandle,
+						true);
 				removePackageFromPieMenu(menuPrimary, packageName,
 						userHandle);
 				removePackageFromPieMenu(menuSecondary, packageName,
@@ -366,7 +367,8 @@ public class Apps {
 		if (packageRestriction != null) {
 			// Copy apps since we're indexing just one app.
 			newApps.putAll(apps);
-			removePackageFromApps(newApps, packageRestriction, userRestriction);
+			removePackageFromApps(newApps, packageRestriction, userRestriction,
+					false);
 			// No need to call removePackageFromPieMenu() because the
 			// menu will be re-created by getPrimaryMenu() after indexing.
 		}
@@ -673,7 +675,7 @@ public class Apps {
 			if (!menu.contains(drawerIcon)) {
 				menu.add(0, drawerIcon);
 			}
-			removePackageFromApps(allApps, drawerPackageName, null);
+			removePackageFromApps(allApps, drawerPackageName, null, false);
 		} else {
 			drawerPackageName = null;
 		}
@@ -722,12 +724,13 @@ public class Apps {
 	private static void removePackageFromApps(
 			Map<LauncherItemKey, AppIcon> allApps,
 			String packageName,
-			UserHandle userHandle) {
+			UserHandle userHandle,
+			boolean includeShortcuts) {
 		Iterator<Map.Entry<LauncherItemKey, AppIcon>> it =
 				allApps.entrySet().iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next().getValue();
-			if (packageName.equals(appIcon.componentName.getPackageName()) &&
+			if (isPackageMatch(appIcon, packageName, includeShortcuts) &&
 					(userHandle == null || userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
@@ -739,10 +742,18 @@ public class Apps {
 		Iterator<AppIcon> it = icons.iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next();
-			if (packageName.equals(appIcon.componentName.getPackageName()) &&
+			if (isPackageMatch(appIcon, packageName, true) &&
 					(userHandle == null || userHandle.equals(appIcon.userHandle))) {
 				it.remove();
 			}
 		}
+	}
+
+	private static boolean isPackageMatch(
+			AppIcon appIcon,
+			String packageName,
+			boolean includeShortcuts) {
+		return packageName.equals(appIcon.componentName.getPackageName()) ||
+				(includeShortcuts && packageName.equals(appIcon.shortcutPackage));
 	}
 }
