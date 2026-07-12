@@ -130,4 +130,6 @@
 	<string name="app_icon">应用程序图标</string>
 	<string name="user_profile_locked">用户个人资料已锁定</string>
 	<string name="activity_not_enabled">活动未启用</string>
+	<string name="added_to_home_screen">已添加 %1$s</string>
+	<string name="removed_from_home_screen">已移除 %1$s</string>
 </resources>

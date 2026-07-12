@@ -130,4 +130,6 @@
 	<string name="app_icon">Appikon</string>
 	<string name="user_profile_locked">Användarprofil låst</string>
 	<string name="activity_not_enabled">Aktivitet ej aktiverad</string>
+	<string name="added_to_home_screen">%1$s har lagts till</string>
+	<string name="removed_from_home_screen">%1$s har tagits bort</string>
 </resources>

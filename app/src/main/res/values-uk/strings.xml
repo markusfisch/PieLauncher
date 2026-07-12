@@ -130,4 +130,6 @@
 	<string name="app_icon">Іконка програми</string>
 	<string name="user_profile_locked">Заблакіраваны профіль карыстальніка</string>
 	<string name="activity_not_enabled">Не активована діяльність</string>
+	<string name="added_to_home_screen">%1$s додано</string>
+	<string name="removed_from_home_screen">%1$s видалено</string>
 </resources>

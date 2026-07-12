@@ -130,4 +130,6 @@
 	<string name="app_icon">App-pictogram</string>
 	<string name="user_profile_locked">Gebruikersprofiel vergrendeld</string>
 	<string name="activity_not_enabled">Activiteit niet ingeschakeld</string>
+	<string name="added_to_home_screen">%1$s toegevoegd</string>
+	<string name="removed_from_home_screen">%1$s verwijderd</string>
 </resources>

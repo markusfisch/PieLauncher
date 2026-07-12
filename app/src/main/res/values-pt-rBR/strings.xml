@@ -130,4 +130,6 @@
 	<string name="app_icon">Ícone do aplicativo</string>
 	<string name="user_profile_locked">Perfil do usuário bloqueado</string>
 	<string name="activity_not_enabled">Atividade não ativada</string>
+	<string name="added_to_home_screen">%1$s adicionado</string>
+	<string name="removed_from_home_screen">%1$s removido</string>
 </resources>

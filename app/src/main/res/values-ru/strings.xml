@@ -130,4 +130,6 @@
 	<string name="app_icon">Иконка приложения</string>
 	<string name="user_profile_locked">Профиль пользователя заблокирован</string>
 	<string name="activity_not_enabled">Деятельность не включена</string>
+	<string name="added_to_home_screen">%1$s добавлено</string>
+	<string name="removed_from_home_screen">%1$s удалено</string>
 </resources>
