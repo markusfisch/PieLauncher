@@ -580,6 +580,7 @@ public class Database {
 		try {
 			deletePackage(context, db, packageName, userHandle);
 			deleteUsage(context, db, packageName, userHandle);
+			deletePinnedShortcuts(context, db, packageName, userHandle);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
@@ -644,6 +645,24 @@ public class Database {
 					});
 		} else {
 			db.delete(APP_USAGE, PACKAGE_NAME + "=?",
+					new String[]{packageName});
+		}
+	}
+
+	private void deletePinnedShortcuts(Context context,
+			SQLiteDatabase db,
+			String packageName,
+			UserHandle userHandle) {
+		if (AppLauncher.HAS_LAUNCHER_APP && userHandle != null) {
+			db.delete(PINNED_SHORTCUTS,
+					OWNER_PACKAGE + "=? AND " + USER_SERIAL + "=?",
+					new String[]{
+							packageName,
+							String.valueOf(getSerialNumberForUser(
+									context, userHandle))
+					});
+		} else {
+			db.delete(PINNED_SHORTCUTS, OWNER_PACKAGE + "=?",
 					new String[]{packageName});
 		}
 	}
