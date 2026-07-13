@@ -1517,7 +1517,7 @@ public class AppPieView extends View {
 	}
 
 	private void onCircle() {
-		ArrayList<Apps.AppIcon> icons = getAlternateMenu(
+		List<Apps.AppIcon> icons = getAlternateMenu(
 				prefs.circleSwapsMenus());
 		if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
 			return;
@@ -1531,7 +1531,7 @@ public class AppPieView extends View {
 		boolean alternate = viewWidth > viewHeight
 				? x < viewWidth >> 1
 				: y < viewHeight >> 1;
-		ArrayList<Apps.AppIcon> icons = alternate
+		List<Apps.AppIcon> icons = alternate
 				? getAlternateMenu(prefs.splitPieMenu())
 				: menuPrimary;
 		setMenu(icons == null || icons.isEmpty()
@@ -1539,20 +1539,19 @@ public class AppPieView extends View {
 				: icons);
 	}
 
-	private ArrayList<Apps.AppIcon> getAlternateMenu(int option) {
+	private List<Apps.AppIcon> getAlternateMenu(int option) {
 		switch (option) {
 			case Preferences.ALTERNATE_MENU_SECONDARY:
 				return menuSecondary;
 			case Preferences.ALTERNATE_MENU_ALL_APPS:
 				List<Apps.AppIcon> all = AppSearch.filterAppsBy(
 						PieLauncherApp.apps, getContext(), null);
-				return all != null ? new ArrayList<Apps.AppIcon>(all) : null;
+				return all != null ? new ArrayList<>(all) : null;
 			case Preferences.ALTERNATE_MENU_LAST_USED:
 				List<Apps.AppIcon> lastUsed = AppSearch.filterAppsByFrecency(
 						PieLauncherApp.apps, getContext());
 				return lastUsed != null
-						? new ArrayList<Apps.AppIcon>(lastUsed.subList(
-								0, Math.min(8, lastUsed.size())))
+						? new ArrayList<>(lastUsed.subList(0, Math.min(8, lastUsed.size())))
 						: null;
 			case Preferences.ALTERNATE_MENU_NONE:
 			default:
@@ -1560,7 +1559,7 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void setMenu(ArrayList<Apps.AppIcon> icons) {
+	private void setMenu(List<Apps.AppIcon> icons) {
 		pieMenu.icons = icons;
 		applyPiePreferences();
 	}
