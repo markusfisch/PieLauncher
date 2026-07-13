@@ -61,30 +61,6 @@ public class AppLauncher {
 		return launchPackage(context, icon.componentName.getPackageName());
 	}
 
-	@SuppressLint("UseRequiresApi")
-	private static boolean launchShortcut(Context context, AppIcon icon) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-			return false;
-		}
-		LauncherApps la = getLauncherApps(context);
-		if (la == null || icon.shortcutPackage == null) {
-			return false;
-		}
-		UserHandle user = icon.userHandle != null
-				? icon.userHandle
-				: Process.myUserHandle();
-		try {
-			la.startShortcut(icon.shortcutPackage, icon.shortcutId,
-					icon.rect, null, user);
-			return true;
-		} catch (Exception e) {
-			// e.g. IllegalStateException when this isn't the default launcher,
-			// or ActivityNotFoundException if the shortcut no longer exists.
-			toast(context, R.string.activity_not_enabled);
-			return false;
-		}
-	}
-
 	public static void launchAppInfo(Context context, AppIcon icon) {
 		if (Apps.isShortcut(icon)) {
 			// A pinned shortcut has no app-info page of its own; show the
@@ -298,5 +274,29 @@ public class AppLauncher {
 			return;
 		}
 		Toast.makeText(context, m, Toast.LENGTH_SHORT).show();
+	}
+
+	@SuppressLint("UseRequiresApi")
+	private static boolean launchShortcut(Context context, AppIcon icon) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+			return false;
+		}
+		LauncherApps la = getLauncherApps(context);
+		if (la == null || icon.shortcutPackage == null) {
+			return false;
+		}
+		UserHandle user = icon.userHandle != null
+				? icon.userHandle
+				: Process.myUserHandle();
+		try {
+			la.startShortcut(icon.shortcutPackage, icon.shortcutId,
+					icon.rect, null, user);
+			return true;
+		} catch (Exception e) {
+			// e.g. IllegalStateException when this isn't the default launcher,
+			// or ActivityNotFoundException if the shortcut no longer exists.
+			toast(context, R.string.activity_not_enabled);
+			return false;
+		}
 	}
 }

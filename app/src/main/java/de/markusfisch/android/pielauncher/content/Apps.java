@@ -148,8 +148,6 @@ public class Apps {
 		hiddenAppsStorage.store(context);
 	}
 
-	// --- Pinned shortcuts (e.g. PWAs added to the home screen) ------------
-
 	public static boolean isShortcut(AppIcon icon) {
 		return icon != null && icon.shortcutId != null;
 	}
@@ -184,50 +182,6 @@ public class Apps {
 		}
 	}
 
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.O)
-	private void acceptPinRequestApi26(Context context, Intent intent) {
-		LauncherApps la = AppLauncher.getLauncherApps(context);
-		if (la == null) {
-			return;
-		}
-		LauncherApps.PinItemRequest request;
-		try {
-			request = la.getPinItemRequest(intent);
-		} catch (Exception e) {
-			return;
-		}
-		if (request == null ||
-				request.getRequestType() !=
-						LauncherApps.PinItemRequest.REQUEST_TYPE_SHORTCUT ||
-				!request.isValid()) {
-			return;
-		}
-		ShortcutInfo info = request.getShortcutInfo();
-		if (info == null) {
-			return;
-		}
-		AppIcon icon = buildShortcutIcon(context, la, info);
-		// Only accept the pin once we can actually represent it, so a request
-		// we can't render isn't silently accepted and then lost.
-		if (icon == null || !request.accept()) {
-			return;
-		}
-		// Persist first so the shortcut survives even if an index that is
-		// already running clears the map before the next one re-injects it.
-		PieLauncherApp.getDatabase(context).storePinnedShortcut(context, icon);
-		apps.put(new LauncherItemKey(icon.componentName, icon.userHandle),
-				icon);
-		if (isIndexing()) {
-			// Re-index once the running index finishes so the new shortcut
-			// isn't dropped by the map replacement at its end.
-			updateIconsAsync(context);
-		}
-		propagateUpdate();
-		AppLauncher.toast(context, context.getString(
-				R.string.added_to_home_screen, icon.label));
-	}
-
 	// Removes a pinned shortcut from the launcher completely.
 	public void removePinnedShortcut(Context context, AppIcon icon) {
 		if (!isShortcut(icon)) {
@@ -241,64 +195,6 @@ public class Apps {
 		propagateUpdate();
 		AppLauncher.toast(context, context.getString(
 				R.string.removed_from_home_screen, icon.label));
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.O)
-	private static AppIcon buildShortcutIcon(
-			Context context,
-			LauncherApps la,
-			ShortcutInfo info) {
-		String shortcutPackage = info.getPackage();
-		String shortcutId = info.getId();
-		if (shortcutPackage == null || shortcutId == null) {
-			return null;
-		}
-		CharSequence label = info.getShortLabel();
-		if (label == null || label.length() < 1) {
-			label = info.getLongLabel();
-		}
-		if (label == null || label.length() < 1) {
-			label = shortcutPackage;
-		}
-		Drawable drawable = null;
-		try {
-			drawable = la.getShortcutIconDrawable(info,
-					context.getResources().getDisplayMetrics().densityDpi);
-		} catch (Exception e) {
-			// Fall through to the owning app's icon.
-		}
-		if (drawable == null) {
-			try {
-				drawable = context.getPackageManager()
-						.getApplicationIcon(shortcutPackage);
-			} catch (PackageManager.NameNotFoundException e) {
-				return null;
-			}
-		}
-		Bitmap bitmap = Converter.getBitmapFromDrawable(drawable);
-		if (bitmap == null) {
-			return null;
-		}
-		AppIcon icon = new AppIcon(
-				shortcutComponentName(shortcutPackage, shortcutId),
-				label.toString(),
-				bitmap,
-				info.getUserHandle());
-		icon.shortcutPackage = shortcutPackage;
-		icon.shortcutId = shortcutId;
-		return icon;
-	}
-
-	private void injectPinnedShortcuts(
-			Context context,
-			Map<LauncherItemKey, AppIcon> allApps,
-			Set<ComponentName> hideApps) {
-		PieLauncherApp.getDatabase(context).restorePinnedShortcuts(
-				context, allApps);
-		if (hideApps != null) {
-			removeApps(allApps, hideApps);
-		}
 	}
 
 	public void removePackageAsync(
@@ -476,6 +372,108 @@ public class Apps {
 		// Let menu restoration resolve the persisted old alias to the new one.
 		allApps.put(oldEntry.getKey(), newEntry.getValue());
 		return RECONCILED_MENU;
+	}
+
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.O)
+	private void acceptPinRequestApi26(Context context, Intent intent) {
+		LauncherApps la = AppLauncher.getLauncherApps(context);
+		if (la == null) {
+			return;
+		}
+		LauncherApps.PinItemRequest request;
+		try {
+			request = la.getPinItemRequest(intent);
+		} catch (Exception e) {
+			return;
+		}
+		if (request == null ||
+				request.getRequestType() !=
+						LauncherApps.PinItemRequest.REQUEST_TYPE_SHORTCUT ||
+				!request.isValid()) {
+			return;
+		}
+		ShortcutInfo info = request.getShortcutInfo();
+		if (info == null) {
+			return;
+		}
+		AppIcon icon = buildShortcutIcon(context, la, info);
+		// Only accept the pin once we can actually represent it, so a request
+		// we can't render isn't silently accepted and then lost.
+		if (icon == null || !request.accept()) {
+			return;
+		}
+		// Persist first so the shortcut survives even if an index that is
+		// already running clears the map before the next one re-injects it.
+		PieLauncherApp.getDatabase(context).storePinnedShortcut(context, icon);
+		apps.put(new LauncherItemKey(icon.componentName, icon.userHandle),
+				icon);
+		if (isIndexing()) {
+			// Re-index once the running index finishes so the new shortcut
+			// isn't dropped by the map replacement at its end.
+			updateIconsAsync(context);
+		}
+		propagateUpdate();
+		AppLauncher.toast(context, context.getString(
+				R.string.added_to_home_screen, icon.label));
+	}
+
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.O)
+	private static AppIcon buildShortcutIcon(
+			Context context,
+			LauncherApps la,
+			ShortcutInfo info) {
+		String shortcutPackage = info.getPackage();
+		String shortcutId = info.getId();
+		if (shortcutPackage == null || shortcutId == null) {
+			return null;
+		}
+		CharSequence label = info.getShortLabel();
+		if (label == null || label.length() < 1) {
+			label = info.getLongLabel();
+		}
+		if (label == null || label.length() < 1) {
+			label = shortcutPackage;
+		}
+		Drawable drawable = null;
+		try {
+			drawable = la.getShortcutIconDrawable(info,
+					context.getResources().getDisplayMetrics().densityDpi);
+		} catch (Exception e) {
+			// Fall through to the owning app's icon.
+		}
+		if (drawable == null) {
+			try {
+				drawable = context.getPackageManager()
+						.getApplicationIcon(shortcutPackage);
+			} catch (PackageManager.NameNotFoundException e) {
+				return null;
+			}
+		}
+		Bitmap bitmap = Converter.getBitmapFromDrawable(drawable);
+		if (bitmap == null) {
+			return null;
+		}
+		AppIcon icon = new AppIcon(
+				shortcutComponentName(shortcutPackage, shortcutId),
+				label.toString(),
+				bitmap,
+				info.getUserHandle());
+		icon.shortcutPackage = shortcutPackage;
+		icon.shortcutId = shortcutId;
+		return icon;
+	}
+
+	private void injectPinnedShortcuts(
+			Context context,
+			Map<LauncherItemKey, AppIcon> allApps,
+			Set<ComponentName> hideApps) {
+		PieLauncherApp.getDatabase(context).restorePinnedShortcuts(
+				context, allApps);
+		if (hideApps != null) {
+			removeApps(allApps, hideApps);
+		}
 	}
 
 	private static void removeObsoletePackageKeys(
