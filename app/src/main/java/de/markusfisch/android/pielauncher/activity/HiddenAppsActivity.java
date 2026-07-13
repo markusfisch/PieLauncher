@@ -162,7 +162,8 @@ public class HiddenAppsActivity extends Activity {
 		});
 	}
 
-	private static Pair<String, Drawable> getAppNameAndIcon(Context context,
+	private static Pair<String, Drawable> getAppNameAndIcon(
+			Context context,
 			String packageName) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			LauncherApps la = (LauncherApps) context.getSystemService(

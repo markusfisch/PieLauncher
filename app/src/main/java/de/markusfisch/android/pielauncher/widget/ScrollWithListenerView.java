@@ -30,7 +30,12 @@ public class ScrollWithListenerView extends ScrollView {
 	}
 
 	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+	protected void onLayout(
+			boolean changed,
+			int left,
+			int top,
+			int right,
+			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (changed) {
 			// Give Android some time to settle down before running this,

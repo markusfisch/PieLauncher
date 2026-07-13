@@ -20,7 +20,10 @@ public class HiddenAppsAdapter extends ArrayAdapter<HiddenAppsAdapter.HiddenApp>
 		public final String name;
 		public final Drawable icon;
 
-		public HiddenApp(ComponentName componentName, String name, Drawable icon) {
+		public HiddenApp(
+				ComponentName componentName,
+				String name,
+				Drawable icon) {
 			this.componentName = componentName;
 			this.name = name;
 			this.icon = icon;

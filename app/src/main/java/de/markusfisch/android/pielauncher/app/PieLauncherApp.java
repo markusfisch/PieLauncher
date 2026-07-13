@@ -105,32 +105,39 @@ public class PieLauncherApp extends Application {
 				LAUNCHER_APPS_SERVICE);
 		launcherApps.registerCallback(new LauncherApps.Callback() {
 			@Override
-			public void onPackageAdded(String packageName,
+			public void onPackageAdded(
+					String packageName,
 					UserHandle user) {
 				apps.updatePackageAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
-			public void onPackageChanged(String packageName,
+			public void onPackageChanged(
+					String packageName,
 					UserHandle user) {
 				apps.updatePackageAsync(PieLauncherApp.this, packageName, user);
 			}
 
 			@Override
-			public void onPackageRemoved(String packageName,
+			public void onPackageRemoved(
+					String packageName,
 					UserHandle user) {
 				apps.removePackageAsync(PieLauncherApp.this, packageName,
 						user);
 			}
 
 			@Override
-			public void onPackagesAvailable(String[] packageNames,
-					UserHandle user, boolean replacing) {
+			public void onPackagesAvailable(
+					String[] packageNames,
+					UserHandle user,
+					boolean replacing) {
 			}
 
 			@Override
-			public void onPackagesUnavailable(String[] packageNames,
-					UserHandle user, boolean replacing) {
+			public void onPackagesUnavailable(
+					String[] packageNames,
+					UserHandle user,
+					boolean replacing) {
 			}
 		});
 	}

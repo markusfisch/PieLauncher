@@ -61,19 +61,24 @@ public class AppSearch {
 		}
 	}
 
-	public static List<AppIcon> filterAppsBy(Apps repo, Context context, String query) {
+	public static List<AppIcon> filterAppsBy(
+			Apps repo,
+			Context context,
+			String query) {
 		Preferences prefs = PieLauncherApp.getPrefs(context);
 		return filterAppsBy(repo, context, query, prefs, prefs.getAppSorting());
 	}
 
 	public static List<AppIcon> filterAppsByFrecency(
-			Apps repo, Context context) {
+			Apps repo,
+			Context context) {
 		Preferences prefs = PieLauncherApp.getPrefs(context);
 		return filterAppsBy(repo, context, null, prefs,
 				Preferences.APP_SORT_FRECENCY);
 	}
 
-	private static List<AppIcon> filterAppsBy(Apps repo,
+	private static List<AppIcon> filterAppsBy(
+			Apps repo,
 			Context context,
 			String query,
 			Preferences prefs,

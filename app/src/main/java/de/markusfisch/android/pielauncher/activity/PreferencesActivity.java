@@ -418,8 +418,10 @@ public class PreferencesActivity extends Activity {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static <T> Spanned getLabelAndValue(Context context,
-			int labelId, T value) {
+	private static <T> Spanned getLabelAndValue(
+			Context context,
+			int labelId,
+			T value) {
 		String valueString;
 		if (value instanceof Integer) {
 			valueString = context.getString((Integer) value);

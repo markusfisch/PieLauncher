@@ -468,8 +468,11 @@ public class HomeActivity extends Activity {
 		}
 
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
+		public boolean onScroll(
+				MotionEvent e1,
+				MotionEvent e2,
+				float distanceX,
+				float distanceY) {
 			if (pieView.appListNotScrolled() &&
 					Math.abs(distanceY) > Math.abs(distanceX)) {
 				pieView.dragDownListBy(distanceY);
@@ -478,8 +481,11 @@ public class HomeActivity extends Activity {
 		}
 
 		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2,
-				float velocityX, float velocityY) {
+		public boolean onFling(
+				MotionEvent e1,
+				MotionEvent e2,
+				float velocityX,
+				float velocityY) {
 			if (pieView.appListNotScrolled() &&
 					velocityY > velocityX &&
 					velocityY >= minimumVelocity &&

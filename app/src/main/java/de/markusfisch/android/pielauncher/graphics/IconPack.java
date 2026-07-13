@@ -133,19 +133,23 @@ public class IconPack {
 	}
 
 	public void restoreMappings(Context context) {
-		IconMappingsStorage.restore(context, getSelectedIconPackageName(), mappings);
+		IconMappingsStorage.restore(
+				context, getSelectedIconPackageName(), mappings);
 	}
 
 	public void storeMappings(Context context) {
-		IconMappingsStorage.store(context, getSelectedIconPackageName(), mappings);
+		IconMappingsStorage.store(
+				context, getSelectedIconPackageName(), mappings);
 	}
 
 	public boolean hasMapping(ComponentName componentName) {
 		return mappings.containsKey(componentName);
 	}
 
-	public void addMapping(String iconPackageName,
-			ComponentName componentName, String drawableName) {
+	public void addMapping(
+			String iconPackageName,
+			ComponentName componentName,
+			String drawableName) {
 		mappings.put(componentName,
 				new PackAndDrawable(iconPackageName, drawableName));
 	}

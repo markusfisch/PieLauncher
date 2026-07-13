@@ -31,7 +31,8 @@ public class AppLauncher {
 	private static UserManager userManager;
 
 	public static ComponentName getLaunchComponentForPackageName(
-			Context context, String packageName) {
+			Context context,
+			String packageName) {
 		Intent intent = getLaunchIntent(context, packageName);
 		return intent != null ? intent.getComponent() : null;
 	}
@@ -195,7 +196,9 @@ public class AppLauncher {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static List<LauncherActivityInfo> getActivityList(
-			LauncherApps la, String packageName, UserHandle userHandle) {
+			LauncherApps la,
+			String packageName,
+			UserHandle userHandle) {
 		try {
 			return la.getActivityList(packageName, userHandle);
 		} catch (Exception e) {
@@ -204,7 +207,9 @@ public class AppLauncher {
 		}
 	}
 
-	public static boolean unlockPrivateProfile(Context context, Runnable onResume) {
+	public static boolean unlockPrivateProfile(
+			Context context,
+			Runnable onResume) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
 			return false;
 		}

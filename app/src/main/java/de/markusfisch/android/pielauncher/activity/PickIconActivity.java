@@ -65,7 +65,9 @@ public class PickIconActivity extends Activity {
 		askToHide(context, componentName, null);
 	}
 
-	public static void askToHide(Context context, ComponentName componentName,
+	public static void askToHide(
+			Context context,
+			ComponentName componentName,
 			OnHideListener hideListener) {
 		Dialog.newDialog(context)
 				.setTitle(R.string.hide_app)

@@ -29,7 +29,10 @@ public class CanvasPieMenu<T extends CanvasPieMenu.CanvasIcon> extends PieMenu<T
 			smoothedY = y;
 		}
 
-		public void draw(Canvas canvas, double iconSize, int centerX,
+		public void draw(
+				Canvas canvas,
+				double iconSize,
+				int centerX,
 				int centerY) {
 			int s = (int) iconSize >> 1;
 			if (s < 1) {

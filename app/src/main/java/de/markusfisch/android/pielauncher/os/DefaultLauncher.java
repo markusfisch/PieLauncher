@@ -34,7 +34,8 @@ public class DefaultLauncher {
 		return isDefault(context.getPackageManager(), context.getPackageName());
 	}
 
-	public static boolean isDefault(PackageManager packageManager,
+	public static boolean isDefault(
+			PackageManager packageManager,
 			String packageName) {
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_HOME);

@@ -37,7 +37,8 @@ public class AppCacheDatabase {
 		openHelper = new OpenHelper(context.getApplicationContext());
 	}
 
-	public void restoreApps(Context context,
+	public void restoreApps(
+			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		SQLiteDatabase db = openHelper.getReadableDatabase();
 		Cursor cursor = db.query(APPS,
@@ -85,7 +86,8 @@ public class AppCacheDatabase {
 		}
 	}
 
-	public void replaceAllApps(Context context,
+	public void replaceAllApps(
+			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
@@ -98,7 +100,8 @@ public class AppCacheDatabase {
 		}
 	}
 
-	public void replacePackage(Context context,
+	public void replacePackage(
+			Context context,
 			String packageName,
 			UserHandle userHandle,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
@@ -121,7 +124,8 @@ public class AppCacheDatabase {
 		}
 	}
 
-	public void removePackage(Context context,
+	public void removePackage(
+			Context context,
 			String packageName,
 			UserHandle userHandle) {
 		SQLiteDatabase db = openHelper.getWritableDatabase();
@@ -134,7 +138,8 @@ public class AppCacheDatabase {
 		}
 	}
 
-	private void insertApps(Context context,
+	private void insertApps(
+			Context context,
 			SQLiteDatabase db,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		long now = System.currentTimeMillis();
@@ -155,7 +160,8 @@ public class AppCacheDatabase {
 		}
 	}
 
-	private void deletePackage(Context context,
+	private void deletePackage(
+			Context context,
 			SQLiteDatabase db,
 			String packageName,
 			UserHandle userHandle) {
@@ -184,7 +190,8 @@ public class AppCacheDatabase {
 		return appIcon.iconBytes;
 	}
 
-	private static void putUserSerial(Context context,
+	private static void putUserSerial(
+			Context context,
 			ContentValues values,
 			UserHandle userHandle) {
 		if (AppLauncher.HAS_LAUNCHER_APP && userHandle != null) {
@@ -197,7 +204,8 @@ public class AppCacheDatabase {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static long getSerialNumberForUser(Context context,
+	private static long getSerialNumberForUser(
+			Context context,
 			UserHandle userHandle) {
 		UserManager um = AppLauncher.getUserManager(context);
 		return um != null ? um.getSerialNumberForUser(userHandle) : -1L;
@@ -205,7 +213,8 @@ public class AppCacheDatabase {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static UserHandle getUserForSerialNumber(Context context,
+	private static UserHandle getUserForSerialNumber(
+			Context context,
 			long serialNumber) {
 		UserManager um = AppLauncher.getUserManager(context);
 		return um != null ? um.getUserForSerialNumber(serialNumber) : null;
@@ -232,13 +241,15 @@ public class AppCacheDatabase {
 		}
 
 		@Override
-		public void onUpgrade(SQLiteDatabase db,
+		public void onUpgrade(
+				SQLiteDatabase db,
 				int oldVersion,
 				int newVersion) {
 		}
 
 		@Override
-		public void onDowngrade(SQLiteDatabase db,
+		public void onDowngrade(
+				SQLiteDatabase db,
 				int oldVersion,
 				int newVersion) {
 		}

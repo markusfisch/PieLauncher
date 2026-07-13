@@ -86,7 +86,8 @@ public class SystemBars {
 		window.setNavigationBarColor(color);
 	}
 
-	public static void listenForWindowInsets(View view,
+	public static void listenForWindowInsets(
+			View view,
 			OnInsetListener listener) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT_WATCH) {
 			return;
@@ -118,7 +119,8 @@ public class SystemBars {
 	}
 
 	public static void addPaddingFromWindowInsets(
-			View toolbar, View content) {
+			View toolbar,
+			View content) {
 		Rect contentPadding = new Rect(
 				content.getPaddingLeft(),
 				content.getPaddingTop(),

@@ -380,7 +380,11 @@ public class AppPieView extends View {
 	}
 
 	@Override
-	protected void onLayout(boolean changed, int left, int top, int right,
+	protected void onLayout(
+			boolean changed,
+			int left,
+			int top,
+			int right,
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (changed) {
@@ -584,7 +588,9 @@ public class AppPieView extends View {
 				}
 			}
 
-			private void setTouchReference(MotionEvent event, int id,
+			private void setTouchReference(
+					MotionEvent event,
+					int id,
 					int index) {
 				touchReferences.put(id, new TouchReference(
 						event.getX(index),
@@ -592,7 +598,8 @@ public class AppPieView extends View {
 						event.getEventTime()));
 			}
 
-			private TouchReference getTouchReference(MotionEvent event,
+			private TouchReference getTouchReference(
+					MotionEvent event,
 					int index) {
 				return index > -1 && index < event.getPointerCount()
 						? touchReferences.get(event.getPointerId(index))
@@ -1153,7 +1160,9 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean performAction(Context context, Point at,
+	private boolean performAction(
+			Context context,
+			Point at,
 			TapFlags tapFlags) {
 		if (mode == MODE_PIE) {
 			return performPieAction(context, tapFlags);
@@ -1363,7 +1372,9 @@ public class AppPieView extends View {
 	}
 
 	private static void centerSmoothCoordinatesAt(
-			ArrayList<Apps.AppIcon> icons, int centerX, int centerY) {
+			ArrayList<Apps.AppIcon> icons,
+			int centerX,
+			int centerY) {
 		for (Apps.AppIcon ic : icons) {
 			ic.setStartPosition(centerX, centerY);
 		}
@@ -1916,7 +1927,10 @@ public class AppPieView extends View {
 		drawAction(canvas, icon, rect, 0f);
 	}
 
-	private void drawAction(Canvas canvas, Bitmap icon, Rect rect,
+	private void drawAction(
+			Canvas canvas,
+			Bitmap icon,
+			Rect rect,
 			float radius) {
 		boolean pressed = rect == highlightedAction;
 		Paint circlePaint = null;

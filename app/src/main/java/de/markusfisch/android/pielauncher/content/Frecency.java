@@ -20,8 +20,12 @@ final class Frecency {
 		return getScore(score, updatedAt, now) + 1d;
 	}
 
-	static int compare(double leftScore, long leftUpdatedAt,
-			double rightScore, long rightUpdatedAt, long now) {
+	static int compare(
+			double leftScore,
+			long leftUpdatedAt,
+			double rightScore,
+			long rightUpdatedAt,
+			long now) {
 		return Double.compare(
 				getScore(rightScore, rightUpdatedAt, now),
 				getScore(leftScore, leftUpdatedAt, now));

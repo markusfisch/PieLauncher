@@ -64,7 +64,9 @@ public class Apps {
 		public String shortcutId;
 		public String shortcutPackage;
 
-		AppIcon(ComponentName componentName, String label, Drawable icon,
+		AppIcon(ComponentName componentName,
+				String label,
+				Drawable icon,
 				UserHandle userHandle) {
 			super(Converter.getBitmapFromDrawable(icon));
 			this.componentName = componentName;
@@ -72,7 +74,9 @@ public class Apps {
 			this.userHandle = userHandle;
 		}
 
-		AppIcon(ComponentName componentName, String label, Bitmap icon,
+		AppIcon(ComponentName componentName,
+				String label,
+				Bitmap icon,
 				UserHandle userHandle) {
 			super(icon);
 			this.componentName = componentName;
@@ -156,7 +160,8 @@ public class Apps {
 	}
 
 	public static ComponentName shortcutComponentName(
-			String shortcutPackage, String shortcutId) {
+			String shortcutPackage,
+			String shortcutId) {
 		// The class part only needs to be a stable, unique token per
 		// (owner, id); it's never decoded because both values are stored
 		// next to the icon. URL-safe Base64 avoids the '/' and '#' that
@@ -240,7 +245,9 @@ public class Apps {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.O)
-	private static AppIcon buildShortcutIcon(Context context, LauncherApps la,
+	private static AppIcon buildShortcutIcon(
+			Context context,
+			LauncherApps la,
 			ShortcutInfo info) {
 		String shortcutPackage = info.getPackage();
 		String shortcutId = info.getId();
@@ -283,7 +290,8 @@ public class Apps {
 		return icon;
 	}
 
-	private void injectPinnedShortcuts(Context context,
+	private void injectPinnedShortcuts(
+			Context context,
 			Map<LauncherItemKey, AppIcon> allApps,
 			Set<ComponentName> hideApps) {
 		PieLauncherApp.getDatabase(context).restorePinnedShortcuts(
@@ -293,7 +301,9 @@ public class Apps {
 		}
 	}
 
-	public void removePackageAsync(Context context, String packageName,
+	public void removePackageAsync(
+			Context context,
+			String packageName,
 			UserHandle userHandle) {
 		if (context == null || packageName == null) {
 			return;
@@ -321,7 +331,9 @@ public class Apps {
 		}
 	}
 
-	public void updatePackageAsync(Context context, String packageName,
+	public void updatePackageAsync(
+			Context context,
+			String packageName,
 			UserHandle userHandle) {
 		if (!indexAppsAsync(context, packageName, userHandle)) {
 			handler.postDelayed(() -> updatePackageAsync(
@@ -413,7 +425,8 @@ public class Apps {
 	}
 
 	private static Map<LauncherItemKey, AppIcon> getPackageApps(
-			Map<LauncherItemKey, AppIcon> allApps, String packageName,
+			Map<LauncherItemKey, AppIcon> allApps,
+			String packageName,
 			UserHandle userHandle) {
 		Map<LauncherItemKey, AppIcon> packageApps = new HashMap<>();
 		if (packageName == null) {
@@ -480,7 +493,8 @@ public class Apps {
 		}
 	}
 
-	private void restoreAppsFromCache(Context context,
+	private void restoreAppsFromCache(
+			Context context,
 			HashSet<ComponentName> hideApps) {
 		Map<LauncherItemKey, AppIcon> cachedApps = new HashMap<>();
 		PieLauncherApp.getDatabase(context).restoreApps(context, cachedApps);
@@ -496,7 +510,8 @@ public class Apps {
 		handler.post(() -> updateApps(cachedApps, menus, false));
 	}
 
-	private Menus compileMenus(Context context,
+	private Menus compileMenus(
+			Context context,
 			Map<LauncherItemKey, AppIcon> newApps) {
 		return new Menus(
 				getPrimaryMenu(context, newApps,
@@ -655,9 +670,12 @@ public class Apps {
 		}
 	}
 
-	private static AppIcon addApp(Map<LauncherItemKey, AppIcon> allApps,
-			ComponentName componentName, String label,
-			Drawable icon, UserHandle userHandle) {
+	private static AppIcon addApp(
+			Map<LauncherItemKey, AppIcon> allApps,
+			ComponentName componentName,
+			String label,
+			Drawable icon,
+			UserHandle userHandle) {
 		AppIcon appIcon = new AppIcon(componentName, label, icon, userHandle);
 		allApps.put(new LauncherItemKey(componentName, userHandle), appIcon);
 		return appIcon;
@@ -687,7 +705,8 @@ public class Apps {
 		return menu;
 	}
 
-	private List<AppIcon> getSecondaryMenu(Context context,
+	private List<AppIcon> getSecondaryMenu(
+			Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		ArrayList<AppIcon> menu = MenuStorage.restore(context,
 				MENU_SECONDARY, allApps);
@@ -699,7 +718,8 @@ public class Apps {
 		return menu;
 	}
 
-	private AppIcon addDrawerIcon(Context context,
+	private AppIcon addDrawerIcon(
+			Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
 		String appPackageName = context.getPackageName();
 		drawerPackageName = appPackageName + ".drawer";
@@ -737,8 +757,10 @@ public class Apps {
 		}
 	}
 
-	private void removePackageFromPieMenu(List<AppIcon> icons,
-			String packageName, UserHandle userHandle) {
+	private void removePackageFromPieMenu(
+			List<AppIcon> icons,
+			String packageName,
+			UserHandle userHandle) {
 		Iterator<AppIcon> it = icons.iterator();
 		while (it.hasNext()) {
 			AppIcon appIcon = it.next();

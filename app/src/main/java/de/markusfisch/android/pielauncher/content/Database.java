@@ -76,7 +76,8 @@ public class Database {
 		migrateFiles();
 	}
 
-	public ArrayList<Apps.AppIcon> restoreMenu(String name,
+	public ArrayList<Apps.AppIcon> restoreMenu(
+			String name,
 			Map<LauncherItemKey, Apps.AppIcon> allApps) {
 		ArrayList<Apps.AppIcon> icons = new ArrayList<>();
 		Cursor cursor = openHelper.getReadableDatabase().query(MENU_ITEMS,
@@ -155,7 +156,8 @@ public class Database {
 		}
 	}
 
-	public void restorePinnedShortcuts(Context context,
+	public void restorePinnedShortcuts(
+			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		Cursor cursor = openHelper.getReadableDatabase().query(PINNED_SHORTCUTS,
 				new String[]{COMPONENT_NAME, USER_SERIAL, OWNER_PACKAGE,
@@ -264,7 +266,8 @@ public class Database {
 		}
 	}
 
-	public void storeIconMappings(String packageName,
+	public void storeIconMappings(
+			String packageName,
 			Map<ComponentName, IconPack.PackAndDrawable> mappings) {
 		String iconPack = normalizeIconPack(packageName);
 		SQLiteDatabase db = openHelper.getWritableDatabase();
@@ -408,7 +411,8 @@ public class Database {
 		return packageName != null ? packageName : "";
 	}
 
-	private static boolean hasIconMappingSet(SQLiteDatabase db,
+	private static boolean hasIconMappingSet(
+			SQLiteDatabase db,
 			String iconPack) {
 		Cursor cursor = db.query(ICON_MAPPING_SETS,
 				new String[]{ICON_PACK},
@@ -435,7 +439,8 @@ public class Database {
 		}
 	}
 
-	public void restoreApps(Context context,
+	public void restoreApps(
+			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		SQLiteDatabase db = openHelper.getReadableDatabase();
 		Cursor cursor = db.query(APPS,
@@ -484,7 +489,8 @@ public class Database {
 		restoreFrecency(context, apps);
 	}
 
-	public void restoreFrecency(Context context,
+	public void restoreFrecency(
+			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		for (Apps.AppIcon appIcon : apps.values()) {
 			appIcon.frecencyScore = 0d;
@@ -536,7 +542,8 @@ public class Database {
 		appIcon.frecencyUpdatedAt = now;
 	}
 
-	public void replaceAllApps(Context context,
+	public void replaceAllApps(
+			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
@@ -549,7 +556,8 @@ public class Database {
 		}
 	}
 
-	public void replacePackage(Context context,
+	public void replacePackage(
+			Context context,
 			String packageName,
 			UserHandle userHandle,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
@@ -572,7 +580,8 @@ public class Database {
 		}
 	}
 
-	public void removePackage(Context context,
+	public void removePackage(
+			Context context,
 			String packageName,
 			UserHandle userHandle) {
 		SQLiteDatabase db = openHelper.getWritableDatabase();
@@ -587,7 +596,8 @@ public class Database {
 		}
 	}
 
-	private void insertApps(Context context,
+	private void insertApps(
+			Context context,
 			SQLiteDatabase db,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
 		long now = System.currentTimeMillis();
@@ -614,7 +624,8 @@ public class Database {
 		}
 	}
 
-	private void deletePackage(Context context,
+	private void deletePackage(
+			Context context,
 			SQLiteDatabase db,
 			String packageName,
 			UserHandle userHandle) {
@@ -631,7 +642,8 @@ public class Database {
 		}
 	}
 
-	private void deleteUsage(Context context,
+	private void deleteUsage(
+			Context context,
 			SQLiteDatabase db,
 			String packageName,
 			UserHandle userHandle) {
@@ -649,7 +661,8 @@ public class Database {
 		}
 	}
 
-	private void deletePinnedShortcuts(Context context,
+	private void deletePinnedShortcuts(
+			Context context,
 			SQLiteDatabase db,
 			String packageName,
 			UserHandle userHandle) {
@@ -679,7 +692,8 @@ public class Database {
 		return appIcon.iconBytes;
 	}
 
-	private static void putUserSerial(Context context,
+	private static void putUserSerial(
+			Context context,
 			ContentValues values,
 			UserHandle userHandle) {
 		if (AppLauncher.HAS_LAUNCHER_APP && userHandle != null) {
@@ -692,7 +706,8 @@ public class Database {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static long getSerialNumberForUser(Context context,
+	private static long getSerialNumberForUser(
+			Context context,
 			UserHandle userHandle) {
 		UserManager um = AppLauncher.getUserManager(context);
 		return um != null ? um.getSerialNumberForUser(userHandle) : -1L;
@@ -700,7 +715,8 @@ public class Database {
 
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private static UserHandle getUserForSerialNumber(Context context,
+	private static UserHandle getUserForSerialNumber(
+			Context context,
 			long serialNumber) {
 		UserManager um = AppLauncher.getUserManager(context);
 		return um != null ? um.getUserForSerialNumber(serialNumber) : null;
@@ -781,7 +797,8 @@ public class Database {
 		}
 
 		@Override
-		public void onUpgrade(SQLiteDatabase db,
+		public void onUpgrade(
+				SQLiteDatabase db,
 				int oldVersion,
 				int newVersion) {
 			if (oldVersion < 2) {
@@ -796,7 +813,8 @@ public class Database {
 		}
 
 		@Override
-		public void onDowngrade(SQLiteDatabase db,
+		public void onDowngrade(
+				SQLiteDatabase db,
 				int oldVersion,
 				int newVersion) {
 		}

@@ -13,13 +13,15 @@ public class HiddenAppsStorage {
 
 	private boolean restored = false;
 
-	public synchronized void addAndStore(Context context,
+	public synchronized void addAndStore(
+			Context context,
 			ComponentName componentName) {
 		componentNames.add(componentName);
 		store(context);
 	}
 
-	public synchronized void removeAndStore(Context context,
+	public synchronized void removeAndStore(
+			Context context,
 			String packageName) {
 		for (Iterator<ComponentName> it = componentNames.iterator();
 				it.hasNext(); ) {
