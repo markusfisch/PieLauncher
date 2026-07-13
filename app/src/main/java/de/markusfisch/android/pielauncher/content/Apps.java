@@ -426,9 +426,6 @@ public class Apps {
 			ShortcutInfo info) {
 		String shortcutPackage = info.getPackage();
 		String shortcutId = info.getId();
-		if (shortcutPackage == null || shortcutId == null) {
-			return null;
-		}
 		CharSequence label = info.getShortLabel();
 		if (label == null || label.length() < 1) {
 			label = info.getLongLabel();
