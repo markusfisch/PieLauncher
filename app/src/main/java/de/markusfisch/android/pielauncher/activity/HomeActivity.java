@@ -146,22 +146,26 @@ public class HomeActivity extends Activity {
 		if (intent != null &&
 				(intent.getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) !=
 						Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) {
-			// Deal with the gesture navigation/recent apps bug in Android 14:
-			// * make the home gesture twice
-			// * enter list of recent apps
-			// * now an empty, broken screen is in the list of recent apps
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-					isGestureNavigationEnabled()) {
-				finish();
+			if (isGestureNavigationEnabled()) {
+				if (Build.VERSION.SDK_INT ==
+						Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+					// Deal with the gesture navigation/recent apps bug in
+					// Android 14:
+					// * make the home gesture twice
+					// * enter list of recent apps
+					// * now an empty, broken screen is in recent apps
+					finish();
+				} else {
+					resetHomeState();
+				}
 				return;
 			}
 			// If this activity is re-launched but _not_ brought to front,
 			// the home button was pressed while this activity was on screen.
 			if (pieView.inEditMode()) {
 				pieView.endEditMode();
-			} else if (!isSearchVisible() &&
-					prefs.showDrawerOnHome() &&
-					!isGestureNavigationEnabled() &&
+			} else if (prefs.showDrawerOnHome() &&
+					!isSearchVisible() &&
 					// Only show all apps if the activity was recently paused
 					// (by pressing the home button) and _not_ if onPause()
 					// was triggered by pressing the overview button and
@@ -417,6 +421,14 @@ public class HomeActivity extends Activity {
 		// there's not always a matching ACTION_UP/_CANCEL event for every
 		// ACTION_DOWN event.
 		pieView.hideList();
+	}
+
+	private void resetHomeState() {
+		showAllAppsOnResume = false;
+		if (pieView.inEditMode()) {
+			pieView.endEditMode();
+		}
+		hideAllApps();
 	}
 
 	private void hideKeyboadAndPrefsButton() {
