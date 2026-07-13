@@ -16,7 +16,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 	}
 
 	public interface OnCircleListener {
-		public void onCircle();
+		void onCircle();
 	}
 
 	public List<T> icons = new ArrayList<>();
@@ -272,10 +272,6 @@ public class PieMenu<T extends PieMenu.Icon> {
 	}
 
 	private static class CircleDetector {
-		private interface CircleDetectorListener {
-			void onCircle();
-		}
-
 		private double ldx;
 		private double ldy;
 		private double sum;
