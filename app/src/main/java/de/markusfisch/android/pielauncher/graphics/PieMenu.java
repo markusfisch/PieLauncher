@@ -1,6 +1,7 @@
 package de.markusfisch.android.pielauncher.graphics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PieMenu<T extends PieMenu.Icon> {
 	public static final double TAU = Math.PI + Math.PI;
@@ -18,7 +19,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 		public void onCircle();
 	}
 
-	public ArrayList<T> icons = new ArrayList<>();
+	public List<T> icons = new ArrayList<>();
 
 	private OnCircleListener onCircleListener;
 	private final CircleDetector circleDetector = new CircleDetector();

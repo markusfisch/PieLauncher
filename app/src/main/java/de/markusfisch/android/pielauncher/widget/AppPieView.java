@@ -1372,7 +1372,7 @@ public class AppPieView extends View {
 	}
 
 	private static void centerSmoothCoordinatesAt(
-			ArrayList<Apps.AppIcon> icons,
+			List<Apps.AppIcon> icons,
 			int centerX,
 			int centerY) {
 		for (Apps.AppIcon ic : icons) {
