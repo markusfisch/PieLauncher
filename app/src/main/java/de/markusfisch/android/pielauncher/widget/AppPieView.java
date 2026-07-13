@@ -342,8 +342,8 @@ public class AppPieView extends View {
 	}
 
 	public void filterAppList(String query, boolean resetScroll) {
-		List<Apps.AppIcon> newAppList =
-				AppSearch.filterAppsBy(PieLauncherApp.apps, getContext(), query);
+		List<Apps.AppIcon> newAppList = AppSearch.filterAppsBy(
+				PieLauncherApp.apps, getContext(), query);
 		if (newAppList != null) {
 			appList = newAppList;
 		}
