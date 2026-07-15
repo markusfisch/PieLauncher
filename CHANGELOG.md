@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.28.0
+* Add support for launching pinned shortcuts
+* Limit recent-apps gesture workaround to Android 14
+
 ## 1.27.0
 * Add frecency app sorting and circle swap option
 * Preserve pie entries across app icon changes
