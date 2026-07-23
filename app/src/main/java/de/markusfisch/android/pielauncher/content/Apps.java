@@ -69,12 +69,13 @@ public class Apps {
 	public final ArrayList<AppIcon> menuPrimary = new ArrayList<>();
 	public final ArrayList<AppIcon> menuSecondary = new ArrayList<>();
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
+	public final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private final ExecutorService executor =
 			Executors.newSingleThreadExecutor();
-	public final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
-	public UpdateListener updateListener;
+
+	private UpdateListener updateListener;
 	private String drawerPackageName;
 	private boolean indexing = false;
 
@@ -86,6 +87,10 @@ public class Apps {
 	public boolean isDrawerPackageName(String packageName) {
 		return drawerPackageName != null &&
 				drawerPackageName.equals(packageName);
+	}
+
+	public UpdateListener getUpdateListener() {
+		return updateListener;
 	}
 
 	public void setUpdateListener(UpdateListener listener) {

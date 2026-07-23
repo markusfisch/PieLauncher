@@ -25,6 +25,7 @@ import de.markusfisch.android.pielauncher.content.Apps.AppIcon;
 public class AppLauncher {
 	public static final boolean HAS_LAUNCHER_APP =
 			Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+
 	private static LauncherApps launcherApps;
 	private static UserManager userManager;
 
@@ -41,8 +42,7 @@ public class AppLauncher {
 		}
 	}
 
-	public static Intent getLaunchIntent(Context context,
-										 String packageName) {
+	public static Intent getLaunchIntent(Context context, String packageName) {
 		PackageManager pm = context.getPackageManager();
 		return pm != null ? pm.getLaunchIntentForPackage(packageName) : null;
 	}
@@ -122,9 +122,8 @@ public class AppLauncher {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static LauncherApps getLauncherApps(Context context) {
-		Context appContext = context.getApplicationContext();
 		if (launcherApps == null) {
-			launcherApps = (LauncherApps) appContext.getSystemService(
+			launcherApps = (LauncherApps) context.getApplicationContext().getSystemService(
 					Context.LAUNCHER_APPS_SERVICE);
 		}
 		return launcherApps;
@@ -133,9 +132,8 @@ public class AppLauncher {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static UserManager getUserManager(Context context) {
-		Context appContext = context.getApplicationContext();
 		if (userManager == null) {
-			userManager = (UserManager) appContext.getSystemService(
+			userManager = (UserManager) context.getApplicationContext().getSystemService(
 					Context.USER_SERVICE);
 		}
 		return userManager;

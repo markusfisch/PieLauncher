@@ -1,24 +1,21 @@
 package de.markusfisch.android.pielauncher.content;
 
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.List;
-
 import android.content.Context;
 import android.os.UserHandle;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-
-import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.content.Apps.AppIcon;
+import de.markusfisch.android.pielauncher.preference.Preferences;
 
 public class AppSearch {
-
 	public static final Comparator<AppIcon> appLabelComparator = (left, right) -> {
 		// Fast enough to do it for every comparison.
 		// Otherwise, if defaultLocale was a permanent field outside
@@ -85,7 +82,10 @@ public class AppSearch {
 			query = query.substring(1);
 			if (AppLauncher.isPrivateProfileLocked(context, privateUser)) {
 				if (AppLauncher.unlockPrivateProfile(context, () -> {
-					if (repo.updateListener != null) repo.updateListener.onShowAllAppsOnResume();
+					Apps.UpdateListener listener = repo.getUpdateListener();
+					if (listener != null) {
+						listener.onShowAllAppsOnResume();
+					}
 				})) {
 					return null;
 				}
@@ -139,9 +139,11 @@ public class AppSearch {
 					list.add(appIcon);
 				} else {
 					int min = Math.min(subject.length(), query.length());
-					int distance = AppSearch.hammingDistance(subject, query, min);
+					int distance = AppSearch.hammingDistance(
+							subject, query, min);
 					if (distance <= min >> 1) {
-						hamming.add(new AppSearch.HammingHit(distance, appIcon));
+						hamming.add(new AppSearch.HammingHit(
+								distance, appIcon));
 					}
 				}
 			}

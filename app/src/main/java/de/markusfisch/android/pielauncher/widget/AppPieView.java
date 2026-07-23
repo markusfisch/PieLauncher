@@ -38,9 +38,9 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.activity.PickIconActivity;
 import de.markusfisch.android.pielauncher.activity.PreferencesActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.Apps;
-import de.markusfisch.android.pielauncher.content.AppSearch;
 import de.markusfisch.android.pielauncher.content.AppLauncher;
+import de.markusfisch.android.pielauncher.content.AppSearch;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -343,7 +343,7 @@ public class AppPieView extends View {
 
 	public void filterAppList(String query, boolean resetScroll) {
 		List<Apps.AppIcon> newAppList =
-				AppSearch.filterAppsBy(PieLauncherApp.apps,getContext(), query);
+				AppSearch.filterAppsBy(PieLauncherApp.apps, getContext(), query);
 		if (newAppList != null) {
 			appList = newAppList;
 		}
