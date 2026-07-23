@@ -14,7 +14,6 @@ import java.util.Map;
 
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 
-
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.content.Apps.AppIcon;
 
@@ -41,7 +40,6 @@ public class AppSearch {
 		}
 		return appLabelComparator.compare(left.appIcon, right.appIcon);
 	};
-
 
 	public static String getSubject(
 			int item,
@@ -73,7 +71,6 @@ public class AppSearch {
 			this.appIcon = appIcon;
 		}
 	}
-
 
 	public static List<AppIcon> filterAppsBy(Apps repo, Context context, String query) {
 		if (repo.isIndexing()) {

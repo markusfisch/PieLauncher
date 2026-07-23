@@ -78,8 +78,6 @@ public class Apps {
 	private String drawerPackageName;
 	private boolean indexing = false;
 
-
-
 	public boolean isDrawerIcon(AppIcon icon) {
 		return icon != null &&
 				isDrawerPackageName(icon.componentName.getPackageName());
