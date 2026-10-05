@@ -33,4 +33,19 @@ android {
 			signingConfig signingConfigs.release
 		}
 	}
+
+	packaging {
+		resources {
+			excludes += 'kotlin/**'
+		}
+	}
+}
+
+androidComponents {
+	onVariants(selector().all()) { variant ->
+		variant.outputs.each { output ->
+			output.outputFileName.set(output.versionName.map { name -> "pie_launcher_${name}.apk"
+			})
+		}
+	}
 }
