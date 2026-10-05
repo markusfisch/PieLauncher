@@ -1,7 +1,7 @@
 buildscript {
 	ext {
 		tools_version = '9.4.0'
-		sdk_version = 36
+		sdk_version = 37
 	}
 
 	repositories {
