@@ -33,10 +33,13 @@ final class SearchPick {
 			return 0d;
 		}
 		double sum = 0d;
+		long minUpdatedAt = now - MAX_AGE_MILLIS;
 		for (Map.Entry<String, SearchPick> entry : picks.entrySet()) {
 			if (entry.getKey().startsWith(key)) {
 				SearchPick pick = entry.getValue();
-				sum += Frecency.getScore(pick.score, pick.updatedAt, now);
+				if (pick.updatedAt >= minUpdatedAt) {
+					sum += Frecency.getScore(pick.score, pick.updatedAt, now);
+				}
 			}
 		}
 		return sum;
