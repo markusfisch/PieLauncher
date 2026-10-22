@@ -217,6 +217,106 @@ public class AppSearch {
 		});
 	}
 
+	// Finds app shortcuts whose label matches the query and groups them
+	// by the app they belong to.
+	public static List<SearchGroup> findAppShortcuts(
+			Apps repo,
+			Context context,
+			String query) {
+		ArrayList<SearchGroup> groups = new ArrayList<>();
+		Preferences prefs = PieLauncherApp.getPrefs(context);
+		if (!prefs.searchAppShortcuts() || repo.appShortcuts.isEmpty()) {
+			return groups;
+		}
+		String pickKey = prefs.rememberSearchPicks()
+				? SearchPick.getKey(query)
+				: "";
+		long now = System.currentTimeMillis();
+		query = query == null ? "" : query.trim();
+		UserHandle privateUser = AppLauncher.findPrivateProfileUser(context);
+		boolean privateOnly = false;
+		if (privateUser != null && query.startsWith(".")) {
+			query = query.substring(1);
+			privateOnly = true;
+		}
+		Locale defaultLocale = Locale.getDefault();
+		query = query.toLowerCase(defaultLocale);
+		if (query.isEmpty()) {
+			return groups;
+		}
+		// Only list shortcuts of apps that are listed too, so shortcuts
+		// of hidden apps or locked profiles don't show up.
+		HashMap<String, AppIcon> owners = new HashMap<>();
+		for (AppIcon appIcon : repo.apps.values()) {
+			owners.put(getPackageKey(
+					appIcon.componentName.getPackageName(),
+					appIcon.userHandle), appIcon);
+		}
+		int strategy = prefs.getSearchStrictness();
+		HashMap<AppIcon, SearchGroup> ownerGroups = new HashMap<>();
+		HashMap<AppIcon, Double> scores = new HashMap<>();
+		for (AppIcon shortcut : repo.appShortcuts) {
+			if (!inProfile(shortcut.userHandle, privateUser, privateOnly) ||
+					// Skip shortcuts that are pinned already.
+					repo.apps.containsKey(new LauncherItemKey(
+							shortcut.componentName, shortcut.userHandle))) {
+				continue;
+			}
+			AppIcon owner = owners.get(getPackageKey(
+					shortcut.shortcutPackage, shortcut.userHandle));
+			if (owner == null) {
+				continue;
+			}
+			String label = shortcut.label.toLowerCase(defaultLocale);
+			if (strategy == Preferences.SEARCH_STRICTNESS_STARTS_WITH
+					? !label.startsWith(query)
+					: !label.contains(query)) {
+				continue;
+			}
+			SearchGroup group = ownerGroups.get(owner);
+			if (group == null) {
+				group = new SearchGroup(owner.label, owner.bitmap);
+				ownerGroups.put(owner, group);
+				groups.add(group);
+			}
+			group.items.add(shortcut);
+			scores.put(shortcut, SearchPick.getScore(
+					shortcut.searchPicks, pickKey, now));
+		}
+		// Shortcuts that were picked for this search term before come
+		// first, and so do the groups they're in.
+		for (SearchGroup group : groups) {
+			Collections.sort(group.items, (left, right) -> {
+				int result = Double.compare(scores.get(right),
+						scores.get(left));
+				return result != 0
+						? result
+						: appLabelComparator.compare(left, right);
+			});
+			while (group.items.size() > SearchGroup.MAX_ITEMS) {
+				group.items.remove(group.items.size() - 1);
+			}
+		}
+		Collections.sort(groups, (left, right) -> {
+			int result = Double.compare(
+					scores.get(right.items.get(0)),
+					scores.get(left.items.get(0)));
+			return result != 0
+					? result
+					: left.title.toLowerCase(defaultLocale).compareTo(
+							right.title.toLowerCase(defaultLocale));
+		});
+		return groups;
+	}
+
+	private static String getPackageKey(
+			String packageName,
+			UserHandle userHandle) {
+		return userHandle != null
+				? packageName + "#" + userHandle.hashCode()
+				: packageName;
+	}
+
 	static Comparator<AppIcon> getAppComparator(int sorting, long now) {
 		if (sorting != Preferences.APP_SORT_FRECENCY) {
 			return appLabelComparator;

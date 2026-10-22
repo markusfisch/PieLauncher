@@ -69,6 +69,9 @@
 	<string name="remember_search_picks">Запам\'ятовувати додатки, вибрані в пошуку</string>
 	<string name="remember_search_picks_yes">Так</string>
 	<string name="remember_search_picks_no">Ні (за замовчуванням)</string>
+	<string name="search_app_shortcuts">Шукати ярлики додатків</string>
+	<string name="search_app_shortcuts_yes">Так</string>
+	<string name="search_app_shortcuts_no">Ні (за замовчуванням)</string>
 	<string name="search_strictness">Пошук додатків</string>
 	<string name="search_strictness_hamming">Назва схожа на пошуковий термін (за замовчуванням)</string>
 	<string name="search_strictness_contains">Назва містить пошуковий запит</string>

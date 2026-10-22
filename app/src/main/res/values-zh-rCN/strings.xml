@@ -69,6 +69,9 @@
 	<string name="remember_search_picks">记住从搜索中选择的应用</string>
 	<string name="remember_search_picks_yes">是</string>
 	<string name="remember_search_picks_no">否 (默认)</string>
+	<string name="search_app_shortcuts">搜索应用快捷方式</string>
+	<string name="search_app_shortcuts_yes">是</string>
+	<string name="search_app_shortcuts_no">否 (默认)</string>
 	<string name="search_strictness">应用程序搜索</string>
 	<string name="search_strictness_hamming">名称与搜索词相似 (默认)</string>
 	<string name="search_strictness_contains">名称包含搜索词</string>

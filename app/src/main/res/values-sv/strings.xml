@@ -69,6 +69,9 @@
 	<string name="remember_search_picks">Kom ihåg appar valda från sökningen</string>
 	<string name="remember_search_picks_yes">Ja</string>
 	<string name="remember_search_picks_no">Nej (standard)</string>
+	<string name="search_app_shortcuts">Sök efter appgenvägar</string>
+	<string name="search_app_shortcuts_yes">Ja</string>
+	<string name="search_app_shortcuts_no">Nej (standard)</string>
 	<string name="search_strictness">Appsökning</string>
 	<string name="search_strictness_hamming">Namn liknar sökord (standard)</string>
 	<string name="search_strictness_contains">Namn innehåller sökord</string>

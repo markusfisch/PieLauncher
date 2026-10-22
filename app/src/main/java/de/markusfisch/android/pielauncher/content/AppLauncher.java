@@ -278,7 +278,7 @@ public class AppLauncher {
 
 	@SuppressLint("UseRequiresApi")
 	private static boolean launchShortcut(Context context, AppIcon icon) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
 			return false;
 		}
 		LauncherApps la = getLauncherApps(context);

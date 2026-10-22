@@ -12,9 +12,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.RenderEffect;
 import android.graphics.RenderNode;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextPaint;
@@ -42,6 +44,7 @@ import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.content.AppSearch;
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.Database;
+import de.markusfisch.android.pielauncher.content.SearchGroup;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -92,6 +95,11 @@ public class AppPieView extends View {
 	private final Paint paintPressed = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Paint paintAction = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+	private final TextPaint paintRowText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+	private final TextPaint paintHeaderText =
+			new TextPaint(Paint.ANTI_ALIAS_FLAG);
+	private final Paint paintCard = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final RectF cardRect = new RectF();
 	private final Point touch = new Point();
 	private final Rect drawRect = new Rect();
 	private final Rect iconStartRect = new Rect();
@@ -134,6 +142,17 @@ public class AppPieView extends View {
 	private final float dp;
 	private final float textHeight;
 	private final float textOffset;
+	private final int rowHeight;
+	private final int rowIconSize;
+	private final float rowTextOffset;
+	private final int headerHeight;
+	private final int headerIconSize;
+	private final float headerTextOffset;
+	private final int alphaHeaderText;
+	private final int cardPadding;
+	private final int cardRadius;
+	private final int cardSpacing;
+	private final int alphaCard;
 	private final float touchSlopSq;
 
 	private Window window;
@@ -169,6 +188,13 @@ public class AppPieView extends View {
 	private int mode = MODE_PIE;
 	private ListListener listListener;
 	private List<Apps.AppIcon> appList;
+	private List<SearchGroup> searchGroups = new ArrayList<>();
+	private int appRowTop;
+	private int appRowBottom;
+	private int appRowScrollX;
+	private int maxAppRowScrollX;
+	private int appRowSelection = Integer.MIN_VALUE;
+	private boolean appRowDragging;
 	private Rect highlightedAction;
 	private Apps.AppIcon grabbedIcon;
 	private Apps.AppIcon touchedIcon;
@@ -227,6 +253,24 @@ public class AppPieView extends View {
 		paintText.setTextSize(14f * sp);
 		textHeight = paintText.descent() - paintText.ascent();
 		textOffset = (textHeight / 2) - paintText.descent();
+
+		rowHeight = Math.round(52f * dp);
+		rowIconSize = Math.round(36f * dp);
+		paintRowText.setColor(paintText.getColor());
+		paintRowText.setTextSize(paintText.getTextSize());
+		rowTextOffset = getCenterOffset(paintRowText);
+		headerHeight = Math.round(36f * dp);
+		headerIconSize = Math.round(20f * dp);
+		paintHeaderText.setColor(paintText.getColor());
+		paintHeaderText.setTextSize(12f * sp);
+		paintHeaderText.setTypeface(Typeface.DEFAULT_BOLD);
+		headerTextOffset = getCenterOffset(paintHeaderText);
+		alphaHeaderText = Math.round(alphaText * .7f);
+		cardPadding = Math.round(8f * dp);
+		cardRadius = Math.round(16f * dp);
+		cardSpacing = Math.round(12f * dp);
+		paintCard.setColor(res.getColor(R.color.bg_search_card));
+		alphaCard = paintCard.getAlpha();
 		translucentBackgroundColor = res.getColor(R.color.bg_ui);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -348,6 +392,8 @@ public class AppPieView extends View {
 				PieLauncherApp.apps, getContext(), query);
 		if (newAppList != null) {
 			appList = newAppList;
+			searchGroups = AppSearch.findAppShortcuts(
+					PieLauncherApp.apps, getContext(), query);
 		}
 		appListIsFiltered = !TextUtils.isEmpty(query);
 		appListQuery = query;
@@ -357,8 +403,14 @@ public class AppPieView extends View {
 		if (resetScroll) {
 			scrollList(0, false);
 			lastScrollY = 0;
+			appRowScrollX = 0;
+			appRowSelection = Integer.MIN_VALUE;
 		}
 		invalidate();
+	}
+
+	public boolean isDraggingAppRow() {
+		return appRowDragging;
 	}
 
 	public void launchSelectedAppFromList() {
@@ -466,6 +518,8 @@ public class AppPieView extends View {
 			private double spinAngleDown;
 			private double spinInitialTwist;
 			private int scrollOffset;
+			private int rowScrollOffset;
+			private boolean rowTouch;
 			private long lastActionUp;
 			private long expandDownTime;
 			private Runnable highlightRunnable;
@@ -486,6 +540,7 @@ public class AppPieView extends View {
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
 							addTouch(event);
+							cancelAppRowDrag();
 							initScroll(event);
 						}
 						break;
@@ -521,6 +576,7 @@ public class AppPieView extends View {
 								if (fadeList.isFadingIn(eventTime)) {
 									return false;
 								}
+								initAppRowDrag();
 								initScroll(event);
 								initLongPress(v.getContext());
 								break;
@@ -538,7 +594,9 @@ public class AppPieView extends View {
 							if (isScroll(event)) {
 								cancelLongPress();
 							}
-							scroll(event);
+							if (!dragAppRow(event)) {
+								scroll(event);
+							}
 						}
 						invalidate();
 						break;
@@ -698,10 +756,57 @@ public class AppPieView extends View {
 					// 1000 means getYVelocity() will return pixels
 					// per second.
 					velocityTracker.computeCurrentVelocity(1000);
-					flingRunnable.start(Math.round(
-							velocityTracker.getYVelocity()));
+					if (appRowDragging) {
+						flingRunnable.startHorizontal(Math.round(
+								velocityTracker.getXVelocity()));
+					} else {
+						flingRunnable.start(Math.round(
+								velocityTracker.getYVelocity()));
+					}
 					recycleVelocityTracker();
 				}
+			}
+
+			private void initAppRowDrag() {
+				int y = touch.y + getScrollY();
+				rowTouch = isRowLayout() && y >= appRowTop && y < appRowBottom;
+				rowScrollOffset = appRowScrollX;
+				appRowDragging = false;
+			}
+
+			private void cancelAppRowDrag() {
+				rowTouch = false;
+				appRowDragging = false;
+			}
+
+			// Returns true if the touch scrolls the app row horizontally.
+			private boolean dragAppRow(MotionEvent event) {
+				if (!rowTouch) {
+					return false;
+				}
+				int index = getPrimaryIndex(event);
+				TouchReference tr = getTouchReference(event, index);
+				if (tr == null) {
+					return false;
+				}
+				int dx = Math.round(event.getX(index)) - tr.x;
+				if (!appRowDragging) {
+					int dy = Math.round(event.getY(index)) - tr.y;
+					if (dx * dx + dy * dy <= touchSlopSq) {
+						// Wait until the direction is clear.
+						return true;
+					}
+					if (Math.abs(dx) <= Math.abs(dy)) {
+						rowTouch = false;
+						return false;
+					}
+					appRowDragging = true;
+				}
+				if (velocityTracker != null) {
+					velocityTracker.addMovement(event);
+				}
+				setAppRowScrollX(rowScrollOffset - dx);
+				return true;
 			}
 
 			private void initVelocityTracker(MotionEvent event) {
@@ -760,6 +865,10 @@ public class AppPieView extends View {
 				}
 
 				touchedIcon = appIcon;
+				if (appIcon.searchOnly) {
+					// Search results can't be edited.
+					return;
+				}
 
 				// Delay touch feedback to not make it feel too sensitive.
 				highlightRunnable = () -> {
@@ -1251,6 +1360,13 @@ public class AppPieView extends View {
 
 	private Apps.AppIcon getListIconAt(int x, int y) {
 		y += getScrollY();
+		for (SearchGroup group : searchGroups) {
+			for (Apps.AppIcon item : group.items) {
+				if (item.hitRect.contains(x, y)) {
+					return item;
+				}
+			}
+		}
 		for (int i = 0, l = getIconCount(); i < l; ++i) {
 			Apps.AppIcon appIcon = appList.get(i);
 			if (appIcon.hitRect.contains(x, y)) {
@@ -1355,7 +1471,9 @@ public class AppPieView extends View {
 		launchingIcon = appIcon;
 		if (AppLauncher.launchApp(context, appIcon)) {
 			Database database = PieLauncherApp.getDatabase(context);
-			database.recordLaunch(context, appIcon);
+			if (!appIcon.searchOnly) {
+				database.recordLaunch(context, appIcon);
+			}
 			if (mode == MODE_LIST && appListIsFiltered &&
 					prefs.rememberSearchPicks()) {
 				database.recordSearchPick(context, appListQuery, appIcon);
@@ -1659,11 +1777,30 @@ public class AppPieView extends View {
 		paintList.setAlpha(Math.round(f * 255f));
 		paintText.setAlpha(Math.round(f * alphaText));
 
+		// If there are other search results than apps, show the apps in
+		// a single row that scrolls horizontally and the other results
+		// in cards below.
+		boolean rowLayout = isRowLayout();
+		if (rowLayout) {
+			maxAppRowScrollX = Math.max(0, size * cellWidth - innerWidth);
+			if (selectedApp != appRowSelection) {
+				appRowSelection = selectedApp;
+				scrollAppRowToSelection(cellWidth, innerWidth);
+			}
+			appRowScrollX = clamp(appRowScrollX, 0, maxAppRowScrollX);
+			x -= appRowScrollX;
+			wrapX = Integer.MAX_VALUE;
+			appRowTop = y;
+			appRowBottom = size > 0 ? y + cellHeight : y;
+		}
+
 		// Draw launch marker.
 		if (selectedApp > -1 && size > 0) {
 			int offset = Math.min(selectedApp, size - 1);
-			int ix = x + offset % columns * cellWidth;
-			int iy = y + offset / columns * cellHeight;
+			int ix = rowLayout
+					? x + offset * cellWidth
+					: x + offset % columns * cellWidth;
+			int iy = rowLayout ? y : y + offset / columns * cellHeight;
 			canvas.drawBitmap(iconLaunchFirst,
 					ix + labelX - iconLaunchFirstHalf,
 					iy - listPadding,
@@ -1689,9 +1826,12 @@ public class AppPieView extends View {
 
 		// Draw icons.
 		for (int i = 0; i < size; ++i) {
-			if (y > viewTop && y < viewBottom) {
-				Apps.AppIcon appIcon = appList.get(i);
-				appIcon.hitRect.set(x, y, x + cellWidth, y + cellHeight);
+			Apps.AppIcon appIcon = appList.get(i);
+			// Always update hit rects so icons that aren't drawn
+			// can't keep stale ones.
+			appIcon.hitRect.set(x, y, x + cellWidth, y + cellHeight);
+			if (y > viewTop && y < viewBottom &&
+					x + cellWidth > 0 && x < viewWidth) {
 				int ix = x + hpad;
 				int iy = y + vpad;
 				int mag = appIcon == highlightedIcon ? magSize : 0;
@@ -1716,7 +1856,10 @@ public class AppPieView extends View {
 			}
 		}
 
-		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
+		int maxHeight = rowLayout
+				? drawSearchCards(canvas, f, appRowBottom, scrollY,
+						viewBottom) + listPadding
+				: y + listPadding + (x > listPadding ? cellHeight : 0);
 		int viewHeightMinusPadding = viewHeight - getPaddingBottom();
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
 		if (scrollY > maxScrollY) {
@@ -1731,6 +1874,93 @@ public class AppPieView extends View {
 		}
 
 		return invalidate;
+	}
+
+	private boolean isRowLayout() {
+		return appListIsFiltered && !searchGroups.isEmpty();
+	}
+
+	private void setAppRowScrollX(int x) {
+		appRowScrollX = clamp(x, 0, maxAppRowScrollX);
+		invalidate();
+	}
+
+	private void scrollAppRowToSelection(int cellWidth, int innerWidth) {
+		int size = getIconCount();
+		if (selectedApp < 0 || size < 1) {
+			return;
+		}
+		int left = Math.min(selectedApp, size - 1) * cellWidth;
+		if (left < appRowScrollX) {
+			appRowScrollX = left;
+		} else if (left + cellWidth > appRowScrollX + innerWidth) {
+			appRowScrollX = left + cellWidth - innerWidth;
+		}
+	}
+
+	// Draws a card for each search group and returns the y coordinate
+	// below the last card.
+	private int drawSearchCards(Canvas canvas, float f, int y,
+			int viewTop, int viewBottom) {
+		paintRowText.setAlpha(Math.round(f * alphaText));
+		paintHeaderText.setAlpha(Math.round(f * alphaHeaderText));
+		paintCard.setAlpha(Math.round(f * alphaCard));
+		int left = listPadding;
+		int right = viewWidth - listPadding;
+		int contentLeft = left + cardPadding;
+		int textX = contentLeft + rowIconSize + iconTextPadding;
+		int maxTextWidth = right - cardPadding - textX;
+		for (SearchGroup group : searchGroups) {
+			int cardHeight = cardPadding * 2 + headerHeight +
+					group.items.size() * rowHeight;
+			if (y + cardHeight > viewTop && y < viewBottom) {
+				cardRect.set(left, y, right, y + cardHeight);
+				canvas.drawRoundRect(cardRect, cardRadius, cardRadius,
+						paintCard);
+			}
+			y += cardPadding;
+			if (y + headerHeight > viewTop && y < viewBottom) {
+				int ix = contentLeft + (rowIconSize - headerIconSize) / 2;
+				int iy = y + (headerHeight - headerIconSize) / 2;
+				drawRect.set(ix, iy, ix + headerIconSize, iy + headerIconSize);
+				canvas.drawBitmap(group.icon, null, drawRect, paintList);
+				drawRowText(canvas, group.title, paintHeaderText, textX,
+						y + headerHeight / 2f + headerTextOffset,
+						maxTextWidth);
+			}
+			y += headerHeight;
+			for (Apps.AppIcon item : group.items) {
+				item.hitRect.set(left, y, right, y + rowHeight);
+				if (y + rowHeight > viewTop && y < viewBottom) {
+					int iy = y + (rowHeight - rowIconSize) / 2;
+					drawRect.set(contentLeft, iy, contentLeft + rowIconSize,
+							iy + rowIconSize);
+					if (item == touchedIcon) {
+						paintList.setColorFilter(dimFilter);
+					}
+					canvas.drawBitmap(item.bitmap, null, drawRect,
+							paintList);
+					paintList.setColorFilter(null);
+					drawRowText(canvas, item.label, paintRowText, textX,
+							y + rowHeight / 2f + rowTextOffset,
+							maxTextWidth);
+				}
+				y += rowHeight;
+			}
+			y += cardPadding + cardSpacing;
+		}
+		return y - cardSpacing;
+	}
+
+	private static void drawRowText(Canvas canvas, String text,
+			TextPaint paint, float x, float y, int maxWidth) {
+		CharSequence label = TextUtils.ellipsize(text, paint, maxWidth,
+				TextUtils.TruncateAt.END);
+		canvas.drawText(label, 0, label.length(), x, y, paint);
+	}
+
+	private static float getCenterOffset(Paint paint) {
+		return (paint.descent() - paint.ascent()) / 2 - paint.descent();
 	}
 
 	private boolean showAppNames() {
@@ -2100,10 +2330,16 @@ public class AppPieView extends View {
 		private final OverScroller scroller;
 		private int maxY;
 		private int pps;
+		private boolean horizontal;
 
 		@Override
 		public void run() {
 			if (mode != MODE_LIST || !scroller.computeScrollOffset()) {
+				return;
+			}
+			if (horizontal) {
+				setAppRowScrollX(scroller.getCurrX());
+				update();
 				return;
 			}
 			if (maxY != maxScrollY) {
@@ -2122,6 +2358,7 @@ public class AppPieView extends View {
 		}
 
 		private void start(int pixelsPerSecond) {
+			horizontal = false;
 			pps = -pixelsPerSecond;
 			maxY = maxScrollY;
 			initFling(getScrollY());
@@ -2135,6 +2372,16 @@ public class AppPieView extends View {
 					0, 0,
 					0, maxY,
 					0, listPadding);
+		}
+
+		private void startHorizontal(int pixelsPerSecond) {
+			horizontal = true;
+			scroller.fling(
+					appRowScrollX, 0,
+					-pixelsPerSecond, 0,
+					0, maxAppRowScrollX,
+					0, 0);
+			update();
 		}
 
 		private void stop() {

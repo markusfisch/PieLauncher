@@ -7,8 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.LauncherApps;
+import android.content.pm.ShortcutInfo;
 import android.os.Build;
 import android.os.UserHandle;
+
+import java.util.List;
 
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.Database;
@@ -124,6 +127,14 @@ public class PieLauncherApp extends Application {
 					UserHandle user) {
 				apps.removePackageAsync(PieLauncherApp.this, packageName,
 						user);
+			}
+
+			@Override
+			public void onShortcutsChanged(
+					String packageName,
+					List<ShortcutInfo> shortcuts,
+					UserHandle user) {
+				apps.updateAppShortcutsAsync(PieLauncherApp.this);
 			}
 
 			@Override

@@ -64,6 +64,11 @@ public class Apps {
 		public String shortcutId;
 		public String shortcutPackage;
 
+		// True for app shortcuts (e.g. "New incognito tab") that are only
+		// listed in search results. Those aren't stored anywhere and can't
+		// be added to the pie menu.
+		public boolean searchOnly;
+
 		AppIcon(ComponentName componentName,
 				String label,
 				Drawable icon,
@@ -89,6 +94,7 @@ public class Apps {
 		long frecencyUpdatedAt;
 		// Search terms this app was launched from. Null if there are none.
 		HashMap<String, SearchPick> searchPicks;
+		long shortcutChangedAt;
 	}
 
 	public static final String MENU_PRIMARY = "menu";
@@ -106,6 +112,7 @@ public class Apps {
 	public final ArrayList<AppIcon> menuSecondary = new ArrayList<>();
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
 	public final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
+	public final ArrayList<AppIcon> appShortcuts = new ArrayList<>();
 
 	private static final int RECONCILED_MENU = 1;
 	private static final int RETRY_PACKAGE = 2;
@@ -223,6 +230,36 @@ public class Apps {
 		});
 	}
 
+	public void updateAppShortcutsAsync(Context context) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+			return;
+		}
+		Context appContext = context.getApplicationContext();
+		if (!PieLauncherApp.getPrefs(appContext).searchAppShortcuts()) {
+			if (!appShortcuts.isEmpty()) {
+				appShortcuts.clear();
+				propagateUpdate();
+			}
+			return;
+		}
+		// Copy the current shortcuts to reuse their icons if they
+		// haven't changed.
+		HashMap<LauncherItemKey, AppIcon> cached = new HashMap<>();
+		for (AppIcon icon : appShortcuts) {
+			cached.put(new LauncherItemKey(icon.componentName,
+					icon.userHandle), icon);
+		}
+		executor.execute(() -> {
+			ArrayList<AppIcon> shortcuts = queryAppShortcuts(appContext,
+					cached);
+			handler.post(() -> {
+				appShortcuts.clear();
+				appShortcuts.addAll(shortcuts);
+				propagateUpdate();
+			});
+		});
+	}
+
 	public void updateIconsAsync(Context context) {
 		if (!indexAppsAsync(context)) {
 			handler.postDelayed(() -> updateIconsAsync(context), 1000L);
@@ -314,7 +351,10 @@ public class Apps {
 						userRestriction,
 						newApps);
 			}
-			handler.post(() -> updateApps(newApps, menus, true));
+			handler.post(() -> {
+				updateApps(newApps, menus, true);
+				updateAppShortcutsAsync(context);
+			});
 			if ((reconciliation & RETRY_PACKAGE) != 0) {
 				handler.postDelayed(() -> updatePackageAsync(context,
 						packageRestriction, userRestriction), 1000L);
@@ -422,7 +462,63 @@ public class Apps {
 	}
 
 	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.O)
+	@TargetApi(Build.VERSION_CODES.N_MR1)
+	private static ArrayList<AppIcon> queryAppShortcuts(
+			Context context,
+			Map<LauncherItemKey, AppIcon> cached) {
+		ArrayList<AppIcon> shortcuts = new ArrayList<>();
+		LauncherApps la = AppLauncher.getLauncherApps(context);
+		// Only the default launcher may query shortcuts.
+		if (la == null || !la.hasShortcutHostPermission()) {
+			return shortcuts;
+		}
+		// Shortcuts that weren't cached before. Only those get their search
+		// picks restored because the cached ones may be in use on the main
+		// thread already and keep their picks up to date anyway.
+		HashMap<LauncherItemKey, AppIcon> built = new HashMap<>();
+		LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
+		query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC |
+				LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST);
+		for (UserHandle user : AppLauncher.getProfiles(
+				AppLauncher.getUserManager(context))) {
+			List<ShortcutInfo> infos;
+			try {
+				infos = la.getShortcuts(query, user);
+			} catch (SecurityException | IllegalStateException e) {
+				// The profile may be locked.
+				continue;
+			}
+			if (infos == null) {
+				continue;
+			}
+			for (ShortcutInfo info : infos) {
+				if (!info.isEnabled()) {
+					continue;
+				}
+				LauncherItemKey key = new LauncherItemKey(
+						shortcutComponentName(info.getPackage(),
+								info.getId()),
+						info.getUserHandle());
+				AppIcon icon = cached.get(key);
+				if (icon == null ||
+						icon.shortcutChangedAt != info.getLastChangedTimestamp()) {
+					icon = buildShortcutIcon(context, la, info);
+					if (icon == null) {
+						continue;
+					}
+					icon.searchOnly = true;
+					icon.shortcutChangedAt = info.getLastChangedTimestamp();
+					built.put(key, icon);
+				}
+				shortcuts.add(icon);
+			}
+		}
+		PieLauncherApp.getDatabase(context).restoreSearchPicks(context, built);
+		return shortcuts;
+	}
+
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.N_MR1)
 	private static AppIcon buildShortcutIcon(
 			Context context,
 			LauncherApps la,

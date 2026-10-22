@@ -69,6 +69,9 @@
 	<string name="remember_search_picks">Запоминать приложения, выбранные в поиске</string>
 	<string name="remember_search_picks_yes">Да</string>
 	<string name="remember_search_picks_no">Нет (Стандартно)</string>
+	<string name="search_app_shortcuts">Искать ярлыки приложений</string>
+	<string name="search_app_shortcuts_yes">Да</string>
+	<string name="search_app_shortcuts_no">Нет (Стандартно)</string>
 	<string name="search_strictness">Поиск приложений</string>
 	<string name="search_strictness_hamming">Вхождение схоже с запросом (Стандартно)</string>
 	<string name="search_strictness_contains">Вхождение содержит запрос</string>

@@ -278,6 +278,18 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getRememberSearchPicksOptions,
 				() -> prefs.rememberSearchPicks(),
 				(value) -> prefs.setRememberSearchPicks(value));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+			initPreference(R.id.search_app_shortcuts,
+					R.string.search_app_shortcuts,
+					PreferencesActivity::getSearchAppShortcutsOptions,
+					() -> prefs.searchAppShortcuts(),
+					(value) -> {
+						prefs.setSearchAppShortcuts(value);
+						PieLauncherApp.apps.updateAppShortcutsAsync(this);
+					});
+		} else {
+			findViewById(R.id.search_app_shortcuts).setVisibility(View.GONE);
+		}
 		initPreference(R.id.search_strictness,
 				R.string.search_strictness,
 				PreferencesActivity::getSearchStrictnessOptions,
@@ -625,6 +637,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.remember_search_picks_yes);
 		map.put(Boolean.FALSE, R.string.remember_search_picks_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getSearchAppShortcutsOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.search_app_shortcuts_yes);
+		map.put(Boolean.FALSE, R.string.search_app_shortcuts_no);
 		return map;
 	}
 

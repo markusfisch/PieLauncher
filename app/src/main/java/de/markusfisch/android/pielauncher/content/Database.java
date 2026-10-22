@@ -586,7 +586,11 @@ public class Database {
 		ContentValues values = new ContentValues();
 		values.put(QUERY, key);
 		values.put(COMPONENT_NAME, appIcon.componentName.flattenToString());
-		values.put(PACKAGE_NAME, appIcon.componentName.getPackageName());
+		// Use the package of the app for shortcuts so the picks are
+		// removed together with the app.
+		values.put(PACKAGE_NAME, Apps.isShortcut(appIcon)
+				? appIcon.shortcutPackage
+				: appIcon.componentName.getPackageName());
 		putUserSerial(context, values, appIcon.userHandle);
 		values.put(SCORE, pick.score);
 		values.put(UPDATED_AT, now);
