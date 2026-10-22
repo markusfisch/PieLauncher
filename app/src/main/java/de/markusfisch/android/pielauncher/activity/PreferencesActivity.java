@@ -273,6 +273,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getAutoLaunchMatchingOptions,
 				() -> prefs.autoLaunchMatching(),
 				(value) -> prefs.setAutoLaunchMatching(value));
+		initPreference(R.id.remember_search_picks,
+				R.string.remember_search_picks,
+				PreferencesActivity::getRememberSearchPicksOptions,
+				() -> prefs.rememberSearchPicks(),
+				(value) -> prefs.setRememberSearchPicks(value));
 		initPreference(R.id.search_strictness,
 				R.string.search_strictness,
 				PreferencesActivity::getSearchStrictnessOptions,
@@ -613,6 +618,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.auto_launch_matching_yes);
 		map.put(Boolean.FALSE, R.string.auto_launch_matching_no);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getRememberSearchPicksOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.remember_search_picks_yes);
+		map.put(Boolean.FALSE, R.string.remember_search_picks_no);
 		return map;
 	}
 

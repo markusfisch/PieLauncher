@@ -66,6 +66,9 @@
 	<string name="auto_launch_matching">当仅一个应用匹配搜索时</string>
 	<string name="auto_launch_matching_yes">是</string>
 	<string name="auto_launch_matching_no">没有 (默认)</string>
+	<string name="remember_search_picks">记住从搜索中选择的应用</string>
+	<string name="remember_search_picks_yes">是</string>
+	<string name="remember_search_picks_no">否 (默认)</string>
 	<string name="search_strictness">应用程序搜索</string>
 	<string name="search_strictness_hamming">名称与搜索词相似 (默认)</string>
 	<string name="search_strictness_contains">名称包含搜索词</string>

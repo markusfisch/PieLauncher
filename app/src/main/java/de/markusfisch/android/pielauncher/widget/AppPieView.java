@@ -41,6 +41,7 @@ import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.content.AppSearch;
 import de.markusfisch.android.pielauncher.content.Apps;
+import de.markusfisch.android.pielauncher.content.Database;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -183,6 +184,7 @@ public class AppPieView extends View {
 	private Bitmap iconSplitPie;
 	private boolean neverDropped = false;
 	private boolean appListIsFiltered = false;
+	private String appListQuery;
 
 	public AppPieView(Context context, AttributeSet attr) {
 		super(context, attr);
@@ -348,6 +350,7 @@ public class AppPieView extends View {
 			appList = newAppList;
 		}
 		appListIsFiltered = !TextUtils.isEmpty(query);
+		appListQuery = query;
 		selectedApp = prefs.doubleSpaceLaunch()
 				? (appListIsFiltered ? 0 : -1)
 				: getSelectedAppFromTrailingSpace(query);
@@ -1351,7 +1354,12 @@ public class AppPieView extends View {
 	private void launchApp(Context context, Apps.AppIcon appIcon) {
 		launchingIcon = appIcon;
 		if (AppLauncher.launchApp(context, appIcon)) {
-			PieLauncherApp.getDatabase(context).recordLaunch(context, appIcon);
+			Database database = PieLauncherApp.getDatabase(context);
+			database.recordLaunch(context, appIcon);
+			if (mode == MODE_LIST && appListIsFiltered &&
+					prefs.rememberSearchPicks()) {
+				database.recordSearchPick(context, appListQuery, appIcon);
+			}
 		}
 	}
 

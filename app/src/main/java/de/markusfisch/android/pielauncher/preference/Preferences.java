@@ -79,6 +79,7 @@ public class Preferences {
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
+	private static final String REMEMBER_SEARCH_PICKS = "remember_search_picks";
 	private static final String SEARCH_STRICTNESS = "strictness";
 	private static final String SEARCH_PARAMETER = "search_parameter";
 	private static final String APP_SORTING = "app_sorting";
@@ -115,6 +116,7 @@ public class Preferences {
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
 	private boolean autoLaunchMatching = false;
+	private boolean rememberSearchPicks = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
 	private int searchParameter = SEARCH_PARAMETER_APP_LABEL;
 	private int appSorting = APP_SORT_ALPHABETICAL;
@@ -171,6 +173,8 @@ public class Preferences {
 				doubleSpaceLaunch);
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
+		rememberSearchPicks = preferences.getBoolean(REMEMBER_SEARCH_PICKS,
+				rememberSearchPicks);
 		searchStrictness = preferences.getInt(SEARCH_STRICTNESS,
 				searchStrictness);
 		searchParameter = preferences.getInt(SEARCH_PARAMETER,
@@ -351,6 +355,15 @@ public class Preferences {
 	public void setAutoLaunchMatching(boolean autoLaunchMatching) {
 		this.autoLaunchMatching = autoLaunchMatching;
 		put(AUTO_LAUNCH_MATCHING, autoLaunchMatching).apply();
+	}
+
+	public boolean rememberSearchPicks() {
+		return rememberSearchPicks;
+	}
+
+	public void setRememberSearchPicks(boolean rememberSearchPicks) {
+		this.rememberSearchPicks = rememberSearchPicks;
+		put(REMEMBER_SEARCH_PICKS, rememberSearchPicks).apply();
 	}
 
 	public int getSearchStrictness() {

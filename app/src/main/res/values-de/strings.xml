@@ -66,6 +66,9 @@
 	<string name="auto_launch_matching">Bei Übereinstimmung automatisch starten</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nein (Standard)</string>
+	<string name="remember_search_picks">Aus der Suche gewählte Apps merken</string>
+	<string name="remember_search_picks_yes">Ja</string>
+	<string name="remember_search_picks_no">Nein (Standard)</string>
 	<string name="search_strictness">App-Suche</string>
 	<string name="search_strictness_hamming">Name ähnelt dem Suchbegriff (Standard)</string>
 	<string name="search_strictness_contains">Name enthält Suchbegriff</string>

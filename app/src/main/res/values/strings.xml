@@ -70,6 +70,9 @@
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
 	<string name="auto_launch_matching_no">No (Default)</string>
+	<string name="remember_search_picks">Remember apps picked from search</string>
+	<string name="remember_search_picks_yes">Yes</string>
+	<string name="remember_search_picks_no">No (Default)</string>
 	<string name="search_strictness">App search</string>
 	<string name="search_strictness_hamming">Name resembles search term (Default)</string>
 	<string name="search_strictness_contains">Name contains search term</string>

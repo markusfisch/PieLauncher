@@ -66,6 +66,9 @@
 	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
 	<string name="auto_launch_matching_yes">Oui</string>
 	<string name="auto_launch_matching_no">Non (par défaut)</string>
+	<string name="remember_search_picks">Mémoriser les applications choisies dans la recherche</string>
+	<string name="remember_search_picks_yes">Oui</string>
+	<string name="remember_search_picks_no">Non (par défaut)</string>
 	<string name="search_strictness">Recherche d\'application</string>
 	<string name="search_strictness_hamming">Le nom ressemble au terme recherché (par défaut)</string>
 	<string name="search_strictness_contains">Le nom contient le terme recherché</string>

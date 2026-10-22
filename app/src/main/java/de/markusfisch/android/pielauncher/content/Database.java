@@ -38,6 +38,8 @@ public class Database {
 	private static final long NO_USER = -1L;
 	private static final String APP_USAGE = "app_usage";
 	private static final String SCORE = "score";
+	private static final String SEARCH_PICKS = "search_picks";
+	private static final String QUERY = "query";
 
 	private static final String MENU_ITEMS = "menu_items";
 	private static final String MENU_NAME = "menu_name";
@@ -487,6 +489,7 @@ public class Database {
 			cursor.close();
 		}
 		restoreFrecency(context, apps);
+		restoreSearchPicks(context, apps);
 	}
 
 	public void restoreFrecency(
@@ -501,25 +504,44 @@ public class Database {
 				null, null, null, null, null);
 		try {
 			while (cursor.moveToNext()) {
-				ComponentName componentName =
-						ComponentName.unflattenFromString(cursor.getString(0));
-				if (componentName == null) {
-					continue;
-				}
-				UserHandle userHandle = null;
-				long serialNumber = cursor.getLong(1);
-				if (AppLauncher.HAS_LAUNCHER_APP && serialNumber != NO_USER) {
-					userHandle = getUserForSerialNumber(context, serialNumber);
-					if (userHandle == null) {
-						continue;
-					}
-				}
-				Apps.AppIcon appIcon = apps.get(
-						new LauncherItemKey(componentName, userHandle));
+				Apps.AppIcon appIcon = getAppIcon(context, apps,
+						cursor.getString(0), cursor.getLong(1));
 				if (appIcon != null) {
 					appIcon.frecencyScore = cursor.getDouble(2);
 					appIcon.frecencyUpdatedAt = cursor.getLong(3);
 				}
+			}
+		} finally {
+			cursor.close();
+		}
+	}
+
+	public void restoreSearchPicks(
+			Context context,
+			Map<LauncherItemKey, Apps.AppIcon> apps) {
+		for (Apps.AppIcon appIcon : apps.values()) {
+			appIcon.searchPicks = null;
+		}
+		long minUpdatedAt = System.currentTimeMillis() -
+				SearchPick.MAX_AGE_MILLIS;
+		Cursor cursor = openHelper.getReadableDatabase().query(SEARCH_PICKS,
+				new String[]{QUERY, COMPONENT_NAME, USER_SERIAL, SCORE,
+						UPDATED_AT},
+				UPDATED_AT + ">=?",
+				new String[]{String.valueOf(minUpdatedAt)},
+				null, null, null);
+		try {
+			while (cursor.moveToNext()) {
+				Apps.AppIcon appIcon = getAppIcon(context, apps,
+						cursor.getString(1), cursor.getLong(2));
+				if (appIcon == null) {
+					continue;
+				}
+				if (appIcon.searchPicks == null) {
+					appIcon.searchPicks = new HashMap<>();
+				}
+				appIcon.searchPicks.put(cursor.getString(0), new SearchPick(
+						cursor.getDouble(3), cursor.getLong(4)));
 			}
 		} finally {
 			cursor.close();
@@ -540,6 +562,39 @@ public class Database {
 				APP_USAGE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		appIcon.frecencyScore = score;
 		appIcon.frecencyUpdatedAt = now;
+	}
+
+	public void recordSearchPick(
+			Context context,
+			String query,
+			Apps.AppIcon appIcon) {
+		String key = SearchPick.getKey(query);
+		if (key.isEmpty()) {
+			return;
+		}
+		if (appIcon.searchPicks == null) {
+			appIcon.searchPicks = new HashMap<>();
+		}
+		long now = System.currentTimeMillis();
+		SearchPick pick = appIcon.searchPicks.get(key);
+		if (pick == null) {
+			pick = new SearchPick(0d, 0L);
+			appIcon.searchPicks.put(key, pick);
+		}
+		pick.score = Frecency.addLaunch(pick.score, pick.updatedAt, now);
+		pick.updatedAt = now;
+		ContentValues values = new ContentValues();
+		values.put(QUERY, key);
+		values.put(COMPONENT_NAME, appIcon.componentName.flattenToString());
+		values.put(PACKAGE_NAME, appIcon.componentName.getPackageName());
+		putUserSerial(context, values, appIcon.userHandle);
+		values.put(SCORE, pick.score);
+		values.put(UPDATED_AT, now);
+		SQLiteDatabase db = openHelper.getWritableDatabase();
+		db.insertWithOnConflict(SEARCH_PICKS, null, values,
+				SQLiteDatabase.CONFLICT_REPLACE);
+		db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
+				String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
 	}
 
 	public void replaceAllApps(
@@ -647,17 +702,19 @@ public class Database {
 			SQLiteDatabase db,
 			String packageName,
 			UserHandle userHandle) {
-		if (AppLauncher.HAS_LAUNCHER_APP && userHandle != null) {
-			db.delete(APP_USAGE,
-					PACKAGE_NAME + "=? AND " + USER_SERIAL + "=?",
-					new String[]{
-							packageName,
-							String.valueOf(getSerialNumberForUser(
-									context, userHandle))
-					});
-		} else {
-			db.delete(APP_USAGE, PACKAGE_NAME + "=?",
-					new String[]{packageName});
+		for (String table : new String[]{APP_USAGE, SEARCH_PICKS}) {
+			if (AppLauncher.HAS_LAUNCHER_APP && userHandle != null) {
+				db.delete(table,
+						PACKAGE_NAME + "=? AND " + USER_SERIAL + "=?",
+						new String[]{
+								packageName,
+								String.valueOf(getSerialNumberForUser(
+										context, userHandle))
+						});
+			} else {
+				db.delete(table, PACKAGE_NAME + "=?",
+						new String[]{packageName});
+			}
 		}
 	}
 
@@ -692,6 +749,26 @@ public class Database {
 		return appIcon.iconBytes;
 	}
 
+	private static Apps.AppIcon getAppIcon(
+			Context context,
+			Map<LauncherItemKey, Apps.AppIcon> apps,
+			String flattenedComponentName,
+			long serialNumber) {
+		ComponentName componentName =
+				ComponentName.unflattenFromString(flattenedComponentName);
+		if (componentName == null) {
+			return null;
+		}
+		UserHandle userHandle = null;
+		if (AppLauncher.HAS_LAUNCHER_APP && serialNumber != NO_USER) {
+			userHandle = getUserForSerialNumber(context, serialNumber);
+			if (userHandle == null) {
+				return null;
+			}
+		}
+		return apps.get(new LauncherItemKey(componentName, userHandle));
+	}
+
 	private static void putUserSerial(
 			Context context,
 			ContentValues values,
@@ -724,7 +801,7 @@ public class Database {
 
 	private static class OpenHelper extends SQLiteOpenHelper {
 		OpenHelper(Context context) {
-			super(context, "app_cache.db", null, 4);
+			super(context, "app_cache.db", null, 5);
 		}
 
 		@Override
@@ -733,6 +810,7 @@ public class Database {
 			createStorageTables(db);
 			createUsageTables(db);
 			createShortcutsTable(db);
+			createSearchPicksTable(db);
 		}
 
 		private static void createAppsTables(SQLiteDatabase db) {
@@ -784,6 +862,20 @@ public class Database {
 					APP_USAGE + " (" + PACKAGE_NAME + ");");
 		}
 
+		private static void createSearchPicksTable(SQLiteDatabase db) {
+			db.execSQL("CREATE TABLE " + SEARCH_PICKS + " (" +
+					QUERY + " TEXT NOT NULL," +
+					COMPONENT_NAME + " TEXT NOT NULL," +
+					PACKAGE_NAME + " TEXT NOT NULL," +
+					USER_SERIAL + " INTEGER NOT NULL," +
+					SCORE + " REAL NOT NULL," +
+					UPDATED_AT + " INTEGER NOT NULL," +
+					"PRIMARY KEY (" + QUERY + "," + COMPONENT_NAME + "," +
+					USER_SERIAL + "));");
+			db.execSQL("CREATE INDEX search_picks_package_name ON " +
+					SEARCH_PICKS + " (" + PACKAGE_NAME + ");");
+		}
+
 		private static void createShortcutsTable(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE " + PINNED_SHORTCUTS + " (" +
 					COMPONENT_NAME + " TEXT NOT NULL," +
@@ -809,6 +901,9 @@ public class Database {
 			}
 			if (oldVersion < 4) {
 				createShortcutsTable(db);
+			}
+			if (oldVersion < 5) {
+				createSearchPicksTable(db);
 			}
 		}
 
