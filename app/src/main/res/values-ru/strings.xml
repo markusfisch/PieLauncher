@@ -66,6 +66,9 @@
 	<string name="auto_launch_matching">Автоматически запускать лучшее вхождение</string>
 	<string name="auto_launch_matching_yes">Да</string>
 	<string name="auto_launch_matching_no">Нет (Стандартно)</string>
+	<string name="remember_search_picks">Запоминать приложения, выбранные в поиске</string>
+	<string name="remember_search_picks_yes">Да</string>
+	<string name="remember_search_picks_no">Нет (Стандартно)</string>
 	<string name="search_strictness">Поиск приложений</string>
 	<string name="search_strictness_hamming">Вхождение схоже с запросом (Стандартно)</string>
 	<string name="search_strictness_contains">Вхождение содержит запрос</string>

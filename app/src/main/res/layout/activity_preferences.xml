@@ -108,6 +108,10 @@
 					android:text="@string/auto_launch_matching_no" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView
 					style="@style/PreferenceWithSeparator"
+					android:id="@+id/remember_search_picks"
+					android:text="@string/remember_search_picks_no" />
+				<de.markusfisch.android.pielauncher.widget.PreferenceView
+					style="@style/PreferenceWithSeparator"
 					android:id="@+id/search_strictness"
 					android:text="@string/search_strictness_hamming" />
 				<de.markusfisch.android.pielauncher.widget.PreferenceView

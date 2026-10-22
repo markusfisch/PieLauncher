@@ -66,6 +66,9 @@
 	<string name="auto_launch_matching">Perfecte overeenkomst automatisch starten</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nee (standaard)</string>
+	<string name="remember_search_picks">In zoekopdracht gekozen apps onthouden</string>
+	<string name="remember_search_picks_yes">Ja</string>
+	<string name="remember_search_picks_no">Nee (standaard)</string>
 	<string name="search_strictness">App zoeken</string>
 	<string name="search_strictness_hamming">Naam lijkt op zoekterm (standaard)</string>
 	<string name="search_strictness_contains">Naam bevat zoekterm</string>

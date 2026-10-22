@@ -6,6 +6,7 @@ import android.os.UserHandle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -90,6 +91,9 @@ public class AppSearch {
 		UserHandle privateUser = AppLauncher.findPrivateProfileUser(context);
 		boolean privateOnly = false;
 
+		String pickKey = prefs.rememberSearchPicks()
+				? SearchPick.getKey(query)
+				: "";
 		query = query == null ? "" : query.trim();
 		if (privateUser != null && query.startsWith(".")) {
 			query = query.substring(1);
@@ -111,8 +115,9 @@ public class AppSearch {
 		query = query.toLowerCase(defaultLocale);
 
 		int strategy = prefs.getSearchStrictness();
+		long now = System.currentTimeMillis();
 		Comparator<AppIcon> appComparator = getAppComparator(
-				appSorting, System.currentTimeMillis());
+				appSorting, now);
 		ArrayList<AppIcon> list = new ArrayList<>();
 		ArrayList<AppSearch.HammingHit> hamming = new ArrayList<>();
 
@@ -178,7 +183,38 @@ public class AppSearch {
 				list.add(hit.appIcon);
 			}
 		}
+		promoteSearchPicks(list, pickKey, now);
 		return list;
+	}
+
+	// Moves apps that were picked for this search term before to the
+	// front, while all other apps keep their order.
+	private static void promoteSearchPicks(
+			List<AppIcon> list,
+			String pickKey,
+			long now) {
+		if (pickKey.isEmpty()) {
+			return;
+		}
+		HashMap<AppIcon, Double> scores = new HashMap<>();
+		for (AppIcon appIcon : list) {
+			double score = SearchPick.getScore(
+					appIcon.searchPicks, pickKey, now);
+			if (score > 0d) {
+				scores.put(appIcon, score);
+			}
+		}
+		if (scores.isEmpty()) {
+			return;
+		}
+		// Collections.sort() is stable.
+		Collections.sort(list, (left, right) -> {
+			Double l = scores.get(left);
+			Double r = scores.get(right);
+			return Double.compare(
+					r != null ? r : 0d,
+					l != null ? l : 0d);
+		});
 	}
 
 	static Comparator<AppIcon> getAppComparator(int sorting, long now) {

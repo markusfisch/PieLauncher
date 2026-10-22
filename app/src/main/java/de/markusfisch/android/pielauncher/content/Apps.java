@@ -87,6 +87,8 @@ public class Apps {
 		byte[] iconBytes;
 		double frecencyScore;
 		long frecencyUpdatedAt;
+		// Search terms this app was launched from. Null if there are none.
+		HashMap<String, SearchPick> searchPicks;
 	}
 
 	public static final String MENU_PRIMARY = "menu";
@@ -296,6 +298,7 @@ public class Apps {
 					newApps, oldPackageApps, packageRestriction, userRestriction);
 			Database database = PieLauncherApp.getDatabase(context);
 			database.restoreFrecency(context, newApps);
+			database.restoreSearchPicks(context, newApps);
 			Menus menus = compileMenus(context, newApps);
 			removeObsoletePackageKeys(newApps, oldPackageApps,
 					packageRestriction);

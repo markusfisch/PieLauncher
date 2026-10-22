@@ -66,6 +66,9 @@
 	<string name="auto_launch_matching">Autostarta exakta sökträffar</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nej (standard)</string>
+	<string name="remember_search_picks">Kom ihåg appar valda från sökningen</string>
+	<string name="remember_search_picks_yes">Ja</string>
+	<string name="remember_search_picks_no">Nej (standard)</string>
 	<string name="search_strictness">Appsökning</string>
 	<string name="search_strictness_hamming">Namn liknar sökord (standard)</string>
 	<string name="search_strictness_contains">Namn innehåller sökord</string>
