@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Xml;
@@ -62,38 +63,23 @@ public class IconPack {
 
 		public void loadComponentAndDrawableNames(
 				LinkedHashMap<String, String> map) {
+			int size = map.size();
+			loadAppFilterFromAssets(map);
+			// Some packs (e.g. Lawnicons) don't ship assets/appfilter.xml
+			// but only res/xml/appfilter.xml.
+			if (map.size() == size) {
+				loadAppFilterFromResources(map);
+			}
+		}
+
+		private void loadAppFilterFromAssets(
+				LinkedHashMap<String, String> map) {
 			InputStream is = null;
 			try {
 				is = resources.getAssets().open("appfilter.xml");
 				XmlPullParser parser = Xml.newPullParser();
 				parser.setInput(new InputStreamReader(is));
-				for (int eventType = parser.getEventType();
-						eventType != XmlPullParser.END_DOCUMENT;
-						eventType = parser.next()) {
-					if (eventType == XmlPullParser.START_TAG &&
-							"item".equals(parser.getName())) {
-						String component = parser.getAttributeValue(
-								null, "component");
-						if (component == null) {
-							component = parser.getAttributeValue(
-									null, "activity");
-						}
-						if (component == null || component.isEmpty()) {
-							continue;
-						}
-						String drawable = parser.getAttributeValue(
-								null, "drawable");
-						if (drawable == null || drawable.isEmpty()) {
-							continue;
-						}
-						ComponentName cn = parseComponent(component);
-						if (cn != null) {
-							map.put(cn.flattenToShortString(), drawable);
-						} else {
-							map.put(component, drawable);
-						}
-					}
-				}
+				parseAppFilter(parser, map);
 			} catch (XmlPullParserException | IOException e) {
 				// Ignore.
 			} finally {
@@ -102,6 +88,61 @@ public class IconPack {
 						is.close();
 					} catch (IOException e) {
 						// Ignore.
+					}
+				}
+			}
+		}
+
+		private void loadAppFilterFromResources(
+				LinkedHashMap<String, String> map) {
+			@SuppressLint("DiscouragedApi")
+			int id = resources.getIdentifier("appfilter", "xml",
+					packageName);
+			if (id == 0) {
+				return;
+			}
+			XmlResourceParser parser = null;
+			try {
+				parser = resources.getXml(id);
+				parseAppFilter(parser, map);
+			} catch (XmlPullParserException | IOException |
+					NotFoundException e) {
+				// Ignore.
+			} finally {
+				if (parser != null) {
+					parser.close();
+				}
+			}
+		}
+
+		private static void parseAppFilter(
+				XmlPullParser parser,
+				LinkedHashMap<String, String> map)
+				throws XmlPullParserException, IOException {
+			for (int eventType = parser.getEventType();
+					eventType != XmlPullParser.END_DOCUMENT;
+					eventType = parser.next()) {
+				if (eventType == XmlPullParser.START_TAG &&
+						"item".equals(parser.getName())) {
+					String component = parser.getAttributeValue(
+							null, "component");
+					if (component == null) {
+						component = parser.getAttributeValue(
+								null, "activity");
+					}
+					if (component == null || component.isEmpty()) {
+						continue;
+					}
+					String drawable = parser.getAttributeValue(
+							null, "drawable");
+					if (drawable == null || drawable.isEmpty()) {
+						continue;
+					}
+					ComponentName cn = parseComponent(component);
+					if (cn != null) {
+						map.put(cn.flattenToShortString(), drawable);
+					} else {
+						map.put(component, drawable);
 					}
 				}
 			}
