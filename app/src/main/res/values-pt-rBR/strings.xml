@@ -73,6 +73,9 @@
 	<string name="remember_search_picks">Lembrar aplicativos escolhidos na pesquisa</string>
 	<string name="remember_search_picks_yes">Sim</string>
 	<string name="remember_search_picks_no">Não (Padrão)</string>
+	<string name="search_app_shortcuts">Pesquisar atalhos de aplicativos</string>
+	<string name="search_app_shortcuts_yes">Sim</string>
+	<string name="search_app_shortcuts_no">Não (Padrão)</string>
 	<string name="search_strictness">Pesquisa de aplicativos</string>
 	<string name="search_strictness_hamming">Nome se assemelha ao termo de pesquisa (Padrão)</string>
 	<string name="search_strictness_contains">Nome contém o termo de pesquisa</string>
