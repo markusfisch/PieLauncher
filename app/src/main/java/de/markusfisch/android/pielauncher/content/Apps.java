@@ -48,6 +48,10 @@ public class Apps {
 		void onShowAllAppsOnResume();
 	}
 
+	public interface AppShortcutsListener {
+		void onAppShortcuts(AppIcon app, List<AppIcon> shortcuts);
+	}
+
 	public static class AppIcon extends CanvasPieMenu.CanvasIcon {
 		public final Rect hitRect = new Rect();
 		public final String label;
@@ -220,6 +224,25 @@ public class Apps {
 						userHandle);
 				propagateUpdate();
 			});
+		});
+	}
+
+	// Loads the app shortcuts (e.g. "New incognito tab") of the given app.
+	// Only the default launcher may query them, so the list is empty
+	// otherwise.
+	public void loadAppShortcutsAsync(
+			Context context,
+			AppIcon app,
+			AppShortcutsListener listener) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1 ||
+				app == null || isShortcut(app)) {
+			listener.onAppShortcuts(app, new ArrayList<>());
+			return;
+		}
+		Context appContext = context.getApplicationContext();
+		executor.execute(() -> {
+			List<AppIcon> shortcuts = queryAppShortcuts(appContext, app);
+			handler.post(() -> listener.onAppShortcuts(app, shortcuts));
 		});
 	}
 
@@ -422,7 +445,56 @@ public class Apps {
 	}
 
 	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.O)
+	@TargetApi(Build.VERSION_CODES.N_MR1)
+	private static List<AppIcon> queryAppShortcuts(
+			Context context,
+			AppIcon app) {
+		ArrayList<AppIcon> shortcuts = new ArrayList<>();
+		LauncherApps la = AppLauncher.getLauncherApps(context);
+		if (la == null || !la.hasShortcutHostPermission()) {
+			return shortcuts;
+		}
+		LauncherApps.ShortcutQuery query = new LauncherApps.ShortcutQuery();
+		query.setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC |
+				LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST);
+		query.setPackage(app.componentName.getPackageName());
+		query.setActivity(app.componentName);
+		List<ShortcutInfo> infos;
+		try {
+			infos = la.getShortcuts(query, app.userHandle);
+		} catch (SecurityException | IllegalStateException e) {
+			// The profile may be locked.
+			return shortcuts;
+		}
+		if (infos == null) {
+			return shortcuts;
+		}
+		// List manifest shortcuts first, like the system launcher does.
+		infos = new ArrayList<>(infos);
+		Collections.sort(infos, (left, right) -> {
+			if (left.isDeclaredInManifest() != right.isDeclaredInManifest()) {
+				return left.isDeclaredInManifest() ? -1 : 1;
+			}
+			return Integer.compare(left.getRank(), right.getRank());
+		});
+		// Some apps publish the same shortcut as manifest and as dynamic
+		// shortcut, so skip labels that are listed already.
+		HashSet<String> labels = new HashSet<>();
+		for (ShortcutInfo info : infos) {
+			if (!info.isEnabled()) {
+				continue;
+			}
+			AppIcon icon = buildShortcutIcon(context, la, info);
+			if (icon == null || !labels.add(icon.label)) {
+				continue;
+			}
+			shortcuts.add(icon);
+		}
+		return shortcuts;
+	}
+
+	@SuppressLint("UseRequiresApi")
+	@TargetApi(Build.VERSION_CODES.N_MR1)
 	private static AppIcon buildShortcutIcon(
 			Context context,
 			LauncherApps la,
