@@ -10,4 +10,5 @@
 	<color name="text_color">#fff</color>
 	<color name="text_color_preference">#afff</color>
 	<color name="separator">#1fff</color>
+	<color name="bg_app_shortcuts">#202020</color>
 </resources>

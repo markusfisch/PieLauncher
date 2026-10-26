@@ -486,6 +486,7 @@ public class HomeActivity extends Activity {
 				float distanceX,
 				float distanceY) {
 			if (pieView.appListNotScrolled() &&
+					!pieView.isScrollingAppShortcuts() &&
 					Math.abs(distanceY) > Math.abs(distanceX)) {
 				pieView.dragDownListBy(distanceY);
 			}
@@ -499,6 +500,7 @@ public class HomeActivity extends Activity {
 				float velocityX,
 				float velocityY) {
 			if (pieView.appListNotScrolled() &&
+					!pieView.isScrollingAppShortcuts() &&
 					velocityY > velocityX &&
 					velocityY >= minimumVelocity &&
 					e1 != null && e2 != null &&
