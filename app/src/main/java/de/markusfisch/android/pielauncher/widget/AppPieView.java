@@ -1907,7 +1907,7 @@ public class AppPieView extends View {
 	// shortcuts than fit, the card scrolls.
 	private boolean drawAppShortcuts(Canvas canvas, float f) {
 		int height = getAppShortcutsHeight();
-		appShortcutsVisible = f > 0 && height > 0;
+		appShortcutsVisible = f > 0 && height > 0 && !isDraggingDownList();
 		if (!appShortcutsVisible) {
 			return false;
 		}
