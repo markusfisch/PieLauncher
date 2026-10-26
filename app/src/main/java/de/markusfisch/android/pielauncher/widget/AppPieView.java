@@ -1834,8 +1834,11 @@ public class AppPieView extends View {
 
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		// Make sure the last row can be scrolled above the app shortcuts.
-		maxHeight += getAppShortcutsHeight();
-		int viewHeightMinusPadding = viewHeight - getPaddingBottom();
+		int shortcutsHeight = getAppShortcutsHeight();
+		maxHeight += shortcutsHeight;
+		int bottomInset = shortcutsHeight > 0
+				? getBottomInset() + listPadding : getPaddingBottom();
+		int viewHeightMinusPadding = viewHeight - bottomInset;
 		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
 		if (scrollY > maxScrollY) {
 			int newScrollY = clamp(scrollY, 0, maxScrollY);
