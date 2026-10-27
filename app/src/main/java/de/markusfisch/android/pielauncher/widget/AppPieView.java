@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -115,6 +116,7 @@ public class AppPieView extends View {
 	private final Rect iconChangeRadiusRect = new Rect();
 	private final Rect appShortcutsRect = new Rect();
 	private final RectF appShortcutsCard = new RectF();
+	private final Path appShortcutsClip = new Path();
 	private final RectF appShortcutsThumb = new RectF();
 	private final OverScroller appShortcutsScroller;
 	private final Bitmap iconAdd;
@@ -160,6 +162,7 @@ public class AppPieView extends View {
 	private Window window;
 	private RenderNode pieRenderNode;
 	private RenderNode listRenderNode;
+	private RenderNode appShortcutsBackdropNode;
 	private int viewWidth;
 	private int viewHeight;
 	private int controlsPadding;
@@ -272,6 +275,12 @@ public class AppPieView extends View {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			pieRenderNode = new RenderNode("PieMenu");
 			listRenderNode = new RenderNode("List");
+		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			appShortcutsBackdropNode = new RenderNode("AppShortcutsBackdrop");
+			appShortcutsBackdropNode.setRenderEffect(RenderEffect.createBlurEffect(
+					maxBlurRadius, maxBlurRadius, Shader.TileMode.CLAMP));
 		}
 
 		// Set up dim filter.
@@ -477,11 +486,21 @@ public class AppPieView extends View {
 			drawTip(canvas, loadingTip);
 		}
 
+		int shortcutsHeight = getAppShortcutsHeight();
+		appShortcutsVisible = shortcutsHeight > 0 && fList > 0 &&
+				!isDraggingDownList();
+
 		Canvas listCanvas = getRecordingCanvas(listRenderNode, canvas);
 		currentListBlur = applyBlurOut(listRenderNode, currentListBlur, fList);
-		invalidate |= drawList(listCanvas, fList);
-		drawRenderNode(listRenderNode, canvas);
-		invalidate |= drawAppShortcuts(canvas, fList);
+		invalidate |= drawList(listCanvas, fList, shortcutsHeight);
+
+		if (appShortcutsVisible) {
+			updateAppShortcutsLayout(shortcutsHeight);
+			drawListWithShortcutBackdrop(listRenderNode, canvas);
+			invalidate |= drawAppShortcuts(canvas, fList, shortcutsHeight);
+		} else {
+			drawRenderNode(listRenderNode, canvas);
+		}
 
 		invalidate |= drawEditor(canvas, fEdit);
 
@@ -1736,7 +1755,7 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean drawList(Canvas canvas, float f) {
+	private boolean drawList(Canvas canvas, float f, int shortcutsHeight) {
 		if (f <= 0) {
 			return false;
 		}
@@ -1834,7 +1853,6 @@ public class AppPieView extends View {
 
 		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
 		// Make sure the last row can be scrolled above the app shortcuts.
-		int shortcutsHeight = getAppShortcutsHeight();
 		maxHeight += shortcutsHeight;
 		int bottomInset = shortcutsHeight > 0
 				? getBottomInset() + listPadding : getPaddingBottom();
@@ -1894,30 +1912,67 @@ public class AppPieView extends View {
 	}
 
 	private int getAppShortcutsHeight() {
-		if (!prefs.showAppShortcuts() || mode != MODE_LIST || appShortcuts == null ||
-				appShortcuts.isEmpty()) {
-			return 0;
+		return !prefs.showAppShortcuts() ||
+				mode != MODE_LIST ||
+				appShortcuts == null ||
+				appShortcuts.isEmpty()
+			? 0
+			: Math.min(appShortcuts.size(), MAX_VISIBLE_APP_SHORTCUTS) *
+					appShortcutHeight + listPadding * 2;
+	}
+
+	private void updateAppShortcutsLayout(int shortcutsHeight) {
+		int bottom = viewHeight - getBottomInset() - listPadding;
+		appShortcutsRect.set(listPadding, bottom - shortcutsHeight,
+				viewWidth - listPadding, bottom);
+		appShortcutsCard.set(appShortcutsRect);
+		appShortcutsCard.offset(0, getScrollY());
+	}
+
+	private void drawListWithShortcutBackdrop(RenderNode node,
+			Canvas canvas) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+			drawRenderNode(node, canvas);
+			return;
+		} else if (node == null || !canvas.isHardwareAccelerated()) {
+			return;
 		}
-		return Math.min(appShortcuts.size(), MAX_VISIBLE_APP_SHORTCUTS) *
-				appShortcutHeight + listPadding * 2;
+		node.endRecording();
+
+		// Keep the offscreen blur surface close to the card, with enough
+		// surrounding content to avoid artifacts at its edges.
+		int margin = (int) Math.ceil(maxBlurRadius * 3f);
+		int left = appShortcutsRect.left - margin;
+		int top = appShortcutsRect.top + getScrollY() - margin;
+		appShortcutsBackdropNode.setPosition(left, top,
+				appShortcutsRect.right + margin,
+				appShortcutsRect.bottom + getScrollY() + margin);
+		Canvas backdrop = appShortcutsBackdropNode.beginRecording();
+		backdrop.translate(-left, -top);
+		backdrop.drawRenderNode(node);
+		appShortcutsBackdropNode.endRecording();
+
+		// Replace the list behind the card with its blurred rendering.
+		appShortcutsClip.reset();
+		appShortcutsClip.addRoundRect(appShortcutsCard,
+				listPadding, listPadding, Path.Direction.CW);
+		canvas.save();
+		canvas.clipOutPath(appShortcutsClip);
+		canvas.drawRenderNode(node);
+		canvas.restore();
+		canvas.save();
+		canvas.clipPath(appShortcutsClip);
+		canvas.drawRenderNode(appShortcutsBackdropNode);
+		canvas.restore();
 	}
 
 	// Draw the shortcuts of the app that would be launched by pressing
 	// enter in a card at the bottom of the screen. If there are more
 	// shortcuts than fit, the card scrolls.
-	private boolean drawAppShortcuts(Canvas canvas, float f) {
-		int height = getAppShortcutsHeight();
-		appShortcutsVisible = f > 0 && height > 0 && !isDraggingDownList();
-		if (!appShortcutsVisible) {
-			return false;
-		}
-		int bottom = viewHeight - getBottomInset() - listPadding;
-		appShortcutsRect.set(listPadding, bottom - height,
-				viewWidth - listPadding, bottom);
-
+	private boolean drawAppShortcuts(Canvas canvas, float f, int shortcutsHeight) {
 		int contentHeight = appShortcuts.size() * appShortcutHeight +
 				listPadding * 2;
-		maxAppShortcutsScrollY = Math.max(0, contentHeight - height);
+		maxAppShortcutsScrollY = Math.max(0, contentHeight - shortcutsHeight);
 		boolean invalidate = false;
 		if (appShortcutsScroller.computeScrollOffset()) {
 			appShortcutsScrollY = appShortcutsScroller.getCurrY();
@@ -1929,8 +1984,6 @@ public class AppPieView extends View {
 		// Draw in view coordinates because the card doesn't scroll
 		// with the list.
 		int scrollY = getScrollY();
-		appShortcutsCard.set(appShortcutsRect);
-		appShortcutsCard.offset(0, scrollY);
 		float radius = listPadding;
 		paintAppShortcuts.setAlpha(Math.round(f * alphaAppShortcuts));
 		canvas.drawRoundRect(appShortcutsCard, radius, radius,
@@ -1968,8 +2021,8 @@ public class AppPieView extends View {
 		// Draw a scroll bar to show there are more shortcuts.
 		if (maxAppShortcutsScrollY > 0) {
 			int trackTop = appShortcutsRect.top + listPadding + scrollY;
-			int trackHeight = height - listPadding * 2;
-			int thumbHeight = trackHeight * height / contentHeight;
+			int trackHeight = shortcutsHeight - listPadding * 2;
+			int thumbHeight = trackHeight * shortcutsHeight / contentHeight;
 			int thumbTop = trackTop + (trackHeight - thumbHeight) *
 					appShortcutsScrollY / maxAppShortcutsScrollY;
 			float thumbRight = appShortcutsRect.right - listPadding / 2f;
