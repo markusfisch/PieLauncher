@@ -145,6 +145,7 @@ public class AppPieView extends View {
 	private final int iconLaunchFirstHalf;
 	private final int appShortcutHeight;
 	private final int appShortcutIconSize;
+	private final int appShortcutsVerticalPadding;
 	private final int alphaAppShortcuts;
 	private final int alphaAppShortcutsThumb;
 	private final int translucentBackgroundColor;
@@ -238,6 +239,8 @@ public class AppPieView extends View {
 		spaceBetween = Math.round(4f * dp);
 		appShortcutHeight = Math.round(48f * dp);
 		appShortcutIconSize = Math.round(32f * dp);
+		appShortcutsVerticalPadding = listPadding -
+				(appShortcutHeight - appShortcutIconSize) / 2;
 		maxBlurRadius = iconSize * .35f;
 
 		loadingTip = context.getString(R.string.tip_loading);
@@ -1918,7 +1921,7 @@ public class AppPieView extends View {
 				appShortcuts.isEmpty()
 			? 0
 			: Math.min(appShortcuts.size(), MAX_VISIBLE_APP_SHORTCUTS) *
-					appShortcutHeight + listPadding * 2;
+					appShortcutHeight + appShortcutsVerticalPadding * 2;
 	}
 
 	private void updateAppShortcutsLayout(int shortcutsHeight) {
@@ -1971,7 +1974,7 @@ public class AppPieView extends View {
 	// shortcuts than fit, the card scrolls.
 	private boolean drawAppShortcuts(Canvas canvas, float f, int shortcutsHeight) {
 		int contentHeight = appShortcuts.size() * appShortcutHeight +
-				listPadding * 2;
+				appShortcutsVerticalPadding * 2;
 		maxAppShortcutsScrollY = Math.max(0, contentHeight - shortcutsHeight);
 		boolean invalidate = false;
 		if (appShortcutsScroller.computeScrollOffset()) {
@@ -1993,7 +1996,8 @@ public class AppPieView extends View {
 		canvas.clipRect(appShortcutsCard);
 		paintAppShortcutText.setAlpha(Math.round(f * alphaText));
 		int x = appShortcutsRect.left + listPadding;
-		int y = appShortcutsRect.top + listPadding - appShortcutsScrollY;
+		int y = appShortcutsRect.top + appShortcutsVerticalPadding -
+				appShortcutsScrollY;
 		int vpad = (appShortcutHeight - appShortcutIconSize) / 2;
 		int textX = x + appShortcutIconSize + listPadding;
 		int maxTextWidth = appShortcutsRect.right - listPadding - textX;
@@ -2020,8 +2024,9 @@ public class AppPieView extends View {
 
 		// Draw a scroll bar to show there are more shortcuts.
 		if (maxAppShortcutsScrollY > 0) {
-			int trackTop = appShortcutsRect.top + listPadding + scrollY;
-			int trackHeight = shortcutsHeight - listPadding * 2;
+			int trackTop = appShortcutsRect.top + appShortcutsVerticalPadding +
+					scrollY;
+			int trackHeight = shortcutsHeight - appShortcutsVerticalPadding * 2;
 			int thumbHeight = trackHeight * shortcutsHeight / contentHeight;
 			int thumbTop = trackTop + (trackHeight - thumbHeight) *
 					appShortcutsScrollY / maxAppShortcutsScrollY;
