@@ -63,6 +63,9 @@
 	<string name="space_action">Spatie na zoekterm</string>
 	<string name="space_action_move_selection">Selectie verplaatsen (standaard)</string>
 	<string name="space_action_double_launch">Twee keer drukken om app te starten</string>
+	<string name="show_app_shortcuts">App-snelkoppelingen tonen</string>
+	<string name="show_app_shortcuts_yes">Ja (standaard)</string>
+	<string name="show_app_shortcuts_no">Nee</string>
 	<string name="auto_launch_matching">Perfecte overeenkomst automatisch starten</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nee (standaard)</string>

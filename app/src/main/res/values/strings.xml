@@ -67,6 +67,9 @@
 	<string name="space_action">Space at the end of search input</string>
 	<string name="space_action_move_selection">Moves selection (Default)</string>
 	<string name="space_action_double_launch">Press twice to launch app</string>
+	<string name="show_app_shortcuts">Show app shortcuts</string>
+	<string name="show_app_shortcuts_yes">Yes (Default)</string>
+	<string name="show_app_shortcuts_no">No</string>
 	<string name="auto_launch_matching">Auto start perfect matches</string>
 	<string name="auto_launch_matching_yes">Yes</string>
 	<string name="auto_launch_matching_no">No (Default)</string>

@@ -1855,7 +1855,7 @@ public class AppPieView extends View {
 	}
 
 	private void updateAppShortcuts() {
-		Apps.AppIcon app = getSelectedApp();
+		Apps.AppIcon app = prefs.showAppShortcuts() ? getSelectedApp() : null;
 		if (app == null) {
 			appShortcutsOwner = null;
 			appShortcuts = null;
@@ -1894,7 +1894,7 @@ public class AppPieView extends View {
 	}
 
 	private int getAppShortcutsHeight() {
-		if (mode != MODE_LIST || appShortcuts == null ||
+		if (!prefs.showAppShortcuts() || mode != MODE_LIST || appShortcuts == null ||
 				appShortcuts.isEmpty()) {
 			return 0;
 		}

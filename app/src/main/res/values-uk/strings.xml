@@ -63,6 +63,9 @@
 	<string name="space_action">Пробіл в кінці пошукового запиту</string>
 	<string name="space_action_move_selection">Переміщує виділення (за замовчуванням)</string>
 	<string name="space_action_double_launch">Натисніть двічі, щоб запустити додаток</string>
+	<string name="show_app_shortcuts">Показувати ярлики програм</string>
+	<string name="show_app_shortcuts_yes">Так (за замовчуванням)</string>
+	<string name="show_app_shortcuts_no">Ні</string>
 	<string name="auto_launch_matching">Автоматичний запуск ідеальних збігів</string>
 	<string name="auto_launch_matching_yes">Так</string>
 	<string name="auto_launch_matching_no">Ні (за замовчуванням)</string>

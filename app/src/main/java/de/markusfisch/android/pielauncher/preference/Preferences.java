@@ -78,6 +78,7 @@ public class Preferences {
 	private static final String LIST_ANIMATION_APPEARANCE = "list_animation_appearance";
 	private static final String DISPLAY_KEYBOARD = "display_keyboard";
 	private static final String DOUBLE_SPACE_LAUNCH = "space_action_double_launch";
+	private static final String SHOW_APP_SHORTCUTS = "show_app_shortcuts";
 	private static final String AUTO_LAUNCH_MATCHING = "auto_launch_matching";
 	private static final String REMEMBER_SEARCH_PICKS = "remember_search_picks";
 	private static final String SEARCH_STRICTNESS = "strictness";
@@ -115,6 +116,7 @@ public class Preferences {
 	private int listAnimationAppearance = LIST_APPEARANCE_ANIMATION_SLIDE;
 	private boolean displayKeyboard = true;
 	private boolean doubleSpaceLaunch = false;
+	private boolean showAppShortcuts = true;
 	private boolean autoLaunchMatching = false;
 	private boolean rememberSearchPicks = false;
 	private int searchStrictness = SEARCH_STRICTNESS_HAMMING;
@@ -171,6 +173,8 @@ public class Preferences {
 				displayKeyboard);
 		doubleSpaceLaunch = preferences.getBoolean(DOUBLE_SPACE_LAUNCH,
 				doubleSpaceLaunch);
+		showAppShortcuts = preferences.getBoolean(SHOW_APP_SHORTCUTS,
+				showAppShortcuts);
 		autoLaunchMatching = preferences.getBoolean(AUTO_LAUNCH_MATCHING,
 				autoLaunchMatching);
 		rememberSearchPicks = preferences.getBoolean(REMEMBER_SEARCH_PICKS,
@@ -346,6 +350,15 @@ public class Preferences {
 	public void setDoubleSpaceLaunch(boolean doubleSpaceLaunch) {
 		this.doubleSpaceLaunch = doubleSpaceLaunch;
 		put(DOUBLE_SPACE_LAUNCH, doubleSpaceLaunch).apply();
+	}
+
+	public boolean showAppShortcuts() {
+		return showAppShortcuts;
+	}
+
+	public void setShowAppShortcuts(boolean showAppShortcuts) {
+		this.showAppShortcuts = showAppShortcuts;
+		put(SHOW_APP_SHORTCUTS, showAppShortcuts).apply();
 	}
 
 	public boolean autoLaunchMatching() {

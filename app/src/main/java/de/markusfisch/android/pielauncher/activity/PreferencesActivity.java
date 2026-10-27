@@ -268,6 +268,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getSpaceActionOptions,
 				() -> prefs.doubleSpaceLaunch(),
 				(value) -> prefs.setDoubleSpaceLaunch(value));
+		initPreference(R.id.show_app_shortcuts,
+				R.string.show_app_shortcuts,
+				PreferencesActivity::getShowAppShortcutsOptions,
+				() -> prefs.showAppShortcuts(),
+				(value) -> prefs.setShowAppShortcuts(value));
 		initPreference(R.id.auto_launch_matching,
 				R.string.auto_launch_matching,
 				PreferencesActivity::getAutoLaunchMatchingOptions,
@@ -611,6 +616,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.space_action_double_launch);
 		map.put(Boolean.FALSE, R.string.space_action_move_selection);
+		return map;
+	}
+
+	private static Map<Boolean, Integer> getShowAppShortcutsOptions() {
+		Map<Boolean, Integer> map = new LinkedHashMap<>();
+		map.put(Boolean.TRUE, R.string.show_app_shortcuts_yes);
+		map.put(Boolean.FALSE, R.string.show_app_shortcuts_no);
 		return map;
 	}
 

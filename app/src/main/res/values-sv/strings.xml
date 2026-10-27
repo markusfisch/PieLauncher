@@ -63,6 +63,9 @@
 	<string name="space_action">Mellanslag i slutet av sökord</string>
 	<string name="space_action_move_selection">Flyttar markering (standard)</string>
 	<string name="space_action_double_launch">Dubbeltryck för att starta app</string>
+	<string name="show_app_shortcuts">Visa appgenvägar</string>
+	<string name="show_app_shortcuts_yes">Ja (standard)</string>
+	<string name="show_app_shortcuts_no">Nej</string>
 	<string name="auto_launch_matching">Autostarta exakta sökträffar</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nej (standard)</string>

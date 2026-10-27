@@ -63,6 +63,9 @@
 	<string name="space_action">Espace à la fin de la recherche</string>
 	<string name="space_action_move_selection">Déplace la sélection (par défaut)</string>
 	<string name="space_action_double_launch">Appuyer deux fois pour lancer l\'app</string>
+	<string name="show_app_shortcuts">Afficher les raccourcis des applications</string>
+	<string name="show_app_shortcuts_yes">Oui (par défaut)</string>
+	<string name="show_app_shortcuts_no">Non</string>
 	<string name="auto_launch_matching">Démarrage automatique des correspondances parfaites</string>
 	<string name="auto_launch_matching_yes">Oui</string>
 	<string name="auto_launch_matching_no">Non (par défaut)</string>

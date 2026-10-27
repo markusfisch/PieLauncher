@@ -67,6 +67,9 @@
 	<string name="space_action">Tecla de espaço no final da entrada de pesquisa</string>
 	<string name="space_action_move_selection">Move a seleção (Padrão)</string>
 	<string name="space_action_double_launch">Pressione duas vezes para iniciar o aplicativo</string>
+	<string name="show_app_shortcuts">Mostrar atalhos de aplicativos</string>
+	<string name="show_app_shortcuts_yes">Sim (Padrão)</string>
+	<string name="show_app_shortcuts_no">Não</string>
 	<string name="auto_launch_matching">Auto-iniciar combinações perfeitas</string>
 	<string name="auto_launch_matching_yes">Sim</string>
 	<string name="auto_launch_matching_no">Não (Padrão)</string>

@@ -63,6 +63,9 @@
 	<string name="space_action">Leer am Ende des Suchbegriffs</string>
 	<string name="space_action_move_selection">Bewegt die Auswahl (Standard)</string>
 	<string name="space_action_double_launch">Zweimal drücken startet die gewählte App</string>
+	<string name="show_app_shortcuts">App-Shortcuts anzeigen</string>
+	<string name="show_app_shortcuts_yes">Ja (Standard)</string>
+	<string name="show_app_shortcuts_no">Nein</string>
 	<string name="auto_launch_matching">Bei Übereinstimmung automatisch starten</string>
 	<string name="auto_launch_matching_yes">Ja</string>
 	<string name="auto_launch_matching_no">Nein (Standard)</string>
