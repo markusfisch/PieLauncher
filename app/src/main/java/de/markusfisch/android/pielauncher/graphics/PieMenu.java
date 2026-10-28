@@ -16,7 +16,7 @@ public class PieMenu<T extends PieMenu.Icon> {
 	}
 
 	public interface OnCircleListener {
-		void onCircle();
+		void onCircle(int direction);
 	}
 
 	public List<T> icons = new ArrayList<>();
@@ -130,10 +130,10 @@ public class PieMenu<T extends PieMenu.Icon> {
 			double infieldRadius = rad / 2f;
 			double factor = cursorRadius / infieldRadius;
 
-			if (onCircleListener != null &&
-					circleDetector.update(centeredX, centeredY,
-							infieldRadius * .75f)) {
-				onCircleListener.onCircle();
+			int circleDirection = onCircleListener == null ? 0 :
+					circleDetector.update(centeredX, centeredY, infieldRadius * .75f);
+			if (circleDirection != 0) {
+				onCircleListener.onCircle(circleDirection);
 				// Because onCircle() may change the icons.
 				calculate(x, y, t, launching);
 				return;
@@ -287,17 +287,17 @@ public class PieMenu<T extends PieMenu.Icon> {
 			direction = 0;
 		}
 
-		private boolean update(double dx, double dy, double minRadius) {
+		private int update(double dx, double dy, double minRadius) {
 			// Reset detection when touch is too close to the center.
 			if (dx * dx + dy * dy < minRadius * minRadius) {
 				reset();
-				return false;
+				return 0;
 			}
 
 			if (ldx == Double.MAX_VALUE && ldy == Double.MAX_VALUE) {
 				ldx = dx;
 				ldy = dy;
-				return false;
+				return 0;
 			}
 
 			double crossProduct = ldx * dy - ldy * dx;
@@ -311,25 +311,26 @@ public class PieMenu<T extends PieMenu.Icon> {
 			if (Math.abs(change) > 1.0) {
 				// Touch moved too far.
 				reset();
-				return false;
+				return 0;
 			}
 
 			// Direction changed.
 			if ((direction > 0 && change < 0) ||
 					(direction < 0 && change > 0)) {
 				reset();
-				return false;
+				return 0;
 			}
 			direction = change;
 
 			sum += change;
 
 			if (Math.abs(sum) < TAU) {
-				return false;
+				return 0;
 			}
 
+			int completedDirection = sum > 0 ? 1 : -1;
 			reset();
-			return true;
+			return completedDirection;
 		}
 	}
 }

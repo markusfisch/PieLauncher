@@ -206,6 +206,9 @@ public class AppPieView extends View {
 	private long grabbedIconAt;
 	private long lastTapUpTime;
 	private long lastCircleAt;
+	private int circleDirection;
+	private final ArrayList<CanvasPieMenu.CanvasIcon> outgoingPieIcons =
+			new ArrayList<>();
 	private Bitmap iconChangeTwist;
 	private Bitmap iconChangeIconScale;
 	private Bitmap iconChangeRadius;
@@ -483,7 +486,7 @@ public class AppPieView extends View {
 
 		Canvas pieCanvas = getRecordingCanvas(pieRenderNode, canvas);
 		currentPieBlur = applyBlurOut(pieRenderNode, currentPieBlur, fPie);
-		boolean invalidate = drawPieMenu(pieCanvas, fPie, ad);
+		boolean invalidate = drawPieMenu(pieCanvas, fPie, now, ad);
 		drawRenderNode(pieRenderNode, canvas);
 
 		if (PieLauncherApp.apps.isIndexing()) {
@@ -1680,14 +1683,26 @@ public class AppPieView extends View {
 		}
 	}
 
-	private void onCircle() {
+	private void onCircle(int direction) {
 		List<Apps.AppIcon> icons = getAlternateMenu(
 				prefs.circleSwapsMenus());
 		if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
 			return;
 		}
+		outgoingPieIcons.clear();
+		if (prefs.animateInOut() && prefs.getAnimationDuration() > 0) {
+			for (Apps.AppIcon icon : pieMenu.icons) {
+				CanvasPieMenu.CanvasIcon snapshot =
+						new CanvasPieMenu.CanvasIcon(icon.bitmap);
+				snapshot.x = icon.x;
+				snapshot.y = icon.y;
+				snapshot.size = icon.size;
+				outgoingPieIcons.add(snapshot);
+			}
+			circleDirection = direction;
+			lastCircleAt = SystemClock.uptimeMillis();
+		}
 		setMenu(icons);
-		lastCircleAt = SystemClock.uptimeMillis();
 		performHapticFeedbackIfAllowed(HapticFeedbackConstants.LONG_PRESS);
 	}
 
@@ -2238,24 +2253,27 @@ public class AppPieView extends View {
 		}
 	}
 
-	private boolean drawPieMenu(Canvas canvas, float f, float ad) {
+	private boolean drawPieMenu(Canvas canvas, float f, long now, float ad) {
 		if (f <= 0) {
+			outgoingPieIcons.clear();
 			return false;
 		}
 
-		float circleSince = Math.round(
-				SystemClock.uptimeMillis() - lastCircleAt);
 		boolean animateInOut = prefs.animateInOut();
-		if (animateInOut && f == 1f && circleSince <= ad) {
-			f = circleSince / ad;
-		}
-
 		f = easeSlowerOut(f);
-		CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
 		pieMenu.calculate(touch.x, touch.y,
 				animateInOut ? f : 1f,
 				launchingIcon);
-		pieMenu.draw(canvas);
+
+		boolean switching = !outgoingPieIcons.isEmpty() && animateInOut && ad > 0;
+		float t = switching ? Math.max(0f, (now - lastCircleAt) / ad) : 1f;
+		if (t < 1f) {
+			drawCircleTransition(canvas, t, f);
+		} else {
+			outgoingPieIcons.clear();
+			CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
+			pieMenu.draw(canvas);
+		}
 
 		int selectedIcon = pieMenu.getSelectedIcon();
 		if (selectedIcon != lastSelectedIcon) {
@@ -2263,7 +2281,34 @@ public class AppPieView extends View {
 			performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CHOICE);
 		}
 
-		return f < 1f;
+		return f < 1f || t < 1f;
+	}
+
+	private void drawCircleTransition(Canvas canvas, float t, float f) {
+		int cx = pieMenu.getCenterX();
+		int cy = pieMenu.getCenterY();
+		float progress = easeSlowerOut(t);
+		float angle = circleDirection * 25f;
+		float scale = 1f - .15f * progress;
+		canvas.save();
+		canvas.rotate(angle * progress, cx, cy);
+		canvas.scale(scale, scale, cx, cy);
+		CanvasPieMenu.paint.setAlpha(Math.round(f * (1f - progress) * 255f));
+		for (int i = outgoingPieIcons.size(); i-- > 0; ) {
+			CanvasPieMenu.CanvasIcon icon = outgoingPieIcons.get(i);
+			icon.draw(canvas, icon.size, icon.x, icon.y);
+		}
+		canvas.restore();
+
+		float x = t - 1f;
+		float spring = 1f + x * x * (2.5f * x + 1.5f);
+		scale = .85f + .15f * spring;
+		canvas.save();
+		canvas.rotate(-angle * (1f - progress), cx, cy);
+		canvas.scale(scale, scale, cx, cy);
+		CanvasPieMenu.paint.setAlpha(Math.round(f * progress * 255f));
+		pieMenu.draw(canvas);
+		canvas.restore();
 	}
 
 	private String getTip(boolean hasIcon) {
