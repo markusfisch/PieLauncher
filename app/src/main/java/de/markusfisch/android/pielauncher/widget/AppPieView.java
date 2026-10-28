@@ -212,6 +212,7 @@ public class AppPieView extends View {
 	private Bitmap iconSplitPie;
 	private boolean neverDropped = false;
 	private boolean appListIsFiltered = false;
+	private long appShortcutsExpandFrom;
 	private boolean appShortcutsVisible = false;
 	private boolean appShortcutsTouched = false;
 	private String appListQuery;
@@ -490,6 +491,7 @@ public class AppPieView extends View {
 		}
 
 		int shortcutsHeight = getAppShortcutsHeight();
+		boolean shortcutsWereVisible = appShortcutsVisible;
 		appShortcutsVisible = shortcutsHeight > 0 && fList > 0 &&
 				!isDraggingDownList();
 
@@ -498,6 +500,22 @@ public class AppPieView extends View {
 		invalidate |= drawList(listCanvas, fList, shortcutsHeight);
 
 		if (appShortcutsVisible) {
+			if (!shortcutsWereVisible) {
+				appShortcutsExpandFrom = now;
+			}
+			if (appShortcutsExpandFrom > 0) {
+				float t = ad > 0 ? (now - appShortcutsExpandFrom) / ad : 1f;
+				if (t < 1f) {
+					// Expand from 85% height, slightly overshooting the target.
+					float x = t - 1f;
+					float spring = 1f + x * x * (2.5f * x + 1.5f);
+					shortcutsHeight = Math.round(shortcutsHeight *
+							(.85f + .15f * spring));
+					invalidate = true;
+				} else {
+					appShortcutsExpandFrom = 0;
+				}
+			}
 			updateAppShortcutsLayout(shortcutsHeight);
 			drawListWithShortcutBackdrop(listRenderNode, canvas);
 			invalidate |= drawAppShortcuts(canvas, fList, shortcutsHeight);
