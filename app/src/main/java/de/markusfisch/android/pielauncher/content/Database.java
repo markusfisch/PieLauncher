@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 
@@ -184,9 +185,11 @@ public class Database {
 				if (bitmap == null) {
 					continue;
 				}
-				Drawable mappedIcon = PieLauncherApp.iconPack.getIcon(componentName);
+				Drawable mappedIcon = PieLauncherApp.iconPack.getIcon(
+						componentName);
 				if (mappedIcon != null) {
-					Bitmap mappedBitmap = Converter.getBitmapFromDrawable(mappedIcon);
+					Bitmap mappedBitmap = Converter.getBitmapFromDrawable(
+							mappedIcon);
 					if (mappedBitmap != null) {
 						bitmap = mappedBitmap;
 					}
