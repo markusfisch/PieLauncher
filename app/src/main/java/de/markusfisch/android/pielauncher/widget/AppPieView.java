@@ -1514,10 +1514,10 @@ public class AppPieView extends View {
 		launchingIcon = appIcon;
 		if (AppLauncher.launchApp(context, appIcon)) {
 			Database database = PieLauncherApp.getDatabase(context);
-			database.recordLaunch(context, appIcon);
+			database.recordLaunchAsync(appIcon);
 			if (mode == MODE_LIST && appListIsFiltered &&
 					prefs.rememberSearchPicks()) {
-				database.recordSearchPick(context, appListQuery, appIcon);
+				database.recordSearchPickAsync(appListQuery, appIcon);
 			}
 		}
 	}

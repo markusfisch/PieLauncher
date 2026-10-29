@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -73,6 +75,8 @@ public class Database {
 	private static final String SEPARATOR = ";";
 
 	private final OpenHelper openHelper;
+	private final ExecutorService usageExecutor =
+			Executors.newSingleThreadExecutor();
 	private final Context context;
 
 	public Database(Context context) {
@@ -560,24 +564,26 @@ public class Database {
 		}
 	}
 
-	public void recordLaunch(Context context, Apps.AppIcon appIcon) {
+	public void recordLaunchAsync(Apps.AppIcon appIcon) {
 		long now = System.currentTimeMillis();
 		double score = Frecency.addLaunch(
 				appIcon.frecencyScore, appIcon.frecencyUpdatedAt, now);
 		ContentValues values = new ContentValues();
 		values.put(COMPONENT_NAME, appIcon.componentName.flattenToString());
 		values.put(PACKAGE_NAME, appIcon.componentName.getPackageName());
-		putUserSerial(context, values, appIcon.userHandle);
 		values.put(SCORE, score);
 		values.put(UPDATED_AT, now);
-		openHelper.getWritableDatabase().insertWithOnConflict(
-				APP_USAGE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		appIcon.frecencyScore = score;
 		appIcon.frecencyUpdatedAt = now;
+		UserHandle user = appIcon.userHandle;
+		usageExecutor.execute(() -> {
+			putUserSerial(this.context, values, user);
+			openHelper.getWritableDatabase().insertWithOnConflict(
+					APP_USAGE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		});
 	}
 
-	public void recordSearchPick(
-			Context context,
+	public void recordSearchPickAsync(
 			String query,
 			Apps.AppIcon appIcon) {
 		String key = SearchPick.getKey(query);
@@ -599,14 +605,17 @@ public class Database {
 		values.put(QUERY, key);
 		values.put(COMPONENT_NAME, appIcon.componentName.flattenToString());
 		values.put(PACKAGE_NAME, appIcon.componentName.getPackageName());
-		putUserSerial(context, values, appIcon.userHandle);
 		values.put(SCORE, pick.score);
 		values.put(UPDATED_AT, now);
-		SQLiteDatabase db = openHelper.getWritableDatabase();
-		db.insertWithOnConflict(SEARCH_PICKS, null, values,
-				SQLiteDatabase.CONFLICT_REPLACE);
-		db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
-				String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
+		UserHandle user = appIcon.userHandle;
+		usageExecutor.execute(() -> {
+			putUserSerial(this.context, values, user);
+			SQLiteDatabase db = openHelper.getWritableDatabase();
+			db.insertWithOnConflict(SEARCH_PICKS, null, values,
+					SQLiteDatabase.CONFLICT_REPLACE);
+			db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
+					String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
+		});
 	}
 
 	public void replaceAllApps(
