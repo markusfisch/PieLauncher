@@ -1686,6 +1686,9 @@ public class AppPieView extends View {
 	private void onCircle(int direction) {
 		List<Apps.AppIcon> icons = getAlternateMenu(
 				prefs.circleSwapsMenus());
+		if (icons != null && !isPrimaryMenu() && icons.equals(pieMenu.icons)) {
+			icons = menuPrimary;
+		}
 		if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
 			return;
 		}
