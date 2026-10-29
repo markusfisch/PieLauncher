@@ -621,11 +621,12 @@ public class Database {
 	public void replaceAllApps(
 			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
+		List<ContentValues> rows = prepareApps(context, apps);
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
 		try {
 			db.delete(APPS, null, null);
-			insertApps(context, db, apps);
+			insertApps(db, rows);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
@@ -645,11 +646,12 @@ public class Database {
 				packageApps.put(entry.getKey(), appIcon);
 			}
 		}
+		List<ContentValues> rows = prepareApps(context, packageApps);
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
 		try {
 			deletePackage(context, db, packageName, userHandle);
-			insertApps(context, db, packageApps);
+			insertApps(db, rows);
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
@@ -672,10 +674,10 @@ public class Database {
 		}
 	}
 
-	private void insertApps(
+	private static List<ContentValues> prepareApps(
 			Context context,
-			SQLiteDatabase db,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
+		List<ContentValues> rows = new ArrayList<>(apps.size());
 		long now = System.currentTimeMillis();
 		for (Apps.AppIcon appIcon : apps.values()) {
 			// Pinned shortcuts share the apps map but are persisted in their
@@ -695,6 +697,13 @@ public class Database {
 			values.put(LABEL, appIcon.label);
 			values.put(ICON, icon);
 			values.put(UPDATED_AT, now);
+			rows.add(values);
+		}
+		return rows;
+	}
+
+	private static void insertApps(SQLiteDatabase db, List<ContentValues> rows) {
+		for (ContentValues values : rows) {
 			db.insertWithOnConflict(APPS, null, values,
 					SQLiteDatabase.CONFLICT_REPLACE);
 		}
