@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 
 public class Database {
@@ -181,6 +183,13 @@ public class Database {
 						icon, 0, icon.length);
 				if (bitmap == null) {
 					continue;
+				}
+				Drawable mappedIcon = PieLauncherApp.iconPack.getIcon(componentName);
+				if (mappedIcon != null) {
+					Bitmap mappedBitmap = Converter.getBitmapFromDrawable(mappedIcon);
+					if (mappedBitmap != null) {
+						bitmap = mappedBitmap;
+					}
 				}
 				UserHandle userHandle = null;
 				long serialNumber = cursor.getLong(1);
