@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
@@ -577,9 +578,13 @@ public class Database {
 		appIcon.frecencyUpdatedAt = now;
 		UserHandle user = appIcon.userHandle;
 		usageExecutor.execute(() -> {
-			putUserSerial(this.context, values, user);
-			openHelper.getWritableDatabase().insertWithOnConflict(
-					APP_USAGE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			try {
+				putUserSerial(this.context, values, user);
+				openHelper.getWritableDatabase().insertWithOnConflict(
+						APP_USAGE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			} catch (SQLException | IllegalStateException e) {
+				// Usage stats are best-effort; do not crash if storage fails.
+			}
 		});
 	}
 
@@ -609,17 +614,21 @@ public class Database {
 		values.put(UPDATED_AT, now);
 		UserHandle user = appIcon.userHandle;
 		usageExecutor.execute(() -> {
-			putUserSerial(this.context, values, user);
-			SQLiteDatabase db = openHelper.getWritableDatabase();
-			db.beginTransaction();
 			try {
-				db.insertWithOnConflict(SEARCH_PICKS, null, values,
-						SQLiteDatabase.CONFLICT_REPLACE);
-				db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
-						String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
-				db.setTransactionSuccessful();
-			} finally {
-				db.endTransaction();
+				putUserSerial(this.context, values, user);
+				SQLiteDatabase db = openHelper.getWritableDatabase();
+				db.beginTransaction();
+				try {
+					db.insertWithOnConflict(SEARCH_PICKS, null, values,
+							SQLiteDatabase.CONFLICT_REPLACE);
+					db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
+							String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+			} catch (SQLException | IllegalStateException e) {
+				// Usage stats are best-effort; do not crash if storage fails.
 			}
 		});
 	}
