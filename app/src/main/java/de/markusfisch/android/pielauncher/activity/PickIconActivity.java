@@ -108,7 +108,7 @@ public class PickIconActivity extends Activity {
 
 		iconPackPackageName = PieLauncherApp.iconPack
 				.getSelectedIconPackageName();
-		if (iconPackPackageName == null) {
+		if (iconPackPackageName == null && !PieLauncherApp.iconPack.packs.isEmpty()) {
 			IconPack.Pack pack =
 					PieLauncherApp.iconPack.packs.values().iterator().next();
 			if (pack != null) {
