@@ -88,7 +88,7 @@ public class AppLauncher {
 	}
 
 	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.N)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public static boolean launchAppWithLauncherApp(
 			Context context, AppIcon icon) {
 		LauncherApps la = getLauncherApps(context);
@@ -97,7 +97,8 @@ public class AppLauncher {
 			return false;
 		}
 		try {
-			if (!um.isUserUnlocked(icon.userHandle) &&
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+					!um.isUserUnlocked(icon.userHandle) &&
 					isPrivateProfile(la, icon.userHandle)) {
 				AppLauncher.toast(context, R.string.user_profile_locked);
 				return false;
