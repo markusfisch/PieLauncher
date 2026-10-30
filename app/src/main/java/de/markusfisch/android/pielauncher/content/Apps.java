@@ -290,9 +290,10 @@ public class Apps {
 		final UserHandle userRestriction = packageRestriction != null
 				? userHandleRestriction
 				: null;
+		Map<LauncherItemKey, AppIcon> oldApps = new HashMap<>(apps);
 		if (packageRestriction != null) {
-			// Copy apps since we're indexing just one app.
-			newApps.putAll(apps);
+			// Unchanged icons stay owned by the UI thread.
+			newApps.putAll(oldApps);
 			removePackageFromApps(newApps, packageRestriction, userRestriction,
 					false);
 			// No need to call removePackageFromPieMenu() because the
@@ -303,7 +304,7 @@ public class Apps {
 			HashSet<ComponentName> hideApps = hiddenAppsStorage.copyComponentNames();
 			hideApps.add(new ComponentName(context, HomeActivity.class));
 			Map<LauncherItemKey, AppIcon> oldPackageApps =
-					getPackageApps(apps, packageRestriction, userRestriction);
+					getPackageApps(oldApps, packageRestriction, userRestriction);
 			if (needsCacheRestore) {
 				restoreAppsFromCache(context, hideApps);
 			}
@@ -316,8 +317,15 @@ public class Apps {
 			int reconciliation = reconcileChangedPackage(
 					newApps, oldPackageApps, packageRestriction, userRestriction);
 			Database database = PieLauncherApp.getDatabase(context);
-			database.restoreFrecency(context, newApps);
-			database.restoreSearchPicks(context, newApps);
+			// Restore only new icons; shared icons may be updated by UI launches.
+			Map<LauncherItemKey, AppIcon> newIcons = new HashMap<>();
+			for (Map.Entry<LauncherItemKey, AppIcon> entry : newApps.entrySet()) {
+				if (entry.getValue() != oldApps.get(entry.getKey())) {
+					newIcons.put(entry.getKey(), entry.getValue());
+				}
+			}
+			database.restoreFrecency(context, newIcons);
+			database.restoreSearchPicks(context, newIcons);
 			Menus menus = compileMenus(context, newApps);
 			removeObsoletePackageKeys(newApps, oldPackageApps,
 					packageRestriction);
@@ -590,6 +598,10 @@ public class Apps {
 			Map<LauncherItemKey, AppIcon> newApps,
 			Menus menus,
 			boolean done) {
+		// Preserve launches made while indexing or while writes were queued.
+		for (Map.Entry<LauncherItemKey, AppIcon> entry : newApps.entrySet()) {
+			mergeUsage(entry.getValue(), apps.get(entry.getKey()));
+		}
 		apps.clear();
 		apps.putAll(newApps);
 		menuPrimary.clear();
@@ -600,6 +612,33 @@ public class Apps {
 			indexing = false;
 		}
 		propagateUpdate();
+	}
+
+	private static void mergeUsage(AppIcon target, AppIcon source) {
+		if (source == null || source == target) {
+			return;
+		}
+		if (source.frecencyUpdatedAt > target.frecencyUpdatedAt ||
+				(source.frecencyUpdatedAt == target.frecencyUpdatedAt &&
+						source.frecencyScore > target.frecencyScore)) {
+			target.frecencyScore = source.frecencyScore;
+			target.frecencyUpdatedAt = source.frecencyUpdatedAt;
+		}
+		if (source.searchPicks == null) {
+			return;
+		}
+		if (target.searchPicks == null) {
+			target.searchPicks = new HashMap<>();
+		}
+		for (Map.Entry<String, SearchPick> entry : source.searchPicks.entrySet()) {
+			SearchPick pick = entry.getValue();
+			SearchPick restored = target.searchPicks.get(entry.getKey());
+			if (restored == null || pick.updatedAt > restored.updatedAt ||
+					(pick.updatedAt == restored.updatedAt && pick.score > restored.score)) {
+				target.searchPicks.put(entry.getKey(),
+						new SearchPick(pick.score, pick.updatedAt));
+			}
+		}
 	}
 
 	private static class Menus {
