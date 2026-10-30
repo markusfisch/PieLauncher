@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.os.UserHandle;
 import android.os.UserManager;
 
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,14 +78,18 @@ public class Database {
 	private static final String SEPARATOR = ";";
 
 	private final OpenHelper openHelper;
-	private final ExecutorService usageExecutor =
+	private final ExecutorService executor =
 			Executors.newSingleThreadExecutor();
 	private final Context context;
 
 	public Database(Context context) {
 		this.context = context.getApplicationContext();
 		openHelper = new OpenHelper(this.context);
-		migrateFiles();
+		executor.execute(this::migrateFiles);
+	}
+
+	public void execute(Runnable task) {
+		executor.execute(task);
 	}
 
 	public ArrayList<Apps.AppIcon> restoreMenu(
@@ -113,6 +119,14 @@ public class Database {
 	}
 
 	public void storeMenu(String name, List<Apps.AppIcon> icons) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			List<Apps.AppIcon> snapshot = new ArrayList<>(icons.size());
+			for (Apps.AppIcon icon : icons) {
+				snapshot.add(copyIcon(icon));
+			}
+			execute(() -> storeMenu(name, snapshot));
+			return;
+		}
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
 		try {
@@ -151,6 +165,11 @@ public class Database {
 	}
 
 	public void storeHiddenApps(Set<ComponentName> componentNames) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			Set<ComponentName> snapshot = new HashSet<>(componentNames);
+			execute(() -> storeHiddenApps(snapshot));
+			return;
+		}
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
 		try {
@@ -220,6 +239,11 @@ public class Database {
 	}
 
 	public void storePinnedShortcut(Context context, Apps.AppIcon appIcon) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			Apps.AppIcon snapshot = copyIcon(appIcon);
+			execute(() -> storePinnedShortcut(this.context, snapshot));
+			return;
+		}
 		byte[] icon = getIconBlob(appIcon);
 		if (icon == null) {
 			return;
@@ -237,6 +261,11 @@ public class Database {
 	}
 
 	public void removePinnedShortcut(Context context, Apps.AppIcon appIcon) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			Apps.AppIcon snapshot = copyIcon(appIcon);
+			execute(() -> removePinnedShortcut(this.context, snapshot));
+			return;
+		}
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		if (AppLauncher.HAS_LAUNCHER_APP && appIcon.userHandle != null) {
 			db.delete(PINNED_SHORTCUTS,
@@ -288,6 +317,12 @@ public class Database {
 	public void storeIconMappings(
 			String packageName,
 			Map<ComponentName, IconPack.PackAndDrawable> mappings) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			Map<ComponentName, IconPack.PackAndDrawable> snapshot =
+					new HashMap<>(mappings);
+			execute(() -> storeIconMappings(packageName, snapshot));
+			return;
+		}
 		String iconPack = normalizeIconPack(packageName);
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
@@ -577,7 +612,7 @@ public class Database {
 		appIcon.frecencyScore = score;
 		appIcon.frecencyUpdatedAt = now;
 		UserHandle user = appIcon.userHandle;
-		usageExecutor.execute(() -> {
+		executor.execute(() -> {
 			try {
 				putUserSerial(this.context, values, user);
 				openHelper.getWritableDatabase().insertWithOnConflict(
@@ -613,7 +648,7 @@ public class Database {
 		values.put(SCORE, pick.score);
 		values.put(UPDATED_AT, now);
 		UserHandle user = appIcon.userHandle;
-		usageExecutor.execute(() -> {
+		executor.execute(() -> {
 			try {
 				putUserSerial(this.context, values, user);
 				SQLiteDatabase db = openHelper.getWritableDatabase();
@@ -780,6 +815,15 @@ public class Database {
 			db.delete(PINNED_SHORTCUTS, OWNER_PACKAGE + "=?",
 					new String[]{packageName});
 		}
+	}
+
+	private static Apps.AppIcon copyIcon(Apps.AppIcon icon) {
+		Apps.AppIcon copy = new Apps.AppIcon(icon.componentName, icon.label,
+				icon.bitmap, icon.userHandle);
+		copy.shortcutPackage = icon.shortcutPackage;
+		copy.shortcutId = icon.shortcutId;
+		copy.iconBytes = icon.iconBytes;
+		return copy;
 	}
 
 	private static byte[] getIconBlob(Apps.AppIcon appIcon) {

@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.activity.HomeActivity;
@@ -115,8 +113,6 @@ public class Apps {
 	private static final int RETRY_PACKAGE = 2;
 
 	private final Handler handler = new Handler(Looper.getMainLooper());
-	private final ExecutorService executor =
-			Executors.newSingleThreadExecutor();
 	private final HashSet<LauncherItemKey> pendingPackageRetries =
 			new HashSet<>();
 
@@ -211,7 +207,7 @@ public class Apps {
 			return;
 		}
 		Context appContext = context.getApplicationContext();
-		executor.execute(() -> {
+		PieLauncherApp.getDatabase(context).execute(() -> {
 			hiddenAppsStorage.removeAndStore(appContext, packageName);
 			PieLauncherApp.getDatabase(appContext).removePackage(
 					appContext, packageName, userHandle);
@@ -240,7 +236,7 @@ public class Apps {
 			return;
 		}
 		Context appContext = context.getApplicationContext();
-		executor.execute(() -> {
+		PieLauncherApp.getDatabase(context).execute(() -> {
 			List<AppIcon> shortcuts = queryAppShortcuts(appContext, app);
 			handler.post(() -> listener.onAppShortcuts(app, shortcuts));
 		});
@@ -281,9 +277,6 @@ public class Apps {
 			return false;
 		}
 		indexing = true;
-		hiddenAppsStorage.restore(context);
-		HashSet<ComponentName> hideApps = hiddenAppsStorage.copyComponentNames();
-		hideApps.add(new ComponentName(context, HomeActivity.class));
 		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
 		final boolean needsCacheRestore =
 				apps.isEmpty() && packageNameRestriction == null;
@@ -305,7 +298,10 @@ public class Apps {
 			// No need to call removePackageFromPieMenu() because the
 			// menu will be re-created by getPrimaryMenu() after indexing.
 		}
-		executor.execute(() -> {
+		PieLauncherApp.getDatabase(context).execute(() -> {
+			hiddenAppsStorage.restore(context);
+			HashSet<ComponentName> hideApps = hiddenAppsStorage.copyComponentNames();
+			hideApps.add(new ComponentName(context, HomeActivity.class));
 			Map<LauncherItemKey, AppIcon> oldPackageApps =
 					getPackageApps(apps, packageRestriction, userRestriction);
 			if (needsCacheRestore) {

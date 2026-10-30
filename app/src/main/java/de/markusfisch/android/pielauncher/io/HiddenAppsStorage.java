@@ -13,37 +13,43 @@ public class HiddenAppsStorage {
 
 	private boolean restored = false;
 
-	public synchronized void addAndStore(
-			Context context,
-			ComponentName componentName) {
-		componentNames.add(componentName);
+	public void addAndStore(Context context, ComponentName componentName) {
+		synchronized (this) {
+			componentNames.add(componentName);
+		}
 		store(context);
 	}
 
-	public synchronized void removeAndStore(
-			Context context,
-			String packageName) {
-		for (Iterator<ComponentName> it = componentNames.iterator();
-				it.hasNext(); ) {
-			ComponentName cn = it.next();
-			if (cn.getPackageName().equals(packageName)) {
-				it.remove();
+	public void removeAndStore(Context context, String packageName) {
+		synchronized (this) {
+			for (Iterator<ComponentName> it = componentNames.iterator();
+					it.hasNext(); ) {
+				if (it.next().getPackageName().equals(packageName)) {
+					it.remove();
+				}
 			}
 		}
 		store(context);
 	}
 
-	public synchronized void restore(Context context) {
-		if (restored) {
-			return;
+	public void restore(Context context) {
+		synchronized (this) {
+			if (restored) {
+				return;
+			}
 		}
-		componentNames.clear();
-		PieLauncherApp.getDatabase(context).restoreHiddenApps(componentNames);
-		restored = true;
+		HashSet<ComponentName> snapshot = new HashSet<>();
+		PieLauncherApp.getDatabase(context).restoreHiddenApps(snapshot);
+		synchronized (this) {
+			if (!restored) {
+				componentNames.addAll(snapshot);
+				restored = true;
+			}
+		}
 	}
 
-	public synchronized void store(Context context) {
-		PieLauncherApp.getDatabase(context).storeHiddenApps(componentNames);
+	public void store(Context context) {
+		PieLauncherApp.getDatabase(context).storeHiddenApps(copyComponentNames());
 	}
 
 	public synchronized HashSet<ComponentName> copyComponentNames() {
