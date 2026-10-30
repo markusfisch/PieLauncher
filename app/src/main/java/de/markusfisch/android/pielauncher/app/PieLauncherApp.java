@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.LauncherApps;
 import android.os.Build;
+import android.os.StrictMode;
 import android.os.UserHandle;
 
+import de.markusfisch.android.pielauncher.BuildConfig;
 import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.content.Database;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
@@ -54,6 +56,16 @@ public class PieLauncherApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		if (BuildConfig.DEBUG) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+					.detectAll()
+					.penaltyLog()
+					.build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+					.detectAll()
+					.penaltyLog()
+					.build());
+		}
 		registerConfigurationChangedReceiver();
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			registerLauncherAppsCallback();

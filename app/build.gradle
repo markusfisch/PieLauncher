@@ -4,6 +4,10 @@ android {
 	namespace 'de.markusfisch.android.pielauncher'
 	compileSdk sdk_version
 
+	buildFeatures {
+		buildConfig true
+	}
+
 	defaultConfig {
 		minSdk 9
 		targetSdk sdk_version
