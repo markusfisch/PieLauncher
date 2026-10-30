@@ -180,7 +180,9 @@ public class Apps {
 		// safely invoked on pre-O devices without tripping class verification.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
 				isPinItemRequest(intent)) {
-			acceptPinRequestApi26(context, intent);
+			Context appContext = context.getApplicationContext();
+			PieLauncherApp.getDatabase(appContext).execute(() ->
+					acceptPinRequestApi26(appContext, intent));
 		}
 	}
 
@@ -436,16 +438,18 @@ public class Apps {
 		// Persist first so the shortcut survives even if an index that is
 		// already running clears the map before the next one re-injects it.
 		PieLauncherApp.getDatabase(context).storePinnedShortcut(context, icon);
-		apps.put(new LauncherItemKey(icon.componentName, icon.userHandle),
-				icon);
-		if (isIndexing()) {
-			// Re-index once the running index finishes so the new shortcut
-			// isn't dropped by the map replacement at its end.
-			updateIconsAsync(context);
-		}
-		propagateUpdate();
-		AppLauncher.toast(context, context.getString(
-				R.string.added_to_home_screen, icon.label));
+		handler.post(() -> {
+			apps.put(new LauncherItemKey(icon.componentName, icon.userHandle),
+					icon);
+			if (isIndexing()) {
+				// An index already queued before this UI update may omit the
+				// shortcut, so inject it again after that index finishes.
+				updateIconsAsync(context);
+			}
+			propagateUpdate();
+			AppLauncher.toast(context, context.getString(
+					R.string.added_to_home_screen, icon.label));
+		});
 	}
 
 	@SuppressLint("UseRequiresApi")
