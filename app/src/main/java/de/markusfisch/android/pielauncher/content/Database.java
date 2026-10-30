@@ -611,10 +611,16 @@ public class Database {
 		usageExecutor.execute(() -> {
 			putUserSerial(this.context, values, user);
 			SQLiteDatabase db = openHelper.getWritableDatabase();
-			db.insertWithOnConflict(SEARCH_PICKS, null, values,
-					SQLiteDatabase.CONFLICT_REPLACE);
-			db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
-					String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
+			db.beginTransaction();
+			try {
+				db.insertWithOnConflict(SEARCH_PICKS, null, values,
+						SQLiteDatabase.CONFLICT_REPLACE);
+				db.delete(SEARCH_PICKS, UPDATED_AT + "<?", new String[]{
+						String.valueOf(now - SearchPick.MAX_AGE_MILLIS)});
+				db.setTransactionSuccessful();
+			} finally {
+				db.endTransaction();
+			}
 		});
 	}
 
