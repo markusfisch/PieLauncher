@@ -236,4 +236,54 @@ public class EditorRendererTest {
                 anyFloat(),
                 any(Paint.class));
     }
+
+    @Test
+    public void testLayout_InPortrait_DistributesButtonsHorizontally() {
+        int width = 1080;
+        int height = 1920;
+        int controlsPadding = 80;
+
+        editorRenderer.layout(width, height, controlsPadding, 12f, 2f, 4, 48);
+
+        // Primary buttons (start, center, end) along bottom
+        assertEquals(editorRenderer.iconStartRect.top, editorRenderer.iconCenterRect.top);
+        assertEquals(editorRenderer.iconCenterRect.top, editorRenderer.iconEndRect.top);
+        org.junit.Assert.assertTrue(editorRenderer.iconStartRect.left < editorRenderer.iconCenterRect.left);
+        org.junit.Assert.assertTrue(editorRenderer.iconCenterRect.left < editorRenderer.iconEndRect.left);
+        org.junit.Assert.assertTrue(editorRenderer.iconStartRect.top > height / 2);
+
+        // Secondary buttons (twist, scale, radius) along top
+        assertEquals(editorRenderer.iconChangeTwistRect.top, editorRenderer.iconChangeIconScaleRect.top);
+        assertEquals(editorRenderer.iconChangeIconScaleRect.top, editorRenderer.iconChangeRadiusRect.top);
+        org.junit.Assert.assertTrue(editorRenderer.iconChangeTwistRect.left < editorRenderer.iconChangeIconScaleRect.left);
+        org.junit.Assert.assertTrue(editorRenderer.iconChangeIconScaleRect.left < editorRenderer.iconChangeRadiusRect.left);
+        org.junit.Assert.assertTrue(editorRenderer.iconChangeTwistRect.top < height / 2);
+
+        org.junit.Assert.assertTrue(editorRenderer.getActionSize() > 0);
+    }
+
+    @Test
+    public void testLayout_InLandscape_DistributesButtonsVertically() {
+        int width = 1920;
+        int height = 1080;
+        int controlsPadding = 80;
+
+        editorRenderer.layout(width, height, controlsPadding, 12f, 2f, 4, 48);
+
+        // Primary buttons along right edge
+        assertEquals(editorRenderer.iconStartRect.left, editorRenderer.iconCenterRect.left);
+        assertEquals(editorRenderer.iconCenterRect.left, editorRenderer.iconEndRect.left);
+        org.junit.Assert.assertTrue(editorRenderer.iconStartRect.top < editorRenderer.iconCenterRect.top);
+        org.junit.Assert.assertTrue(editorRenderer.iconCenterRect.top < editorRenderer.iconEndRect.top);
+        org.junit.Assert.assertTrue(editorRenderer.iconStartRect.left > width / 2);
+
+        // Secondary buttons along left edge
+        assertEquals(editorRenderer.iconChangeTwistRect.left, editorRenderer.iconChangeIconScaleRect.left);
+        assertEquals(editorRenderer.iconChangeIconScaleRect.left, editorRenderer.iconChangeRadiusRect.left);
+        org.junit.Assert.assertTrue(editorRenderer.iconChangeTwistRect.top < editorRenderer.iconChangeIconScaleRect.top);
+        org.junit.Assert.assertTrue(editorRenderer.iconChangeIconScaleRect.top < editorRenderer.iconChangeRadiusRect.top);
+        org.junit.Assert.assertTrue(editorRenderer.iconChangeTwistRect.left < width / 2);
+
+        org.junit.Assert.assertTrue(editorRenderer.getActionSize() > 0);
+    }
 }

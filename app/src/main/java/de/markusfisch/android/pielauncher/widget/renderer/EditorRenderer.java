@@ -225,6 +225,102 @@ public class EditorRenderer {
         this.actionSizeSq = actionSize * actionSize;
     }
 
+    public float getActionSize() {
+        return actionSize;
+    }
+
+    public void layout(
+            int viewWidth,
+            int viewHeight,
+            int controlsPadding,
+            float textOffset,
+            float sp,
+            int spaceBetween,
+            int iconSize) {
+        boolean portrait = viewHeight > viewWidth;
+        int max = distributeButtons(
+                iconAdd,
+                iconPreferences,
+                iconDone,
+                iconStartRect,
+                iconCenterRect,
+                iconEndRect,
+                -controlsPadding,
+                viewWidth,
+                viewHeight,
+                portrait);
+
+        distributeButtons(
+                iconChangeTwist,
+                iconChangeIconScale,
+                iconChangeRadius,
+                iconChangeTwistRect,
+                iconChangeIconScaleRect,
+                iconChangeRadiusRect,
+                controlsPadding,
+                viewWidth,
+                viewHeight,
+                portrait);
+
+        setActionSize(Math.min(iconSize, max / 2 - spaceBetween));
+        setTextDimensions(controlsPadding, textOffset, sp);
+    }
+
+    private int distributeButtons(
+            Bitmap icon1, Bitmap icon2, Bitmap icon3,
+            Rect rect1, Rect rect2, Rect rect3,
+            int base,
+            int viewWidth,
+            int viewHeight,
+            boolean portrait) {
+        int w1 = icon1 != null ? icon1.getWidth() : 0;
+        int h1 = icon1 != null ? icon1.getHeight() : 0;
+        int w2 = icon2 != null ? icon2.getWidth() : 0;
+        int h2 = icon2 != null ? icon2.getHeight() : 0;
+        int w3 = icon3 != null ? icon3.getWidth() : 0;
+        int h3 = icon3 != null ? icon3.getHeight() : 0;
+
+        rect1.set(0, 0, w1, h1);
+        rect2.set(0, 0, w2, h2);
+        rect3.set(0, 0, w3, h3);
+
+        int totalWidth = w1 + w2 + w3;
+        int totalHeight = h1 + h2 + h3;
+        int largestWidth = Math.max(w1, Math.max(w2, w3));
+        int largestHeight = Math.max(h1, Math.max(h2, h3));
+
+        int spaces = 4;
+        int max;
+        if (portrait) {
+            int step = Math.round((float) (viewWidth - totalWidth) / spaces);
+            max = largestWidth + step;
+            int x = step;
+            int y = (base > 0 ? base : viewHeight + base) - largestHeight / 2;
+
+            rect1.offset(x, y);
+            x += step + rect1.width();
+
+            rect2.offset(x, y);
+            x += step + rect2.width();
+
+            rect3.offset(x, y);
+        } else {
+            int step = Math.round((float) (viewHeight - totalHeight) / spaces);
+            max = largestHeight + step;
+            int x = (base > 0 ? base : viewWidth + base) - largestWidth / 2;
+            int y = step;
+
+            rect1.offset(x, y);
+            y += step + rect1.height();
+
+            rect2.offset(x, y);
+            y += step + rect2.height();
+
+            rect3.offset(x, y);
+        }
+        return max;
+    }
+
     public EditorAction getActionAt(Point touch, boolean hasGrabbedIcon) {
         if (!hasGrabbedIcon) {
             if (contains(iconChangeTwistRect, touch)) {

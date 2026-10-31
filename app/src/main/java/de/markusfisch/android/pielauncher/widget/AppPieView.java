@@ -70,6 +70,7 @@ import de.markusfisch.android.pielauncher.widget.touch.TapFlags;
 import de.markusfisch.android.pielauncher.widget.shortcuts.AppShortcutsController;
 import de.markusfisch.android.pielauncher.widget.state.EditorAction;
 import de.markusfisch.android.pielauncher.widget.state.AppSearchFilter;
+import de.markusfisch.android.pielauncher.widget.state.PieConfiguration;
 
 public class AppPieView extends View {
 
@@ -204,19 +205,12 @@ public class AppPieView extends View {
     private int viewWidth;
     private int viewHeight;
     private int controlsPadding;
-    private int actionSize;
     private int deadZoneTop;
     private int deadZoneBottom;
     private int deadZoneLeft;
     private int deadZoneRight;
     private int listFadeHeight;
-    private int minRadius;
-    private int medRadius;
-    private int maxRadius;
-    private int radius;
-    private float twist;
-    private float minIconScale;
-    private float iconScale;
+    private final PieConfiguration pieConfig = new PieConfiguration();
     private int maxScrollY;
     private int lastScrollY;
     private int lastSelectedIcon;
@@ -860,15 +854,7 @@ public class AppPieView extends View {
         viewWidth = width;
         viewHeight = height;
 
-        float maxIconSize = 64f * dp;
-        if (Math.floor(viewMin * .28f) > maxIconSize) {
-            viewMin = Math.round(maxIconSize / .28f);
-        }
-
-        maxRadius = Math.round(viewMin * .5f);
-        minRadius = Math.round(maxRadius * .5f);
-        medRadius = minRadius + (maxRadius - minRadius) / 2;
-        minIconScale = (48f * dp) / maxIconSize;
+        pieConfig.layout(viewMin, dp);
         loadPiePreferences();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
@@ -876,10 +862,10 @@ public class AppPieView extends View {
             pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
         }
 
-        updateChangePieIcons();
-        updateSplitPieIcon();
+        pieConfig.updateChangeIcons(getResources(), editorRenderer);
+        pieConfig.updateSplitPieIcon(getResources(), editorRenderer, !isPrimaryMenu());
 
-        int pieBottom = viewMax / 2 + maxRadius;
+        int pieBottom = viewMax / 2 + pieConfig.getMaxRadius();
         controlsPadding = (viewMax - pieBottom) / 2;
 
         deadZoneTop = Math.min(height / 10, Math.round(64f * dp));
@@ -891,97 +877,9 @@ public class AppPieView extends View {
         stateManager.setListFadeHeight(listFadeHeight);
 
         shortcutsController.setTextSize(sp);
-        layoutEditorControls(height > width);
-        calculateMaxScrollY();
-    }
-
-    private void layoutEditorControls(boolean portrait) {
-        int max = distributeIconButtons(
-                new Bitmap[]{
-                        editorRenderer.iconAdd,
-                        editorRenderer.iconPreferences,
-                        editorRenderer.iconDone
-                },
-                new Rect[]{
-                        editorRenderer.iconStartRect,
-                        editorRenderer.iconCenterRect,
-                        editorRenderer.iconEndRect
-                },
-                -controlsPadding,
-                portrait);
-
-        distributeIconButtons(
-                new Bitmap[]{
-                        editorRenderer.iconChangeTwist,
-                        editorRenderer.iconChangeIconScale,
-                        editorRenderer.iconChangeRadius,
-                },
-                new Rect[]{
-                        editorRenderer.iconChangeTwistRect,
-                        editorRenderer.iconChangeIconScaleRect,
-                        editorRenderer.iconChangeRadiusRect
-                },
-                controlsPadding,
-                portrait);
-
-        // Calculate size of circular action buttons.
-        actionSize = Math.min(iconSize, max / 2 - spaceBetween);
-        editorRenderer.setActionSize(actionSize);
-
         listRenderer.layout(listPadding, searchInputHeight, iconSize, spaceBetween, iconTextPadding, listFadeHeight, sp);
-        editorRenderer.setTextDimensions(controlsPadding, listRenderer.getTextOffset(), sp);
-
-    }
-
-    private int distributeIconButtons(
-            Bitmap[] icons,
-            Rect[] rects,
-            int base,
-            boolean portrait) {
-        int length = icons.length;
-        int totalWidth = 0;
-        int totalHeight = 0;
-        int largestWidth = 0;
-        int largestHeight = 0;
-
-        // Initialize rects and calculate totals for both layout directions.
-        for (int i = 0; i < length; ++i) {
-            Bitmap icon = icons[i];
-            int w = icon.getWidth();
-            int h = icon.getHeight();
-            rects[i].set(0, 0, w, h);
-            largestWidth = Math.max(largestWidth, w);
-            largestHeight = Math.max(largestHeight, h);
-            totalWidth += w;
-            totalHeight += h;
-        }
-
-        // Evenly distribute rects in parent.
-        int spaces = length + 1;
-        int max;
-        if (portrait) {
-            // Horizontally.
-            int step = Math.round((float) (viewWidth - totalWidth) / spaces);
-            max = largestWidth + step;
-            int x = step;
-            int y = (base > 0 ? base : viewHeight + base) - largestHeight / 2;
-            for (Rect rect : rects) {
-                rect.offset(x, y);
-                x += step + rect.width();
-            }
-        } else {
-            // Vertically.
-            int step = Math.round((float) (viewHeight - totalHeight) / spaces);
-            max = largestHeight + step;
-            int x = (base > 0 ? base : viewWidth + base) - largestWidth / 2;
-            int y = step;
-            for (Rect rect : rects) {
-                rect.offset(x, y);
-                y += step + rect.height();
-            }
-        }
-
-        return max;
+        editorRenderer.layout(viewWidth, viewHeight, controlsPadding, listRenderer.getTextOffset(), sp, spaceBetween, iconSize);
+        calculateMaxScrollY();
     }
 
     public void addIconInteractively(Apps.AppIcon appIcon) {
@@ -1000,7 +898,7 @@ public class AppPieView extends View {
                 pieMenu.icons != menuSecondary) {
             setMenu(menuPrimary);
         }
-        updateSplitPieIcon();
+        pieConfig.updateSplitPieIcon(getResources(), editorRenderer, !isPrimaryMenu());
         setCenter(viewWidth >> 1, viewHeight >> 1);
         pieEditor.beginEdit(pieMenu.icons);
         pieMenu.icons.remove(icon);
@@ -1144,18 +1042,17 @@ public class AppPieView extends View {
         EditorAction action = editorRenderer.getActionAt(touch, pieEditor.hasGrabbedIcon());
         switch (action) {
             case CHANGE_TWIST:
-                twist = getTwistSegment(twist + PieMenu.HALF_PI) *
-                        (float) PieMenu.HALF_PI;
-                updateChangeTwistIcon();
+                pieConfig.cycleTwist();
+                pieConfig.updateChangeTwistIcon(getResources(), editorRenderer);
                 return true;
             case CHANGE_ICON_SCALE:
-                iconScale = iconScale < 1f ? 1f : minIconScale;
-                updateChangeIconScaleIcon();
+                pieConfig.cycleIconScale();
+                pieConfig.updateChangeIconScaleIcon(getResources(), editorRenderer);
                 return true;
             case CHANGE_RADIUS:
-                radius = getNextRadius(radius);
-                pieMenu.setRadius(radius);
-                updateChangeRadiusIcon();
+                pieConfig.cycleRadius();
+                pieMenu.setRadius(pieConfig.getRadius());
+                pieConfig.updateChangeRadiusIcon(getResources(), editorRenderer);
                 return true;
             case BACK_OR_REMOVE_ICON:
                 if (!pieEditor.hasGrabbedIcon()) {
@@ -1173,8 +1070,8 @@ public class AppPieView extends View {
                         setMenu(isPrimaryMenu() ? menuSecondary : menuPrimary);
                         centerSmoothCoordinatesAt(pieMenu.icons,
                                 viewWidth >> 1, viewHeight >> 1);
-                        updateSplitPieIcon();
-                        updateChangePieIcons();
+                        pieConfig.updateSplitPieIcon(getResources(), editorRenderer, !isPrimaryMenu());
+                        pieConfig.updateChangeIcons(getResources(), editorRenderer);
                         invalidate();
                     } else {
                         PreferencesActivity.start(context);
@@ -1323,103 +1220,6 @@ public class AppPieView extends View {
         }
     }
 
-    private void updateChangePieIcons() {
-        updateChangeTwistIcon();
-        updateChangeIconScaleIcon();
-        updateChangeRadiusIcon();
-    }
-
-    private void updateChangeTwistIcon() {
-        editorRenderer.iconChangeTwist = Converter.getBitmapFromDrawable(getResources(),
-                getDrawableForTwist(twist));
-    }
-
-    private static int getDrawableForTwist(float twist) {
-        switch (getTwistSegment(twist)) {
-            case 1:
-                return R.drawable.ic_twist_90;
-            case 2:
-                return R.drawable.ic_twist_180;
-            case 3:
-                return R.drawable.ic_twist_270;
-            default:
-                return R.drawable.ic_twist_0;
-        }
-    }
-
-    private static int getTwistSegment(double rad) {
-        rad = (rad + PieMenu.TAU) % PieMenu.TAU;
-        if (rad > 5.497 || rad < .785) {
-            return 0;
-        } else if (rad < 2.356) {
-            return 1;
-        } else if (rad < 3.926) {
-            return 2;
-        }
-        return 3;
-    }
-
-    private void updateChangeIconScaleIcon() {
-        editorRenderer.iconChangeIconScale = Converter.getBitmapFromDrawable(getResources(),
-                getDrawableForIconScale(iconScale));
-    }
-
-    private static int getDrawableForIconScale(float scale) {
-        return scale == 1f
-                ? R.drawable.ic_icon_scale_large
-                : R.drawable.ic_icon_scale_small;
-    }
-
-    private void updateChangeRadiusIcon() {
-        editorRenderer.iconChangeRadius = Converter.getBitmapFromDrawable(getResources(),
-                getDrawableForRadius(radius));
-    }
-
-    private int getNextRadius(int r) {
-        switch (getRadiusSegment(r)) {
-            case 1:
-                return maxRadius;
-            case 2:
-                return minRadius;
-            default:
-                return medRadius;
-        }
-    }
-
-    private int getDrawableForRadius(int r) {
-        switch (getRadiusSegment(r)) {
-            case 1:
-                return R.drawable.ic_radius_medium;
-            case 2:
-                return R.drawable.ic_radius_large;
-            default:
-                return R.drawable.ic_radius_small;
-        }
-    }
-
-    private int getRadiusSegment(int r) {
-        int dMin = Math.abs(r - minRadius);
-        int dMed = Math.abs(r - medRadius);
-        int dMax = Math.abs(r - maxRadius);
-        if (dMin < dMed && dMin < dMax) {
-            return 0;
-        } else if (dMed < dMin && dMed < dMax) {
-            return 1;
-        }
-        return 2;
-    }
-
-    private void updateSplitPieIcon() {
-        editorRenderer.iconSplitPie = Converter.getBitmapFromDrawable(getResources(),
-                getDrawableForSplitPie());
-    }
-
-    private int getDrawableForSplitPie() {
-        return pieMenu.icons == menuSecondary
-                ? R.drawable.ic_screen_upper
-                : R.drawable.ic_screen_lower;
-    }
-
     public void changeIcon(Context context, PieMenu.Icon icon) {
         Apps.AppIcon appIcon = (Apps.AppIcon) icon;
         PickIconActivity.start(context, appIcon.componentName);
@@ -1486,12 +1286,13 @@ public class AppPieView extends View {
     }
 
     private void setCenter(int x, int y) {
+        int radius = pieConfig.getRadius();
         pieMenu.set(
                 clamp(x, radius, viewWidth - radius),
                 clamp(y, radius, viewHeight - radius),
                 radius,
-                twist,
-                iconScale);
+                pieConfig.getTwist(),
+                pieConfig.getIconScale());
         lastSelectedIcon = -1;
         pieRenderer.setLaunchingIcon(null);
     }
@@ -1596,22 +1397,16 @@ public class AppPieView extends View {
         if (context != null) {
             PieLauncherApp.apps.store(context);
         }
-        boolean primary = isPrimaryMenu();
-        prefs.setRadius(primary, radius);
-        prefs.setTwist(primary, twist);
-        prefs.setIconScale(primary, iconScale);
+        pieConfig.savePreferences(prefs, isPrimaryMenu());
     }
 
     private void applyPiePreferences() {
         loadPiePreferences();
-        pieMenu.setRadiusTwistIconScale(radius, twist, iconScale);
+        pieConfig.applyTo(pieMenu);
     }
 
     private void loadPiePreferences() {
-        boolean primary = isPrimaryMenu();
-        radius = clampRadius(prefs.getRadius(primary, maxRadius));
-        twist = prefs.getTwist(primary);
-        iconScale = prefs.getIconScale(primary);
+        pieConfig.loadPreferences(prefs, isPrimaryMenu());
     }
 
     private void fadeOutMode() {
@@ -1640,10 +1435,6 @@ public class AppPieView extends View {
             default:
                 performHapticFeedback(feedback);
         }
-    }
-
-    private int clampRadius(int r) {
-        return clamp(r, minRadius, maxRadius);
     }
 
     private static int clamp(int value, int min, int max) {
