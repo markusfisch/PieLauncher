@@ -67,6 +67,7 @@ import de.markusfisch.android.pielauncher.widget.touch.GeneralTouchListener;
 import de.markusfisch.android.pielauncher.widget.touch.ListTouchListener;
 import de.markusfisch.android.pielauncher.widget.touch.PieTouchListener;
 import de.markusfisch.android.pielauncher.widget.touch.TapFlags;
+import de.markusfisch.android.pielauncher.widget.shortcuts.AppShortcutsController;
 import de.markusfisch.android.pielauncher.widget.state.EditorAction;
 import de.markusfisch.android.pielauncher.widget.state.AppSearchFilter;
 
@@ -232,36 +233,8 @@ public class AppPieView extends View {
     private long lastTapUpTime;
     private boolean appListIsFiltered = false;
 
-    private static final int MAX_VISIBLE_APP_SHORTCUTS = 4;
-
-    private final HashMap<Apps.AppIcon, List<Apps.AppIcon>> appShortcutsCache =
-            new HashMap<>();
-    private final Paint paintAppShortcuts = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint paintAppShortcutsThumb = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final TextPaint paintAppShortcutText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-    private final Rect appShortcutsRect = new Rect();
-    private final RectF appShortcutsCard = new RectF();
-    private final Path appShortcutsClip = new Path();
-    private final RectF appShortcutsThumb = new RectF();
-    private final OverScroller appShortcutsScroller;
-    private final int appShortcutHeight;
-    private final int appShortcutIconSize;
-    private final int appShortcutsVerticalPadding;
-    private final int alphaAppShortcuts;
-    private final int alphaAppShortcutsThumb;
-    private final RenderNode appShortcutsBackdropNode;
-
+    private final AppShortcutsController shortcutsController;
     private int keyboardHeight = -1;
-    private int appShortcutsScrollY = 0;
-    private int maxAppShortcutsScrollY = 0;
-    private int appShortcutsScrollOffset = 0;
-    private long appShortcutsExpandFrom = 0L;
-    private boolean appShortcutsVisible = false;
-    private boolean appShortcutsTouched = false;
-    private Apps.AppIcon appShortcutsOwner;
-    private List<Apps.AppIcon> appShortcuts;
-    private final Paint paintList = new Paint(Paint.FILTER_BITMAP_FLAG);
-    private final Rect drawRect = new Rect();
 
     public AppPieView(Context context, AttributeSet attr) {
         super(context, attr);
@@ -284,26 +257,7 @@ public class AppPieView extends View {
         spaceBetween = Math.round(4f * dp);
         maxBlurRadius = iconSize * .35f;
 
-        appShortcutsScroller = new OverScroller(context);
-        appShortcutHeight = Math.round(48f * dp);
-        appShortcutIconSize = Math.round(32f * dp);
-        appShortcutsVerticalPadding = Math.round(8f * dp);
-        paintAppShortcuts.setColor(res.getColor(R.color.bg_app_shortcuts));
-        paintAppShortcuts.setStyle(Paint.Style.FILL);
-        alphaAppShortcuts = paintAppShortcuts.getAlpha();
-        paintAppShortcutsThumb.setColor(res.getColor(R.color.separator));
-        paintAppShortcutsThumb.setStyle(Paint.Style.FILL);
-        alphaAppShortcutsThumb = paintAppShortcutsThumb.getAlpha();
-        paintAppShortcutText.setColor(res.getColor(R.color.text_color));
-        paintAppShortcutText.setTextAlign(Paint.Align.LEFT);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            appShortcutsBackdropNode = new RenderNode("app_shortcuts_backdrop");
-            appShortcutsBackdropNode.setRenderEffect(RenderEffect.createBlurEffect(
-                    maxBlurRadius, maxBlurRadius, Shader.TileMode.CLAMP));
-        } else {
-            appShortcutsBackdropNode = null;
-        }
+        shortcutsController = new AppShortcutsController(context, dp);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             trackKeyboardApi30();
@@ -397,7 +351,7 @@ public class AppPieView extends View {
     }
 
     public boolean isScrollingAppShortcuts() {
-        return appShortcutsTouched;
+        return shortcutsController.isTouched();
     }
 
     public boolean isFiltered() {
@@ -508,10 +462,10 @@ public class AppPieView extends View {
             }
         }
 
-        int shortcutsHeight = getAppShortcutsHeight();
-        boolean shortcutsWereVisible = appShortcutsVisible;
-        appShortcutsVisible = shortcutsHeight > 0 && fList > 0 &&
-                !stateManager.isDraggingDownList();
+        int shortcutsHeight = shortcutsController.getHeight(prefs.showAppShortcuts(), stateManager.inListMode());
+        boolean shortcutsWereVisible = shortcutsController.isVisible();
+        shortcutsController.setVisible(shortcutsHeight > 0 && fList > 0 &&
+                !stateManager.isDraggingDownList());
 
         Canvas listCanvas = getRecordingCanvas(listRenderNode, canvas);
         currentListBlur = applyBlurOut(listRenderNode, currentListBlur, fList);
@@ -522,24 +476,24 @@ public class AppPieView extends View {
                 prefs.listAnimationAppearance(), stateManager.getDragProgress(),
                 listRenderNode, shortcutsHeight);
 
-        if (appShortcutsVisible) {
+        if (shortcutsController.isVisible()) {
             if (!shortcutsWereVisible) {
-                appShortcutsExpandFrom = now;
+                shortcutsController.setExpandFrom(now);
             }
-            if (appShortcutsExpandFrom > 0) {
-                float t = ad > 0 ? (now - appShortcutsExpandFrom) / ad : 1f;
+            if (shortcutsController.getExpandFrom() > 0) {
+                float t = ad > 0 ? (now - shortcutsController.getExpandFrom()) / ad : 1f;
                 if (t < 1f) {
                     float x = t - 1f;
                     float spring = 1f + x * x * (2.5f * x + 1.5f);
                     shortcutsHeight = Math.round(shortcutsHeight * (.85f + .15f * spring));
                     invalidate = true;
                 } else {
-                    appShortcutsExpandFrom = 0;
+                    shortcutsController.setExpandFrom(0);
                 }
             }
-            updateAppShortcutsLayout(shortcutsHeight);
-            drawListWithShortcutBackdrop(listRenderNode, canvas);
-            invalidate |= drawAppShortcuts(canvas, fList, shortcutsHeight);
+            shortcutsController.layout(viewWidth, viewHeight, getBottomInset(), listPadding, shortcutsHeight, getScrollY());
+            shortcutsController.drawBackdrop(listRenderNode, canvas, getScrollY(), listPadding);
+            invalidate |= shortcutsController.draw(canvas, fList, shortcutsHeight, getScrollY(), listRenderer.getTextOffset(), listPadding);
         } else {
             drawRenderNode(listRenderNode, canvas);
         }
@@ -722,12 +676,8 @@ public class AppPieView extends View {
 
         @Override
         public void keepScrolling(int velocityY) {
-            if (appShortcutsTouched) {
-                appShortcutsScroller.fling(
-                        0, appShortcutsScrollY,
-                        0, -velocityY,
-                        0, 0,
-                        0, maxAppShortcutsScrollY);
+            if (shortcutsController.isTouched()) {
+                shortcutsController.fling(velocityY);
                 invalidate();
             } else {
                 flingRunnable.start(velocityY);
@@ -736,29 +686,22 @@ public class AppPieView extends View {
 
         @Override
         public void initAppShortcutsScroll(Point touch) {
-            appShortcutsTouched = appShortcutsVisible &&
-                    maxAppShortcutsScrollY > 0 &&
-                    appShortcutsRect.contains(touch.x, touch.y);
-            if (appShortcutsTouched) {
-                appShortcutsScroller.forceFinished(true);
-                appShortcutsScrollOffset = appShortcutsScrollY;
-            }
+            shortcutsController.initScroll(touch, shortcutsController.isVisible());
         }
 
         @Override
         public void scrollAppShortcuts(int delta) {
-            appShortcutsScrollY = clamp(appShortcutsScrollOffset + delta,
-                    0, maxAppShortcutsScrollY);
+            shortcutsController.scrollBy(delta);
         }
 
         @Override
         public boolean isAppShortcutsTouched() {
-            return appShortcutsTouched;
+            return shortcutsController.isTouched();
         }
 
         @Override
         public void setAppShortcutsTouched(boolean touched) {
-            appShortcutsTouched = touched;
+            shortcutsController.setTouched(touched);
         }
 
         @Override
@@ -898,7 +841,7 @@ public class AppPieView extends View {
         int iconAndTextHeight = iconSize + (showAppNames ? iconTextPadding + Math.round(listRenderer.getTextHeight()) : 0);
         int cellHeight = iconAndTextHeight + iconTextPadding * 2;
         int rows = (int) Math.ceil((double) appList.size() / columns);
-        int shortcutsHeight = getAppShortcutsHeight();
+        int shortcutsHeight = shortcutsController.getHeight(prefs.showAppShortcuts(), stateManager.inListMode());
         int bottomInset = shortcutsHeight > 0
                 ? getBottomInset() + listPadding : getPaddingBottom();
         int maxHeight = searchInputHeight + listPadding + rows * cellHeight + listPadding + shortcutsHeight;
@@ -947,7 +890,7 @@ public class AppPieView extends View {
         listFadeHeight = Math.round(viewHeight * .5f);
         stateManager.setListFadeHeight(listFadeHeight);
 
-        paintAppShortcutText.setTextSize(14f * sp);
+        shortcutsController.setTextSize(sp);
         layoutEditorControls(height > width);
         calculateMaxScrollY();
     }
@@ -1151,8 +1094,15 @@ public class AppPieView extends View {
     }
 
     private boolean performListAction(Context context, Point at) {
-        if (appShortcutsVisible && appShortcutsRect.contains(at.x, at.y)) {
-            return launchAppShortcutAt(context, at.x, at.y);
+        if (shortcutsController.isVisible() && shortcutsController.contains(at.x, at.y)) {
+            Apps.AppIcon shortcut = shortcutsController.getShortcutAt(at.x, at.y);
+            if (shortcut != null && AppLauncher.launchApp(context, shortcut)) {
+                if (listListener != null) {
+                    listListener.onHideList();
+                }
+                return true;
+            }
+            return false;
         }
         Apps.AppIcon appIcon = getListIconAt(at.x, at.y);
         if (appIcon == null) {
@@ -1177,7 +1127,7 @@ public class AppPieView extends View {
     }
 
     private Apps.AppIcon getListIconAt(int x, int y) {
-        if (appShortcutsVisible && appShortcutsRect.contains(x, y)) {
+        if (shortcutsController.isVisible() && shortcutsController.contains(x, y)) {
             return null;
         }
         y += getScrollY();
@@ -1298,35 +1248,12 @@ public class AppPieView extends View {
     }
 
     private void updateAppShortcuts() {
-        Apps.AppIcon app = prefs.showAppShortcuts() ? getSelectedApp() : null;
-        if (app == null) {
-            appShortcutsOwner = null;
-            appShortcuts = null;
-            if (!appSearchFilter.isFiltered()) {
-                // Query shortcuts again for the next search because
-                // apps can change them any time.
-                appShortcutsCache.clear();
-            }
-            return;
-        }
-        if (app == appShortcutsOwner) {
-            return;
-        }
-        appShortcutsOwner = app;
-        appShortcuts = appShortcutsCache.get(app);
-        appShortcutsScroller.forceFinished(true);
-        appShortcutsScrollY = 0;
-        if (appShortcuts != null) {
-            return;
-        }
-        PieLauncherApp.apps.loadAppShortcutsAsync(getContext(), app,
-                (owner, shortcuts) -> {
-                    appShortcutsCache.put(owner, shortcuts);
-                    if (owner == appShortcutsOwner) {
-                        appShortcuts = shortcuts;
-                        invalidate();
-                    }
-                });
+        shortcutsController.update(
+                getSelectedApp(),
+                appSearchFilter.isFiltered(),
+                prefs.showAppShortcuts(),
+                getContext(),
+                this::invalidate);
     }
 
     private Apps.AppIcon getSelectedApp() {
@@ -1334,137 +1261,6 @@ public class AppPieView extends View {
             return null;
         }
         return appList.get(clamp(selectedApp, 0, getIconCount() - 1));
-    }
-
-    private int getAppShortcutsHeight() {
-        return !prefs.showAppShortcuts() ||
-                !stateManager.inListMode() ||
-                appShortcuts == null ||
-                appShortcuts.isEmpty()
-            ? 0
-            : Math.min(appShortcuts.size(), MAX_VISIBLE_APP_SHORTCUTS) *
-                    appShortcutHeight + appShortcutsVerticalPadding * 2;
-    }
-
-    private void updateAppShortcutsLayout(int shortcutsHeight) {
-        int bottom = viewHeight - getBottomInset() - listPadding;
-        appShortcutsRect.set(listPadding, bottom - shortcutsHeight,
-                viewWidth - listPadding, bottom);
-        appShortcutsCard.set(appShortcutsRect);
-        appShortcutsCard.offset(0, getScrollY());
-    }
-
-    private void drawListWithShortcutBackdrop(RenderNode node,
-            Canvas canvas) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            drawRenderNode(node, canvas);
-            return;
-        } else if (node == null || !canvas.isHardwareAccelerated()) {
-            return;
-        }
-        node.endRecording();
-
-        int margin = (int) Math.ceil(maxBlurRadius * 3f);
-        int left = appShortcutsRect.left - margin;
-        int top = appShortcutsRect.top + getScrollY() - margin;
-        appShortcutsBackdropNode.setPosition(left, top,
-                appShortcutsRect.right + margin,
-                appShortcutsRect.bottom + getScrollY() + margin);
-        Canvas backdrop = appShortcutsBackdropNode.beginRecording();
-        backdrop.translate(-left, -top);
-        backdrop.drawRenderNode(node);
-        appShortcutsBackdropNode.endRecording();
-
-        appShortcutsClip.reset();
-        appShortcutsClip.addRoundRect(appShortcutsCard,
-                listPadding, listPadding, Path.Direction.CW);
-        canvas.save();
-        canvas.clipOutPath(appShortcutsClip);
-        canvas.drawRenderNode(node);
-        canvas.restore();
-        canvas.save();
-        canvas.clipPath(appShortcutsClip);
-        canvas.drawRenderNode(appShortcutsBackdropNode);
-        canvas.restore();
-    }
-
-    private boolean drawAppShortcuts(Canvas canvas, float f, int shortcutsHeight) {
-        int contentHeight = appShortcuts.size() * appShortcutHeight +
-                appShortcutsVerticalPadding * 2;
-        maxAppShortcutsScrollY = Math.max(0, contentHeight - shortcutsHeight);
-        boolean invalidate = false;
-        if (appShortcutsScroller.computeScrollOffset()) {
-            appShortcutsScrollY = appShortcutsScroller.getCurrY();
-            invalidate = true;
-        }
-        appShortcutsScrollY = clamp(appShortcutsScrollY, 0,
-                maxAppShortcutsScrollY);
-
-        int scrollY = getScrollY();
-        float radius = listPadding;
-        paintAppShortcuts.setAlpha(Math.round(f * alphaAppShortcuts));
-        canvas.drawRoundRect(appShortcutsCard, radius, radius,
-                paintAppShortcuts);
-
-        canvas.save();
-        canvas.clipRect(appShortcutsCard);
-        paintAppShortcutText.setAlpha(Math.round(f * 255f));
-        int x = appShortcutsRect.left + listPadding;
-        int y = appShortcutsRect.top + appShortcutsVerticalPadding -
-                appShortcutsScrollY;
-        int vpad = (appShortcutHeight - appShortcutIconSize) / 2;
-        int textX = x + appShortcutIconSize + listPadding;
-        int maxTextWidth = appShortcutsRect.right - listPadding - textX;
-        for (Apps.AppIcon shortcut : appShortcuts) {
-            shortcut.hitRect.set(appShortcutsRect.left, y,
-                    appShortcutsRect.right, y + appShortcutHeight);
-            if (y + appShortcutHeight > appShortcutsRect.top &&
-                    y < appShortcutsRect.bottom) {
-                int iy = y + scrollY + vpad;
-                drawRect.set(x, iy, x + appShortcutIconSize,
-                        iy + appShortcutIconSize);
-                canvas.drawBitmap(shortcut.bitmap, null, drawRect,
-                        paintList);
-                CharSequence label = TextUtils.ellipsize(shortcut.label,
-                        paintAppShortcutText, maxTextWidth,
-                        TextUtils.TruncateAt.END);
-                canvas.drawText(label, 0, label.length(), textX,
-                        y + scrollY + appShortcutHeight / 2f + listRenderer.getTextOffset(),
-                        paintAppShortcutText);
-            }
-            y += appShortcutHeight;
-        }
-        canvas.restore();
-
-        if (maxAppShortcutsScrollY > 0) {
-            int trackTop = appShortcutsRect.top + appShortcutsVerticalPadding +
-                    scrollY;
-            int trackHeight = shortcutsHeight - appShortcutsVerticalPadding * 2;
-            int thumbHeight = trackHeight * shortcutsHeight / contentHeight;
-            int thumbTop = trackTop + (trackHeight - thumbHeight) *
-                    appShortcutsScrollY / maxAppShortcutsScrollY;
-            float thumbRight = appShortcutsRect.right - listPadding / 2f;
-            appShortcutsThumb.set(thumbRight - spaceBetween, thumbTop,
-                    thumbRight, thumbTop + thumbHeight);
-            paintAppShortcutsThumb.setAlpha(Math.round(
-                    f * alphaAppShortcutsThumb));
-            canvas.drawRoundRect(appShortcutsThumb, spaceBetween,
-                    spaceBetween, paintAppShortcutsThumb);
-        }
-        return invalidate;
-    }
-
-    private boolean launchAppShortcutAt(Context context, int x, int y) {
-        for (Apps.AppIcon shortcut : appShortcuts) {
-            if (shortcut.hitRect.contains(x, y)) {
-                if (AppLauncher.launchApp(context, shortcut) &&
-                        listListener != null) {
-                    listListener.onHideList();
-                }
-                return true;
-            }
-        }
-        return false;
     }
 
     private int getBottomInset() {
