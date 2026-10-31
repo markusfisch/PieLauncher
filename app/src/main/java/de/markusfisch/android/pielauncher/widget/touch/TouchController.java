@@ -8,6 +8,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.preference.Preferences;
+
 public class TouchController implements View.OnTouchListener {
     public static class TouchReference {
         public final float x;
@@ -51,7 +54,10 @@ public class TouchController implements View.OnTouchListener {
         touchSlopSq = touchSlop * touchSlop;
         tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
         doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
-        longPressTimeout = ViewConfiguration.getLongPressTimeout();
+        Preferences prefs = PieLauncherApp.getPrefs(context);
+        longPressTimeout = ViewConfiguration.getLongPressTimeout() *
+                (prefs != null && prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
+                        ? 2L : 1L);
         minFlingVelocity = configuration.getScaledMinimumFlingVelocity();
         maxFlingVelocity = configuration.getScaledMaximumFlingVelocity();
     }

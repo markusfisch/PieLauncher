@@ -44,10 +44,8 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.activity.PickIconActivity;
 import de.markusfisch.android.pielauncher.activity.PreferencesActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.content.AppSearch;
 import de.markusfisch.android.pielauncher.content.Apps;
-import de.markusfisch.android.pielauncher.content.Database;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
@@ -71,6 +69,7 @@ import de.markusfisch.android.pielauncher.widget.shortcuts.AppShortcutsControlle
 import de.markusfisch.android.pielauncher.widget.state.EditorAction;
 import de.markusfisch.android.pielauncher.widget.state.AppSearchFilter;
 import de.markusfisch.android.pielauncher.widget.state.PieConfiguration;
+import de.markusfisch.android.pielauncher.widget.action.AppActionHandler;
 
 public class AppPieView extends View {
 
@@ -82,10 +81,8 @@ public class AppPieView extends View {
         void onEditOptionsRequested(Apps.AppIcon icon);
     }
 
-    private ActionCallback actionCallback;
-
     public void setActionCallback(ActionCallback actionCallback) {
-        this.actionCallback = actionCallback;
+        actionHandler.setActionCallback(actionCallback);
     }
 
     public interface ListListener {
@@ -183,21 +180,16 @@ public class AppPieView extends View {
     private final android.graphics.Point touch = new android.graphics.Point();
     private final String loadingTip;
     private final Preferences prefs;
-    private final long tapOrScrollTimeout;
     private final long longPressTimeout;
-    private final long doubleTapTimeout;
     private final int listPadding;
     private final int searchInputHeight;
     private final int iconSize;
     private final int iconTextPadding;
     private final int spaceBetween;
     private final int translucentBackgroundColor;
-    private final int minFlingVelocity;
-    private final int maxFlingVelocity;
     private final float maxBlurRadius;
     private final float dp;
     private final float sp;
-    private final float touchSlopSq;
 
     private Window window;
     private RenderNode pieRenderNode;
@@ -224,10 +216,10 @@ public class AppPieView extends View {
     private Apps.AppIcon touchedIcon;
     private Apps.AppIcon highlightedIcon;
     private long highlightedFrom;
-    private long lastTapUpTime;
     private boolean appListIsFiltered = false;
 
     private final AppShortcutsController shortcutsController;
+    private final AppActionHandler actionHandler;
     private int keyboardHeight = -1;
 
     public AppPieView(Context context, AttributeSet attr) {
@@ -268,15 +260,9 @@ public class AppPieView extends View {
 
 
         ViewConfiguration configuration = ViewConfiguration.get(context);
-        float touchSlop = configuration.getScaledTouchSlop();
-        touchSlopSq = touchSlop * touchSlop;
-        minFlingVelocity = configuration.getScaledMinimumFlingVelocity();
-        maxFlingVelocity = configuration.getScaledMaximumFlingVelocity();
-        tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
         longPressTimeout = ViewConfiguration.getLongPressTimeout() *
                 (prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
                         ? 2L : 1L);
-        doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
         if (PieLauncherApp.apps.isEmpty()) {
             PieLauncherApp.apps.indexAppsAsync(context);
         }
@@ -285,6 +271,23 @@ public class AppPieView extends View {
         pieRenderer = new PieRenderer(pieMenu, stateManager.getFadePie(), prefs);
         listRenderer = new ListRenderer(context);
         editorRenderer = new EditorRenderer(context);
+
+        actionHandler = new AppActionHandler(prefs, new AppActionHandler.Listener() {
+            @Override
+            public void onLaunchingIcon(Apps.AppIcon icon) {
+                pieRenderer.setLaunchingIcon(icon);
+            }
+
+            @Override
+            public boolean isListFiltered() {
+                return stateManager.inListMode() && appSearchFilter.isFiltered();
+            }
+
+            @Override
+            public String getFilterQuery() {
+                return appSearchFilter.getQuery();
+            }
+        });
     }
 
     public void setWindow(Window window) {
@@ -293,6 +296,7 @@ public class AppPieView extends View {
 
     public void setListListener(ListListener listener) {
         listListener = listener;
+        actionHandler.setListListener(listener);
     }
 
     public void resetScroll() {
@@ -376,11 +380,7 @@ public class AppPieView extends View {
     }
 
     public void launchSelectedAppFromList() {
-        if (selectedApp < 0 || isEmpty()) {
-            return;
-        }
-        launchApp(getContext(), appList.get(
-                clamp(selectedApp, 0, getIconCount() - 1)));
+        actionHandler.launchSelectedAppFromList(getContext(), selectedApp, appList);
     }
 
     public void endEditMode() {
@@ -705,7 +705,6 @@ public class AppPieView extends View {
             final Apps.AppIcon appIcon = getListIconAt(t.x, t.y);
             if (appIcon == null) return;
             touchedIcon = appIcon;
-            long longPressTimeout = android.view.ViewConfiguration.getLongPressTimeout();
             highlightRunnable = () -> {
                 highlightedIcon = appIcon;
                 highlightedFrom = android.os.SystemClock.uptimeMillis();
@@ -714,9 +713,7 @@ public class AppPieView extends View {
             longPressRunnable = () -> {
                 performHapticFeedbackIfAllowed(android.view.HapticFeedbackConstants.LONG_PRESS);
                 if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
-                    if (actionCallback != null) {
-                        actionCallback.onEditOptionsRequested(appIcon);
-                    }
+                    actionHandler.requestEditOptions(appIcon);
                 } else {
                     addIconInteractively(appIcon);
                 }
@@ -911,7 +908,6 @@ public class AppPieView extends View {
     }
 
     public void releaseIcon() {
-        // grabbing is managed by pieEditor now
         pieEditor.setNeverDropped(false);
         pieEditor.commitGrabbedItem();
     }
@@ -933,9 +929,21 @@ public class AppPieView extends View {
             Point at,
             TapFlags tapFlags) {
         if (stateManager.getMode() == ViewStateManager.MODE_PIE) {
-            return performPieAction(context, tapFlags);
+            Apps.AppIcon appIcon = null;
+            int index = pieMenu.getSelectedIcon();
+            if (index > -1 && index < pieMenu.icons.size()) {
+                appIcon = pieMenu.icons.get(index);
+            }
+            boolean pieVisible = stateManager.getFadePie().isVisible();
+            fadeOutMode();
+            return actionHandler.performPieAction(context, tapFlags, appIcon, pieVisible);
         } else if (stateManager.inListMode() && tapFlags.wasTap) {
-            return performListAction(context, at);
+            if (shortcutsController.isVisible() && shortcutsController.contains(at.x, at.y)) {
+                Apps.AppIcon shortcut = shortcutsController.getShortcutAt(at.x, at.y);
+                return actionHandler.performShortcutAction(context, shortcut);
+            }
+            Apps.AppIcon listIcon = getListIconAt(at.x, at.y);
+            return actionHandler.performListAction(context, listIcon);
         } else if (stateManager.inEditMode()) {
             boolean result = performEditAction(context);
             releaseIcon();
@@ -943,85 +951,6 @@ public class AppPieView extends View {
             return result;
         }
         return false;
-    }
-
-    private boolean performPieAction(Context context, TapFlags tapFlags) {
-        Apps.AppIcon appIcon = null;
-        int index = pieMenu.getSelectedIcon();
-        if (index > -1 && index < pieMenu.icons.size()) {
-            appIcon = pieMenu.icons.get(index);
-        }
-        boolean pieVisible = stateManager.getFadePie().isVisible();
-        fadeOutMode();
-        boolean result = false;
-        boolean openList = false;
-        switch (prefs.openListWith()) {
-            case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
-                openList = tapFlags.wasTap || appIcon == null;
-                break;
-            case Preferences.OPEN_LIST_WITH_ICON:
-                result = openList =
-                        PieLauncherApp.apps.isDrawerIcon(appIcon);
-                break;
-            case Preferences.OPEN_LIST_WITH_LONG_PRESS:
-                openList = tapFlags.longPress;
-                break;
-            case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
-                openList = tapFlags.doubleTap;
-                break;
-            case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
-                openList = tapFlags.twoFingerTap;
-                break;
-            case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
-                openList = tapFlags.fourFingerTap;
-                break;
-            case Preferences.OPEN_LIST_WITH_TAP:
-            default:
-                openList = tapFlags.wasTap;
-                break;
-        }
-        if (openList) {
-            if (listListener != null) {
-                listListener.onOpenList(false);
-            }
-        } else if (pieVisible && appIcon != null) {
-            launchApp(context, appIcon);
-            result = true;
-        }
-        return result;
-    }
-
-    private boolean performListAction(Context context, Point at) {
-        if (shortcutsController.isVisible() && shortcutsController.contains(at.x, at.y)) {
-            Apps.AppIcon shortcut = shortcutsController.getShortcutAt(at.x, at.y);
-            if (shortcut != null && AppLauncher.launchApp(context, shortcut)) {
-                if (listListener != null) {
-                    listListener.onHideList();
-                }
-                return true;
-            }
-            return false;
-        }
-        Apps.AppIcon appIcon = getListIconAt(at.x, at.y);
-        if (appIcon == null) {
-            switch (prefs.openListWith()) {
-                case Preferences.OPEN_LIST_WITH_TAP:
-                case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
-                case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
-                case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
-                case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
-                    if (listListener != null) {
-                        listListener.onHideList();
-                    }
-                    break;
-            }
-            return false;
-        }
-        launchApp(context, appIcon);
-        if (listListener != null) {
-            listListener.onHideList();
-        }
-        return true;
     }
 
     private Apps.AppIcon getListIconAt(int x, int y) {
@@ -1118,29 +1047,13 @@ public class AppPieView extends View {
                         // that can be used to uninstall an app which would
                         // trigger indexing what would reset any changes.
                         storeMenu();
-                        if (actionCallback != null) {
-                            actionCallback.onAppInfoRequested((Apps.AppIcon) pieEditor.getGrabbedIcon());
-                        }
+                        actionHandler.requestAppInfo((Apps.AppIcon) pieEditor.getGrabbedIcon());
                     }
                 }
                 return true;
             case NONE:
             default:
                 return false;
-        }
-    }
-
-    private void launchApp(Context context, Apps.AppIcon appIcon) {
-        pieRenderer.setLaunchingIcon(appIcon);
-        if (actionCallback != null) {
-            actionCallback.onAppTapped(appIcon);
-        } else if (AppLauncher.launchApp(context, appIcon)) {
-            Database database = PieLauncherApp.getDatabase(context);
-            database.recordLaunchAsync(appIcon);
-            if (stateManager.inListMode() && appSearchFilter.isFiltered() &&
-                    prefs.rememberSearchPicks()) {
-                database.recordSearchPickAsync(appSearchFilter.getQuery(), appIcon);
-            }
         }
     }
 

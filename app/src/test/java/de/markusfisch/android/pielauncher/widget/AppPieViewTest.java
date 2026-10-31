@@ -250,41 +250,6 @@ public class AppPieViewTest {
         // Run any pending runnables (like postPerformAction)
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        int finalSelectedIcon = -1;
-        try {
-            java.lang.reflect.Field pieMenuField = AppPieView.class.getDeclaredField("pieMenu");
-            pieMenuField.setAccessible(true);
-            Object pieMenu = pieMenuField.get(appPieView);
-
-            java.lang.reflect.Field iconsField = pieMenu.getClass().getSuperclass().getDeclaredField("icons");
-            iconsField.setAccessible(true);
-            java.util.List icons = (java.util.List) iconsField.get(pieMenu);
-            System.out.println("PieMenu icons size: " + (icons != null ? icons.size() : "null"));
-
-            java.lang.reflect.Method getSelectedIconMethod = pieMenu.getClass().getSuperclass().getDeclaredMethod("getSelectedIcon");
-            getSelectedIconMethod.setAccessible(true);
-            finalSelectedIcon = (int) getSelectedIconMethod.invoke(pieMenu);
-            java.lang.reflect.Field touchField = AppPieView.class.getDeclaredField("touch");
-            touchField.setAccessible(true);
-            android.graphics.Point touch = (android.graphics.Point) touchField.get(appPieView);
-            System.out.println("Touch coordinates: " + touch.x + ", " + touch.y);
-
-            System.out.println("PieMenu selected icon: " + finalSelectedIcon);
-
-// fade pie removed
-
-            java.lang.reflect.Field radiusField = pieMenu.getClass().getSuperclass().getDeclaredField("radius");
-            radiusField.setAccessible(true);
-            double radius = (double) radiusField.get(pieMenu);
-            System.out.println("PieMenu radius: " + radius);
-
-
-// mode removed
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
         // Assert that the correct icon was selected by the drag
         org.junit.Assert.assertNotNull("Expected an app to be tapped", tappedAppIcon);
         org.junit.Assert.assertEquals("Expected redIcon to be tapped", redIcon, tappedAppIcon);
@@ -509,22 +474,7 @@ public class AppPieViewTest {
         org.robolectric.shadows.ShadowSystemClock.advanceBy(java.time.Duration.ofMillis(longPressTimeout + 100));
         org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        try {
-            java.lang.reflect.Method getListIconAtMethod = AppPieView.class.getDeclaredMethod("getListIconAt", int.class, int.class);
-            getListIconAtMethod.setAccessible(true);
-            Object icon = getListIconAtMethod.invoke(appPieView, 540, (int) y);
-            System.out.println("DEBUG icon: " + (icon != null));
-
-            java.lang.reflect.Field appListField = AppPieView.class.getDeclaredField("appList");
-            appListField.setAccessible(true);
-            java.util.List<?> list = (java.util.List<?>) appListField.get(appPieView);
-            System.out.println("DEBUG appList size: " + (list != null ? list.size() : "null"));
-
-            org.junit.Assert.assertTrue("Mode should be MODE_EDIT", appPieView.inEditMode());
-        } catch (Exception e) {
-            e.printStackTrace();
-            org.junit.Assert.fail("Reflection failed");
-        }
+        org.junit.Assert.assertTrue("Mode should be MODE_EDIT", appPieView.inEditMode());
 
         actionDown.recycle();
     }

@@ -84,12 +84,7 @@ public class ViewStateManagerTest {
 
         viewStateManager.dragDownListBy(50f);
 
-        // dragDistance is -50 (dragDistance -= 50) => 0 - 50 = -50
-        // progress = 1f - (-50 / 100) = 1f - (-0.5) = 1.5 -> clamped to 1f
-        // Wait, dragDownListBy expects positive y for pulling down? Let's check logic:
-        // if y > 0 (finger moving down), dragDistance -= y => negative.
-        // wait, in AppPieView: dragDistance -= y.
-        // Actually, let's test a negative drag y which implies distance becomes positive.
+        // Negative delta simulates dragging list downwards, increasing drag distance
         viewStateManager.resetDragDownList();
         viewStateManager.dragDownListBy(-50f);
 
