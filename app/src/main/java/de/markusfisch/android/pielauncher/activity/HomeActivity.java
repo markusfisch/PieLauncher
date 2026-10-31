@@ -23,6 +23,7 @@ import android.window.OnBackInvokedDispatcher;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
 import de.markusfisch.android.pielauncher.content.Apps;
+import de.markusfisch.android.pielauncher.content.Database;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SoftKeyboard;
@@ -229,6 +230,60 @@ public class HomeActivity extends Activity {
 
 	private void initPieView() {
 		pieView.setWindow(getWindow());
+		pieView.setActionCallback(new AppPieView.ActionCallback() {
+			@Override
+			public void onAppTapped(Apps.AppIcon icon) {
+				if (de.markusfisch.android.pielauncher.content.AppLauncher.launchApp(HomeActivity.this, icon)) {
+					Database database = PieLauncherApp.getDatabase(HomeActivity.this);
+					database.recordLaunchAsync(icon);
+					if (pieView.inListMode() && pieView.isFiltered() &&
+							prefs.rememberSearchPicks()) {
+						database.recordSearchPickAsync(pieView.getQuery(), icon);
+					}
+				}
+			}
+
+			@Override
+			public void onAppInfoRequested(Apps.AppIcon icon) {
+				de.markusfisch.android.pielauncher.content.AppLauncher.launchAppInfo(HomeActivity.this, icon);
+			}
+
+			@Override
+			public void onEditOptionsRequested(Apps.AppIcon icon) {
+				if (icon == null) return;
+				java.util.ArrayList<String> list = new java.util.ArrayList<>();
+				list.add(getString(R.string.edit_pie_menu));
+				list.add(getString(R.string.add_to_pie_menu));
+				list.add(getString(R.string.show_app_info));
+				list.add(getString(R.string.hide_app));
+				if (PieLauncherApp.iconPack.hasPacks()) {
+					list.add(getString(R.string.change_icon));
+				}
+				de.markusfisch.android.pielauncher.widget.OptionsDialog.show(HomeActivity.this, R.string.edit_app,
+						list.toArray(new CharSequence[0]),
+						(view, which) -> {
+							switch (which) {
+								case 0:
+									pieView.addIconInteractively(null);
+									break;
+								case 1:
+									pieView.addIconInteractively(icon);
+									pieView.postDelayed(() -> pieView.releaseIcon(), 100);
+									break;
+								case 2:
+									de.markusfisch.android.pielauncher.content.AppLauncher.launchAppInfo(HomeActivity.this, icon);
+									break;
+								case 3:
+									de.markusfisch.android.pielauncher.activity.PickIconActivity.askToHide(HomeActivity.this, icon.componentName);
+									break;
+								case 4:
+									pieView.returnToList();
+									pieView.changeIcon(HomeActivity.this, icon);
+									break;
+							}
+						});
+			}
+		});
 		pieView.setListListener(new AppPieView.ListListener() {
 			@Override
 			public void onOpenList(boolean resume) {

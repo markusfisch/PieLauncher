@@ -44,2622 +44,1423 @@ import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.activity.PickIconActivity;
 import de.markusfisch.android.pielauncher.activity.PreferencesActivity;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
-import de.markusfisch.android.pielauncher.content.AppLauncher;
 import de.markusfisch.android.pielauncher.content.AppSearch;
 import de.markusfisch.android.pielauncher.content.Apps;
-import de.markusfisch.android.pielauncher.content.Database;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.CanvasPieMenu;
 import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.graphics.PieMenu;
+import de.markusfisch.android.pielauncher.widget.state.ViewStateManager;
+import de.markusfisch.android.pielauncher.widget.state.PieEditor;
 import de.markusfisch.android.pielauncher.preference.Preferences;
 import de.markusfisch.android.pielauncher.view.SystemBars;
+import de.markusfisch.android.pielauncher.widget.renderer.EditorRenderer;
+import de.markusfisch.android.pielauncher.widget.renderer.ListRenderer;
+import de.markusfisch.android.pielauncher.widget.renderer.PieRenderer;
+import de.markusfisch.android.pielauncher.widget.touch.TouchController;
+import de.markusfisch.android.pielauncher.widget.touch.EditorTouchState;
+import de.markusfisch.android.pielauncher.widget.touch.ListTouchState;
+import de.markusfisch.android.pielauncher.widget.touch.PieTouchState;
+import de.markusfisch.android.pielauncher.widget.touch.GeneralTouchListener;
+import de.markusfisch.android.pielauncher.widget.touch.ListTouchListener;
+import de.markusfisch.android.pielauncher.widget.touch.PieTouchListener;
+import de.markusfisch.android.pielauncher.widget.touch.TapFlags;
+import de.markusfisch.android.pielauncher.widget.shortcuts.AppShortcutsController;
+import de.markusfisch.android.pielauncher.widget.state.EditorAction;
+import de.markusfisch.android.pielauncher.widget.state.AppSearchFilter;
+import de.markusfisch.android.pielauncher.widget.state.PieConfiguration;
+import de.markusfisch.android.pielauncher.widget.action.AppActionHandler;
 
 public class AppPieView extends View {
-	public interface ListListener {
-		void onOpenList(boolean resume);
-
-		void onHideList();
-
-		void onScrollList(int y, boolean isScrolling);
-
-		void onDragDown(float alpha);
-	}
-
-	private static final int HAPTIC_FEEDBACK_DOWN =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-					? HapticFeedbackConstants.KEYBOARD_TAP
-					: HapticFeedbackConstants.CONTEXT_CLICK;
-	private static final int HAPTIC_FEEDBACK_CONFIRM =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.R
-					? HAPTIC_FEEDBACK_DOWN
-					: HapticFeedbackConstants.CONFIRM;
-	private static final int HAPTIC_FEEDBACK_CHOICE =
-			Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-					? HAPTIC_FEEDBACK_DOWN
-					: HapticFeedbackConstants.SEGMENT_TICK;
-	private static final int MODE_PIE = 0;
-	private static final int MODE_LIST = 1;
-	private static final int MODE_EDIT = 2;
-	private static final int MAX_VISIBLE_APP_SHORTCUTS = 4;
-
-	private final CanvasPieMenu<Apps.AppIcon> pieMenu = new CanvasPieMenu<>();
-	private final ArrayList<Apps.AppIcon> menuPrimary =
-			PieLauncherApp.apps.menuPrimary;
-	private final ArrayList<Apps.AppIcon> menuSecondary =
-			PieLauncherApp.apps.menuSecondary;
-	private final Fade fadePie = new Fade();
-	private final Fade fadeList = new Fade();
-	private final Fade fadeEdit = new Fade();
-	private final ArrayList<Apps.AppIcon> backup = new ArrayList<>();
-	private final ArrayList<Apps.AppIcon> ungrabbedIcons = new ArrayList<>();
-	private final HashMap<Apps.AppIcon, List<Apps.AppIcon>> appShortcutsCache =
-			new HashMap<>();
-	private final ColorMatrixColorFilter dimFilter;
-	private final Paint paintList = new Paint(Paint.FILTER_BITMAP_FLAG);
-	private final Paint paintDropZone = new Paint(Paint.ANTI_ALIAS_FLAG);
-	private final Paint paintPressed = new Paint(Paint.ANTI_ALIAS_FLAG);
-	private final Paint paintAction = new Paint(Paint.FILTER_BITMAP_FLAG);
-	private final Paint paintAppShortcuts = new Paint(Paint.ANTI_ALIAS_FLAG);
-	private final Paint paintAppShortcutsThumb =
-			new Paint(Paint.ANTI_ALIAS_FLAG);
-	private final TextPaint paintText = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-	private final TextPaint paintAppShortcutText =
-			new TextPaint(Paint.ANTI_ALIAS_FLAG);
-	private final Point touch = new Point();
-	private final Rect drawRect = new Rect();
-	private final Rect iconStartRect = new Rect();
-	private final Rect iconCenterRect = new Rect();
-	private final Rect iconEndRect = new Rect();
-	private final Rect iconChangeTwistRect = new Rect();
-	private final Rect iconChangeIconScaleRect = new Rect();
-	private final Rect iconChangeRadiusRect = new Rect();
-	private final Rect appShortcutsRect = new Rect();
-	private final RectF appShortcutsCard = new RectF();
-	private final Path appShortcutsClip = new Path();
-	private final RectF appShortcutsThumb = new RectF();
-	private final OverScroller appShortcutsScroller;
-	private final Bitmap iconAdd;
-	private final Bitmap iconRemove;
-	private final Bitmap iconEdit;
-	private final Bitmap iconHide;
-	private final Bitmap iconDetails;
-	private final Bitmap iconDone;
-	private final Bitmap iconPreferences;
-	private final Bitmap iconLaunchFirst;
-	private final String loadingTip;
-	private final String dragToOrderTip;
-	private final String removeIconTip;
-	private final String editAppTip;
-	private final String hideAppTip;
-	private final String removeAppTip;
-	private final Preferences prefs;
-	private final long tapOrScrollTimeout;
-	private final long longPressTimeout;
-	private final long doubleTapTimeout;
-	private final int listPadding;
-	private final int searchInputHeight;
-	private final int iconSize;
-	private final int iconTextPadding;
-	private final int spaceBetween;
-	private final int iconLaunchFirstHalf;
-	private final int appShortcutHeight;
-	private final int appShortcutIconSize;
-	private final int appShortcutsVerticalPadding;
-	private final int alphaAppShortcuts;
-	private final int alphaAppShortcutsThumb;
-	private final int translucentBackgroundColor;
-	private final int alphaDropZone;
-	private final int alphaPressed;
-	private final int alphaText;
-	private final int minFlingVelocity;
-	private final int maxFlingVelocity;
-	private final float maxBlurRadius;
-	private final float dp;
-	private final float textHeight;
-	private final float textOffset;
-	private final float touchSlopSq;
-
-	private Window window;
-	private RenderNode pieRenderNode;
-	private RenderNode listRenderNode;
-	private RenderNode appShortcutsBackdropNode;
-	private int viewWidth;
-	private int viewHeight;
-	private int controlsPadding;
-	private int actionSize;
-	private int actionSizeSq;
-	private int deadZoneTop;
-	private int deadZoneBottom;
-	private int deadZoneLeft;
-	private int deadZoneRight;
-	private int listFadeHeight;
-	private int minRadius;
-	private int medRadius;
-	private int maxRadius;
-	private int radius;
-	private float twist;
-	private float minIconScale;
-	private float iconScale;
-	private float dragDistance;
-	private float dragProgress;
-	private int maxScrollY;
-	private int lastScrollY;
-	private int lastInsertAt;
-	private int lastSelectedIcon;
-	private int currentBackgroundBlur;
-	private int currentPieBlur;
-	private int currentListBlur;
-	private int selectedApp = -1;
-	private int keyboardHeight = -1;
-	private int appShortcutsScrollY;
-	private int maxAppShortcutsScrollY;
-	private int mode = MODE_PIE;
-	private ListListener listListener;
-	private List<Apps.AppIcon> appList;
-	private Rect highlightedAction;
-	private Apps.AppIcon grabbedIcon;
-	private Apps.AppIcon touchedIcon;
-	private Apps.AppIcon highlightedIcon;
-	private Apps.AppIcon launchingIcon;
-	private long highlightedFrom;
-	private long grabbedIconAt;
-	private long lastTapUpTime;
-	private long lastCircleAt;
-	private int circleDirection;
-	private final ArrayList<CanvasPieMenu.CanvasIcon> outgoingPieIcons =
-			new ArrayList<>();
-	private Bitmap iconChangeTwist;
-	private Bitmap iconChangeIconScale;
-	private Bitmap iconChangeRadius;
-	private Bitmap iconSplitPie;
-	private boolean neverDropped = false;
-	private boolean appListIsFiltered = false;
-	private long appShortcutsExpandFrom;
-	private boolean appShortcutsVisible = false;
-	private boolean appShortcutsTouched = false;
-	private String appListQuery;
-	private Apps.AppIcon appShortcutsOwner;
-	private List<Apps.AppIcon> appShortcuts;
-
-	public AppPieView(Context context, AttributeSet attr) {
-		super(context, attr);
-
-		prefs = PieLauncherApp.getPrefs(context);
-
-		Resources res = context.getResources();
-		DisplayMetrics dm = res.getDisplayMetrics();
-		dp = dm.density;
-		float sp = dm.scaledDensity;
-
-		pieMenu.icons = menuPrimary;
-		pieMenu.onCircle(this::onCircle);
-
-		controlsPadding = Math.round(80f * dp);
-		listPadding = Math.round(16f * dp);
-		searchInputHeight = Math.round(112f * dp);
-		iconSize = Math.round(48f * dp);
-		iconTextPadding = Math.round(12f * dp);
-		spaceBetween = Math.round(4f * dp);
-		appShortcutHeight = Math.round(48f * dp);
-		appShortcutIconSize = Math.round(32f * dp);
-		appShortcutsVerticalPadding = listPadding -
-				(appShortcutHeight - appShortcutIconSize) / 2;
-		maxBlurRadius = iconSize * .35f;
-
-		loadingTip = context.getString(R.string.tip_loading);
-		dragToOrderTip = context.getString(R.string.tip_drag_to_order);
-		removeIconTip = context.getString(R.string.tip_remove_icon);
-		editAppTip = context.getString(R.string.change_icon);
-		hideAppTip = context.getString(R.string.hide_app);
-		removeAppTip = context.getString(R.string.tip_remove_app);
-
-		paintDropZone.setColor(res.getColor(R.color.bg_drop_zone));
-		paintDropZone.setStyle(Paint.Style.FILL);
-		alphaDropZone = paintDropZone.getAlpha();
-		paintPressed.setColor(res.getColor(R.color.bg_action_pressed));
-		paintPressed.setStyle(Paint.Style.FILL);
-		alphaPressed = paintPressed.getAlpha();
-
-		paintText.setColor(res.getColor(R.color.text_color));
-		alphaText = paintText.getAlpha();
-		paintText.setTextAlign(Paint.Align.CENTER);
-		paintText.setTextSize(14f * sp);
-		textHeight = paintText.descent() - paintText.ascent();
-		textOffset = (textHeight / 2) - paintText.descent();
-		translucentBackgroundColor = res.getColor(R.color.bg_ui);
-
-		paintAppShortcuts.setColor(res.getColor(R.color.bg_app_shortcuts));
-		paintAppShortcuts.setStyle(Paint.Style.FILL);
-		alphaAppShortcuts = paintAppShortcuts.getAlpha();
-		paintAppShortcutsThumb.setColor(res.getColor(R.color.separator));
-		paintAppShortcutsThumb.setStyle(Paint.Style.FILL);
-		alphaAppShortcutsThumb = paintAppShortcutsThumb.getAlpha();
-		appShortcutsScroller = new OverScroller(context);
-		paintAppShortcutText.setColor(res.getColor(R.color.text_color));
-		paintAppShortcutText.setTextSize(14f * sp);
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			pieRenderNode = new RenderNode("PieMenu");
-			listRenderNode = new RenderNode("List");
-		}
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			appShortcutsBackdropNode = new RenderNode("AppShortcutsBackdrop");
-			appShortcutsBackdropNode.setRenderEffect(RenderEffect.createBlurEffect(
-					maxBlurRadius, maxBlurRadius, Shader.TileMode.CLAMP));
-		}
-
-		// Set up dim filter.
-		{
-			float dimAmount = .5f;
-			ColorMatrix colorMatrix = new ColorMatrix();
-			colorMatrix.setScale(dimAmount, dimAmount, dimAmount, 1);
-			dimFilter = new ColorMatrixColorFilter(colorMatrix);
-		}
-
-		iconAdd = Converter.getBitmapFromDrawable(res, R.drawable.ic_add);
-		iconEdit = Converter.getBitmapFromDrawable(res, R.drawable.ic_edit);
-		iconHide = Converter.getBitmapFromDrawable(res, R.drawable.ic_hide);
-		iconRemove = Converter.getBitmapFromDrawable(res,
-				R.drawable.ic_remove);
-		iconDetails = Converter.getBitmapFromDrawable(res,
-				R.drawable.ic_details);
-		iconDone = Converter.getBitmapFromDrawable(res, R.drawable.ic_done);
-		iconPreferences = Converter.getBitmapFromDrawable(res,
-				R.drawable.ic_preferences);
-		iconLaunchFirst = Converter.getBitmapFromDrawable(res,
-				R.drawable.ic_launch_first);
-		iconLaunchFirstHalf = iconLaunchFirst.getWidth() >> 1;
-
-		ViewConfiguration configuration = ViewConfiguration.get(context);
-		float touchSlop = configuration.getScaledTouchSlop();
-		touchSlopSq = touchSlop * touchSlop;
-		minFlingVelocity = configuration.getScaledMinimumFlingVelocity();
-		maxFlingVelocity = configuration.getScaledMaximumFlingVelocity();
-		tapOrScrollTimeout = ViewConfiguration.getTapTimeout();
-		longPressTimeout = ViewConfiguration.getLongPressTimeout() *
-				(prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
-						? 2L : 1L);
-		doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
-		if (PieLauncherApp.apps.isEmpty()) {
-			PieLauncherApp.apps.indexAppsAsync(context);
-		}
-		initTouchListener();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			trackKeyboardApi30();
-		}
-	}
-
-	public void setWindow(Window window) {
-		this.window = window;
-	}
-
-	public void setListListener(ListListener listener) {
-		listListener = listener;
-	}
-
-	public void resetScroll() {
-		lastScrollY = 0;
-	}
-
-	public void showList() {
-		if (mode == MODE_LIST) {
-			return;
-		}
-		mode = MODE_LIST;
-		pieMenu.addScrollShift(lastScrollY);
-		scrollList(lastScrollY, false);
-		setVerticalScrollBarEnabled(true);
-		resetDragDownList();
-		fadeList.fadeIn();
-		invalidate();
-	}
-
-	public void hideList() {
-		if (mode == MODE_PIE) {
-			return;
-		}
-		fadeList.maxIn = dragProgress;
-		fadeOutMode();
-		mode = MODE_PIE;
-		resetScrollWithoutAnimation();
-		setVerticalScrollBarEnabled(false);
-		invalidate();
-	}
-
-	public void dragDownListBy(float y) {
-		if (mode != MODE_LIST) {
-			return;
-		}
-		dragDistance -= y;
-		dragProgress = clamp(1f - (dragDistance / listFadeHeight), 0f, 1f);
-		invalidate();
-	}
-
-	public void showEditor() {
-		editIcon(null);
-		invalidate();
-	}
-
-	public boolean isEmpty() {
-		return appList == null || appList.isEmpty();
-	}
-
-	public int getIconCount() {
-		return appList == null ? 0 : appList.size();
-	}
-
-	public boolean appListNotScrolled() {
-		return mode != MODE_LIST || getScrollY() == 0;
-	}
-
-	public boolean inEditMode() {
-		return mode == MODE_EDIT;
-	}
-
-	public boolean inListMode() {
-		return mode == MODE_LIST;
-	}
-
-	public boolean isScrollingAppShortcuts() {
-		return appShortcutsTouched;
-	}
-
-	public void filterAppList(String query, boolean resetScroll) {
-		List<Apps.AppIcon> newAppList = AppSearch.filterAppsBy(
-				PieLauncherApp.apps, getContext(), query);
-		if (newAppList != null) {
-			appList = newAppList;
-		}
-		appListIsFiltered = !TextUtils.isEmpty(query);
-		appListQuery = query;
-		selectedApp = prefs.doubleSpaceLaunch()
-				? (appListIsFiltered ? 0 : -1)
-				: getSelectedAppFromTrailingSpace(query);
-		if (resetScroll) {
-			scrollList(0, false);
-			lastScrollY = 0;
-		}
-		updateAppShortcuts();
-		invalidate();
-	}
-
-	public void launchSelectedAppFromList() {
-		if (selectedApp < 0 || isEmpty()) {
-			return;
-		}
-		launchApp(getContext(), appList.get(
-				clamp(selectedApp, 0, getIconCount() - 1)));
-	}
-
-	public void endEditMode() {
-		storeMenu();
-		backup.clear();
-		ungrabbedIcons.clear();
-		releaseIcon();
-		fadeOutMode();
-		mode = MODE_PIE;
-		invalidate();
-		if (prefs.excludePie() != Preferences.EXCLUDE_PIE_NONE) {
-			PieLauncherApp.apps.propagateUpdate();
-		}
-	}
-
-	@Override
-	protected void onLayout(
-			boolean changed,
-			int left,
-			int top,
-			int right,
-			int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
-		if (changed) {
-			layoutView(right - left, bottom - top);
-		}
-	}
-
-	@Override
-	protected void onDraw(Canvas canvas) {
-		long now = SystemClock.uptimeMillis();
-		float ad = prefs.getAnimationDuration();
-		float fPie = fadePie.get(now,
-				// Prolong fade out to improve touch feedback.
-				fadePie.isFadingOut(now) ? ad * 3f : ad);
-		float fList = Math.min(fadeList.get(now, ad), dragProgress);
-		float fEdit = fadeEdit.get(now, ad);
-		float fMax = easeSlowerIn(Math.max(fPie, Math.max(fList, fEdit)));
-
-		int bbr = prefs.getBackgroundBlurRadius();
-		if (bbr > 0) {
-			int blur = Math.round(fMax * bbr);
-			if (blur != currentBackgroundBlur) {
-				BackgroundBlur.setBlurRadius(window, blur);
-				currentBackgroundBlur = blur;
-			}
-		}
-
-		if (mode != MODE_PIE || prefs.darkenBackground() !=
-				Preferences.DARKEN_BACKGROUND_NONE) {
-			darkenBackground(canvas, fMax);
-		}
-
-		Canvas pieCanvas = getRecordingCanvas(pieRenderNode, canvas);
-		currentPieBlur = applyBlurOut(pieRenderNode, currentPieBlur, fPie);
-		boolean invalidate = drawPieMenu(pieCanvas, fPie, now, ad);
-		drawRenderNode(pieRenderNode, canvas);
-
-		if (PieLauncherApp.apps.isIndexing()) {
-			drawTip(canvas, loadingTip);
-		}
-
-		int shortcutsHeight = getAppShortcutsHeight();
-		boolean shortcutsWereVisible = appShortcutsVisible;
-		appShortcutsVisible = shortcutsHeight > 0 && fList > 0 &&
-				!isDraggingDownList();
-
-		Canvas listCanvas = getRecordingCanvas(listRenderNode, canvas);
-		currentListBlur = applyBlurOut(listRenderNode, currentListBlur, fList);
-		invalidate |= drawList(listCanvas, fList, shortcutsHeight);
-
-		if (appShortcutsVisible) {
-			if (!shortcutsWereVisible) {
-				appShortcutsExpandFrom = now;
-			}
-			if (appShortcutsExpandFrom > 0) {
-				float t = ad > 0 ? (now - appShortcutsExpandFrom) / ad : 1f;
-				if (t < 1f) {
-					// Expand from 85% height, slightly overshooting the target.
-					float x = t - 1f;
-					float spring = 1f + x * x * (2.5f * x + 1.5f);
-					shortcutsHeight = Math.round(shortcutsHeight *
-							(.85f + .15f * spring));
-					invalidate = true;
-				} else {
-					appShortcutsExpandFrom = 0;
-				}
-			}
-			updateAppShortcutsLayout(shortcutsHeight);
-			drawListWithShortcutBackdrop(listRenderNode, canvas);
-			invalidate |= drawAppShortcuts(canvas, fList, shortcutsHeight);
-		} else {
-			drawRenderNode(listRenderNode, canvas);
-		}
-
-		invalidate |= drawEditor(canvas, fEdit);
-
-		if (invalidate) {
-			invalidate();
-		}
-	}
-
-	@Override
-	protected int computeVerticalScrollRange() {
-		return maxScrollY + getHeight();
-	}
-
-	@Override
-	protected int computeVerticalScrollOffset() {
-		return getScrollY();
-	}
-
-	private void initTouchListener() {
-		setOnTouchListener(new OnTouchListener() {
-			private final FlingRunnable flingRunnable = new FlingRunnable();
-			private final SparseArray<TouchReference> touchReferences =
-					new SparseArray<>();
-			private final Point expandTouch = new Point();
-			private final TapFlags tapFlags = new TapFlags();
-
-			private VelocityTracker velocityTracker;
-			private int primaryId;
-			private int pointerCount;
-			private int spinId = -1;
-			private double spinAngleDown;
-			private double spinInitialTwist;
-			private int scrollOffset;
-			private int appShortcutsScrollOffset;
-			private long lastActionUp;
-			private long expandDownTime;
-			private Runnable highlightRunnable;
-			private Runnable longPressRunnable;
-			private Runnable performActionRunnable;
-
-			@SuppressLint("ClickableViewAccessibility")
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				touch.set(Math.round(event.getX()), Math.round(event.getY()));
-				switch (event.getActionMasked()) {
-					case MotionEvent.ACTION_POINTER_DOWN:
-						pointerCount = event.getPointerCount();
-						if (mode == MODE_PIE) {
-							cancelExpandPanel();
-							startSpin(event);
-							invalidate();
-						} else if (mode == MODE_LIST) {
-							cancelLongPress();
-							addTouch(event);
-							initScroll(event);
-							// Scroll the list with more than one finger.
-							appShortcutsTouched = false;
-						}
-						break;
-					case MotionEvent.ACTION_POINTER_UP:
-						if (mode == MODE_PIE) {
-							stopSpin(event);
-						} else if (mode == MODE_LIST) {
-							updateReferences(event);
-							initScroll(event);
-						}
-						break;
-					case MotionEvent.ACTION_DOWN:
-						if (cancelPerformAction()) {
-							// Ignore additional ACTION_DOWN's when there
-							// is a pending action.
-							break;
-						}
-						pointerCount = 1;
-						addTouch(event);
-						long eventTime = event.getEventTime();
-						switch (mode) {
-							case MODE_PIE:
-								if (inDeadZone()) {
-									initExpandPanel(event, eventTime);
-									return true;
-								}
-								openMenu(eventTime);
-								break;
-							case MODE_LIST:
-								// Ignore ACTION_DOWN during animation to
-								// prevent starting a long press from the
-								// wrong coordinates.
-								if (fadeList.isFadingIn(eventTime)) {
-									return false;
-								}
-								initScroll(event);
-								initAppShortcutsScroll();
-								initLongPress(v.getContext());
-								break;
-							case MODE_EDIT:
-								editIconAt(touch);
-								break;
-						}
-						invalidate();
-						break;
-					case MotionEvent.ACTION_MOVE:
-						if (mode == MODE_PIE) {
-							expandPanel(v.getContext(), event);
-							spin(event);
-						} else if (mode == MODE_LIST) {
-							if (isScroll(event)) {
-								cancelLongPress();
-							}
-							if (!scrollAppShortcuts(event)) {
-								scroll(event);
-							}
-						}
-						invalidate();
-						break;
-					case MotionEvent.ACTION_UP:
-						if (mode == MODE_PIE) {
-							lastActionUp = event.getEventTime();
-							cancelSpin();
-							cancelExpandPanel();
-						} else if (mode == MODE_LIST) {
-							cancelLongPress();
-							cancelDragDownList();
-							keepScrolling(event);
-							appShortcutsTouched = false;
-						}
-						postPerformAction(v, event);
-						break;
-					case MotionEvent.ACTION_CANCEL:
-						if (mode == MODE_PIE) {
-							cancelSpin();
-							cancelExpandPanel();
-							fadeOutMode();
-						} else if (mode == MODE_LIST) {
-							cancelLongPress();
-							cancelDragDownList();
-							recycleVelocityTracker();
-							appShortcutsTouched = false;
-						}
-						releaseIcon();
-						invalidate();
-						break;
-					default:
-						break;
-				}
-				return true;
-			}
-
-			private void addTouch(MotionEvent event) {
-				int index = event.getActionIndex();
-				primaryId = event.getPointerId(index);
-				setTouchReference(event, primaryId, index);
-			}
-
-			private void updateReferences(MotionEvent event) {
-				// Unfortunately, and contrary to the docs, some (old?) touch
-				// screen drivers don't return the index of the touch that has
-				// gone up in ACTION_POINTER_UP for getActionIndex() but an
-				// index of a pointer that is still down.
-				// So the only option is to update all references.
-				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
-					int id = event.getPointerId(i);
-					setTouchReference(event, id, i);
-				}
-			}
-
-			private void setTouchReference(
-					MotionEvent event,
-					int id,
-					int index) {
-				touchReferences.put(id, new TouchReference(
-						event.getX(index),
-						event.getY(index),
-						event.getEventTime()));
-			}
-
-			private TouchReference getTouchReference(
-					MotionEvent event,
-					int index) {
-				return index > -1 && index < event.getPointerCount()
-						? touchReferences.get(event.getPointerId(index))
-						: null;
-			}
-
-			private boolean inDeadZone() {
-				switch (prefs.getDeadZone()) {
-					case Preferences.DEAD_ZONE_TOP:
-						return inTopDeadZone();
-					case Preferences.DEAD_ZONE_BOTTOM:
-						return inBottomDeadZone();
-					case Preferences.DEAD_ZONE_TOP_BOTTOM:
-						return inTopDeadZone() || inBottomDeadZone();
-					case Preferences.DEAD_ZONE_ALL:
-						return inTopDeadZone() || inBottomDeadZone() ||
-								inLeftOrRightDeadZone();
-					default:
-						return false;
-				}
-			}
-
-			private boolean inTopDeadZone() {
-				return touch.y < deadZoneTop;
-			}
-
-			private boolean inBottomDeadZone() {
-				return touch.y > deadZoneBottom;
-			}
-
-			private boolean inLeftOrRightDeadZone() {
-				return touch.x < deadZoneLeft || touch.x > deadZoneRight;
-			}
-
-			private void openMenu(long eventTime) {
-				if (prefs.splitPieMenu() !=
-						Preferences.ALTERNATE_MENU_NONE) {
-					selectMenu(touch.x, touch.y);
-					setCenter(touch.x, touch.y);
-				} else {
-					// Reset menu to primary if necessary.
-					if (prefs.circleSwapsMenus() !=
-							Preferences.ALTERNATE_MENU_NONE &&
-							!isPrimaryMenu()) {
-						setMenu(menuPrimary);
-					}
-					// Don't re-center for interrupted touches.
-					if (eventTime - lastActionUp > 200L) {
-						setCenter(touch.x, touch.y);
-					}
-				}
-				fadePie.fadeIn(eventTime);
-				performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
-			}
-
-			private void initScroll(MotionEvent event) {
-				flingRunnable.stop();
-				initVelocityTracker(event);
-				scrollOffset = getScrollY();
-			}
-
-			private void scroll(MotionEvent event) {
-				if (isDraggingDownList()) {
-					if (listListener != null) {
-						listListener.onDragDown(dragProgress);
-					}
-					return;
-				}
-				int index = getPrimaryIndex(event);
-				TouchReference tr = getTouchReference(event, index);
-				if (tr == null || isTap(tr, event.getEventTime(),
-						tapOrScrollTimeout)) {
-					return;
-				}
-				if (velocityTracker != null) {
-					velocityTracker.addMovement(event);
-				}
-				int y = Math.round(event.getY(index));
-				int scrollY = scrollOffset + (tr.scrollRef - y);
-				lastScrollY = clamp(scrollY, 0, maxScrollY);
-				scrollList(lastScrollY, true);
-				if (lastScrollY == 0 || lastScrollY == maxScrollY) {
-					// Move reference to current coordinate if no scrolling
-					// (in that direction) was possible so moving into the
-					// opposite direction is immediate.
-					tr.scrollRef = y;
-					scrollOffset = getScrollY();
-				}
-			}
-
-			private void keepScrolling(MotionEvent event) {
-				if (event.getPointerCount() < 2 && velocityTracker != null) {
-					// 1000 means getYVelocity() will return pixels
-					// per second.
-					velocityTracker.computeCurrentVelocity(1000);
-					if (appShortcutsTouched) {
-						appShortcutsScroller.fling(
-								0, appShortcutsScrollY,
-								0, -Math.round(
-										velocityTracker.getYVelocity()),
-								0, 0,
-								0, maxAppShortcutsScrollY);
-						invalidate();
-					} else {
-						flingRunnable.start(Math.round(
-								velocityTracker.getYVelocity()));
-					}
-					recycleVelocityTracker();
-				}
-			}
-
-			private void initAppShortcutsScroll() {
-				appShortcutsTouched = appShortcutsVisible &&
-						maxAppShortcutsScrollY > 0 &&
-						appShortcutsRect.contains(touch.x, touch.y);
-				if (appShortcutsTouched) {
-					appShortcutsScroller.forceFinished(true);
-					appShortcutsScrollOffset = appShortcutsScrollY;
-				}
-			}
-
-			private boolean scrollAppShortcuts(MotionEvent event) {
-				if (!appShortcutsTouched) {
-					return false;
-				}
-				int index = getPrimaryIndex(event);
-				TouchReference tr = getTouchReference(event, index);
-				if (tr == null || isTap(tr, event.getEventTime(),
-						tapOrScrollTimeout)) {
-					return true;
-				}
-				if (velocityTracker != null) {
-					velocityTracker.addMovement(event);
-				}
-				appShortcutsScrollY = clamp(appShortcutsScrollOffset +
-						tr.scrollRef - Math.round(event.getY(index)),
-						0, maxAppShortcutsScrollY);
-				return true;
-			}
-
-			private void initVelocityTracker(MotionEvent event) {
-				recycleVelocityTracker();
-				velocityTracker = VelocityTracker.obtain();
-				velocityTracker.addMovement(event);
-			}
-
-			private void recycleVelocityTracker() {
-				if (velocityTracker != null) {
-					velocityTracker.recycle();
-					velocityTracker = null;
-				}
-			}
-
-			private void initExpandPanel(MotionEvent event, long eventTime) {
-				if (!prefs.expandPanelInDeadZone()) {
-					return;
-				}
-				expandDownTime = eventTime;
-				expandTouch.set(touch.x, touch.y);
-				initVelocityTracker(event);
-			}
-
-			private void expandPanel(Context context, MotionEvent event) {
-				if (velocityTracker == null) {
-					return;
-				}
-				velocityTracker.addMovement(event);
-				velocityTracker.computeCurrentVelocity(1000);
-				float vy = velocityTracker.getYVelocity();
-				if (expandDownTime > 0 &&
-						event.getEventTime() - expandDownTime > tapOrScrollTimeout &&
-						distSq(expandTouch.x, expandTouch.y,
-								touch.x, touch.y) > touchSlopSq &&
-						vy > minFlingVelocity &&
-						vy < maxFlingVelocity) {
-					cancelExpandPanel();
-					SystemBars.expandNotificationPanel(context);
-				}
-			}
-
-			private void cancelExpandPanel() {
-				expandDownTime = 0;
-				recycleVelocityTracker();
-			}
-
-			private void initLongPress(Context context) {
-				if (prefs.getIconPress() == Preferences.ICON_LOCK_MENU) {
-					return;
-				}
-				cancelLongPress();
-				final Apps.AppIcon appIcon = getListIconAt(touch.x, touch.y);
-				if (appIcon == null) {
-					return;
-				}
-
-				touchedIcon = appIcon;
-
-				// Delay touch feedback to not make it feel too sensitive.
-				highlightRunnable = () -> {
-					highlightedIcon = appIcon;
-					highlightedFrom = SystemClock.uptimeMillis();
-				};
-				postDelayed(highlightRunnable, longPressTimeout >> 1);
-
-				longPressRunnable = () -> {
-					performHapticFeedbackIfAllowed(
-							HapticFeedbackConstants.LONG_PRESS);
-					if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
-						showIconOptions(context, appIcon);
-					} else {
-						addIconInteractively(appIcon);
-					}
-					longPressRunnable = null;
-					cancelHighlight();
-				};
-				postDelayed(longPressRunnable, longPressTimeout);
-			}
-
-			private void cancelLongPress() {
-				cancelHighlight();
-				if (longPressRunnable != null) {
-					removeCallbacks(longPressRunnable);
-					longPressRunnable = null;
-				}
-			}
-
-			private void cancelHighlight() {
-				touchedIcon = null;
-				highlightedIcon = null;
-				highlightedFrom = 0;
-				if (highlightRunnable != null) {
-					removeCallbacks(highlightRunnable);
-					highlightRunnable = null;
-				}
-			}
-
-			private boolean isScroll(MotionEvent event) {
-				return !isTap(event, Long.MAX_VALUE);
-			}
-
-			private boolean isTap(MotionEvent event, long timeOut) {
-				TouchReference tr = getTouchReference(event,
-						getPrimaryIndex(event));
-				return isTap(tr, event.getEventTime(), timeOut);
-			}
-
-			private boolean isTap(TouchReference tr, long time, long timeOut) {
-				return tr != null &&
-						time - tr.time <= timeOut &&
-						distSq(tr.x, tr.y, touch.x, touch.y) <= touchSlopSq;
-			}
-
-			private int getPrimaryIndex(MotionEvent event) {
-				int count = event.getPointerCount();
-				int id = -1;
-				for (int i = 0; i < count; ++i) {
-					id = event.getPointerId(i);
-					if (id == primaryId) {
-						return i;
-					}
-				}
-				// If the ID wasn't found, the pointer must have gone up.
-				primaryId = id;
-				return count - 1;
-			}
-
-			private void postPerformAction(final View v, MotionEvent event) {
-				cancelPerformAction();
-				// Any duration shorter than the long press timeout is
-				// considered to be a press/tap.
-				tapFlags.wasTap = isTap(event, longPressTimeout);
-				tapFlags.longPress = !tapFlags.wasTap &&
-						isTap(event, Long.MAX_VALUE);
-				long eventTime = event.getEventTime();
-				tapFlags.doubleTap = tapFlags.wasTap &&
-						eventTime - lastTapUpTime < doubleTapTimeout;
-				tapFlags.twoFingerTap = pointerCount == 2;
-				tapFlags.fourFingerTap = pointerCount == 4;
-				lastTapUpTime = eventTime;
-				final Point at = new Point(touch.x, touch.y);
-				performActionRunnable = () -> {
-					v.performClick();
-					if (performAction(v.getContext(), at, tapFlags)) {
-						performHapticFeedbackIfAllowed(
-								HAPTIC_FEEDBACK_CONFIRM);
-					}
-					performActionRunnable = null;
-					resetHighlightedAction();
-					invalidate();
-				};
-				// Wait a short time before performing the action
-				// because some touch screen drivers send
-				// ACTION_UP/ACTION_DOWN pairs for very short
-				// touch interruptions what makes the menu jump
-				// and execute multiple actions unintentionally.
-				postDelayed(performActionRunnable, 16);
-			}
-
-			private boolean cancelPerformAction() {
-				if (performActionRunnable != null) {
-					removeCallbacks(performActionRunnable);
-					performActionRunnable = null;
-					return true;
-				}
-				return false;
-			}
-
-			private void startSpin(MotionEvent event) {
-				if (fadePie.isVisible() && spinId < 0) {
-					initSpin(event, event.getActionIndex());
-				}
-			}
-
-			private void spin(MotionEvent event) {
-				if (!fadePie.isVisible()) {
-					return;
-				}
-				int count = event.getPointerCount();
-				// Hide pie once the primary pointer was lifted. Can only be
-				// done in ACTION_MOVE since ACTION_POINTER_UP doesn't give
-				// the correct index everywhere. See updateReferences().
-				if (count == 1 && event.getPointerId(0) != primaryId) {
-					cancelSpin();
-					primaryId = -1;
-					fadeOutMode();
-					return;
-				}
-				if (count < 2) {
-					cancelSpin();
-					return;
-				}
-				for (int i = 0; i < count; ++i) {
-					if (event.getPointerId(i) == spinId) {
-						pieMenu.setTwist(spinInitialTwist +
-								PieMenu.getAngleDifference(
-										angleOf(event.getX(i), event.getY(i)),
-										spinAngleDown));
-						return;
-					}
-				}
-			}
-
-			private void stopSpin(MotionEvent event) {
-				cancelSpin();
-				int indexUp = event.getActionIndex();
-				for (int i = 0, l = event.getPointerCount(); i < l; ++i) {
-					if (i == indexUp) {
-						continue;
-					}
-					int id = event.getPointerId(i);
-					if (id == primaryId) {
-						continue;
-					}
-					initSpin(event, i);
-					break;
-				}
-			}
-
-			private void cancelSpin() {
-				spinId = -1;
-			}
-
-			private void initSpin(MotionEvent event, int idx) {
-				spinId = event.getPointerId(idx);
-				spinAngleDown = angleOf(event.getX(idx), event.getY(idx));
-				spinInitialTwist = pieMenu.getTwist();
-			}
-		});
-	}
-
-	private void cancelDragDownList() {
-		if (isDraggingDownList()) {
-			resetDragDownList();
-			invalidate();
-			if (listListener != null) {
-				listListener.onDragDown(dragProgress);
-			}
-		}
-	}
-
-	private boolean isDraggingDownList() {
-		return dragProgress < 1f;
-	}
-
-	private void resetDragDownList() {
-		dragDistance = 0f;
-		dragProgress = 1f;
-	}
-
-	private void layoutView(int width, int height) {
-		int viewMin = Math.min(width, height);
-		int viewMax = Math.max(width, height);
-		viewWidth = width;
-		viewHeight = height;
-
-		float maxIconSize = 64f * dp;
-		if (Math.floor(viewMin * .28f) > maxIconSize) {
-			viewMin = Math.round(maxIconSize / .28f);
-		}
-
-		maxRadius = Math.round(viewMin * .5f);
-		minRadius = Math.round(maxRadius * .5f);
-		medRadius = minRadius + (maxRadius - minRadius) / 2;
-		minIconScale = (48f * dp) / maxIconSize;
-		loadPiePreferences();
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-				pieRenderNode != null) {
-			pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
-		}
-
-		updateChangePieIcons();
-		updateSplitPieIcon();
-
-		int pieBottom = viewMax / 2 + maxRadius;
-		controlsPadding = (viewMax - pieBottom) / 2;
-
-		deadZoneTop = Math.min(height / 10, Math.round(64f * dp));
-		deadZoneBottom = height - deadZoneTop;
-		deadZoneLeft = Math.min(width / 10, Math.round(48f * dp));
-		deadZoneRight = width - deadZoneLeft;
-
-		listFadeHeight = Math.round(viewHeight * .5f);
-
-		layoutEditorControls(height > width);
-	}
-
-	private void layoutEditorControls(boolean portrait) {
-		int max = distributeIconButtons(
-				new Bitmap[]{
-						iconAdd,
-						iconPreferences,
-						iconDone
-				},
-				new Rect[]{
-						iconStartRect,
-						iconCenterRect,
-						iconEndRect
-				},
-				-controlsPadding,
-				portrait);
-
-		distributeIconButtons(
-				new Bitmap[]{
-						iconChangeTwist,
-						iconChangeIconScale,
-						iconChangeRadius,
-				},
-				new Rect[]{
-						iconChangeTwistRect,
-						iconChangeIconScaleRect,
-						iconChangeRadiusRect
-				},
-				controlsPadding,
-				portrait);
-
-		// Calculate size of circular action buttons.
-		actionSize = Math.min(iconSize, max / 2 - spaceBetween);
-		actionSizeSq = actionSize * actionSize;
-	}
-
-	private int distributeIconButtons(
-			Bitmap[] icons,
-			Rect[] rects,
-			int base,
-			boolean portrait) {
-		int length = icons.length;
-		int totalWidth = 0;
-		int totalHeight = 0;
-		int largestWidth = 0;
-		int largestHeight = 0;
-
-		// Initialize rects and calculate totals for both layout directions.
-		for (int i = 0; i < length; ++i) {
-			Bitmap icon = icons[i];
-			int w = icon.getWidth();
-			int h = icon.getHeight();
-			rects[i].set(0, 0, w, h);
-			largestWidth = Math.max(largestWidth, w);
-			largestHeight = Math.max(largestHeight, h);
-			totalWidth += w;
-			totalHeight += h;
-		}
-
-		// Evenly distribute rects in parent.
-		int spaces = length + 1;
-		int max;
-		if (portrait) {
-			// Horizontally.
-			int step = Math.round((float) (viewWidth - totalWidth) / spaces);
-			max = largestWidth + step;
-			int x = step;
-			int y = (base > 0 ? base : viewHeight + base) - largestHeight / 2;
-			for (Rect rect : rects) {
-				rect.offset(x, y);
-				x += step + rect.width();
-			}
-		} else {
-			// Vertically.
-			int step = Math.round((float) (viewHeight - totalHeight) / spaces);
-			max = largestHeight + step;
-			int x = (base > 0 ? base : viewWidth + base) - largestWidth / 2;
-			int y = step;
-			for (Rect rect : rects) {
-				rect.offset(x, y);
-				y += step + rect.height();
-			}
-		}
-
-		return max;
-	}
-
-	private void showIconOptions(Context context, Apps.AppIcon icon) {
-		if (icon == null) {
-			return;
-		}
-		ArrayList<String> list = new ArrayList<>();
-		list.add(context.getString(R.string.edit_pie_menu));
-		list.add(context.getString(R.string.add_to_pie_menu));
-		list.add(context.getString(R.string.show_app_info));
-		list.add(context.getString(R.string.hide_app));
-		if (PieLauncherApp.iconPack.hasPacks()) {
-			list.add(context.getString(R.string.change_icon));
-		}
-		OptionsDialog.show(context, R.string.edit_app,
-				list.toArray(new CharSequence[0]),
-				(view, which) -> {
-					switch (which) {
-						case 0:
-							addIconInteractively(null);
-							break;
-						case 1:
-							addIconInteractively(icon);
-							postDelayed(this::releaseIcon, 100);
-							break;
-						case 2:
-							AppLauncher.launchAppInfo(context,
-									(Apps.AppIcon) icon);
-							break;
-						case 3:
-							PickIconActivity.askToHide(context,
-									((Apps.AppIcon) icon).componentName);
-							break;
-						case 4:
-							returnToList();
-							changeIcon(context, icon);
-							break;
-					}
-				});
-	}
-
-	private void addIconInteractively(Apps.AppIcon appIcon) {
-		if (listListener != null) {
-			listListener.onHideList();
-		}
-		fadeList.fadeOut();
-		neverDropped = true;
-		editIcon(appIcon);
-		resetScrollWithoutAnimation();
-		invalidate();
-	}
-
-	private void editIcon(Apps.AppIcon icon) {
-		if (pieMenu.icons != menuPrimary &&
-				pieMenu.icons != menuSecondary) {
-			setMenu(menuPrimary);
-		}
-		updateSplitPieIcon();
-		backup.clear();
-		backup.addAll(pieMenu.icons);
-		pieMenu.icons.remove(icon);
-		ungrabbedIcons.clear();
-		ungrabbedIcons.addAll(pieMenu.icons);
-		CanvasPieMenu.paint.setAlpha(255);
-		grabbedIcon = icon;
-		grabbedIconAt = SystemClock.uptimeMillis();
-		lastInsertAt = -1;
-		if (mode != MODE_EDIT) {
-			fadeEdit.fadeIn();
-			mode = MODE_EDIT;
-		}
-	}
-
-	private void releaseIcon() {
-		grabbedIcon = null;
-		neverDropped = false;
-	}
-
-	private void resetScrollWithoutAnimation() {
-		scrollTo(0, 0);
-	}
-
-	private void scrollList(int y, boolean isScrolling) {
-		scrollTo(0, y);
-		if (listListener != null) {
-			listListener.onScrollList(y, isScrolling);
-		}
-	}
-
-	private boolean performAction(
-			Context context,
-			Point at,
-			TapFlags tapFlags) {
-		if (mode == MODE_PIE) {
-			return performPieAction(context, tapFlags);
-		} else if (mode == MODE_LIST && tapFlags.wasTap) {
-			return performListAction(context, at);
-		} else if (mode == MODE_EDIT) {
-			boolean result = performEditAction(context);
-			releaseIcon();
-			pieMenu.updateSmoothing();
-			return result;
-		}
-		return false;
-	}
-
-	private boolean performPieAction(Context context, TapFlags tapFlags) {
-		Apps.AppIcon appIcon = null;
-		int index = pieMenu.getSelectedIcon();
-		if (index > -1 && index < pieMenu.icons.size()) {
-			appIcon = pieMenu.icons.get(index);
-		}
-		boolean pieVisible = fadePie.isVisible();
-		fadeOutMode();
-		boolean result = false;
-		boolean openList = false;
-		switch (prefs.openListWith()) {
-			case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
-				openList = tapFlags.wasTap || appIcon == null;
-				break;
-			case Preferences.OPEN_LIST_WITH_ICON:
-				result = openList =
-						PieLauncherApp.apps.isDrawerIcon(appIcon);
-				break;
-			case Preferences.OPEN_LIST_WITH_LONG_PRESS:
-				openList = tapFlags.longPress;
-				break;
-			case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
-				openList = tapFlags.doubleTap;
-				break;
-			case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
-				openList = tapFlags.twoFingerTap;
-				break;
-			case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
-				openList = tapFlags.fourFingerTap;
-				break;
-			case Preferences.OPEN_LIST_WITH_TAP:
-			default:
-				openList = tapFlags.wasTap;
-				break;
-		}
-		if (openList) {
-			if (listListener != null) {
-				listListener.onOpenList(false);
-			}
-		} else if (pieVisible && appIcon != null) {
-			launchApp(context, appIcon);
-			result = true;
-		}
-		return result;
-	}
-
-	private boolean performListAction(Context context, Point at) {
-		if (appShortcutsVisible && appShortcutsRect.contains(at.x, at.y)) {
-			return launchAppShortcutAt(context, at.x, at.y);
-		}
-		Apps.AppIcon appIcon = getListIconAt(at.x, at.y);
-		if (appIcon == null) {
-			switch (prefs.openListWith()) {
-				case Preferences.OPEN_LIST_WITH_TAP:
-				case Preferences.OPEN_LIST_WITH_ANY_TOUCH:
-				case Preferences.OPEN_LIST_WITH_DOUBLE_TAP:
-				case Preferences.OPEN_LIST_WITH_TWO_FINGER_TAP:
-				case Preferences.OPEN_LIST_WITH_FOUR_FINGER_TAP:
-					if (listListener != null) {
-						listListener.onHideList();
-					}
-					break;
-			}
-			return false;
-		}
-		launchApp(context, appIcon);
-		if (listListener != null) {
-			listListener.onHideList();
-		}
-		return true;
-	}
-
-	private Apps.AppIcon getListIconAt(int x, int y) {
-		// The app shortcuts are drawn over the list.
-		if (appShortcutsVisible && appShortcutsRect.contains(x, y)) {
-			return null;
-		}
-		y += getScrollY();
-		for (int i = 0, l = getIconCount(); i < l; ++i) {
-			Apps.AppIcon appIcon = appList.get(i);
-			if (appIcon.hitRect.contains(x, y)) {
-				return appIcon;
-			}
-		}
-		return null;
-	}
-
-	private boolean performEditAction(Context context) {
-		if (grabbedIcon == null &&
-				contains(iconChangeTwistRect, touch)) {
-			twist = getTwistSegment(twist + PieMenu.HALF_PI) *
-					(float) PieMenu.HALF_PI;
-			updateChangeTwistIcon();
-			return true;
-		} else if (grabbedIcon == null &&
-				contains(iconChangeIconScaleRect, touch)) {
-			iconScale = iconScale < 1f ? 1f : minIconScale;
-			updateChangeIconScaleIcon();
-			return true;
-		} else if (grabbedIcon == null &&
-				contains(iconChangeRadiusRect, touch)) {
-			radius = getNextRadius(radius);
-			pieMenu.setRadius(radius);
-			updateChangeRadiusIcon();
-			return true;
-		} else if (contains(iconStartRect, touch)) {
-			if (grabbedIcon == null) {
-				((Activity) context).onBackPressed();
-			} else {
-				removeIconFromPie(grabbedIcon,
-						PieLauncherApp.apps.isDrawerIcon(
-								(Apps.AppIcon) grabbedIcon));
-			}
-			return true;
-		} else if (contains(iconCenterRect, touch)) {
-			if (grabbedIcon == null) {
-				if (hasSecondaryMenu()) {
-					storeMenu();
-					setMenu(isPrimaryMenu() ? menuSecondary : menuPrimary);
-					centerSmoothCoordinatesAt(pieMenu.icons,
-							viewWidth >> 1, viewHeight >> 1);
-					updateSplitPieIcon();
-					updateChangePieIcons();
-					invalidate();
-				} else {
-					PreferencesActivity.start(context);
-				}
-			} else {
-				rollback();
-				if (neverDropped) {
-					fadeOutMode();
-					returnToList();
-				}
-				if (PieLauncherApp.iconPack.hasPacks()) {
-					storeMenu();
-					changeIcon(context, grabbedIcon);
-				} else if (PieLauncherApp.apps.isDrawerIcon(
-						(Apps.AppIcon) grabbedIcon)) {
-					removeIconFromPie(grabbedIcon, true);
-				} else {
-					PickIconActivity.askToHide(context,
-							((Apps.AppIcon) grabbedIcon).componentName);
-				}
-			}
-			return true;
-		} else if (contains(iconEndRect, touch)) {
-			if (grabbedIcon == null) {
-				endEditMode();
-			} else {
-				rollback();
-				fadeOutMode();
-				if (PieLauncherApp.apps.isDrawerIcon(
-						(Apps.AppIcon) grabbedIcon)) {
-					removeIconFromPie(grabbedIcon, true);
-				} else if (Apps.isShortcut((Apps.AppIcon) grabbedIcon)) {
-					// The end target uninstalls apps; a pinned shortcut (e.g.
-					// a PWA) has nothing to uninstall, so remove it instead.
-					// Unlike launchAppInfo() this stays in-app, so we must end
-					// edit mode ourselves — otherwise the view is left in
-					// MODE_EDIT and the pie won't open until the activity is
-					// recreated (e.g. by pressing Home).
-					PieLauncherApp.apps.removePinnedShortcut(context,
-							(Apps.AppIcon) grabbedIcon);
-					endEditMode();
-				} else {
-					// Persist changes before launching app info because
-					// that can be used to uninstall an app which would
-					// trigger indexing what would reset any changes.
-					storeMenu();
-					AppLauncher.launchAppInfo(context,
-							(Apps.AppIcon) grabbedIcon);
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private boolean launchAppShortcutAt(Context context, int x, int y) {
-		for (Apps.AppIcon shortcut : appShortcuts) {
-			if (shortcut.hitRect.contains(x, y)) {
-				if (AppLauncher.launchApp(context, shortcut) &&
-						listListener != null) {
-					listListener.onHideList();
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void launchApp(Context context, Apps.AppIcon appIcon) {
-		launchingIcon = appIcon;
-		if (AppLauncher.launchApp(context, appIcon)) {
-			Database database = PieLauncherApp.getDatabase(context);
-			database.recordLaunchAsync(appIcon);
-			if (mode == MODE_LIST && appListIsFiltered &&
-					prefs.rememberSearchPicks()) {
-				database.recordSearchPickAsync(appListQuery, appIcon);
-			}
-		}
-	}
-
-	private void removeIconFromPie(Apps.AppIcon icon, boolean isDrawerIcon) {
-		if (isDrawerIcon) {
-			prefs.setOpenListWith(Preferences.OPEN_LIST_WITH_TAP);
-		}
-		pieMenu.icons.remove(icon);
-		// Undo any rotation if the menu has not otherwise changed.
-		if (sameOrder(backup, pieMenu.icons)) {
-			rollback();
-		}
-	}
-
-	private void rollback() {
-		pieMenu.icons.clear();
-		pieMenu.icons.addAll(backup);
-	}
-
-	private static void centerSmoothCoordinatesAt(
-			List<Apps.AppIcon> icons,
-			int centerX,
-			int centerY) {
-		for (Apps.AppIcon ic : icons) {
-			ic.setStartPosition(centerX, centerY);
-		}
-	}
-
-	private static boolean sameOrder(
-			List<? extends PieMenu.Icon> a,
-			List<? extends PieMenu.Icon> b) {
-		int size = a.size();
-		if (size != b.size()) {
-			return false;
-		}
-		if (size == 0) {
-			return true;
-		}
-		PieMenu.Icon icon = a.get(0);
-		int i;
-		for (i = 0; i < size; ++i) {
-			if (b.get(i) == icon) {
-				break;
-			}
-		}
-		if (i >= size) {
-			return false;
-		}
-		for (int j = 1; j < size; ++j) {
-			if (a.get(j) != b.get(++i % size)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private void updateChangePieIcons() {
-		updateChangeTwistIcon();
-		updateChangeIconScaleIcon();
-		updateChangeRadiusIcon();
-	}
-
-	private void updateChangeTwistIcon() {
-		iconChangeTwist = Converter.getBitmapFromDrawable(getResources(),
-				getDrawableForTwist(twist));
-	}
-
-	private static int getDrawableForTwist(float twist) {
-		switch (getTwistSegment(twist)) {
-			case 1:
-				return R.drawable.ic_twist_90;
-			case 2:
-				return R.drawable.ic_twist_180;
-			case 3:
-				return R.drawable.ic_twist_270;
-			default:
-				return R.drawable.ic_twist_0;
-		}
-	}
-
-	private static int getTwistSegment(double rad) {
-		rad = (rad + PieMenu.TAU) % PieMenu.TAU;
-		if (rad > 5.497 || rad < .785) {
-			return 0;
-		} else if (rad < 2.356) {
-			return 1;
-		} else if (rad < 3.926) {
-			return 2;
-		}
-		return 3;
-	}
-
-	private void updateChangeIconScaleIcon() {
-		iconChangeIconScale = Converter.getBitmapFromDrawable(getResources(),
-				getDrawableForIconScale(iconScale));
-	}
-
-	private static int getDrawableForIconScale(float scale) {
-		return scale == 1f
-				? R.drawable.ic_icon_scale_large
-				: R.drawable.ic_icon_scale_small;
-	}
-
-	private void updateChangeRadiusIcon() {
-		iconChangeRadius = Converter.getBitmapFromDrawable(getResources(),
-				getDrawableForRadius(radius));
-	}
-
-	private int getNextRadius(int r) {
-		switch (getRadiusSegment(r)) {
-			case 1:
-				return maxRadius;
-			case 2:
-				return minRadius;
-			default:
-				return medRadius;
-		}
-	}
-
-	private int getDrawableForRadius(int r) {
-		switch (getRadiusSegment(r)) {
-			case 1:
-				return R.drawable.ic_radius_medium;
-			case 2:
-				return R.drawable.ic_radius_large;
-			default:
-				return R.drawable.ic_radius_small;
-		}
-	}
-
-	private int getRadiusSegment(int r) {
-		int dMin = Math.abs(r - minRadius);
-		int dMed = Math.abs(r - medRadius);
-		int dMax = Math.abs(r - maxRadius);
-		if (dMin < dMed && dMin < dMax) {
-			return 0;
-		} else if (dMed < dMin && dMed < dMax) {
-			return 1;
-		}
-		return 2;
-	}
-
-	private void updateSplitPieIcon() {
-		iconSplitPie = Converter.getBitmapFromDrawable(getResources(),
-				getDrawableForSplitPie());
-	}
-
-	private int getDrawableForSplitPie() {
-		return pieMenu.icons == menuSecondary
-				? R.drawable.ic_screen_upper
-				: R.drawable.ic_screen_lower;
-	}
-
-	private void changeIcon(Context context, PieMenu.Icon icon) {
-		Apps.AppIcon appIcon = (Apps.AppIcon) icon;
-		PickIconActivity.start(context, appIcon.componentName);
-	}
-
-	private void returnToList() {
-		if (listListener != null) {
-			listListener.onOpenList(true);
-		}
-	}
-
-	private void onCircle(int direction) {
-		List<Apps.AppIcon> icons = getAlternateMenu(
-				prefs.circleSwapsMenus());
-		if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
-			return;
-		}
-		outgoingPieIcons.clear();
-		if (prefs.animateInOut() && prefs.getAnimationDuration() > 0) {
-			for (Apps.AppIcon icon : pieMenu.icons) {
-				CanvasPieMenu.CanvasIcon snapshot =
-						new CanvasPieMenu.CanvasIcon(icon.bitmap);
-				snapshot.x = icon.x;
-				snapshot.y = icon.y;
-				snapshot.size = icon.size;
-				outgoingPieIcons.add(snapshot);
-			}
-			circleDirection = direction;
-			lastCircleAt = SystemClock.uptimeMillis();
-		}
-		setMenu(icons);
-		performHapticFeedbackIfAllowed(HapticFeedbackConstants.LONG_PRESS);
-	}
-
-	private void selectMenu(int x, int y) {
-		boolean alternate = viewWidth > viewHeight
-				? x < viewWidth >> 1
-				: y < viewHeight >> 1;
-		List<Apps.AppIcon> icons = alternate
-				? getAlternateMenu(prefs.splitPieMenu())
-				: menuPrimary;
-		setMenu(icons == null || icons.isEmpty()
-				? menuPrimary
-				: icons);
-	}
-
-	private List<Apps.AppIcon> getAlternateMenu(int option) {
-		switch (option) {
-			case Preferences.ALTERNATE_MENU_SECONDARY:
-				return menuSecondary;
-			case Preferences.ALTERNATE_MENU_ALL_APPS:
-				List<Apps.AppIcon> all = AppSearch.filterAppsBy(
-						PieLauncherApp.apps, getContext(), null);
-				return all != null ? new ArrayList<>(all) : null;
-			case Preferences.ALTERNATE_MENU_LAST_USED:
-				List<Apps.AppIcon> lastUsed = AppSearch.filterAppsByFrecency(
-						PieLauncherApp.apps, getContext());
-				return lastUsed != null
-						? new ArrayList<>(lastUsed.subList(0, Math.min(8, lastUsed.size())))
-						: null;
-			case Preferences.ALTERNATE_MENU_NONE:
-			default:
-				return null;
-		}
-	}
-
-	private void setMenu(List<Apps.AppIcon> icons) {
-		pieMenu.icons = icons;
-		applyPiePreferences();
-	}
-
-	private boolean isPrimaryMenu() {
-		return pieMenu.icons == menuPrimary;
-	}
-
-	private void setCenter(int x, int y) {
-		pieMenu.set(
-				clamp(x, radius, viewWidth - radius),
-				clamp(y, radius, viewHeight - radius),
-				radius,
-				twist,
-				iconScale);
-		lastSelectedIcon = -1;
-		launchingIcon = null;
-	}
-
-	private void editIconAt(Point point) {
-		int size = pieMenu.icons.size();
-		for (int i = 0; i < size; ++i) {
-			Apps.AppIcon icon = (Apps.AppIcon) pieMenu.icons.get(i);
-			double rad = icon.size * .5;
-			float sizeSq = Math.round(rad * rad);
-			if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
-				editIcon(icon);
-				performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
-				return;
-			}
-		}
-		editActionsFeedback();
-	}
-
-	private void editActionsFeedback() {
-		if (contains(iconStartRect, touch)) {
-			setHighlightedAction(iconStartRect);
-		} else if (contains(iconCenterRect, touch)) {
-			setHighlightedAction(iconCenterRect);
-		} else if (contains(iconEndRect, touch)) {
-			setHighlightedAction(iconEndRect);
-		} else if (contains(iconChangeTwistRect, touch)) {
-			setHighlightedAction(iconChangeTwistRect);
-		} else if (contains(iconChangeIconScaleRect, touch)) {
-			setHighlightedAction(iconChangeIconScaleRect);
-		} else if (contains(iconChangeRadiusRect, touch)) {
-			setHighlightedAction(iconChangeRadiusRect);
-		} else {
-			resetHighlightedAction();
-		}
-	}
-
-	private boolean drawList(Canvas canvas, float f, int shortcutsHeight) {
-		if (f <= 0) {
-			return false;
-		}
-
-		// Manually draw an icon grid because GridView doesn't perform too
-		// well on low-end devices and doing it manually gives us more control.
-		int innerWidth = viewWidth - listPadding * 2;
-		int columns = Math.min(5, innerWidth / (iconSize + spaceBetween));
-		boolean showAppNames = showAppNames();
-		int iconAndTextHeight = iconSize + (showAppNames
-				? iconTextPadding + Math.round(textHeight)
-				: 0);
-		int cellWidth = innerWidth / columns;
-		int cellHeight = iconAndTextHeight + iconTextPadding * 2;
-		int wrapX = listPadding + cellWidth * columns;
-		int size = getIconCount();
-
-		// Calculate boundaries and offsets.
-		int maxTextWidth = cellWidth - iconTextPadding;
-		int hpad = (cellWidth - iconSize) / 2;
-		int vpad = (cellHeight - iconAndTextHeight) / 2;
-		int labelX = cellWidth >> 1;
-		int labelY = cellHeight - vpad - Math.round(textOffset);
-		int scrollY = getScrollY();
-		int viewTop = scrollY - cellHeight;
-		int viewBottom = scrollY + viewHeight;
-		int x = listPadding;
-		int y = searchInputHeight + listPadding;
-
-		// Slide in/out animation.
-		if (prefs.listAnimationAppearance() ==
-				Preferences.LIST_APPEARANCE_ANIMATION_SLIDE ||
-				isDraggingDownList()) {
-			y += Math.round((1f - f) * listFadeHeight);
-		}
-		paintList.setAlpha(Math.round(f * 255f));
-		paintText.setAlpha(Math.round(f * alphaText));
-
-		// Draw launch marker.
-		if (selectedApp > -1 && size > 0) {
-			int offset = Math.min(selectedApp, size - 1);
-			int ix = x + offset % columns * cellWidth;
-			int iy = y + offset / columns * cellHeight;
-			canvas.drawBitmap(iconLaunchFirst,
-					ix + labelX - iconLaunchFirstHalf,
-					iy - listPadding,
-					paintList);
-		}
-
-		// Calculate magnification of hightlighted icon.
-		int magSize = Math.round(Math.max(cellWidth, cellHeight) * .2f);
-		boolean invalidate = f < 1f;
-		if (highlightedFrom > 0) {
-			float ad = prefs.getAnimationDuration();
-			if (ad > 0) {
-				long now = SystemClock.uptimeMillis();
-				float t = Math.min(1f, (now - highlightedFrom) / ad);
-				if (t < 1f) {
-					invalidate = true;
-				}
-				magSize = Math.round(magSize * t);
-			} else {
-				magSize = 0;
-			}
-		}
-
-		// Draw icons.
-		for (int i = 0; i < size; ++i) {
-			if (y > viewTop && y < viewBottom) {
-				Apps.AppIcon appIcon = appList.get(i);
-				appIcon.hitRect.set(x, y, x + cellWidth, y + cellHeight);
-				int ix = x + hpad;
-				int iy = y + vpad;
-				int mag = appIcon == highlightedIcon ? magSize : 0;
-				drawRect.set(ix - mag, iy - mag,
-						ix + iconSize + mag, iy + iconSize + mag);
-				if (mag == 0 && appIcon == touchedIcon) {
-					paintList.setColorFilter(dimFilter);
-				}
-				canvas.drawBitmap(appIcon.bitmap, null, drawRect, paintList);
-				paintList.setColorFilter(null);
-				if (showAppNames) {
-					CharSequence label = TextUtils.ellipsize(appIcon.label,
-							paintText, maxTextWidth, TextUtils.TruncateAt.END);
-					canvas.drawText(label, 0, label.length(),
-							x + labelX, y + labelY, paintText);
-				}
-			}
-			x += cellWidth;
-			if (x >= wrapX) {
-				x = listPadding;
-				y += cellHeight;
-			}
-		}
-
-		int maxHeight = y + listPadding + (x > listPadding ? cellHeight : 0);
-		// Make sure the last row can be scrolled above the app shortcuts.
-		maxHeight += shortcutsHeight;
-		int bottomInset = shortcutsHeight > 0
-				? getBottomInset() + listPadding : getPaddingBottom();
-		int viewHeightMinusPadding = viewHeight - bottomInset;
-		maxScrollY = Math.max(maxHeight - viewHeightMinusPadding, 0);
-		if (scrollY > maxScrollY) {
-			int newScrollY = clamp(scrollY, 0, maxScrollY);
-			lastScrollY = newScrollY;
-			scrollList(newScrollY, false);
-		}
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-				listRenderNode != null) {
-			listRenderNode.setPosition(0, 0, viewWidth, maxHeight);
-		}
-
-		return invalidate;
-	}
-
-	private void updateAppShortcuts() {
-		Apps.AppIcon app = prefs.showAppShortcuts() ? getSelectedApp() : null;
-		if (app == null) {
-			appShortcutsOwner = null;
-			appShortcuts = null;
-			if (!appListIsFiltered) {
-				// Query shortcuts again for the next search because
-				// apps can change them any time.
-				appShortcutsCache.clear();
-			}
-			return;
-		}
-		if (app == appShortcutsOwner) {
-			return;
-		}
-		appShortcutsOwner = app;
-		appShortcuts = appShortcutsCache.get(app);
-		appShortcutsScroller.forceFinished(true);
-		appShortcutsScrollY = 0;
-		if (appShortcuts != null) {
-			return;
-		}
-		PieLauncherApp.apps.loadAppShortcutsAsync(getContext(), app,
-				(owner, shortcuts) -> {
-					appShortcutsCache.put(owner, shortcuts);
-					if (owner == appShortcutsOwner) {
-						appShortcuts = shortcuts;
-						invalidate();
-					}
-				});
-	}
-
-	private Apps.AppIcon getSelectedApp() {
-		if (!appListIsFiltered || selectedApp < 0 || isEmpty()) {
-			return null;
-		}
-		return appList.get(clamp(selectedApp, 0, getIconCount() - 1));
-	}
-
-	private int getAppShortcutsHeight() {
-		return !prefs.showAppShortcuts() ||
-				mode != MODE_LIST ||
-				appShortcuts == null ||
-				appShortcuts.isEmpty()
-			? 0
-			: Math.min(appShortcuts.size(), MAX_VISIBLE_APP_SHORTCUTS) *
-					appShortcutHeight + appShortcutsVerticalPadding * 2;
-	}
-
-	private void updateAppShortcutsLayout(int shortcutsHeight) {
-		int bottom = viewHeight - getBottomInset() - listPadding;
-		appShortcutsRect.set(listPadding, bottom - shortcutsHeight,
-				viewWidth - listPadding, bottom);
-		appShortcutsCard.set(appShortcutsRect);
-		appShortcutsCard.offset(0, getScrollY());
-	}
-
-	private void drawListWithShortcutBackdrop(RenderNode node,
-			Canvas canvas) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-			drawRenderNode(node, canvas);
-			return;
-		} else if (node == null || !canvas.isHardwareAccelerated()) {
-			return;
-		}
-		node.endRecording();
-
-		// Keep the offscreen blur surface close to the card, with enough
-		// surrounding content to avoid artifacts at its edges.
-		int margin = (int) Math.ceil(maxBlurRadius * 3f);
-		int left = appShortcutsRect.left - margin;
-		int top = appShortcutsRect.top + getScrollY() - margin;
-		appShortcutsBackdropNode.setPosition(left, top,
-				appShortcutsRect.right + margin,
-				appShortcutsRect.bottom + getScrollY() + margin);
-		Canvas backdrop = appShortcutsBackdropNode.beginRecording();
-		backdrop.translate(-left, -top);
-		backdrop.drawRenderNode(node);
-		appShortcutsBackdropNode.endRecording();
-
-		// Replace the list behind the card with its blurred rendering.
-		appShortcutsClip.reset();
-		appShortcutsClip.addRoundRect(appShortcutsCard,
-				listPadding, listPadding, Path.Direction.CW);
-		canvas.save();
-		canvas.clipOutPath(appShortcutsClip);
-		canvas.drawRenderNode(node);
-		canvas.restore();
-		canvas.save();
-		canvas.clipPath(appShortcutsClip);
-		canvas.drawRenderNode(appShortcutsBackdropNode);
-		canvas.restore();
-	}
-
-	// Draw the shortcuts of the app that would be launched by pressing
-	// enter in a card at the bottom of the screen. If there are more
-	// shortcuts than fit, the card scrolls.
-	private boolean drawAppShortcuts(Canvas canvas, float f, int shortcutsHeight) {
-		int contentHeight = appShortcuts.size() * appShortcutHeight +
-				appShortcutsVerticalPadding * 2;
-		maxAppShortcutsScrollY = Math.max(0, contentHeight - shortcutsHeight);
-		boolean invalidate = false;
-		if (appShortcutsScroller.computeScrollOffset()) {
-			appShortcutsScrollY = appShortcutsScroller.getCurrY();
-			invalidate = true;
-		}
-		appShortcutsScrollY = clamp(appShortcutsScrollY, 0,
-				maxAppShortcutsScrollY);
-
-		// Draw in view coordinates because the card doesn't scroll
-		// with the list.
-		int scrollY = getScrollY();
-		float radius = listPadding;
-		paintAppShortcuts.setAlpha(Math.round(f * alphaAppShortcuts));
-		canvas.drawRoundRect(appShortcutsCard, radius, radius,
-				paintAppShortcuts);
-
-		canvas.save();
-		canvas.clipRect(appShortcutsCard);
-		paintAppShortcutText.setAlpha(Math.round(f * alphaText));
-		int x = appShortcutsRect.left + listPadding;
-		int y = appShortcutsRect.top + appShortcutsVerticalPadding -
-				appShortcutsScrollY;
-		int vpad = (appShortcutHeight - appShortcutIconSize) / 2;
-		int textX = x + appShortcutIconSize + listPadding;
-		int maxTextWidth = appShortcutsRect.right - listPadding - textX;
-		for (Apps.AppIcon shortcut : appShortcuts) {
-			shortcut.hitRect.set(appShortcutsRect.left, y,
-					appShortcutsRect.right, y + appShortcutHeight);
-			if (y + appShortcutHeight > appShortcutsRect.top &&
-					y < appShortcutsRect.bottom) {
-				int iy = y + scrollY + vpad;
-				drawRect.set(x, iy, x + appShortcutIconSize,
-						iy + appShortcutIconSize);
-				canvas.drawBitmap(shortcut.bitmap, null, drawRect,
-						paintList);
-				CharSequence label = TextUtils.ellipsize(shortcut.label,
-						paintAppShortcutText, maxTextWidth,
-						TextUtils.TruncateAt.END);
-				canvas.drawText(label, 0, label.length(), textX,
-						y + scrollY + appShortcutHeight / 2f + textOffset,
-						paintAppShortcutText);
-			}
-			y += appShortcutHeight;
-		}
-		canvas.restore();
-
-		// Draw a scroll bar to show there are more shortcuts.
-		if (maxAppShortcutsScrollY > 0) {
-			int trackTop = appShortcutsRect.top + appShortcutsVerticalPadding +
-					scrollY;
-			int trackHeight = shortcutsHeight - appShortcutsVerticalPadding * 2;
-			int thumbHeight = trackHeight * shortcutsHeight / contentHeight;
-			int thumbTop = trackTop + (trackHeight - thumbHeight) *
-					appShortcutsScrollY / maxAppShortcutsScrollY;
-			float thumbRight = appShortcutsRect.right - listPadding / 2f;
-			appShortcutsThumb.set(thumbRight - spaceBetween, thumbTop,
-					thumbRight, thumbTop + thumbHeight);
-			paintAppShortcutsThumb.setAlpha(Math.round(
-					f * alphaAppShortcutsThumb));
-			canvas.drawRoundRect(appShortcutsThumb, spaceBetween,
-					spaceBetween, paintAppShortcutsThumb);
-		}
-		return invalidate;
-	}
-
-	private int getBottomInset() {
-		int inset = getPaddingBottom();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			// The keyboard covers this view because it's drawn edge
-			// to edge.
-			inset = Math.max(inset, keyboardHeight > -1
-					? keyboardHeight
-					: getKeyboardHeightApi30(getRootWindowInsets()));
-		}
-		return inset;
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.R)
-	private void trackKeyboardApi30() {
-		// Move the app shortcuts together with the keyboard.
-		setWindowInsetsAnimationCallback(new WindowInsetsAnimation.Callback(
-				WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
-			@Override
-			public WindowInsets onProgress(
-					WindowInsets insets,
-					List<WindowInsetsAnimation> animations) {
-				keyboardHeight = getKeyboardHeightApi30(insets);
-				invalidate();
-				return insets;
-			}
-
-			@Override
-			public void onEnd(WindowInsetsAnimation animation) {
-				// Use the root window insets from now on.
-				keyboardHeight = -1;
-				invalidate();
-			}
-		});
-	}
-
-	@SuppressLint("UseRequiresApi")
-	@TargetApi(Build.VERSION_CODES.R)
-	private static int getKeyboardHeightApi30(WindowInsets insets) {
-		return insets == null
-				? 0
-				: insets.getInsets(WindowInsets.Type.ime()).bottom;
-	}
-
-	private boolean showAppNames() {
-		switch (prefs.showAppNames()) {
-			case Preferences.SHOW_APP_NAMES_ALWAYS:
-				return true;
-			case Preferences.SHOW_APP_NAMES_SEARCH:
-				return appListIsFiltered;
-			default:
-				return false;
-		}
-	}
-
-	private boolean drawEditor(Canvas canvas, float f) {
-		if (f <= 0) {
-			return false;
-		}
-
-		int alpha = Math.round(f * 255f);
-		CanvasPieMenu.paint.setAlpha(alpha);
-		paintDropZone.setAlpha(Math.round(f * alphaDropZone));
-		paintPressed.setAlpha(Math.round(f * alphaPressed));
-		paintAction.setAlpha(alpha);
-		paintText.setAlpha(Math.round(f * alphaText));
-
-		boolean hasIcon = grabbedIcon != null;
-
-		// Only draw tips in portrait orientation.
-		// There's probably not enough space in landscape.
-		if (canvas.getWidth() < canvas.getHeight()) {
-			drawTip(canvas, getTip(hasIcon));
-		}
-
-		boolean invalidate = f < 1f;
-		if (hasIcon) {
-			float r = actionSize;
-			float ad = prefs.getAnimationDuration();
-			if (ad > 0) {
-				long now = SystemClock.uptimeMillis();
-				float t = Math.min(1f, (now - grabbedIconAt) / ad);
-				if (t < 1f) {
-					invalidate = true;
-				}
-				r *= t;
-			}
-			drawAction(canvas, iconRemove, iconStartRect, r);
-			drawAction(canvas, PieLauncherApp.iconPack.hasPacks()
-					? iconEdit : iconHide, iconCenterRect, r);
-			drawAction(canvas, iconDetails, iconEndRect, r);
-		} else {
-			drawAction(canvas, iconChangeTwist, iconChangeTwistRect);
-			drawAction(canvas, iconChangeIconScale, iconChangeIconScaleRect);
-			drawAction(canvas, iconChangeRadius, iconChangeRadiusRect);
-			drawAction(canvas, iconAdd, iconStartRect);
-			drawAction(canvas, hasSecondaryMenu()
-					? iconSplitPie
-					: iconPreferences, iconCenterRect);
-			drawAction(canvas, iconDone, iconEndRect);
-		}
-
-		int centerX = viewWidth >> 1;
-		int centerY = viewHeight >> 1;
-		setCenter(centerX, centerY);
-
-		if (hasIcon) {
-			calculateEditablePie(centerX, centerY);
-		} else {
-			pieMenu.calculate(centerX, centerY);
-		}
-
-		// Invoke drawSmoothed() first to make sure it's always run.
-		return pieMenu.drawSmoothed(canvas) || invalidate;
-	}
-
-	private boolean hasSecondaryMenu() {
-		return prefs.splitPieMenu() == Preferences.ALTERNATE_MENU_SECONDARY ||
-				prefs.circleSwapsMenus() ==
-						Preferences.ALTERNATE_MENU_SECONDARY;
-	}
-
-	private void calculateEditablePie(int centerX, int centerY) {
-		int endIndex = ungrabbedIcons.size();
-		double step = PieMenu.TAU / (endIndex + 1);
-		double angle = PieMenu.getPositiveAngle(Math.atan2(
-				touch.y - centerY,
-				touch.x - centerX) - twist + step * .5);
-		int insertAt = Math.min(endIndex, (int) Math.floor(angle / step));
-		if (insertAt != lastInsertAt) {
-			// Avoid (visible) rotation of the menu when the first item
-			// changes. From the user's point of view, it is not clear
-			// why the menu rotates all of a sudden. The technical
-			// reason was to keep the menu unchanged when the grabbed
-			// icon is a newly added icon that is removed again. To
-			// prevent this, the menu is now rolled back if it has the
-			// sameOrder() as before (see below).
-			if (lastInsertAt == 0 && insertAt == endIndex) {
-				Collections.rotate(ungrabbedIcons, 1);
-			} else if (lastInsertAt == endIndex && insertAt == 0) {
-				Collections.rotate(ungrabbedIcons, -1);
-			}
-
-			pieMenu.icons.clear();
-			pieMenu.icons.addAll(ungrabbedIcons);
-			pieMenu.icons.add(insertAt, grabbedIcon);
-			pieMenu.updateSmoothing();
-
-			if (lastInsertAt < 0) {
-				pieMenu.calculate(centerX, centerY);
-				grabbedIcon.x = touch.x;
-				grabbedIcon.y = touch.y;
-				pieMenu.initSmoothing();
-			}
-			lastInsertAt = insertAt;
-		}
-
-		pieMenu.calculate(touch.x, touch.y);
-		grabbedIcon.x = touch.x;
-		grabbedIcon.y = touch.y;
-	}
-
-	private Canvas getRecordingCanvas(RenderNode node, Canvas fallback) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
-				!fallback.isHardwareAccelerated()) {
-			return fallback;
-		}
-		return node.beginRecording();
-	}
-
-	private void drawRenderNode(RenderNode node, Canvas canvas) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-				node != null &&
-				canvas.isHardwareAccelerated()) {
-			node.endRecording();
-			canvas.drawRenderNode(node);
-		}
-	}
-
-	private boolean drawPieMenu(Canvas canvas, float f, long now, float ad) {
-		if (f <= 0) {
-			outgoingPieIcons.clear();
-			return false;
-		}
-
-		boolean animateInOut = prefs.animateInOut();
-		f = easeSlowerOut(f);
-		pieMenu.calculate(touch.x, touch.y,
-				animateInOut ? f : 1f,
-				launchingIcon);
-
-		boolean switching = !outgoingPieIcons.isEmpty() && animateInOut && ad > 0;
-		float t = switching ? Math.max(0f, (now - lastCircleAt) / ad) : 1f;
-		if (t < 1f) {
-			drawCircleTransition(canvas, t, f);
-		} else {
-			outgoingPieIcons.clear();
-			CanvasPieMenu.paint.setAlpha(Math.round(f * 255f));
-			pieMenu.draw(canvas);
-		}
-
-		int selectedIcon = pieMenu.getSelectedIcon();
-		if (selectedIcon != lastSelectedIcon) {
-			lastSelectedIcon = selectedIcon;
-			performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CHOICE);
-		}
-
-		return f < 1f || t < 1f;
-	}
-
-	private void drawCircleTransition(Canvas canvas, float t, float f) {
-		int cx = pieMenu.getCenterX();
-		int cy = pieMenu.getCenterY();
-		float progress = easeSlowerOut(t);
-		float angle = circleDirection * 25f;
-		float scale = 1f - .15f * progress;
-		canvas.save();
-		canvas.rotate(angle * progress, cx, cy);
-		canvas.scale(scale, scale, cx, cy);
-		CanvasPieMenu.paint.setAlpha(Math.round(f * (1f - progress) * 255f));
-		for (int i = outgoingPieIcons.size(); i-- > 0; ) {
-			CanvasPieMenu.CanvasIcon icon = outgoingPieIcons.get(i);
-			icon.draw(canvas, icon.size, icon.x, icon.y);
-		}
-		canvas.restore();
-
-		float x = t - 1f;
-		float spring = 1f + x * x * (2.5f * x + 1.5f);
-		scale = .85f + .15f * spring;
-		canvas.save();
-		canvas.rotate(-angle * (1f - progress), cx, cy);
-		canvas.scale(scale, scale, cx, cy);
-		CanvasPieMenu.paint.setAlpha(Math.round(f * progress * 255f));
-		pieMenu.draw(canvas);
-		canvas.restore();
-	}
-
-	private String getTip(boolean hasIcon) {
-		if (hasIcon) {
-			if (contains(iconStartRect, touch)) {
-				setHighlightedAction(iconStartRect);
-				return removeIconTip;
-			} else if (contains(iconCenterRect, touch)) {
-				setHighlightedAction(iconCenterRect);
-				return PieLauncherApp.iconPack.hasPacks()
-						? editAppTip : hideAppTip;
-			} else if (contains(iconEndRect, touch)) {
-				setHighlightedAction(iconEndRect);
-				return removeAppTip;
-			}
-			resetHighlightedAction();
-			return dragToOrderTip;
-		}
-		return null;
-	}
-
-	private void resetHighlightedAction() {
-		setHighlightedAction(null);
-	}
-
-	private void setHighlightedAction(Rect rect) {
-		highlightedAction = rect;
-	}
-
-	private void drawTip(Canvas canvas, String tip) {
-		if (tip != null) {
-			canvas.drawText(tip, viewWidth >> 1,
-					controlsPadding + textOffset, paintText);
-		}
-	}
-
-	private void drawAction(Canvas canvas, Bitmap icon, Rect rect) {
-		drawAction(canvas, icon, rect, 0f);
-	}
-
-	private void drawAction(
-			Canvas canvas,
-			Bitmap icon,
-			Rect rect,
-			float radius) {
-		boolean pressed = rect == highlightedAction;
-		Paint circlePaint = null;
-		if (radius > 0) {
-			circlePaint = pressed ? paintPressed : paintDropZone;
-		} else if (pressed) {
-			radius = actionSize;
-			circlePaint = paintPressed;
-		}
-		if (circlePaint != null) {
-			canvas.drawCircle(rect.centerX(), rect.centerY(),
-					radius, circlePaint);
-		}
-		canvas.drawBitmap(icon, null, rect, paintAction);
-	}
-
-	private void storeMenu() {
-		Context context = getContext();
-		if (context != null) {
-			PieLauncherApp.apps.store(context);
-		}
-		boolean primary = isPrimaryMenu();
-		prefs.setRadius(primary, radius);
-		prefs.setTwist(primary, twist);
-		prefs.setIconScale(primary, iconScale);
-	}
-
-	private void applyPiePreferences() {
-		loadPiePreferences();
-		pieMenu.setRadiusTwistIconScale(radius, twist, iconScale);
-	}
-
-	private void loadPiePreferences() {
-		boolean primary = isPrimaryMenu();
-		radius = clampRadius(prefs.getRadius(primary, maxRadius));
-		twist = prefs.getTwist(primary);
-		iconScale = prefs.getIconScale(primary);
-	}
-
-	private void fadeOutMode() {
-		switch (mode) {
-			case MODE_PIE:
-				fadePie.fadeOut();
-				break;
-			case MODE_LIST:
-				fadeList.fadeOut();
-				break;
-			case MODE_EDIT:
-				fadeEdit.fadeOut();
-				break;
-		}
-	}
-
-	private void performHapticFeedbackIfAllowed(int feedback) {
-		switch (prefs.hapticFeedback()) {
-			case Preferences.HAPTIC_FEEDBACK_DISABLE_ALL:
-				return;
-			case Preferences.HAPTIC_FEEDBACK_DISABLE_LAUNCH:
-				if (feedback == HAPTIC_FEEDBACK_CONFIRM) {
-					return;
-				}
-				// Fall through.
-			default:
-				performHapticFeedback(feedback);
-		}
-	}
-
-	private boolean contains(Rect rect, Point point) {
-		return distSq(rect.centerX(), rect.centerY(), point.x, point.y) <
-				actionSizeSq;
-	}
-
-	private static float distSq(int ax, int ay, int bx, int by) {
-		float dx = ax - bx;
-		float dy = ay - by;
-		return dx * dx + dy * dy;
-	}
-
-	private double angleOf(float x, float y) {
-		return PieMenu.getPositiveAngle(Math.atan2(
-				y - pieMenu.getCenterY(),
-				x - pieMenu.getCenterX()));
-	}
-
-	private int clampRadius(int r) {
-		return clamp(r, minRadius, maxRadius);
-	}
-
-	private static int clamp(int value, int min, int max) {
-		return Math.max(min, Math.min(max, value));
-	}
-
-	private static float clamp(float value, float min, float max) {
-		return Math.max(min, Math.min(max, value));
-	}
-
-	private static int getSelectedAppFromTrailingSpace(String s) {
-		int l = s == null ? 0 : s.length();
-		if (l < 1) {
-			return -1; // No selection.
-		}
-		--l;
-		int i = l;
-		for (; i > -1; --i) {
-			if (s.charAt(i) != ' ') {
-				break;
-			}
-		}
-		return i == -1
-				? l // Only spaces, so treat first space as show icon.
-				: l - i; // Return number of trailing spaces.
-	}
-
-	private void darkenBackground(Canvas canvas, float f) {
-		int max = (translucentBackgroundColor >> 24) & 0xff;
-		if (mode == MODE_PIE && prefs.darkenBackground() ==
-				Preferences.DARKEN_BACKGROUND_LIGHT) {
-			max /= 2;
-		}
-		int alpha = Math.round(f * max);
-		if (alpha == 0) {
-			canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		} else {
-			canvas.drawColor(
-					(alpha << 24) | (translucentBackgroundColor & 0xffffff),
-					PorterDuff.Mode.SRC);
-		}
-	}
-
-	private int applyBlurOut(RenderNode node, int current, float f) {
-		return applyBlur(node, current, 1f - clamp(f, 0f, 1f));
-	}
-
-	private int applyBlur(RenderNode node, int current, float f) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-				node == null ||
-				!isHardwareAccelerated()) {
-			return 0;
-		}
-		if (!prefs.blurMenu() || f <= 0f) {
-			clearBlur(node);
-			return 0;
-		}
-		int radius = Math.max(1, Math.round(f * maxBlurRadius));
-		if (current != radius) {
-			node.setRenderEffect(RenderEffect.createBlurEffect(
-					radius, radius, Shader.TileMode.CLAMP));
-		}
-		return radius;
-	}
-
-	private void clearBlur(RenderNode node) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-				node != null) {
-			node.setRenderEffect(null);
-		}
-	}
-
-	private class FlingRunnable implements Runnable {
-		private final OverScroller scroller;
-		private int maxY;
-		private int pps;
-
-		@Override
-		public void run() {
-			if (mode != MODE_LIST || !scroller.computeScrollOffset()) {
-				return;
-			}
-			if (maxY != maxScrollY) {
-				maxY = maxScrollY;
-				// OverScroller.springBack() stops the animation so we
-				// cannot use it and have to start a new fling instead.
-				scroller.forceFinished(true);
-				initFling(getScrollY());
-			}
-			scrollList(scroller.getCurrY(), true);
-			update();
-		}
-
-		private FlingRunnable() {
-			scroller = new OverScroller(getContext());
-		}
-
-		private void start(int pixelsPerSecond) {
-			pps = -pixelsPerSecond;
-			maxY = maxScrollY;
-			initFling(getScrollY());
-			update();
-		}
-
-		private void initFling(int y) {
-			scroller.fling(
-					0, y,
-					0, pps,
-					0, 0,
-					0, maxY,
-					0, listPadding);
-		}
-
-		private void stop() {
-			scroller.forceFinished(true);
-			removeCallbacks(this);
-		}
-
-		private void update() {
-			invalidate();
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-				post(this);
-			} else {
-				postOnAnimation(this);
-			}
-		}
-	}
-
-	private static final class TouchReference {
-		private final int x;
-		private final int y;
-		private final long time;
-
-		// Required to avoid modifying y, which interferes with isTap().
-		private int scrollRef;
-
-		private TouchReference(float x, float y, long time) {
-			this.x = Math.round(x);
-			this.scrollRef = this.y = Math.round(y);
-			this.time = time;
-		}
-	}
-
-	private static final class TapFlags {
-		private boolean wasTap;
-		private boolean doubleTap;
-		private boolean twoFingerTap;
-		private boolean fourFingerTap;
-		private boolean longPress;
-	}
-
-	private static final class Fade {
-		private long fadeInFrom;
-		private long fadeInTo;
-		private long fadeOutFrom;
-		private float maxIn = 1f;
-		private float minOut = 0f;
-
-		private void fadeIn() {
-			fadeIn(SystemClock.uptimeMillis());
-		}
-
-		private void fadeIn(long now) {
-			fadeInFrom = now;
-			fadeInTo = 0;
-			fadeOutFrom = 0;
-		}
-
-		private void fadeOut() {
-			fadeOut(SystemClock.uptimeMillis());
-		}
-
-		private void fadeOut(long now) {
-			if (!isVisible()) {
-				return;
-			}
-			fadeInFrom = 0;
-			fadeInTo = 0;
-			fadeOutFrom = now;
-		}
-
-		private boolean isVisible() {
-			return fadeInFrom > 0;
-		}
-
-		private boolean isFadingIn(long now) {
-			return now < fadeInTo;
-		}
-
-		private boolean isFadingOut(long now) {
-			return fadeOutFrom > 0 && fadeOutFrom <= now;
-		}
-
-		private float get(long now, float duration) {
-			if (fadeInTo == 0) {
-				fadeInTo = fadeInFrom + Math.round(duration);
-			}
-			if (duration == 0) {
-				return fadeInFrom > 0 ? 1f : 0f;
-			}
-			if (fadeInFrom > 0) {
-				float x = (now - fadeInFrom) / duration;
-				maxIn = Math.min(1f, minOut + easeSlowerIn(x));
-				return maxIn;
-			}
-			long delta = now - fadeOutFrom;
-			if (delta < duration) {
-				minOut = maxIn - easeSlowerOut(delta / duration);
-				// Ensure < 1f so invalidate() is invoked one last time.
-				minOut = Math.min(.999f, Math.max(0f, minOut));
-				return minOut;
-			}
-			return 0;
-		}
-	}
-
-	private static float easeSlowerIn(float x) {
-		return x * x;
-	}
-
-	private static float easeSlowerOut(float x) {
-		return 1f - (1f - x) * (1f - x);
-	}
+
+    public interface ActionCallback {
+        void onAppTapped(Apps.AppIcon icon);
+
+        void onAppInfoRequested(Apps.AppIcon icon);
+
+        void onEditOptionsRequested(Apps.AppIcon icon);
+    }
+
+    public void setActionCallback(ActionCallback actionCallback) {
+        actionHandler.setActionCallback(actionCallback);
+    }
+
+    public interface ListListener {
+        void onOpenList(boolean resume);
+
+        void onHideList();
+
+        void onScrollList(int y, boolean isScrolling);
+
+        void onDragDown(float alpha);
+    }
+
+    private static final int HAPTIC_FEEDBACK_DOWN =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                    ? HapticFeedbackConstants.KEYBOARD_TAP
+                    : HapticFeedbackConstants.CONTEXT_CLICK;
+    private static final int HAPTIC_FEEDBACK_CONFIRM =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                    ? HAPTIC_FEEDBACK_DOWN
+                    : HapticFeedbackConstants.CONFIRM;
+    private static final int HAPTIC_FEEDBACK_CHOICE =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                    ? HAPTIC_FEEDBACK_DOWN
+                    : HapticFeedbackConstants.SEGMENT_TICK;
+
+    private final CanvasPieMenu<Apps.AppIcon> pieMenu = new CanvasPieMenu<>();
+    private final ArrayList<Apps.AppIcon> menuPrimary =
+            PieLauncherApp.apps.menuPrimary;
+    private final ArrayList<Apps.AppIcon> menuSecondary =
+            PieLauncherApp.apps.menuSecondary;
+    private final ViewStateManager stateManager = new ViewStateManager(new ViewStateManager.Listener() {
+        @Override
+        public void invalidate() {
+            AppPieView.this.invalidate();
+        }
+
+        @Override
+        public void setVerticalScrollBarEnabled(boolean enabled) {
+            AppPieView.this.setVerticalScrollBarEnabled(enabled);
+        }
+
+        @Override
+        public void scrollList(int y, boolean isScrolling) {
+            AppPieView.this.scrollList(y, isScrolling);
+        }
+
+        @Override
+        public void resetScrollWithoutAnimation() {
+            AppPieView.this.resetScrollWithoutAnimation();
+        }
+
+        @Override
+        public void fadeOutMode() {
+            AppPieView.this.fadeOutMode();
+        }
+
+        @Override
+        public void onModeChanged(int mode) {
+            switch (mode) {
+                case ViewStateManager.MODE_PIE:
+                    if (touchController != null) touchController.setState(pieTouchState);
+                    lastSelectedIcon = -1;
+                    break;
+                case ViewStateManager.MODE_LIST:
+                    if (touchController != null) touchController.setState(listTouchState);
+                    break;
+                case ViewStateManager.MODE_EDIT:
+                    if (touchController != null) touchController.setState(editorTouchState);
+                    pieMenu.calculate(viewWidth >> 1, viewHeight >> 1);
+                    break;
+            }
+        }
+    });
+
+    private final PieEditor pieEditor = new PieEditor(new PieEditor.Listener() {
+        @Override
+        public void invalidate() {
+            AppPieView.this.invalidate();
+        }
+
+        @Override
+        public void storeMenu() {
+            AppPieView.this.storeMenu();
+        }
+
+        @Override
+        public void releaseIcon() {
+            AppPieView.this.releaseIcon();
+        }
+    }, pieMenu);
+    private PieRenderer pieRenderer;
+    private ListRenderer listRenderer;
+    private EditorRenderer editorRenderer;
+
+    private final android.graphics.Point touch = new android.graphics.Point();
+    private final String loadingTip;
+    private final Preferences prefs;
+    private final long longPressTimeout;
+    private final int listPadding;
+    private final int searchInputHeight;
+    private final int iconSize;
+    private final int iconTextPadding;
+    private final int spaceBetween;
+    private final int translucentBackgroundColor;
+    private final float maxBlurRadius;
+    private final float dp;
+    private final float sp;
+
+    private Window window;
+    private RenderNode pieRenderNode;
+    private RenderNode listRenderNode;
+    private int viewWidth;
+    private int viewHeight;
+    private int controlsPadding;
+    private int deadZoneTop;
+    private int deadZoneBottom;
+    private int deadZoneLeft;
+    private int deadZoneRight;
+    private int listFadeHeight;
+    private final PieConfiguration pieConfig = new PieConfiguration();
+    private int maxScrollY;
+    private int lastScrollY;
+    private int lastSelectedIcon;
+    private int currentBackgroundBlur;
+    private int currentPieBlur;
+    private int currentListBlur;
+    private int selectedApp = -1;
+    private ListListener listListener;
+    private List<Apps.AppIcon> appList;
+    private Rect highlightedAction;
+    private Apps.AppIcon touchedIcon;
+    private Apps.AppIcon highlightedIcon;
+    private long highlightedFrom;
+    private boolean appListIsFiltered = false;
+
+    private final AppShortcutsController shortcutsController;
+    private final AppActionHandler actionHandler;
+    private int keyboardHeight = -1;
+
+    public AppPieView(Context context, AttributeSet attr) {
+        super(context, attr);
+
+        prefs = PieLauncherApp.getPrefs(context);
+
+        Resources res = context.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        dp = dm.density;
+        sp = dm.scaledDensity;
+
+        pieMenu.icons = menuPrimary;
+        pieMenu.onCircle(this::onCircle);
+
+        controlsPadding = Math.round(80f * dp);
+        listPadding = Math.round(16f * dp);
+        searchInputHeight = Math.round(112f * dp);
+        iconSize = Math.round(48f * dp);
+        iconTextPadding = Math.round(12f * dp);
+        spaceBetween = Math.round(4f * dp);
+        maxBlurRadius = iconSize * .35f;
+
+        shortcutsController = new AppShortcutsController(context, dp);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            trackKeyboardApi30();
+        }
+
+        loadingTip = context.getString(R.string.tip_loading);
+
+        translucentBackgroundColor = res.getColor(R.color.bg_ui);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            pieRenderNode = new RenderNode("PieMenu");
+            listRenderNode = new RenderNode("List");
+        }
+
+
+        ViewConfiguration configuration = ViewConfiguration.get(context);
+        longPressTimeout = ViewConfiguration.getLongPressTimeout() *
+                (prefs.getIconPress() == Preferences.ICON_PRESS_LONGER
+                        ? 2L : 1L);
+        if (PieLauncherApp.apps.isEmpty()) {
+            PieLauncherApp.apps.indexAppsAsync(context);
+        }
+        initTouchListener();
+
+        pieRenderer = new PieRenderer(pieMenu, stateManager.getFadePie(), prefs);
+        listRenderer = new ListRenderer(context);
+        editorRenderer = new EditorRenderer(context);
+
+        actionHandler = new AppActionHandler(prefs, new AppActionHandler.Listener() {
+            @Override
+            public void onLaunchingIcon(Apps.AppIcon icon) {
+                pieRenderer.setLaunchingIcon(icon);
+            }
+
+            @Override
+            public boolean isListFiltered() {
+                return stateManager.inListMode() && appSearchFilter.isFiltered();
+            }
+
+            @Override
+            public String getFilterQuery() {
+                return appSearchFilter.getQuery();
+            }
+        });
+    }
+
+    public void setWindow(Window window) {
+        this.window = window;
+    }
+
+    public void setListListener(ListListener listener) {
+        listListener = listener;
+        actionHandler.setListListener(listener);
+    }
+
+    public void resetScroll() {
+        lastScrollY = 0;
+    }
+
+    public void showList() {
+        if (maxScrollY > 0 && lastScrollY > maxScrollY) {
+            lastScrollY = maxScrollY;
+        }
+        stateManager.setLastScrollY(lastScrollY);
+        pieMenu.addScrollShift(lastScrollY);
+        stateManager.showList();
+    }
+
+    public void hideList() {
+        stateManager.hideList();
+    }
+
+    public void dragDownListBy(float y) {
+        stateManager.dragDownListBy(y);
+        if (listListener != null) {
+            listListener.onDragDown(stateManager.getDragProgress());
+        }
+    }
+
+    public void showEditor() {
+        editIcon(null);
+        stateManager.showEditor();
+    }
+
+    public boolean isEmpty() {
+        return appList == null || appList.isEmpty();
+    }
+
+    public int getIconCount() {
+        return appList == null ? 0 : appList.size();
+    }
+
+    public boolean appListNotScrolled() {
+        return stateManager.getMode() != ViewStateManager.MODE_LIST || getScrollY() == 0;
+    }
+
+    public boolean inEditMode() {
+        return stateManager.inEditMode();
+    }
+
+    public boolean inListMode() {
+        return stateManager.inListMode();
+    }
+
+    public boolean isScrollingAppShortcuts() {
+        return shortcutsController.isTouched();
+    }
+
+    public boolean isFiltered() {
+        return appSearchFilter.isFiltered();
+    }
+
+    public String getQuery() {
+        return appSearchFilter.getQuery();
+    }
+
+    private final AppSearchFilter appSearchFilter = new AppSearchFilter((newAppList, isFiltered, selected) -> {
+        if (newAppList != null) {
+            appList = newAppList;
+        }
+        appListIsFiltered = isFiltered;
+        selectedApp = selected;
+        invalidate();
+    });
+
+    public void filterAppList(String query, boolean resetScroll) {
+        appSearchFilter.filterAppList(getContext(), query, prefs.doubleSpaceLaunch());
+        if (resetScroll) {
+            scrollList(0, false);
+            lastScrollY = 0;
+        }
+        calculateMaxScrollY();
+        updateAppShortcuts();
+    }
+
+    public void launchSelectedAppFromList() {
+        actionHandler.launchSelectedAppFromList(getContext(), selectedApp, appList);
+    }
+
+    public void endEditMode() {
+        pieEditor.storeMenu();
+        pieEditor.commit();
+        releaseIcon();
+        stateManager.endEditMode();
+        if (prefs.excludePie() != Preferences.EXCLUDE_PIE_NONE) {
+            PieLauncherApp.apps.propagateUpdate();
+        }
+    }
+
+    @Override
+    protected void onLayout(
+            boolean changed,
+            int left,
+            int top,
+            int right,
+            int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (changed) {
+            layoutView(right - left, bottom - top);
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        long now = SystemClock.uptimeMillis();
+        float ad = prefs.getAnimationDuration();
+        float fPie = stateManager.getFadePie().get(now,
+                // Prolong fade out to improve touch feedback.
+                stateManager.getFadePie().isFadingOut(now) ? ad * 3f : ad);
+        float fList = Math.min(stateManager.getFadeList().get(now, ad), stateManager.getDragProgress());
+        float fEdit = stateManager.getFadeEdit().get(now, ad);
+        float fMax = easeSlowerIn(Math.max(fPie, Math.max(fList, fEdit)));
+
+        int bbr = prefs.getBackgroundBlurRadius();
+        if (bbr > 0) {
+            int blur = Math.round(fMax * bbr);
+            if (blur != currentBackgroundBlur) {
+                BackgroundBlur.setBlurRadius(window, blur);
+                currentBackgroundBlur = blur;
+            }
+        }
+
+        if (stateManager.getMode() != ViewStateManager.MODE_PIE || prefs.darkenBackground() !=
+                Preferences.DARKEN_BACKGROUND_NONE) {
+            darkenBackground(canvas, fMax);
+        }
+
+        if (stateManager.inEditMode()) {
+            int centerX = viewWidth >> 1;
+            int centerY = viewHeight >> 1;
+            setCenter(centerX, centerY);
+            if (pieEditor.hasGrabbedIcon()) {
+                pieEditor.setTouch(touch);
+                pieEditor.setTwist(pieMenu.getTwist());
+                pieEditor.calculateEditablePie(centerX, centerY);
+            } else {
+                pieMenu.calculate(centerX, centerY);
+            }
+        }
+
+        Canvas pieCanvas = getRecordingCanvas(pieRenderNode, canvas);
+        float pieBlurAlpha = stateManager.inEditMode() ? 1f : fPie;
+        currentPieBlur = applyBlurOut(pieRenderNode, currentPieBlur, pieBlurAlpha);
+        boolean invalidate = pieRenderer.draw(pieCanvas, touch, fPie, now, ad, stateManager.inEditMode());
+        drawRenderNode(pieRenderNode, canvas);
+
+        if (PieLauncherApp.apps.isIndexing()) {
+            if (loadingTip != null) {
+                canvas.drawText(loadingTip, viewWidth >> 1, controlsPadding + listRenderer.getTextOffset(), listRenderer.getPaintText());
+            }
+        }
+
+        int shortcutsHeight = shortcutsController.getHeight(prefs.showAppShortcuts(), stateManager.inListMode());
+        boolean shortcutsWereVisible = shortcutsController.isVisible();
+        shortcutsController.setVisible(shortcutsHeight > 0 && fList > 0 &&
+                !stateManager.isDraggingDownList());
+
+        Canvas listCanvas = getRecordingCanvas(listRenderNode, canvas);
+        currentListBlur = applyBlurOut(listRenderNode, currentListBlur, fList);
+        invalidate |= listRenderer.draw(listCanvas, stateManager.getFadeList(),
+                appList, getScrollY(), viewWidth, viewHeight,
+                touchedIcon, highlightedIcon, isDraggingDownList(),
+                selectedApp, highlightedFrom, ad, showAppNames(),
+                prefs.listAnimationAppearance(), stateManager.getDragProgress(),
+                listRenderNode, shortcutsHeight);
+
+        if (shortcutsController.isVisible()) {
+            if (!shortcutsWereVisible) {
+                shortcutsController.setExpandFrom(now);
+            }
+            if (shortcutsController.getExpandFrom() > 0) {
+                float t = ad > 0 ? (now - shortcutsController.getExpandFrom()) / ad : 1f;
+                if (t < 1f) {
+                    float x = t - 1f;
+                    float spring = 1f + x * x * (2.5f * x + 1.5f);
+                    shortcutsHeight = Math.round(shortcutsHeight * (.85f + .15f * spring));
+                    invalidate = true;
+                } else {
+                    shortcutsController.setExpandFrom(0);
+                }
+            }
+            shortcutsController.layout(viewWidth, viewHeight, getBottomInset(), listPadding, shortcutsHeight, getScrollY());
+            shortcutsController.drawBackdrop(listRenderNode, canvas, getScrollY(), listPadding);
+            invalidate |= shortcutsController.draw(canvas, fList, shortcutsHeight, getScrollY(), listRenderer.getTextOffset(), listPadding);
+        } else {
+            drawRenderNode(listRenderNode, canvas);
+        }
+
+        editorRenderer.setTouch(touch);
+        invalidate |= editorRenderer.draw(canvas, stateManager.getFadeEdit(), pieMenu, pieEditor.getGrabbedIcon(), pieEditor.getGrabbedIconAt(), highlightedAction, ad, hasSecondaryMenu(), PieLauncherApp.iconPack.hasPacks());
+
+        if (invalidate) {
+            invalidate();
+        }
+    }
+
+    @Override
+    protected int computeVerticalScrollRange() {
+        return maxScrollY + getHeight();
+    }
+
+    @Override
+    protected int computeVerticalScrollOffset() {
+        return getScrollY();
+    }
+
+    private final FlingRunnable flingRunnable = new FlingRunnable();
+    private Runnable highlightRunnable;
+    private Runnable longPressRunnable;
+
+    private TouchController touchController;
+    private PieTouchState pieTouchState;
+    private ListTouchState listTouchState;
+    private EditorTouchState editorTouchState;
+
+    private class AppGeneralTouchListener implements GeneralTouchListener {
+        @Override
+        public void performAction(View v, Point t, TapFlags tapFlags) {
+            AppPieView.this.touch.set(t.x, t.y);
+            if (AppPieView.this.performAction(v.getContext(), t, tapFlags)) {
+                performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CONFIRM);
+            }
+            resetHighlightedAction();
+        }
+
+        @Override
+        public void postDelayed(Runnable r, long delayMillis) {
+            AppPieView.this.postDelayed(r, delayMillis);
+        }
+
+        @Override
+        public void removeCallbacks(Runnable r) {
+            AppPieView.this.removeCallbacks(r);
+        }
+
+        @Override
+        public void releaseIcon() {
+            AppPieView.this.releaseIcon();
+        }
+
+        @Override
+        public void setTouch(Point touch) {
+            AppPieView.this.touch.set(touch.x, touch.y);
+        }
+
+        @Override
+        public void invalidate() {
+            AppPieView.this.invalidate();
+        }
+
+        @Override
+        public Context getContext() {
+            return AppPieView.this.getContext();
+        }
+
+        @Override
+        public void editIconAt(Point touch) {
+            AppPieView.this.editIconAt(touch);
+        }
+
+        @Override
+        public void updateEditablePie(Point touch) {
+            if (pieEditor.hasGrabbedIcon()) {
+                pieEditor.setTouch(touch);
+                pieEditor.setTwist(pieMenu.getTwist());
+                pieEditor.calculateEditablePie(viewWidth >> 1, viewHeight >> 1);
+            }
+        }
+    }
+
+    private class AppPieTouchListener implements PieTouchListener {
+        @Override
+        public void openMenu(long eventTime) {
+            if (prefs.splitPieMenu() != Preferences.ALTERNATE_MENU_NONE) {
+                selectMenu(touch.x, touch.y);
+                setCenter(touch.x, touch.y);
+            } else {
+                if (prefs.circleSwapsMenus() != Preferences.ALTERNATE_MENU_NONE && !isPrimaryMenu()) {
+                    setMenu(menuPrimary);
+                }
+                setCenter(touch.x, touch.y);
+            }
+            stateManager.getFadePie().fadeIn(eventTime);
+            performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
+        }
+
+        @Override
+        public void startSpin() {
+        }
+
+        @Override
+        public void spin(double twist) {
+            if (!stateManager.getFadePie().isVisible()) return;
+            pieMenu.setTwist(twist);
+        }
+
+        @Override
+        public void stopSpin() {
+        }
+
+        @Override
+        public double getPieTwist() {
+            return pieMenu.getTwist();
+        }
+
+        @Override
+        public Point getPieCenter() {
+            return new Point(pieMenu.getCenterX(), pieMenu.getCenterY());
+        }
+
+        @Override
+        public boolean inDeadZone(Point touch) {
+            AppPieView.this.touch.set(touch.x, touch.y);
+            switch (prefs.getDeadZone()) {
+                case Preferences.DEAD_ZONE_TOP:
+                    return touch.y < deadZoneTop;
+                case Preferences.DEAD_ZONE_BOTTOM:
+                    return touch.y > deadZoneBottom;
+                case Preferences.DEAD_ZONE_TOP_BOTTOM:
+                    return touch.y < deadZoneTop || touch.y > deadZoneBottom;
+                case Preferences.DEAD_ZONE_ALL:
+                    return touch.y < deadZoneTop || touch.y > deadZoneBottom || touch.x < deadZoneLeft || touch.x > deadZoneRight;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public boolean expandPanelInDeadZone() {
+            return prefs.expandPanelInDeadZone();
+        }
+
+        @Override
+        public void fadeOutMode() {
+            AppPieView.this.fadeOutMode();
+        }
+
+        @Override
+        public void evaluateSelectedIcon(Point touch) {
+            pieMenu.calculate(touch.x, touch.y, 1f, pieRenderer.getLaunchingIcon());
+            int selectedIcon = pieMenu.getSelectedIcon();
+            if (selectedIcon != lastSelectedIcon) {
+                lastSelectedIcon = selectedIcon;
+                performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_CHOICE);
+            }
+        }
+    }
+
+    private class AppListTouchListener implements ListTouchListener {
+        @Override
+        public int getScrollY() {
+            return AppPieView.this.getScrollY();
+        }
+
+        @Override
+        public int getMaxScrollY() {
+            return maxScrollY;
+        }
+
+        @Override
+        public void scroll(int scrollY, boolean anim) {
+            scrollList(scrollY, anim);
+        }
+
+        @Override
+        public void keepScrolling(int velocityY) {
+            if (shortcutsController.isTouched()) {
+                shortcutsController.fling(velocityY);
+                invalidate();
+            } else {
+                flingRunnable.start(velocityY);
+            }
+        }
+
+        @Override
+        public void initAppShortcutsScroll(Point touch) {
+            shortcutsController.initScroll(touch, shortcutsController.isVisible());
+        }
+
+        @Override
+        public void scrollAppShortcuts(int delta) {
+            shortcutsController.scrollBy(delta);
+        }
+
+        @Override
+        public boolean isAppShortcutsTouched() {
+            return shortcutsController.isTouched();
+        }
+
+        @Override
+        public void setAppShortcutsTouched(boolean touched) {
+            shortcutsController.setTouched(touched);
+        }
+
+        @Override
+        public void initLongPress(Context context, Point t) {
+            if (prefs.getIconPress() == Preferences.ICON_LOCK_MENU) return;
+            cancelLongPress();
+            final Apps.AppIcon appIcon = getListIconAt(t.x, t.y);
+            if (appIcon == null) return;
+            touchedIcon = appIcon;
+            highlightRunnable = () -> {
+                highlightedIcon = appIcon;
+                highlightedFrom = android.os.SystemClock.uptimeMillis();
+            };
+            postDelayed(highlightRunnable, longPressTimeout >> 1);
+            longPressRunnable = () -> {
+                performHapticFeedbackIfAllowed(android.view.HapticFeedbackConstants.LONG_PRESS);
+                if (prefs.getIconPress() == Preferences.ICON_PRESS_MENU) {
+                    actionHandler.requestEditOptions(appIcon);
+                } else {
+                    addIconInteractively(appIcon);
+                }
+                longPressRunnable = null;
+                cancelHighlight();
+            };
+            postDelayed(longPressRunnable, longPressTimeout);
+        }
+
+        @Override
+        public void cancelLongPress() {
+            cancelHighlight();
+            if (longPressRunnable != null) {
+                removeCallbacks(longPressRunnable);
+                longPressRunnable = null;
+            }
+        }
+
+        @Override
+        public boolean isFadingIn(long eventTime) {
+            return stateManager.getFadeList().isFadingIn(eventTime);
+        }
+
+        @Override
+        public boolean isDraggingDownList() {
+            return stateManager.isDraggingDownList();
+        }
+
+        @Override
+        public float getDragProgress() {
+            return stateManager.getDragProgress();
+        }
+
+        @Override
+        public void onDragDown(float dragProgress) {
+            if (listListener != null) {
+                listListener.onDragDown(dragProgress);
+            }
+        }
+
+        @Override
+        public void cancelDragDownList() {
+            if (stateManager.isDraggingDownList()) {
+                if (stateManager.getDragProgress() <= 0.5f) {
+                    stateManager.resetDragDownList();
+                    if (listListener != null) {
+                        listListener.onHideList();
+                    }
+                } else {
+                    stateManager.resetDragDownList();
+                    invalidate();
+                    if (listListener != null) {
+                        listListener.onDragDown(1f);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void stopFling() {
+            flingRunnable.stop();
+        }
+    }
+
+    private void initTouchListener() {
+        GeneralTouchListener generalTouchListener = new AppGeneralTouchListener();
+        PieTouchListener pieTouchListener = new AppPieTouchListener();
+        ListTouchListener listTouchListener = new AppListTouchListener();
+
+        pieTouchState = new PieTouchState(pieTouchListener);
+        listTouchState = new ListTouchState(listTouchListener);
+        editorTouchState = new EditorTouchState(generalTouchListener);
+
+        touchController = new TouchController(generalTouchListener);
+        touchController.setState(pieTouchState); // Default state
+        setOnTouchListener(touchController);
+    }
+
+    private void cancelHighlight() {
+        touchedIcon = null;
+        highlightedIcon = null;
+        highlightedFrom = 0;
+        if (highlightRunnable != null) {
+            removeCallbacks(highlightRunnable);
+            highlightRunnable = null;
+        }
+    }
+
+    private void cancelDragDownList() {
+        if (isDraggingDownList()) {
+            resetDragDownList();
+            invalidate();
+            if (listListener != null) {
+                listListener.onDragDown(stateManager.getDragProgress());
+            }
+        }
+    }
+
+    private boolean isDraggingDownList() {
+        return stateManager.isDraggingDownList();
+    }
+
+    private void resetDragDownList() {
+        stateManager.resetDragDownList();
+    }
+
+    private void calculateMaxScrollY() {
+        if (viewWidth == 0 || appList == null || appList.isEmpty()) {
+            maxScrollY = 0;
+            return;
+        }
+        int innerWidth = viewWidth - listPadding * 2;
+        int columns = Math.max(1, Math.min(5, innerWidth / (iconSize + spaceBetween)));
+        boolean showAppNames = prefs.showAppNames() == Preferences.SHOW_APP_NAMES_ALWAYS ||
+                (prefs.showAppNames() == Preferences.SHOW_APP_NAMES_SEARCH && appListIsFiltered);
+        int iconAndTextHeight = iconSize + (showAppNames ? iconTextPadding + Math.round(listRenderer.getTextHeight()) : 0);
+        int cellHeight = iconAndTextHeight + iconTextPadding * 2;
+        int rows = (int) Math.ceil((double) appList.size() / columns);
+        int shortcutsHeight = shortcutsController.getHeight(prefs.showAppShortcuts(), stateManager.inListMode());
+        int bottomInset = shortcutsHeight > 0
+                ? getBottomInset() + listPadding : getPaddingBottom();
+        int maxHeight = searchInputHeight + listPadding + rows * cellHeight + listPadding + shortcutsHeight;
+        int maxY = Math.max(0, maxHeight - (viewHeight - bottomInset));
+        if (maxY != maxScrollY) {
+            maxScrollY = maxY;
+            if (getScrollY() > maxScrollY) {
+                scrollList(maxScrollY, false); // Ensure we don't scroll past the new max
+            }
+        }
+    }
+
+    private void layoutView(int width, int height) {
+        int viewMin = Math.min(width, height);
+        int viewMax = Math.max(width, height);
+        viewWidth = width;
+        viewHeight = height;
+
+        pieConfig.layout(viewMin, dp);
+        loadPiePreferences();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                pieRenderNode != null) {
+            pieRenderNode.setPosition(0, 0, viewWidth, viewHeight);
+        }
+
+        pieConfig.updateChangeIcons(getResources(), editorRenderer);
+        pieConfig.updateSplitPieIcon(getResources(), editorRenderer, !isPrimaryMenu());
+
+        int pieBottom = viewMax / 2 + pieConfig.getMaxRadius();
+        controlsPadding = (viewMax - pieBottom) / 2;
+
+        deadZoneTop = Math.min(height / 10, Math.round(64f * dp));
+        deadZoneBottom = height - deadZoneTop;
+        deadZoneLeft = Math.min(width / 10, Math.round(48f * dp));
+        deadZoneRight = width - deadZoneLeft;
+
+        listFadeHeight = Math.round(viewHeight * .5f);
+        stateManager.setListFadeHeight(listFadeHeight);
+
+        shortcutsController.setTextSize(sp);
+        listRenderer.layout(listPadding, searchInputHeight, iconSize, spaceBetween, iconTextPadding, listFadeHeight, sp);
+        editorRenderer.layout(viewWidth, viewHeight, controlsPadding, listRenderer.getTextOffset(), sp, spaceBetween, iconSize);
+        calculateMaxScrollY();
+    }
+
+    public void addIconInteractively(Apps.AppIcon appIcon) {
+        if (listListener != null) {
+            listListener.onHideList();
+        }
+        stateManager.getFadeList().fadeOut();
+        pieEditor.setNeverDropped(true);
+        editIcon(appIcon);
+        resetScrollWithoutAnimation();
+        invalidate();
+    }
+
+    private void editIcon(Apps.AppIcon icon) {
+        if (pieMenu.icons != menuPrimary &&
+                pieMenu.icons != menuSecondary) {
+            setMenu(menuPrimary);
+        }
+        pieConfig.updateSplitPieIcon(getResources(), editorRenderer, !isPrimaryMenu());
+        setCenter(viewWidth >> 1, viewHeight >> 1);
+        pieEditor.beginEdit(pieMenu.icons);
+        pieMenu.icons.remove(icon);
+        CanvasPieMenu.paint.setAlpha(255);
+        pieEditor.editIcon(icon);
+        if (stateManager.getMode() != ViewStateManager.MODE_EDIT) {
+            stateManager.showEditor();
+        }
+        invalidate();
+    }
+
+    public void releaseIcon() {
+        pieEditor.setNeverDropped(false);
+        pieEditor.commitGrabbedItem();
+    }
+
+    private void resetScrollWithoutAnimation() {
+        scrollTo(0, 0);
+    }
+
+    private void scrollList(int y, boolean isScrolling) {
+        lastScrollY = y;
+        scrollTo(0, y);
+        if (listListener != null) {
+            listListener.onScrollList(y, isScrolling);
+        }
+    }
+
+    private boolean performAction(
+            Context context,
+            Point at,
+            TapFlags tapFlags) {
+        if (stateManager.getMode() == ViewStateManager.MODE_PIE) {
+            Apps.AppIcon appIcon = null;
+            int index = pieMenu.getSelectedIcon();
+            if (index > -1 && index < pieMenu.icons.size()) {
+                appIcon = pieMenu.icons.get(index);
+            }
+            boolean pieVisible = stateManager.getFadePie().isVisible();
+            fadeOutMode();
+            return actionHandler.performPieAction(context, tapFlags, appIcon, pieVisible);
+        } else if (stateManager.inListMode() && tapFlags.wasTap) {
+            if (shortcutsController.isVisible() && shortcutsController.contains(at.x, at.y)) {
+                Apps.AppIcon shortcut = shortcutsController.getShortcutAt(at.x, at.y);
+                return actionHandler.performShortcutAction(context, shortcut);
+            }
+            Apps.AppIcon listIcon = getListIconAt(at.x, at.y);
+            return actionHandler.performListAction(context, listIcon);
+        } else if (stateManager.inEditMode()) {
+            boolean result = performEditAction(context);
+            releaseIcon();
+            pieMenu.updateSmoothing();
+            return result;
+        }
+        return false;
+    }
+
+    private Apps.AppIcon getListIconAt(int x, int y) {
+        if (shortcutsController.isVisible() && shortcutsController.contains(x, y)) {
+            return null;
+        }
+        y += getScrollY();
+        for (int i = 0, l = getIconCount(); i < l; ++i) {
+            Apps.AppIcon appIcon = appList.get(i);
+            if (appIcon.hitRect.contains(x, y)) {
+                return appIcon;
+            }
+        }
+        return null;
+    }
+
+    private boolean performEditAction(Context context) {
+        EditorAction action = editorRenderer.getActionAt(touch, pieEditor.hasGrabbedIcon());
+        switch (action) {
+            case CHANGE_TWIST:
+                pieConfig.cycleTwist();
+                pieConfig.updateChangeTwistIcon(getResources(), editorRenderer);
+                return true;
+            case CHANGE_ICON_SCALE:
+                pieConfig.cycleIconScale();
+                pieConfig.updateChangeIconScaleIcon(getResources(), editorRenderer);
+                return true;
+            case CHANGE_RADIUS:
+                pieConfig.cycleRadius();
+                pieMenu.setRadius(pieConfig.getRadius());
+                pieConfig.updateChangeRadiusIcon(getResources(), editorRenderer);
+                return true;
+            case BACK_OR_REMOVE_ICON:
+                if (!pieEditor.hasGrabbedIcon()) {
+                    ((Activity) context).onBackPressed();
+                } else {
+                    removeIconFromPie(pieEditor.getGrabbedIcon(),
+                            PieLauncherApp.apps.isDrawerIcon(
+                                    (Apps.AppIcon) pieEditor.getGrabbedIcon()));
+                }
+                return true;
+            case EDIT_SETTINGS_OR_UNDO:
+                if (!pieEditor.hasGrabbedIcon()) {
+                    if (hasSecondaryMenu()) {
+                        storeMenu();
+                        setMenu(isPrimaryMenu() ? menuSecondary : menuPrimary);
+                        centerSmoothCoordinatesAt(pieMenu.icons,
+                                viewWidth >> 1, viewHeight >> 1);
+                        pieConfig.updateSplitPieIcon(getResources(), editorRenderer, !isPrimaryMenu());
+                        pieConfig.updateChangeIcons(getResources(), editorRenderer);
+                        invalidate();
+                    } else {
+                        PreferencesActivity.start(context);
+                    }
+                } else {
+                    pieEditor.rollback(pieMenu.icons);
+                    if (pieEditor.isNeverDropped()) {
+                        fadeOutMode();
+                        returnToList();
+                    }
+                    if (PieLauncherApp.iconPack.hasPacks()) {
+                        storeMenu();
+                        changeIcon(context, pieEditor.getGrabbedIcon());
+                    } else if (PieLauncherApp.apps.isDrawerIcon(
+                            (Apps.AppIcon) pieEditor.getGrabbedIcon())) {
+                        removeIconFromPie(pieEditor.getGrabbedIcon(), true);
+                    } else {
+                        PickIconActivity.askToHide(context,
+                                ((Apps.AppIcon) pieEditor.getGrabbedIcon()).componentName);
+                    }
+                }
+                return true;
+            case END_EDIT_MODE:
+                if (!pieEditor.hasGrabbedIcon()) {
+                    endEditMode();
+                } else {
+                    pieEditor.rollback(pieMenu.icons);
+                    fadeOutMode();
+                    if (PieLauncherApp.apps.isDrawerIcon(
+                            (Apps.AppIcon) pieEditor.getGrabbedIcon())) {
+                        removeIconFromPie(pieEditor.getGrabbedIcon(), true);
+                    } else if (Apps.isShortcut((Apps.AppIcon) pieEditor.getGrabbedIcon())) {
+                        // The end target uninstalls apps; a pinned shortcut (e.g.
+                        // a PWA) has nothing to uninstall, so remove it instead.
+                        // Unlike launchAppInfo() this stays in-app, so we must end
+                        // edit mode ourselves — otherwise the view is left in
+                        // MODE_EDIT and the pie won't open until the activity is
+                        // recreated (e.g. by pressing Home).
+                        PieLauncherApp.apps.removePinnedShortcut(context,
+                                (Apps.AppIcon) pieEditor.getGrabbedIcon());
+                        endEditMode();
+                    } else {
+                        // Persist changes before launching app info because
+                        // that can be used to uninstall an app which would
+                        // trigger indexing what would reset any changes.
+                        storeMenu();
+                        actionHandler.requestAppInfo((Apps.AppIcon) pieEditor.getGrabbedIcon());
+                    }
+                }
+                return true;
+            case NONE:
+            default:
+                return false;
+        }
+    }
+
+    private void updateAppShortcuts() {
+        shortcutsController.update(
+                getSelectedApp(),
+                appSearchFilter.isFiltered(),
+                prefs.showAppShortcuts(),
+                getContext(),
+                this::invalidate);
+    }
+
+    private Apps.AppIcon getSelectedApp() {
+        if (!appSearchFilter.isFiltered() || selectedApp < 0 || isEmpty()) {
+            return null;
+        }
+        return appList.get(clamp(selectedApp, 0, getIconCount() - 1));
+    }
+
+    private int getBottomInset() {
+        int inset = getPaddingBottom();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            inset = Math.max(inset, keyboardHeight > -1
+                    ? keyboardHeight
+                    : getKeyboardHeightApi30(getRootWindowInsets()));
+        }
+        return inset;
+    }
+
+    @SuppressLint("UseRequiresApi")
+    @TargetApi(Build.VERSION_CODES.R)
+    private void trackKeyboardApi30() {
+        setWindowInsetsAnimationCallback(new WindowInsetsAnimation.Callback(
+                WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
+            @Override
+            public WindowInsets onProgress(
+                    WindowInsets insets,
+                    List<WindowInsetsAnimation> animations) {
+                keyboardHeight = getKeyboardHeightApi30(insets);
+                invalidate();
+                return insets;
+            }
+
+            @Override
+            public void onEnd(WindowInsetsAnimation animation) {
+                keyboardHeight = -1;
+                invalidate();
+            }
+        });
+    }
+
+    @SuppressLint("UseRequiresApi")
+    @TargetApi(Build.VERSION_CODES.R)
+    private static int getKeyboardHeightApi30(WindowInsets insets) {
+        return insets == null
+                ? 0
+                : insets.getInsets(WindowInsets.Type.ime()).bottom;
+    }
+
+    private void removeIconFromPie(Apps.AppIcon icon, boolean isDrawerIcon) {
+        if (isDrawerIcon) {
+            prefs.setOpenListWith(Preferences.OPEN_LIST_WITH_TAP);
+        }
+        pieMenu.icons.remove(icon);
+        // Undo any rotation if the menu has not otherwise changed.
+        if (!pieEditor.isMenuChanged(pieMenu.icons)) {
+            pieEditor.rollback(pieMenu.icons);
+        }
+    }
+
+    private static void centerSmoothCoordinatesAt(
+            List<Apps.AppIcon> icons,
+            int centerX,
+            int centerY) {
+        for (Apps.AppIcon ic : icons) {
+            ic.setStartPosition(centerX, centerY);
+        }
+    }
+
+    public void changeIcon(Context context, PieMenu.Icon icon) {
+        Apps.AppIcon appIcon = (Apps.AppIcon) icon;
+        PickIconActivity.start(context, appIcon.componentName);
+    }
+
+    public void returnToList() {
+        if (listListener != null) {
+            listListener.onOpenList(true);
+        }
+    }
+
+    private void onCircle(int direction) {
+        List<Apps.AppIcon> icons = getAlternateMenu(
+                prefs.circleSwapsMenus());
+        if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
+            return;
+        }
+        if (prefs.animateInOut() && prefs.getAnimationDuration() > 0) {
+            pieRenderer.startCircleTransition(direction, pieMenu.icons, SystemClock.uptimeMillis());
+        }
+        setMenu(icons);
+        performHapticFeedbackIfAllowed(HapticFeedbackConstants.LONG_PRESS);
+    }
+
+    private void selectMenu(int x, int y) {
+        boolean alternate = viewWidth > viewHeight
+                ? x < viewWidth >> 1
+                : y < viewHeight >> 1;
+        List<Apps.AppIcon> icons = alternate
+                ? getAlternateMenu(prefs.splitPieMenu())
+                : menuPrimary;
+        setMenu(icons == null || icons.isEmpty()
+                ? menuPrimary
+                : icons);
+    }
+
+    private List<Apps.AppIcon> getAlternateMenu(int option) {
+        switch (option) {
+            case Preferences.ALTERNATE_MENU_SECONDARY:
+                return menuSecondary;
+            case Preferences.ALTERNATE_MENU_ALL_APPS:
+                List<Apps.AppIcon> all = AppSearch.filterAppsBy(
+                        PieLauncherApp.apps, getContext(), null);
+                return all != null ? new ArrayList<>(all) : null;
+            case Preferences.ALTERNATE_MENU_LAST_USED:
+                List<Apps.AppIcon> lastUsed = AppSearch.filterAppsByFrecency(
+                        PieLauncherApp.apps, getContext());
+                return lastUsed != null
+                        ? new ArrayList<>(lastUsed.subList(0, Math.min(8, lastUsed.size())))
+                        : null;
+            case Preferences.ALTERNATE_MENU_NONE:
+            default:
+                return null;
+        }
+    }
+
+    private void setMenu(List<Apps.AppIcon> icons) {
+        pieMenu.icons = icons;
+        applyPiePreferences();
+    }
+
+    private boolean isPrimaryMenu() {
+        return pieMenu.icons == menuPrimary;
+    }
+
+    private void setCenter(int x, int y) {
+        int radius = pieConfig.getRadius();
+        pieMenu.set(
+                clamp(x, radius, viewWidth - radius),
+                clamp(y, radius, viewHeight - radius),
+                radius,
+                pieConfig.getTwist(),
+                pieConfig.getIconScale());
+        lastSelectedIcon = -1;
+        pieRenderer.setLaunchingIcon(null);
+    }
+
+    private static float distSq(int ax, int ay, int bx, int by) {
+        float dx = ax - bx;
+        float dy = ay - by;
+        return dx * dx + dy * dy;
+    }
+
+    private void editIconAt(Point point) {
+        int size = pieMenu.icons.size();
+        for (int i = 0; i < size; ++i) {
+            Apps.AppIcon icon = (Apps.AppIcon) pieMenu.icons.get(i);
+            double rad = icon.size * .5;
+            float sizeSq = Math.round(rad * rad);
+            if (distSq(point.x, point.y, icon.x, icon.y) < sizeSq) {
+                editIcon(icon);
+                performHapticFeedbackIfAllowed(HAPTIC_FEEDBACK_DOWN);
+                return;
+            }
+        }
+        editActionsFeedback();
+    }
+
+    private void editActionsFeedback() {
+        EditorAction action = editorRenderer.getActionAt(touch, pieEditor.hasGrabbedIcon());
+        switch (action) {
+            case BACK_OR_REMOVE_ICON:
+                setHighlightedAction(editorRenderer.iconStartRect);
+                break;
+            case EDIT_SETTINGS_OR_UNDO:
+                setHighlightedAction(editorRenderer.iconCenterRect);
+                break;
+            case END_EDIT_MODE:
+                setHighlightedAction(editorRenderer.iconEndRect);
+                break;
+            case CHANGE_TWIST:
+                setHighlightedAction(editorRenderer.iconChangeTwistRect);
+                break;
+            case CHANGE_ICON_SCALE:
+                setHighlightedAction(editorRenderer.iconChangeIconScaleRect);
+                break;
+            case CHANGE_RADIUS:
+                setHighlightedAction(editorRenderer.iconChangeRadiusRect);
+                break;
+            case NONE:
+            default:
+                resetHighlightedAction();
+                break;
+        }
+    }
+
+
+    private boolean showAppNames() {
+        switch (prefs.showAppNames()) {
+            case Preferences.SHOW_APP_NAMES_ALWAYS:
+                return true;
+            case Preferences.SHOW_APP_NAMES_SEARCH:
+                return appListIsFiltered;
+            default:
+                return false;
+        }
+    }
+
+
+    private boolean hasSecondaryMenu() {
+        return prefs.splitPieMenu() == Preferences.ALTERNATE_MENU_SECONDARY ||
+                prefs.circleSwapsMenus() ==
+                        Preferences.ALTERNATE_MENU_SECONDARY;
+    }
+
+
+    private Canvas getRecordingCanvas(RenderNode node, Canvas fallback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+                !fallback.isHardwareAccelerated()) {
+            return fallback;
+        }
+        return node.beginRecording();
+    }
+
+    private void drawRenderNode(RenderNode node, Canvas canvas) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                node != null &&
+                canvas.isHardwareAccelerated()) {
+            node.endRecording();
+            canvas.drawRenderNode(node);
+        }
+    }
+
+
+    private void resetHighlightedAction() {
+        setHighlightedAction(null);
+    }
+
+    private void setHighlightedAction(android.graphics.Rect rect) {
+        highlightedAction = rect;
+    }
+
+    private void storeMenu() {
+        Context context = getContext();
+        if (context != null) {
+            PieLauncherApp.apps.store(context);
+        }
+        pieConfig.savePreferences(prefs, isPrimaryMenu());
+    }
+
+    private void applyPiePreferences() {
+        loadPiePreferences();
+        pieConfig.applyTo(pieMenu);
+    }
+
+    private void loadPiePreferences() {
+        pieConfig.loadPreferences(prefs, isPrimaryMenu());
+    }
+
+    private void fadeOutMode() {
+        switch (stateManager.getMode()) {
+            case ViewStateManager.MODE_PIE:
+                stateManager.getFadePie().fadeOut();
+                break;
+            case ViewStateManager.MODE_LIST:
+                stateManager.getFadeList().fadeOut();
+                break;
+            case ViewStateManager.MODE_EDIT:
+                stateManager.getFadeEdit().fadeOut();
+                break;
+        }
+    }
+
+    private void performHapticFeedbackIfAllowed(int feedback) {
+        switch (prefs.hapticFeedback()) {
+            case Preferences.HAPTIC_FEEDBACK_DISABLE_ALL:
+                return;
+            case Preferences.HAPTIC_FEEDBACK_DISABLE_LAUNCH:
+                if (feedback == HAPTIC_FEEDBACK_CONFIRM) {
+                    return;
+                }
+                // Fall through.
+            default:
+                performHapticFeedback(feedback);
+        }
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private static float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+
+    private void darkenBackground(Canvas canvas, float f) {
+        int max = (translucentBackgroundColor >> 24) & 0xff;
+        if (stateManager.getMode() == ViewStateManager.MODE_PIE && prefs.darkenBackground() ==
+                Preferences.DARKEN_BACKGROUND_LIGHT) {
+            max /= 2;
+        }
+        int alpha = Math.round(f * max);
+        if (alpha == 0) {
+            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        } else {
+            canvas.drawColor(
+                    (alpha << 24) | (translucentBackgroundColor & 0xffffff),
+                    PorterDuff.Mode.SRC);
+        }
+    }
+
+    private int applyBlurOut(RenderNode node, int current, float f) {
+        return applyBlur(node, current, 1f - clamp(f, 0f, 1f));
+    }
+
+    private int applyBlur(RenderNode node, int current, float f) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                node == null ||
+                !isHardwareAccelerated()) {
+            return 0;
+        }
+        if (!prefs.blurMenu() || f <= 0f) {
+            clearBlur(node);
+            return 0;
+        }
+        int radius = Math.max(1, Math.round(f * maxBlurRadius));
+        if (current != radius) {
+            node.setRenderEffect(RenderEffect.createBlurEffect(
+                    radius, radius, Shader.TileMode.CLAMP));
+        }
+        return radius;
+    }
+
+    private void clearBlur(RenderNode node) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                node != null) {
+            node.setRenderEffect(null);
+        }
+    }
+
+    private class FlingRunnable implements Runnable {
+        private final OverScroller scroller;
+        private int maxY;
+        private int pps;
+
+        @Override
+        public void run() {
+            if (stateManager.getMode() != ViewStateManager.MODE_LIST || !scroller.computeScrollOffset()) {
+                return;
+            }
+            if (maxY != maxScrollY) {
+                maxY = maxScrollY;
+                // OverScroller.springBack() stops the animation so we
+                // cannot use it and have to start a new fling instead.
+                scroller.forceFinished(true);
+                initFling(getScrollY());
+            }
+            scrollList(scroller.getCurrY(), true);
+            update();
+        }
+
+        private FlingRunnable() {
+            scroller = new OverScroller(getContext());
+        }
+
+        private void start(int pixelsPerSecond) {
+            pps = -pixelsPerSecond;
+            maxY = maxScrollY;
+            initFling(getScrollY());
+            update();
+        }
+
+        private void initFling(int y) {
+            scroller.fling(
+                    0, y,
+                    0, pps,
+                    0, 0,
+                    0, maxY,
+                    0, listPadding);
+        }
+
+        private void stop() {
+            scroller.forceFinished(true);
+            removeCallbacks(this);
+        }
+
+        private void update() {
+            invalidate();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                post(this);
+            } else {
+                postOnAnimation(this);
+            }
+        }
+    }
+
+    private static float easeSlowerIn(float x) {
+        return x * x;
+    }
 }

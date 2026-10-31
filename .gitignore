@@ -1,3 +1,5 @@
+.agents
+.archify
 *.swp
 *.iml
 .gradle

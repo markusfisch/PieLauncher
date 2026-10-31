@@ -806,7 +806,7 @@ public class Apps {
 		} else {
 			drawerPackageName = null;
 		}
-		if (menu.isEmpty()) {
+		if (menu.isEmpty() || (menu.size() == 1 && drawerIcon != null)) {
 			MenuDefaults.createInitialMenu(menu, allApps,
 					context.getPackageManager());
 			MenuStorage.store(context, MENU_PRIMARY, menu);
