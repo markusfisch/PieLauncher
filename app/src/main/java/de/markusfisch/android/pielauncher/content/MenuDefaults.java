@@ -125,13 +125,16 @@ public class MenuDefaults {
 			PackageManager pm,
 			Intent intent,
 			UserHandle userHandle) {
-		ResolveInfo resolveInfo = pm.resolveActivity(intent,
+		List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent,
 				PackageManager.MATCH_DEFAULT_ONLY);
-		if (resolveInfo == null) {
-			return null;
+		if (resolveInfos == null || resolveInfos.isEmpty()) {
+			resolveInfos = pm.queryIntentActivities(intent, 0);
+			if (resolveInfos == null || resolveInfos.isEmpty()) {
+				return null;
+			}
 		}
 		return new LauncherItemKey(
-				Apps.getComponentName(resolveInfo.activityInfo),
+				Apps.getComponentName(resolveInfos.get(0).activityInfo),
 				userHandle);
 	}
 
