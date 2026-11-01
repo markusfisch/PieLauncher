@@ -22,8 +22,9 @@ public class ManagedProfileEventReceiver extends BroadcastReceiver {
 				Intent.ACTION_MANAGED_PROFILE_REMOVED.equals(action)) {
 			PieLauncherApp.apps.indexAppsAsync(context);
 		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-				Intent.ACTION_PROFILE_AVAILABLE.equals(action)) {
-			PieLauncherApp.apps.propagateUpdate();
+				(Intent.ACTION_PROFILE_AVAILABLE.equals(action) ||
+						Intent.ACTION_PROFILE_UNAVAILABLE.equals(action))) {
+			PieLauncherApp.apps.refreshProfiles(context);
 		}
 	}
 }

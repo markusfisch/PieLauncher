@@ -92,10 +92,10 @@ public class Database {
 		executor.execute(task);
 	}
 
-	public ArrayList<Apps.AppIcon> restoreMenu(
+	public MenuItems restoreMenu(
 			String name,
 			Map<LauncherItemKey, Apps.AppIcon> allApps) {
-		ArrayList<Apps.AppIcon> icons = new ArrayList<>();
+		MenuItems icons = new MenuItems();
 		Cursor cursor = openHelper.getReadableDatabase().query(MENU_ITEMS,
 				new String[]{ITEM_KEY},
 				MENU_NAME + "=?",
@@ -105,9 +105,26 @@ public class Database {
 				POSITION);
 		try {
 			while (cursor.moveToNext()) {
-				Apps.AppIcon icon = allApps.get(
-						LauncherItemKey.unflattenFromString(
-								context, cursor.getString(0)));
+				LauncherItemKey key = LauncherItemKey.unflattenFromString(
+						context, cursor.getString(0));
+				if (key == null || key.componentName == null) {
+					continue;
+				}
+				boolean locked = AppLauncher.isPrivateProfileLocked(context, key.userHandle);
+				if (locked) {
+					AppSnapshot.markUnavailable(allApps, key.userHandle);
+				}
+				boolean hidden = locked || (allApps instanceof AppSnapshot &&
+						((AppSnapshot) allApps).unavailableProfiles.contains(key.userHandle));
+				Apps.AppIcon icon = hidden ? null : allApps.get(key);
+				// A persisted cache can predate an unlock, installation or migration.
+				hidden |= icon == null && allApps instanceof AppSnapshot &&
+						((AppSnapshot) allApps).provisional;
+				if (hidden || icon != null) {
+					// Alias reconciliation can resolve an old key to a new component.
+					icons.remember(hidden ? key :
+							new LauncherItemKey(icon.componentName, icon.userHandle), hidden, icon);
+				}
 				if (icon != null) {
 					icons.add(icon);
 				}
@@ -119,25 +136,34 @@ public class Database {
 	}
 
 	public void storeMenu(String name, List<Apps.AppIcon> icons) {
-		if (Looper.myLooper() == Looper.getMainLooper()) {
-			List<Apps.AppIcon> snapshot = new ArrayList<>(icons.size());
+		List<LauncherItemKey> keys;
+		if (icons instanceof MenuItems) {
+			keys = ((MenuItems) icons).snapshotKeys();
+		} else {
+			keys = new ArrayList<>(icons.size());
 			for (Apps.AppIcon icon : icons) {
-				snapshot.add(copyIcon(icon));
+				keys.add(new LauncherItemKey(icon.componentName, icon.userHandle));
 			}
-			execute(() -> storeMenu(name, snapshot));
-			return;
 		}
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			execute(() -> storeMenuKeys(name, keys));
+		} else {
+			storeMenuKeys(name, keys);
+		}
+	}
+
+	private void storeMenuKeys(String name, List<LauncherItemKey> keys) {
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		db.beginTransaction();
 		try {
 			db.delete(MENU_ITEMS, MENU_NAME + "=?", new String[]{name});
 			int position = 0;
-			for (Apps.AppIcon icon : icons) {
+			for (LauncherItemKey key : keys) {
 				ContentValues values = new ContentValues();
 				values.put(MENU_NAME, name);
 				values.put(POSITION, position++);
 				values.put(ITEM_KEY, LauncherItemKey.flattenToString(
-						context, icon.componentName, icon.userHandle));
+						context, key.componentName, key.userHandle));
 				db.insertOrThrow(MENU_ITEMS, null, values);
 			}
 			db.setTransactionSuccessful();
@@ -223,6 +249,10 @@ public class Database {
 				if (AppLauncher.HAS_LAUNCHER_APP && serialNumber != NO_USER) {
 					userHandle = getUserForSerialNumber(context, serialNumber);
 					if (userHandle == null) {
+						continue;
+					}
+					if (AppLauncher.isPrivateProfileLocked(context, userHandle)) {
+						AppSnapshot.markUnavailable(apps, userHandle);
 						continue;
 					}
 				}
@@ -496,6 +526,9 @@ public class Database {
 	public void restoreApps(
 			Context context,
 			Map<LauncherItemKey, Apps.AppIcon> apps) {
+		if (apps instanceof AppSnapshot) {
+			((AppSnapshot) apps).provisional = true;
+		}
 		SQLiteDatabase db = openHelper.getReadableDatabase();
 		Cursor cursor = db.query(APPS,
 				new String[]{COMPONENT_NAME, USER_SERIAL, LABEL, ICON},
@@ -523,6 +556,7 @@ public class Database {
 						continue;
 					}
 					if (AppLauncher.isPrivateProfileLocked(context, userHandle)) {
+						AppSnapshot.markUnavailable(apps, userHandle);
 						continue;
 					}
 				}

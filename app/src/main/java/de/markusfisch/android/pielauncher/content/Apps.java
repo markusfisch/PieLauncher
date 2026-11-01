@@ -22,6 +22,7 @@ import android.os.UserManager;
 import android.util.Base64;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,8 @@ import de.markusfisch.android.pielauncher.preference.Preferences;
 public class Apps {
 	public interface UpdateListener {
 		void onUpdate();
+
+		void onProfilesChanged();
 
 		void onShowAllAppsOnResume();
 	}
@@ -104,10 +107,10 @@ public class Apps {
 	public static final String ACTION_CONFIRM_PIN_SHORTCUT =
 			"android.content.pm.action.CONFIRM_PIN_SHORTCUT";
 
-	public final ArrayList<AppIcon> menuPrimary = new ArrayList<>();
-	public final ArrayList<AppIcon> menuSecondary = new ArrayList<>();
+	public final MenuItems menuPrimary = new MenuItems();
+	public final MenuItems menuSecondary = new MenuItems();
 	public final HiddenAppsStorage hiddenAppsStorage = new HiddenAppsStorage();
-	public final HashMap<LauncherItemKey, AppIcon> apps = new HashMap<>();
+	public final AppSnapshot apps = new AppSnapshot();
 
 	private static final int RECONCILED_MENU = 1;
 	private static final int RETRY_PACKAGE = 2;
@@ -119,6 +122,7 @@ public class Apps {
 	private UpdateListener updateListener;
 	private String drawerPackageName;
 	private boolean indexing = false;
+	private boolean menusRestored;
 
 	public boolean isDrawerIcon(AppIcon icon) {
 		return icon != null &&
@@ -145,6 +149,9 @@ public class Apps {
 	}
 
 	public void store(Context context) {
+		if (!menusRestored) {
+			return;
+		}
 		MenuStorage.store(context, MENU_PRIMARY, menuPrimary);
 		MenuStorage.store(context, MENU_SECONDARY, menuSecondary);
 		hiddenAppsStorage.store(context);
@@ -260,6 +267,55 @@ public class Apps {
 		}
 	}
 
+	public void refreshProfiles(Context context) {
+		if (updateListener != null) {
+			updateListener.onProfilesChanged();
+		}
+		removeLockedProfiles(context, apps, menuPrimary, menuSecondary);
+		propagateUpdate();
+		updateIconsAsync(context);
+	}
+
+	private static boolean removeLockedProfiles(
+			Context context,
+			Map<LauncherItemKey, AppIcon> allApps,
+			MenuItems primary,
+			MenuItems secondary) {
+		Map<UserHandle, Boolean> lockedProfiles = new HashMap<>();
+		Set<UserHandle> removed = new HashSet<>();
+		Iterator<AppIcon> it = allApps.values().iterator();
+		while (it.hasNext()) {
+			AppIcon icon = it.next();
+			Boolean locked = lockedProfiles.get(icon.userHandle);
+			if (locked == null) {
+				locked = AppLauncher.isPrivateProfileLocked(context, icon.userHandle);
+				lockedProfiles.put(icon.userHandle, locked);
+			}
+			if (locked) {
+				removed.add(icon.userHandle);
+				it.remove();
+			}
+		}
+		for (List<AppIcon> menu : Arrays.asList(primary, secondary)) {
+			for (AppIcon icon : menu) {
+				Boolean locked = lockedProfiles.get(icon.userHandle);
+				if (locked == null) {
+					locked = AppLauncher.isPrivateProfileLocked(context, icon.userHandle);
+					lockedProfiles.put(icon.userHandle, locked);
+				}
+				if (locked) {
+					removed.add(icon.userHandle);
+				}
+			}
+		}
+		for (UserHandle user : removed) {
+			AppSnapshot.markUnavailable(allApps, user);
+		}
+		primary.hideProfiles(removed);
+		secondary.hideProfiles(removed);
+		return !removed.isEmpty();
+	}
+
 	public boolean isEmpty() {
 		return apps.isEmpty();
 	}
@@ -279,7 +335,7 @@ public class Apps {
 			return false;
 		}
 		indexing = true;
-		Map<LauncherItemKey, AppIcon> newApps = new HashMap<>();
+		AppSnapshot newApps = new AppSnapshot();
 		final boolean needsCacheRestore =
 				apps.isEmpty() && packageNameRestriction == null;
 		// If apps haven't been indexed yet, a partial index would restore
@@ -292,10 +348,11 @@ public class Apps {
 		final UserHandle userRestriction = packageRestriction != null
 				? userHandleRestriction
 				: null;
-		Map<LauncherItemKey, AppIcon> oldApps = new HashMap<>(apps);
+		AppSnapshot oldApps = new AppSnapshot(apps);
 		if (packageRestriction != null) {
 			// Unchanged icons stay owned by the UI thread.
 			newApps.putAll(oldApps);
+			newApps.unavailableProfiles.addAll(oldApps.unavailableProfiles);
 			removePackageFromApps(newApps, packageRestriction, userRestriction,
 					false);
 			// No need to call removePackageFromPieMenu() because the
@@ -343,7 +400,7 @@ public class Apps {
 						userRestriction,
 						newApps);
 			}
-			handler.post(() -> updateApps(newApps, menus, true));
+			handler.post(() -> updateApps(context, newApps, menus, true));
 			if ((reconciliation & RETRY_PACKAGE) != 0) {
 				handler.postDelayed(() -> updatePackageAsync(context,
 						packageRestriction, userRestriction), 1000L);
@@ -439,6 +496,9 @@ public class Apps {
 		// already running clears the map before the next one re-injects it.
 		PieLauncherApp.getDatabase(context).storePinnedShortcut(context, icon);
 		handler.post(() -> {
+			if (AppLauncher.isPrivateProfileLocked(context, icon.userHandle)) {
+				return;
+			}
 			apps.put(new LauncherItemKey(icon.componentName, icon.userHandle),
 					icon);
 			if (isIndexing()) {
@@ -574,18 +634,12 @@ public class Apps {
 	private void restoreAppsFromCache(
 			Context context,
 			HashSet<ComponentName> hideApps) {
-		Map<LauncherItemKey, AppIcon> cachedApps = new HashMap<>();
+		AppSnapshot cachedApps = new AppSnapshot();
 		PieLauncherApp.getDatabase(context).restoreApps(context, cachedApps);
 		injectPinnedShortcuts(context, cachedApps, null);
-		if (cachedApps.isEmpty()) {
-			return;
-		}
 		removeApps(cachedApps, hideApps);
-		if (cachedApps.isEmpty()) {
-			return;
-		}
 		Menus menus = compileMenus(context, cachedApps);
-		handler.post(() -> updateApps(cachedApps, menus, false));
+		handler.post(() -> updateApps(context, cachedApps, menus, false));
 	}
 
 	private Menus compileMenus(
@@ -599,19 +653,30 @@ public class Apps {
 	}
 
 	private void updateApps(
-			Map<LauncherItemKey, AppIcon> newApps,
+			Context context,
+			AppSnapshot newApps,
 			Menus menus,
 			boolean done) {
+		// A profile may have been locked after the worker read its apps.
+		boolean profilesChanged = removeLockedProfiles(context, newApps,
+				menus.primary, menus.secondary);
+		for (UserHandle user : newApps.unavailableProfiles) {
+			if (!apps.unavailableProfiles.contains(user) &&
+					AppLauncher.isPrivateProfileLocked(context, user)) {
+				profilesChanged = true;
+			}
+		}
+		if (profilesChanged && updateListener != null) {
+			updateListener.onProfilesChanged();
+		}
 		// Preserve launches made while indexing or while writes were queued.
 		for (Map.Entry<LauncherItemKey, AppIcon> entry : newApps.entrySet()) {
 			mergeUsage(entry.getValue(), apps.get(entry.getKey()));
 		}
-		apps.clear();
-		apps.putAll(newApps);
-		menuPrimary.clear();
-		menuPrimary.addAll(menus.primary);
-		menuSecondary.clear();
-		menuSecondary.addAll(menus.secondary);
+		apps.replaceWith(newApps);
+		menuPrimary.replaceWith(menus.primary);
+		menuSecondary.replaceWith(menus.secondary);
+		menusRestored = true;
 		if (done) {
 			indexing = false;
 		}
@@ -646,10 +711,10 @@ public class Apps {
 	}
 
 	private static class Menus {
-		final List<AppIcon> primary;
-		final List<AppIcon> secondary;
+		final MenuItems primary;
+		final MenuItems secondary;
 
-		Menus(List<AppIcon> primary, List<AppIcon> secondary) {
+		Menus(MenuItems primary, MenuItems secondary) {
 			this.primary = primary;
 			this.secondary = secondary;
 		}
@@ -679,6 +744,7 @@ public class Apps {
 		PieLauncherApp.iconPack.restoreMappings(context);
 		if (AppLauncher.HAS_LAUNCHER_APP) {
 			indexProfilesApps(
+					context,
 					AppLauncher.getLauncherApps(context),
 					AppLauncher.getUserManager(context),
 					allApps,
@@ -725,6 +791,7 @@ public class Apps {
 	@SuppressLint("UseRequiresApi")
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static void indexProfilesApps(
+			Context context,
 			LauncherApps la,
 			UserManager um,
 			Map<LauncherItemKey, AppIcon> allApps,
@@ -743,6 +810,11 @@ public class Apps {
 		// If packageNameRestriction == null and userHandleRestriction != null
 		// apps was cleared and all profiles will be indexed.
 		for (UserHandle profile : profiles) {
+			if (AppLauncher.isPrivateProfileLocked(context, profile)) {
+				AppSnapshot.markUnavailable(allApps, profile);
+				continue;
+			}
+			// A partial index cannot make a previously incomplete profile complete.
 			for (LauncherActivityInfo info :
 					AppLauncher.getActivityList(la, packageNameRestriction, profile)) {
 				ComponentName componentName = info.getComponentName();
@@ -790,13 +862,13 @@ public class Apps {
 		return appIcon;
 	}
 
-	private List<AppIcon> getPrimaryMenu(Context context,
+	private MenuItems getPrimaryMenu(Context context,
 			Map<LauncherItemKey, AppIcon> allApps,
 			boolean useDrawerIcon) {
 		AppIcon drawerIcon = useDrawerIcon
 				? addDrawerIcon(context, allApps)
 				: null;
-		ArrayList<AppIcon> menu = MenuStorage.restore(context,
+		MenuItems menu = MenuStorage.restore(context,
 				MENU_PRIMARY, allApps);
 		if (drawerIcon != null) {
 			if (!menu.contains(drawerIcon)) {
@@ -806,7 +878,7 @@ public class Apps {
 		} else {
 			drawerPackageName = null;
 		}
-		if (menu.isEmpty()) {
+		if (menu.isEmpty() && !menu.hasUnavailableItems()) {
 			MenuDefaults.createInitialMenu(menu, allApps,
 					context.getPackageManager());
 			MenuStorage.store(context, MENU_PRIMARY, menu);
@@ -814,12 +886,12 @@ public class Apps {
 		return menu;
 	}
 
-	private List<AppIcon> getSecondaryMenu(
+	private MenuItems getSecondaryMenu(
 			Context context,
 			Map<LauncherItemKey, AppIcon> allApps) {
-		ArrayList<AppIcon> menu = MenuStorage.restore(context,
+		MenuItems menu = MenuStorage.restore(context,
 				MENU_SECONDARY, allApps);
-		if (menu.isEmpty()) {
+		if (menu.isEmpty() && !menu.hasUnavailableItems()) {
 			// Just add a few apps so users aren't confused by an empty menu.
 			MenuDefaults.createMenuForPopularApps(menu, allApps, 4);
 			MenuStorage.store(context, MENU_SECONDARY, menu);

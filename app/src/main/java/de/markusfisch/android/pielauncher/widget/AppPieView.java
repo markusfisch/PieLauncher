@@ -205,6 +205,8 @@ public class AppPieView extends View {
 	private long highlightedFrom;
 	private long grabbedIconAt;
 	private long lastTapUpTime;
+	private Runnable cancelTouch;
+	private int profileGeneration;
 	private long lastCircleAt;
 	private int circleDirection;
 	private final ArrayList<CanvasPieMenu.CanvasIcon> outgoingPieIcons =
@@ -406,12 +408,39 @@ public class AppPieView extends View {
 		return appShortcutsTouched;
 	}
 
+	public void onProfilesChanged() {
+		++profileGeneration;
+		if (cancelTouch != null) {
+			cancelTouch.run();
+		}
+		if (mode == MODE_EDIT) {
+			rollback();
+			fadeEdit.fadeOut();
+			mode = MODE_PIE;
+		}
+		backup.clear();
+		ungrabbedIcons.clear();
+		releaseIcon();
+		setMenu(menuPrimary);
+		outgoingPieIcons.clear();
+		launchingIcon = null;
+		touchedIcon = null;
+		highlightedIcon = null;
+		appList = null;
+		selectedApp = -1;
+		appShortcutsOwner = null;
+		appShortcuts = null;
+		appShortcutsCache.clear();
+		appShortcutsVisible = false;
+		appShortcutsTouched = false;
+		appShortcutsScroller.forceFinished(true);
+		invalidate();
+	}
+
 	public void filterAppList(String query, boolean resetScroll) {
 		List<Apps.AppIcon> newAppList = AppSearch.filterAppsBy(
 				PieLauncherApp.apps, getContext(), query);
-		if (newAppList != null) {
-			appList = newAppList;
-		}
+		appList = newAppList;
 		appListIsFiltered = !TextUtils.isEmpty(query);
 		appListQuery = query;
 		selectedApp = prefs.doubleSpaceLaunch()
@@ -564,10 +593,29 @@ public class AppPieView extends View {
 			private Runnable highlightRunnable;
 			private Runnable longPressRunnable;
 			private Runnable performActionRunnable;
+			private int touchProfileGeneration;
+
+			{
+				cancelTouch = () -> {
+					cancelLongPress();
+					cancelPerformAction();
+					cancelSpin();
+					cancelExpandPanel();
+					flingRunnable.stop();
+					recycleVelocityTracker();
+					touchReferences.clear();
+					pointerCount = 0;
+				};
+			}
 
 			@SuppressLint("ClickableViewAccessibility")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+					touchProfileGeneration = profileGeneration;
+				} else if (touchProfileGeneration != profileGeneration) {
+					return true;
+				}
 				touch.set(Math.round(event.getX()), Math.round(event.getY()));
 				switch (event.getActionMasked()) {
 					case MotionEvent.ACTION_POINTER_DOWN:
@@ -983,7 +1031,12 @@ public class AppPieView extends View {
 				tapFlags.fourFingerTap = pointerCount == 4;
 				lastTapUpTime = eventTime;
 				final Point at = new Point(touch.x, touch.y);
+				int generation = profileGeneration;
 				performActionRunnable = () -> {
+					if (generation != profileGeneration) {
+						performActionRunnable = null;
+						return;
+					}
 					v.performClick();
 					if (performAction(v.getContext(), at, tapFlags)) {
 						performHapticFeedbackIfAllowed(
@@ -1216,7 +1269,7 @@ public class AppPieView extends View {
 	}
 
 	private void showIconOptions(Context context, Apps.AppIcon icon) {
-		if (icon == null) {
+		if (icon == null || AppLauncher.isPrivateProfileLocked(context, icon.userHandle)) {
 			return;
 		}
 		ArrayList<String> list = new ArrayList<>();
@@ -1266,6 +1319,9 @@ public class AppPieView extends View {
 	}
 
 	private void editIcon(Apps.AppIcon icon) {
+		if (icon != null && AppLauncher.isPrivateProfileLocked(getContext(), icon.userHandle)) {
+			return;
+		}
 		if (pieMenu.icons != menuPrimary &&
 				pieMenu.icons != menuSecondary) {
 			setMenu(menuPrimary);
@@ -1930,8 +1986,13 @@ public class AppPieView extends View {
 		if (appShortcuts != null) {
 			return;
 		}
+		int generation = profileGeneration;
 		PieLauncherApp.apps.loadAppShortcutsAsync(getContext(), app,
 				(owner, shortcuts) -> {
+					if (generation != profileGeneration ||
+							AppLauncher.isPrivateProfileLocked(getContext(), owner.userHandle)) {
+						return;
+					}
 					appShortcutsCache.put(owner, shortcuts);
 					if (owner == appShortcutsOwner) {
 						appShortcuts = shortcuts;

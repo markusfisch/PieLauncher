@@ -106,6 +106,7 @@ public class PieLauncherApp extends Application {
 		filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
 			filter.addAction(Intent.ACTION_PROFILE_AVAILABLE);
+			filter.addAction(Intent.ACTION_PROFILE_UNAVAILABLE);
 		}
 		registerReceiver(managedProfileEventReceiver, filter);
 	}
@@ -143,6 +144,9 @@ public class PieLauncherApp extends Application {
 					String[] packageNames,
 					UserHandle user,
 					boolean replacing) {
+				if (!replacing) {
+					apps.refreshProfiles(PieLauncherApp.this);
+				}
 			}
 
 			@Override
@@ -150,6 +154,9 @@ public class PieLauncherApp extends Application {
 					String[] packageNames,
 					UserHandle user,
 					boolean replacing) {
+				if (!replacing) {
+					apps.refreshProfiles(PieLauncherApp.this);
+				}
 			}
 		});
 	}

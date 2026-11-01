@@ -264,6 +264,16 @@ public class HomeActivity extends Activity {
 			}
 
 			@Override
+			public void onProfilesChanged() {
+				updateAfterTextChange = false;
+				if (searchInput.getText().toString().trim().startsWith(".")) {
+					searchInput.getText().clear();
+				}
+				updateAfterTextChange = true;
+				pieView.onProfilesChanged();
+			}
+
+			@Override
 			public void onShowAllAppsOnResume() {
 				showAllAppsOnResume = true;
 			}
