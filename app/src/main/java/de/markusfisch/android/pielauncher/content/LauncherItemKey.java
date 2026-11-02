@@ -30,10 +30,13 @@ public class LauncherItemKey {
 	public static LauncherItemKey unflattenFromString(
 			Context context,
 			String s) {
-		return AppLauncher.HAS_LAUNCHER_APP
-				? unflattenFromStringWithUserHandle(context, s)
-				: new LauncherItemKey(
-				ComponentName.unflattenFromString(s), null);
+		if (AppLauncher.HAS_LAUNCHER_APP) {
+			return unflattenFromStringWithUserHandle(context, s);
+		}
+		ComponentName componentName = ComponentName.unflattenFromString(s);
+		return componentName != null
+				? new LauncherItemKey(componentName, null)
+				: null;
 	}
 
 	public LauncherItemKey(
@@ -84,9 +87,10 @@ public class LauncherItemKey {
 			String s) {
 		int sep = s.indexOf('#');
 		if (sep < 0) {
-			return new LauncherItemKey(
-					ComponentName.unflattenFromString(s),
-					null);
+			ComponentName componentName = ComponentName.unflattenFromString(s);
+			return componentName != null
+					? new LauncherItemKey(componentName, null)
+					: null;
 		}
 		if (sep + 1 >= s.length()) {
 			return null;
