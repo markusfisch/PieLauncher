@@ -265,9 +265,10 @@ public class HomeActivity extends Activity {
 
 			@Override
 			public void onProfilesChanged() {
+				Editable editable = searchInput.getText();
 				updateAfterTextChange = false;
-				if (searchInput.getText().toString().trim().startsWith(".")) {
-					searchInput.getText().clear();
+				if (editable.toString().trim().startsWith(".")) {
+					editable.clear();
 				}
 				updateAfterTextChange = true;
 				pieView.onProfilesChanged();
