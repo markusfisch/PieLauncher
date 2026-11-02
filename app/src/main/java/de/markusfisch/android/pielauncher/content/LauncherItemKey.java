@@ -89,20 +89,21 @@ public class LauncherItemKey {
 					null);
 		}
 		if (sep + 1 >= s.length()) {
-			return new LauncherItemKey(
-					ComponentName.unflattenFromString(s.substring(0, sep)),
-					null);
+			return null;
 		}
 		ComponentName componentName = ComponentName.unflattenFromString(
 				s.substring(0, sep));
-		UserHandle userHandle = null;
+		if (componentName == null) {
+			return null;
+		}
 		try {
 			long id = Long.parseLong(s.substring(sep + 1));
-			userHandle = getUserManager(context).getUserForSerialNumber(id);
+			UserManager um = getUserManager(context);
+			UserHandle userHandle = um != null ? um.getUserForSerialNumber(id) : null;
+			return userHandle != null ? new LauncherItemKey(componentName, userHandle) : null;
 		} catch (NumberFormatException nfe) {
-			// Fall through, userHandle is null.
+			return null;
 		}
-		return new LauncherItemKey(componentName, userHandle);
 	}
 
 	@SuppressLint("UseRequiresApi")
