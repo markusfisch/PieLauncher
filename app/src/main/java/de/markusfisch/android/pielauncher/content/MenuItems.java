@@ -74,6 +74,19 @@ public class MenuItems extends ArrayList<Apps.AppIcon> {
 		}
 	}
 
+	void removeKeys(Set<LauncherItemKey> keys) {
+		Iterator<Apps.AppIcon> it = iterator();
+		while (it.hasNext()) {
+			Apps.AppIcon icon = it.next();
+			if (keys.contains(new LauncherItemKey(icon.componentName, icon.userHandle))) {
+				it.remove();
+			}
+		}
+		storedOrder.removeAll(keys);
+		unavailable.removeAll(keys);
+		visibleSlots.keySet().removeAll(keys);
+	}
+
 	void replaceWith(MenuItems menu) {
 		if (menu == this) {
 			return;

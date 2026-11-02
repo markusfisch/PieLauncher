@@ -119,6 +119,8 @@ public class Apps {
 	private final HashSet<LauncherItemKey> pendingPackageRetries =
 			new HashSet<>();
 
+	private final Set<LauncherItemKey> removedPinnedShortcuts = new HashSet<>();
+
 	private UpdateListener updateListener;
 	private String drawerPackageName;
 	private boolean indexing = false;
@@ -198,8 +200,10 @@ public class Apps {
 		if (!isShortcut(icon)) {
 			return;
 		}
+		LauncherItemKey key = new LauncherItemKey(icon.componentName, icon.userHandle);
+		removedPinnedShortcuts.add(key);
 		PieLauncherApp.getDatabase(context).removePinnedShortcut(context, icon);
-		apps.remove(new LauncherItemKey(icon.componentName, icon.userHandle));
+		apps.remove(key);
 		menuPrimary.remove(icon);
 		menuSecondary.remove(icon);
 		store(context);
@@ -496,11 +500,12 @@ public class Apps {
 		// already running clears the map before the next one re-injects it.
 		PieLauncherApp.getDatabase(context).storePinnedShortcut(context, icon);
 		handler.post(() -> {
+			LauncherItemKey key = new LauncherItemKey(icon.componentName, icon.userHandle);
+			removedPinnedShortcuts.remove(key);
 			if (AppLauncher.isPrivateProfileLocked(context, icon.userHandle)) {
 				return;
 			}
-			apps.put(new LauncherItemKey(icon.componentName, icon.userHandle),
-					icon);
+			apps.put(key, icon);
 			if (isIndexing()) {
 				// An index already queued before this UI update may omit the
 				// shortcut, so inject it again after that index finishes.
@@ -669,6 +674,10 @@ public class Apps {
 		if (profilesChanged && updateListener != null) {
 			updateListener.onProfilesChanged();
 		}
+		// A queued database deletion may be newer than this index result.
+		newApps.keySet().removeAll(removedPinnedShortcuts);
+		menus.primary.removeKeys(removedPinnedShortcuts);
+		menus.secondary.removeKeys(removedPinnedShortcuts);
 		// Preserve launches made while indexing or while writes were queued.
 		for (Map.Entry<LauncherItemKey, AppIcon> entry : newApps.entrySet()) {
 			mergeUsage(entry.getValue(), apps.get(entry.getKey()));
@@ -679,6 +688,7 @@ public class Apps {
 		menusRestored = true;
 		if (done) {
 			indexing = false;
+			removedPinnedShortcuts.clear();
 		}
 		propagateUpdate();
 	}
