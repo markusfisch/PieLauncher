@@ -96,6 +96,9 @@ public class Database {
 			String name,
 			Map<LauncherItemKey, Apps.AppIcon> allApps) {
 		MenuItems icons = new MenuItems();
+		boolean aliasesChanged = false;
+		Set<ComponentName> hiddenApps =
+				PieLauncherApp.apps.hiddenAppsStorage.copyComponentNames();
 		Cursor cursor = openHelper.getReadableDatabase().query(MENU_ITEMS,
 				new String[]{ITEM_KEY},
 				MENU_NAME + "=?",
@@ -110,20 +113,36 @@ public class Database {
 				if (key == null || key.componentName == null) {
 					continue;
 				}
-				boolean locked = AppLauncher.isPrivateProfileLocked(context, key.userHandle);
+				boolean locked = AppLauncher.isPrivateProfileLocked(
+						context, key.userHandle);
 				if (locked) {
 					AppSnapshot.markUnavailable(allApps, key.userHandle);
 				}
 				boolean hidden = locked || (allApps instanceof AppSnapshot &&
-						((AppSnapshot) allApps).unavailableProfiles.contains(key.userHandle));
+						((AppSnapshot) allApps).unavailableProfiles.contains(
+								key.userHandle));
 				Apps.AppIcon icon = hidden ? null : allApps.get(key);
-				// A persisted cache can predate an unlock, installation or migration.
-				hidden |= icon == null && allApps instanceof AppSnapshot &&
+				// A persisted cache can predate an unlock, installation or
+				// migration.
+				hidden |= icon == null &&
+						allApps instanceof AppSnapshot &&
 						((AppSnapshot) allApps).provisional;
+				if (icon == null && !hidden) {
+					icon = findNewAlias(allApps, key, hiddenApps);
+					aliasesChanged |= icon != null;
+				}
+				// Old and new aliases may both have been in the menu.
+				if (icon != null && icons.contains(icon)) {
+					aliasesChanged = true;
+					continue;
+				}
 				if (hidden || icon != null) {
-					// Alias reconciliation can resolve an old key to a new component.
-					icons.remember(hidden ? key :
-							new LauncherItemKey(icon.componentName, icon.userHandle), hidden, icon);
+					// Alias reconciliation can resolve an old key to a new
+					// component.
+					icons.remember(
+							hidden ? key : new LauncherItemKey(
+									icon.componentName, icon.userHandle),
+							hidden, icon);
 				}
 				if (icon != null) {
 					icons.add(icon);
@@ -132,7 +151,42 @@ public class Database {
 		} finally {
 			cursor.close();
 		}
+		if (aliasesChanged) {
+			storeMenu(name, icons);
+		}
 		return icons;
+	}
+
+	private static Apps.AppIcon findNewAlias(
+			Map<LauncherItemKey, Apps.AppIcon> allApps,
+			LauncherItemKey oldKey,
+			Set<ComponentName> hiddenApps) {
+		String packageName = oldKey.componentName.getPackageName();
+		// Shortcut IDs are independent items, not activity aliases.
+		if (Apps.SHORTCUT_PACKAGE.equals(packageName) ||
+				hiddenApps.contains(oldKey.componentName)) {
+			return null;
+		}
+		Apps.AppIcon match = null;
+		for (Map.Entry<LauncherItemKey, Apps.AppIcon> entry : allApps.entrySet()) {
+			LauncherItemKey key = entry.getKey();
+			boolean sameUser = key.userHandle == oldKey.userHandle ||
+					(key.userHandle != null && key.userHandle.equals(
+							oldKey.userHandle));
+			if (!packageName.equals(key.componentName.getPackageName()) ||
+					!sameUser) {
+				continue;
+			}
+			// Multiple launcher activities make the replacement ambiguous.
+			if (match != null && match != entry.getValue()) {
+				return null;
+			}
+			match = entry.getValue();
+		}
+		if (match != null && hiddenApps.contains(match.componentName)) {
+			return null;
+		}
+		return match;
 	}
 
 	public void storeMenu(String name, List<Apps.AppIcon> icons) {
