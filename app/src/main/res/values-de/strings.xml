@@ -127,6 +127,7 @@
 	<string name="change_icon">Icon ändern</string>
 	<string name="hidden_apps">Versteckte Apps</string>
 	<string name="hide_app">App verstecken</string>
+	<string name="cannot_hide_shortcut">Verknüpfungen können nicht versteckt werden. Du kannst sie stattdessen entfernen.</string>
 	<string name="show_app_info">App-Infos anzeigen</string>
 	<string name="no_hidden_apps">Keine versteckten Apps</string>
 	<string name="unhide_app">App wieder anzeigen</string>

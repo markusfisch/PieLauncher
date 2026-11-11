@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.adapter.PickIconAdapter;
 import de.markusfisch.android.pielauncher.app.PieLauncherApp;
+import de.markusfisch.android.pielauncher.content.Apps;
 import de.markusfisch.android.pielauncher.graphics.BackgroundBlur;
 import de.markusfisch.android.pielauncher.graphics.IconPack;
 import de.markusfisch.android.pielauncher.graphics.ToolbarBackground;
@@ -34,6 +35,7 @@ import de.markusfisch.android.pielauncher.view.SoftKeyboard;
 import de.markusfisch.android.pielauncher.view.SystemBars;
 import de.markusfisch.android.pielauncher.widget.Dialog;
 import de.markusfisch.android.pielauncher.widget.OptionsDialog;
+import de.markusfisch.android.pielauncher.widget.Toaster;
 
 public class PickIconActivity extends Activity {
 	public interface OnHideListener {
@@ -69,6 +71,10 @@ public class PickIconActivity extends Activity {
 			Context context,
 			ComponentName componentName,
 			OnHideListener hideListener) {
+		if (Apps.SHORTCUT_PACKAGE.equals(componentName.getPackageName())) {
+			Toaster.toast(context, R.string.cannot_hide_shortcut);
+			return;
+		}
 		Dialog.newDialog(context)
 				.setTitle(R.string.hide_app)
 				.setMessage(R.string.want_to_hide_app)
