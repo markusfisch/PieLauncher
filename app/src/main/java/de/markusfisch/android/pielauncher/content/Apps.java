@@ -39,6 +39,7 @@ import de.markusfisch.android.pielauncher.graphics.Converter;
 import de.markusfisch.android.pielauncher.io.HiddenAppsStorage;
 import de.markusfisch.android.pielauncher.io.MenuStorage;
 import de.markusfisch.android.pielauncher.preference.Preferences;
+import de.markusfisch.android.pielauncher.widget.Toaster;
 
 public class Apps {
 	public interface UpdateListener {
@@ -210,7 +211,7 @@ public class Apps {
 		menuSecondary.remove(icon);
 		store(context);
 		propagateUpdate();
-		AppLauncher.toast(context, context.getString(
+		Toaster.toast(context, context.getString(
 				R.string.removed_from_home_screen, icon.label));
 	}
 
@@ -542,7 +543,7 @@ public class Apps {
 				updateIconsAsync(context);
 			}
 			propagateUpdate();
-			AppLauncher.toast(context, context.getString(
+			Toaster.toast(context, context.getString(
 					R.string.added_to_home_screen, icon.label));
 		});
 	}

@@ -1367,7 +1367,7 @@ public class AppPieView extends View {
 		if (PieLauncherApp.apps.beginMenuEdit()) {
 			return true;
 		}
-		AppLauncher.toast(context, R.string.editor_unavailable_while_loading);
+		Toaster.toast(context, R.string.editor_unavailable_while_loading);
 		return false;
 	}
 

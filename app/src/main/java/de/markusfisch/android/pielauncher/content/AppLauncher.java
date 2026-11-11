@@ -15,13 +15,13 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.markusfisch.android.pielauncher.R;
 import de.markusfisch.android.pielauncher.content.Apps.AppIcon;
+import de.markusfisch.android.pielauncher.widget.Toaster;
 
 public class AppLauncher {
 	public static final boolean HAS_LAUNCHER_APP =
@@ -100,7 +100,7 @@ public class AppLauncher {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
 					!um.isUserUnlocked(icon.userHandle) &&
 					isPrivateProfile(la, icon.userHandle)) {
-				AppLauncher.toast(context, R.string.user_profile_locked);
+				Toaster.toast(context, R.string.user_profile_locked);
 				return false;
 			}
 			la.startMainActivity(
@@ -118,7 +118,7 @@ public class AppLauncher {
 					icon.userHandle);
 			if (componentName == null ||
 					componentName.equals(icon.componentName)) {
-				AppLauncher.toast(context, R.string.activity_not_enabled);
+				Toaster.toast(context, R.string.activity_not_enabled);
 				return false;
 			}
 			icon.componentName = componentName;
@@ -130,7 +130,7 @@ public class AppLauncher {
 						null);
 				return true;
 			} catch (Exception e2) {
-				AppLauncher.toast(context, R.string.activity_not_enabled);
+				Toaster.toast(context, R.string.activity_not_enabled);
 				return false;
 			}
 		}
@@ -192,7 +192,7 @@ public class AppLauncher {
 		}
 		UserHandle privateUser = findPrivateProfileUser(context);
 		if (privateUser == null) {
-			AppLauncher.toast(context, R.string.private_space_not_available);
+			Toaster.toast(context, R.string.private_space_not_available);
 			return false;
 		}
 		if (!isPrivateProfileLocked(context, privateUser)) {
@@ -200,10 +200,10 @@ public class AppLauncher {
 		}
 		UserManager um = getUserManager(context);
 		if (um == null) {
-			AppLauncher.toast(context, R.string.private_space_unlock_failed);
+			Toaster.toast(context, R.string.private_space_unlock_failed);
 			return false;
 		}
-		AppLauncher.toast(context, R.string.private_space_unlocking);
+		Toaster.toast(context, R.string.private_space_unlocking);
 		try {
 			um.requestQuietModeEnabled(false, privateUser);
 			if (onResume != null) {
@@ -211,7 +211,7 @@ public class AppLauncher {
 			}
 			return true;
 		} catch (SecurityException e) {
-			AppLauncher.toast(context, R.string.private_space_unlock_failed);
+			Toaster.toast(context, R.string.private_space_unlock_failed);
 		}
 		return false;
 	}
@@ -265,18 +265,6 @@ public class AppLauncher {
 		return new ArrayList<>();
 	}
 
-	public static <T> void toast(Context context, T message) {
-		String m;
-		if (message instanceof Integer) {
-			m = context.getString((Integer) message);
-		} else if (message instanceof String) {
-			m = (String) message;
-		} else {
-			return;
-		}
-		Toast.makeText(context, m, Toast.LENGTH_SHORT).show();
-	}
-
 	@SuppressLint("UseRequiresApi")
 	private static boolean launchShortcut(Context context, AppIcon icon) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
@@ -296,7 +284,7 @@ public class AppLauncher {
 		} catch (Exception e) {
 			// e.g. IllegalStateException when this isn't the default launcher,
 			// or ActivityNotFoundException if the shortcut no longer exists.
-			toast(context, R.string.activity_not_enabled);
+			Toaster.toast(context, R.string.activity_not_enabled);
 			return false;
 		}
 	}
