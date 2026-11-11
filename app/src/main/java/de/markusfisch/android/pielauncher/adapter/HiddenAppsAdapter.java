@@ -3,6 +3,7 @@ package de.markusfisch.android.pielauncher.adapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.UserHandle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +20,17 @@ public class HiddenAppsAdapter extends ArrayAdapter<HiddenAppsAdapter.HiddenApp>
 		public final ComponentName componentName;
 		public final String name;
 		public final Drawable icon;
+		public final UserHandle userHandle;
 
 		public HiddenApp(
 				ComponentName componentName,
 				String name,
-				Drawable icon) {
+				Drawable icon,
+				UserHandle userHandle) {
 			this.componentName = componentName;
 			this.name = name;
 			this.icon = icon;
+			this.userHandle = userHandle;
 		}
 	}
 
