@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">Pie Launcher</string>
 	<string name="tip_loading">Завантаження…</string>
+	<string name="editor_unavailable_while_loading">Зачекайте, доки програми завантажаться</string>
 	<string name="tip_drag_to_order">Перетягніть, щоб упорядкувати</string>
 	<string name="tip_remove_icon">Видалити значок із кругового меню</string>
 	<string name="tip_remove_app">Видалити додаток</string>

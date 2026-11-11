@@ -124,6 +124,8 @@ public class Apps {
 	private UpdateListener updateListener;
 	private String drawerPackageName;
 	private boolean indexing = false;
+	private boolean editingMenu;
+	private boolean indexAfterEditing;
 	private boolean menusRestored;
 
 	public boolean isDrawerIcon(AppIcon icon) {
@@ -225,6 +227,11 @@ public class Apps {
 			PieLauncherApp.getDatabase(appContext).removePackage(
 					appContext, packageName, userHandle);
 			handler.post(() -> {
+				// Cancel a drag before removing icons so its backup cannot
+				// put an uninstalled app back into the menu.
+				if (editingMenu && updateListener != null) {
+					updateListener.onProfilesChanged();
+				}
 				removePackageFromApps(apps, packageName, userHandle,
 						true);
 				removePackageFromPieMenu(menuPrimary, packageName,
@@ -328,6 +335,23 @@ public class Apps {
 		return indexing;
 	}
 
+	public boolean beginMenuEdit() {
+		if (indexing) {
+			return false;
+		}
+		editingMenu = true;
+		return true;
+	}
+
+	public void endMenuEdit(Context context) {
+		editingMenu = false;
+		if (indexAfterEditing) {
+			indexAfterEditing = false;
+			Context appContext = context.getApplicationContext();
+			handler.post(() -> updateIconsAsync(appContext));
+		}
+	}
+
 	public boolean indexAppsAsync(Context context) {
 		return indexAppsAsync(context, null, null);
 	}
@@ -335,6 +359,10 @@ public class Apps {
 	public boolean indexAppsAsync(Context context,
 			String packageNameRestriction,
 			UserHandle userHandleRestriction) {
+		if (editingMenu) {
+			indexAfterEditing = true;
+			return true;
+		}
 		if (indexing) {
 			return false;
 		}
@@ -378,9 +406,11 @@ public class Apps {
 					newApps);
 			injectPinnedShortcuts(context, newApps, hideApps);
 			int reconciliation = reconcileChangedPackage(
-					newApps, oldPackageApps, packageRestriction, userRestriction);
+					newApps,
+					oldPackageApps,
+					packageRestriction,
+					userRestriction);
 			Database database = PieLauncherApp.getDatabase(context);
-			// Restore only new icons; shared icons may be updated by UI launches.
 			Map<LauncherItemKey, AppIcon> newIcons = new HashMap<>();
 			for (Map.Entry<LauncherItemKey, AppIcon> entry : newApps.entrySet()) {
 				if (entry.getValue() != oldApps.get(entry.getKey())) {

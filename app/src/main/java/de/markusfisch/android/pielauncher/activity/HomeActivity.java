@@ -223,6 +223,9 @@ public class HomeActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		unregisterBackCallback();
+		if (pieView.inEditMode()) {
+			pieView.endEditMode();
+		}
 		PieLauncherApp.apps.setUpdateListener(null);
 		super.onDestroy();
 	}

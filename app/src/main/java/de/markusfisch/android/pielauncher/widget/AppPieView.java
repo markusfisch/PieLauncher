@@ -346,6 +346,9 @@ public class AppPieView extends View {
 	}
 
 	public void showList() {
+		if (mode == MODE_EDIT) {
+			endEditMode();
+		}
 		if (mode == MODE_LIST) {
 			return;
 		}
@@ -359,6 +362,9 @@ public class AppPieView extends View {
 	}
 
 	public void hideList() {
+		if (mode == MODE_EDIT) {
+			endEditMode();
+		}
 		if (mode == MODE_PIE) {
 			return;
 		}
@@ -415,8 +421,10 @@ public class AppPieView extends View {
 		}
 		if (mode == MODE_EDIT) {
 			rollback();
+			storeMenu();
 			fadeEdit.fadeOut();
 			mode = MODE_PIE;
+			PieLauncherApp.apps.endMenuEdit(getContext());
 		}
 		backup.clear();
 		ungrabbedIcons.clear();
@@ -469,6 +477,7 @@ public class AppPieView extends View {
 		releaseIcon();
 		fadeOutMode();
 		mode = MODE_PIE;
+		PieLauncherApp.apps.endMenuEdit(getContext());
 		invalidate();
 		if (prefs.excludePie() != Preferences.EXCLUDE_PIE_NONE) {
 			PieLauncherApp.apps.propagateUpdate();
@@ -1308,20 +1317,27 @@ public class AppPieView extends View {
 	}
 
 	private void addIconInteractively(Apps.AppIcon appIcon) {
+		if (!beginMenuEdit(appIcon)) {
+			return;
+		}
 		if (listListener != null) {
 			listListener.onHideList();
 		}
 		fadeList.fadeOut();
 		neverDropped = true;
-		editIcon(appIcon);
+		startIconEdit(appIcon);
 		resetScrollWithoutAnimation();
 		invalidate();
 	}
 
 	private void editIcon(Apps.AppIcon icon) {
-		if (icon != null && AppLauncher.isPrivateProfileLocked(getContext(), icon.userHandle)) {
+		if (!beginMenuEdit(icon)) {
 			return;
 		}
+		startIconEdit(icon);
+	}
+
+	private void startIconEdit(Apps.AppIcon icon) {
 		if (pieMenu.icons != menuPrimary &&
 				pieMenu.icons != menuSecondary) {
 			setMenu(menuPrimary);
@@ -1340,6 +1356,19 @@ public class AppPieView extends View {
 			fadeEdit.fadeIn();
 			mode = MODE_EDIT;
 		}
+	}
+
+	private boolean beginMenuEdit(Apps.AppIcon icon) {
+		Context context = getContext();
+		if (icon != null && AppLauncher.isPrivateProfileLocked(
+				context, icon.userHandle)) {
+			return false;
+		}
+		if (PieLauncherApp.apps.beginMenuEdit()) {
+			return true;
+		}
+		AppLauncher.toast(context, R.string.editor_unavailable_while_loading);
+		return false;
 	}
 
 	private void releaseIcon() {
@@ -1503,6 +1532,7 @@ public class AppPieView extends View {
 					PreferencesActivity.start(context);
 				}
 			} else {
+				Apps.AppIcon icon = grabbedIcon;
 				rollback();
 				if (neverDropped) {
 					fadeOutMode();
@@ -1510,13 +1540,12 @@ public class AppPieView extends View {
 				}
 				if (PieLauncherApp.iconPack.hasPacks()) {
 					storeMenu();
-					changeIcon(context, grabbedIcon);
-				} else if (PieLauncherApp.apps.isDrawerIcon(
-						(Apps.AppIcon) grabbedIcon)) {
-					removeIconFromPie(grabbedIcon, true);
+					changeIcon(context, icon);
+				} else if (PieLauncherApp.apps.isDrawerIcon(icon)) {
+					removeIconFromPie(icon, true);
 				} else {
 					PickIconActivity.askToHide(context,
-							((Apps.AppIcon) grabbedIcon).componentName);
+							icon.componentName);
 				}
 			}
 			return true;

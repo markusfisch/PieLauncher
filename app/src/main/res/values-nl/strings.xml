@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">Pie Launcher</string>
 	<string name="tip_loading">Laden…</string>
+	<string name="editor_unavailable_while_loading">Wacht tot de apps zijn geladen</string>
 	<string name="tip_drag_to_order">Slepen om te rangschikken, cirkelen om volgorde te wijzigen</string>
 	<string name="tip_remove_icon">Pictogram verwijderen van Pie menu</string>
 	<string name="tip_remove_app">App verwijderen van apparaat</string>

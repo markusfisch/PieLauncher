@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">Pie 启动器</string>
 	<string name="tip_loading">正在加载</string>
+	<string name="editor_unavailable_while_loading">请等待应用加载完成</string>
 	<string name="tip_drag_to_order">拖动排列，圈选更改顺序</string>
 	<string name="tip_remove_icon">从饼状菜单中移除图标</string>
 	<string name="tip_remove_app">卸载应用程序</string>

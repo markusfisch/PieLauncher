@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">Pie Launcher</string>
 	<string name="tip_loading">Chargement…</string>
+	<string name="editor_unavailable_while_loading">Veuillez attendre la fin du chargement des applications</string>
 	<string name="tip_drag_to_order">Entourer pour changer l\'ordre</string>
 	<string name="tip_remove_icon">Supprimer l\'icône de Pie</string>
 	<string name="tip_remove_app">Désinstaller l\'application</string>
