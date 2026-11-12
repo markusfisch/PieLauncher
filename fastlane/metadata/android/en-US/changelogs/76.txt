@@ -1,0 +1,6 @@
+* Add an option to show app shortcuts in search
+* Add an option to learn from search selections
+* Add an option to switch menus with a second finger
+* Improve icon pack support
+* Improve support for menu entries from other profiles
+

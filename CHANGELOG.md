@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.29.0
+* Add an option to show app shortcuts in search
+* Add an option to learn from search selections
+* Add an option to switch menus with a second finger
+* Improve icon pack support
+* Improve support for menu entries from other profiles
+
 ## 1.28.0
 * Add support for launching pinned shortcuts
 * Limit recent-apps gesture workaround to Android 14
