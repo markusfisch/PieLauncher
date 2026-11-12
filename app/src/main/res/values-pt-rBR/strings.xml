@@ -99,6 +99,8 @@
 	<string name="exclude_pie_all">Dos dois menus</string>
 	<string name="exclude_pie_no">Não (Padrão)</string>
 	<string name="split_pie_menu">Menus Pie separados em cima/embaixo</string>
+	<string name="additional_touch_menu">Ao tocar com outro dedo</string>
+	<string name="additional_touch_menu_default">Gira o menu (Padrão)</string>
 	<string name="circle_swaps_menus">Circular alterna menus</string>
 	<string name="alternate_menu_none">Não (Padrão)</string>
 	<string name="alternate_menu_secondary">Menu secundário</string>

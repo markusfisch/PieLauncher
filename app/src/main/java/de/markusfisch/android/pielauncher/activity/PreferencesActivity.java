@@ -240,6 +240,11 @@ public class PreferencesActivity extends Activity {
 				PreferencesActivity::getAlternateMenuOptions,
 				() -> prefs.circleSwapsMenus(),
 				(value) -> prefs.setCircleSwapsMenus(value));
+		initPreference(R.id.additional_touch_menu,
+				R.string.additional_touch_menu,
+				PreferencesActivity::getAdditionalTouchMenuOptions,
+				() -> prefs.additionalTouchMenu(),
+				(value) -> prefs.setAdditionalTouchMenu(value));
 		initPreference(R.id.home_button_opens_drawer,
 				R.string.home_button_opens_drawer,
 				PreferencesActivity::getHomeButtonOpensDrawerOptions,
@@ -547,6 +552,13 @@ public class PreferencesActivity extends Activity {
 		Map<Boolean, Integer> map = new LinkedHashMap<>();
 		map.put(Boolean.TRUE, R.string.animate_in_out_yes);
 		map.put(Boolean.FALSE, R.string.animate_in_out_no);
+		return map;
+	}
+
+	private static Map<Integer, Integer> getAdditionalTouchMenuOptions() {
+		Map<Integer, Integer> map = getAlternateMenuOptions();
+		map.put(Preferences.ALTERNATE_MENU_NONE,
+				R.string.additional_touch_menu_default);
 		return map;
 	}
 

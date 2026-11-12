@@ -93,6 +93,7 @@ public class Preferences {
 	private static final String FORCE_RELAUNCH = "force_relaunch";
 	private static final String SHOW_DRAWER_ON_HOME = "show_drawer_on_home";
 	private static final String SPLIT_PIE_MENU = "split_pie_menu";
+	private static final String ADDITIONAL_TOUCH_MENU = "additional_touch_menu";
 	private static final String CIRCLE_SWAPS_MENUS = "circle_swaps";
 
 	private final SharedPreferences preferences;
@@ -130,6 +131,7 @@ public class Preferences {
 	private boolean forceRelaunch = false;
 	private boolean showDrawerOnHome = true;
 	private int splitPieMenu = ALTERNATE_MENU_NONE;
+	private int additionalTouchMenu = ALTERNATE_MENU_NONE;
 	private int circleSwapsMenus = ALTERNATE_MENU_NONE;
 
 	public Preferences(Context context) {
@@ -195,6 +197,8 @@ public class Preferences {
 		showDrawerOnHome = preferences.getBoolean(SHOW_DRAWER_ON_HOME,
 				showDrawerOnHome);
 		splitPieMenu = preferences.getInt(SPLIT_PIE_MENU, splitPieMenu);
+		additionalTouchMenu = preferences.getInt(ADDITIONAL_TOUCH_MENU,
+				additionalTouchMenu);
 		circleSwapsMenus = preferences.getInt(CIRCLE_SWAPS_MENUS,
 				circleSwapsMenus);
 	}
@@ -485,6 +489,15 @@ public class Preferences {
 	public void setSplitPieMenu(int splitPieMenu) {
 		this.splitPieMenu = splitPieMenu;
 		put(SPLIT_PIE_MENU, splitPieMenu).apply();
+	}
+
+	public int additionalTouchMenu() {
+		return additionalTouchMenu;
+	}
+
+	public void setAdditionalTouchMenu(int additionalTouchMenu) {
+		this.additionalTouchMenu = additionalTouchMenu;
+		put(ADDITIONAL_TOUCH_MENU, additionalTouchMenu).apply();
 	}
 
 	public int circleSwapsMenus() {

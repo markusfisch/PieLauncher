@@ -592,6 +592,7 @@ public class AppPieView extends View {
 			private VelocityTracker velocityTracker;
 			private int primaryId;
 			private int pointerCount;
+			private boolean additionalTouchMenu;
 			private int spinId = -1;
 			private double spinAngleDown;
 			private double spinInitialTwist;
@@ -631,7 +632,13 @@ public class AppPieView extends View {
 						pointerCount = event.getPointerCount();
 						if (mode == MODE_PIE) {
 							cancelExpandPanel();
-							startSpin(event);
+							if (prefs.additionalTouchMenu() ==
+									Preferences.ALTERNATE_MENU_NONE) {
+								startSpin(event);
+							} else if (fadePie.isVisible() && !additionalTouchMenu) {
+								additionalTouchMenu = true;
+								switchMenu(prefs.additionalTouchMenu(), 0);
+							}
 							invalidate();
 						} else if (mode == MODE_LIST) {
 							cancelLongPress();
@@ -642,7 +649,7 @@ public class AppPieView extends View {
 						}
 						break;
 					case MotionEvent.ACTION_POINTER_UP:
-						if (mode == MODE_PIE) {
+						if (mode == MODE_PIE && !additionalTouchMenu) {
 							stopSpin(event);
 						} else if (mode == MODE_LIST) {
 							updateReferences(event);
@@ -656,6 +663,7 @@ public class AppPieView extends View {
 							break;
 						}
 						pointerCount = 1;
+						additionalTouchMenu = false;
 						addTouch(event);
 						long eventTime = event.getEventTime();
 						switch (mode) {
@@ -708,7 +716,13 @@ public class AppPieView extends View {
 							keepScrolling(event);
 							appShortcutsTouched = false;
 						}
-						postPerformAction(v, event);
+						if (mode == MODE_PIE && additionalTouchMenu &&
+								event.getPointerId(0) != primaryId) {
+							fadeOutMode();
+							invalidate();
+						} else {
+							postPerformAction(v, event);
+						}
 						break;
 					case MotionEvent.ACTION_CANCEL:
 						if (mode == MODE_PIE) {
@@ -801,8 +815,10 @@ public class AppPieView extends View {
 					setCenter(touch.x, touch.y);
 				} else {
 					// Reset menu to primary if necessary.
-					if (prefs.circleSwapsMenus() !=
-							Preferences.ALTERNATE_MENU_NONE &&
+					if ((prefs.circleSwapsMenus() !=
+							Preferences.ALTERNATE_MENU_NONE ||
+							prefs.additionalTouchMenu() !=
+							Preferences.ALTERNATE_MENU_NONE) &&
 							!isPrimaryMenu()) {
 						setMenu(menuPrimary);
 					}
@@ -1030,14 +1046,14 @@ public class AppPieView extends View {
 				cancelPerformAction();
 				// Any duration shorter than the long press timeout is
 				// considered to be a press/tap.
-				tapFlags.wasTap = isTap(event, longPressTimeout);
-				tapFlags.longPress = !tapFlags.wasTap &&
+				tapFlags.wasTap = !additionalTouchMenu && isTap(event, longPressTimeout);
+				tapFlags.longPress = !additionalTouchMenu && !tapFlags.wasTap &&
 						isTap(event, Long.MAX_VALUE);
 				long eventTime = event.getEventTime();
 				tapFlags.doubleTap = tapFlags.wasTap &&
 						eventTime - lastTapUpTime < doubleTapTimeout;
-				tapFlags.twoFingerTap = pointerCount == 2;
-				tapFlags.fourFingerTap = pointerCount == 4;
+				tapFlags.twoFingerTap = !additionalTouchMenu && pointerCount == 2;
+				tapFlags.fourFingerTap = !additionalTouchMenu && pointerCount == 4;
 				lastTapUpTime = eventTime;
 				final Point at = new Point(touch.x, touch.y);
 				int generation = profileGeneration;
@@ -1769,8 +1785,11 @@ public class AppPieView extends View {
 	}
 
 	private void onCircle(int direction) {
-		List<Apps.AppIcon> icons = getAlternateMenu(
-				prefs.circleSwapsMenus());
+		switchMenu(prefs.circleSwapsMenus(), direction);
+	}
+
+	private void switchMenu(int option, int direction) {
+		List<Apps.AppIcon> icons = getAlternateMenu(option);
 		if (icons == null || icons.isEmpty() || icons.equals(pieMenu.icons)) {
 			return;
 		}
@@ -2283,6 +2302,8 @@ public class AppPieView extends View {
 	private boolean hasSecondaryMenu() {
 		return prefs.splitPieMenu() == Preferences.ALTERNATE_MENU_SECONDARY ||
 				prefs.circleSwapsMenus() ==
+						Preferences.ALTERNATE_MENU_SECONDARY ||
+				prefs.additionalTouchMenu() ==
 						Preferences.ALTERNATE_MENU_SECONDARY;
 	}
 

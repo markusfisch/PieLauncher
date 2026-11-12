@@ -95,6 +95,8 @@
 	<string name="exclude_pie_all">Из обоих меню</string>
 	<string name="exclude_pie_no">Нет (Стандартно)</string>
 	<string name="split_pie_menu">Отдельные круговые меню сверху/снизу</string>
+	<string name="additional_touch_menu">При дополнительном касании</string>
+	<string name="additional_touch_menu_default">Вращает меню (По умолчанию)</string>
 	<string name="circle_swaps_menus">Обведение по кругу переключает меню</string>
 	<string name="alternate_menu_none">Нет (Стандартно)</string>
 	<string name="alternate_menu_secondary">Вторичное меню</string>

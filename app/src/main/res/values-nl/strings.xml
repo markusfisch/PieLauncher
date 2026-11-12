@@ -95,6 +95,8 @@
 	<string name="exclude_pie_all">Uit beide menu\'s</string>
 	<string name="exclude_pie_no">Nee (standaard)</string>
 	<string name="split_pie_menu">Aparte bovenste/onderste Pie-menu\'s</string>
+	<string name="additional_touch_menu">Bij extra aanraking</string>
+	<string name="additional_touch_menu_default">Draait het menu (Standaard)</string>
 	<string name="circle_swaps_menus">Omcirkelen wisselt menu\'s</string>
 	<string name="alternate_menu_none">Nee (standaard)</string>
 	<string name="alternate_menu_secondary">Secundair menu</string>
